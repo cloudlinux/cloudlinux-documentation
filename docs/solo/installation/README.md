@@ -183,7 +183,7 @@ Next, [activate your installation](/solo/manager/#activation) in order to get up
 ## Converting existing servers
 
 :::warning
-Only CenOS 8/AlmaLinux 8 can be converted to the CloudLinux OS Solo 8. 
+Only CentOS 8/AlmaLinux 8 can be converted to the CloudLinux OS Solo 8. 
 :::
 
 Sometimes it is required to convert already existing servers with `CentOS` or `AlmaLinux` and make them `CloudLinux OS Solo`.
