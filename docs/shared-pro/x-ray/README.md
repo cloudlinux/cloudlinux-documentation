@@ -675,6 +675,21 @@ The list of currently supported PHP versions:
 
 It may be any PHP system function which can be related to a PHP engine or other PHP extension, for example <span class="notranslate">`fopen()`</span> or <span class="notranslate">`json_encode()`</span>. A list of these functions can be found [here](https://www.php.net/manual/en/indexes.functions.php).
 
+### Web performance monitoring
+
+:::tip Note
+Personal data about visitors to the page is not collected.
+:::
+
+With tracing tasks enabled, JavaScript can be added to the bottom page of WordPress for web performance monitoring.  
+The script can send a couple of POST requests to the analytics service.
+
+![](./images/XRayWebPerformans.request.png)
+
+Anonymous data is collected about page load time and resources such as images and css files.
+
+![](./images/XRayWebPerformans.data.png)
+
 ### Configuration Options
 
 <div class="notranslate">
