@@ -531,6 +531,35 @@ tly for the most valuable URLs of your site."
 }
 ```
 
+## Advanced performance analytics
+
+By enabling this feature, X-Ray will add JavaScript profiling code to each WordPress site during the tracing process. This will allow X-Ray to provide highly detailed insights into each website’s performance (greatly enhancing the quality and accuracy of SmartAdvice). The performance metrics that will be collected include TTFB (Time To First Byte), Total Blocking Time, First Contentful Paint, and more. The profiling code does not collect any user or visitor data nor sensitive data of any kind. The sole purpose of this profiling code is to gather performance-related metrics to better optimize the website.
+
+### How to enable/disable via UI
+You can manage the setting in several interfaces:  
+
+X-Ray settings  
+![](./images/XRayAdvancedMetrics.ui.xray.png)
+
+AccelerateWP settings  
+![](./images/XRayAdvancedMetrics.ui.awp.png)
+
+### How to enable/disable via CLI
+To enable:  
+```cloudlinux-xray-manager advanced-metrics --enable```
+
+To disable:  
+```cloudlinux-xray-manager advanced-metrics --disable```
+
+### How it works
+To start advanced performance monitoring, you can enable tracing tasks that involve adding a JavaScript snippet to the bottom of your WordPress page. This snippet facilitates performance monitoring and allows X-Ray to gather valuable insights.
+
+Once tracing tasks are enabled, the JavaScript snippet will periodically send POST requests to our secure analytics service.
+![](./images/XRayAdvancedMetrics.request.png)
+
+These requests capture anonymous data about page load time and resources.
+![](./images/XRayAdvancedMetrics.data.png)
+
 ## End-user X-Ray plugin
 
 :::warning Warning
@@ -674,21 +703,6 @@ The list of currently supported PHP versions:
 ### System PHP functions
 
 It may be any PHP system function which can be related to a PHP engine or other PHP extension, for example <span class="notranslate">`fopen()`</span> or <span class="notranslate">`json_encode()`</span>. A list of these functions can be found [here](https://www.php.net/manual/en/indexes.functions.php).
-
-### Web performance monitoring
-
-:::tip Note
-Personal data about visitors to the page is not collected.
-:::
-
-With tracing tasks enabled, JavaScript can be added to the bottom page of WordPress for web performance monitoring.  
-The script can send a couple of POST requests to the analytics service.
-
-![](./images/XRayWebPerformans.request.png)
-
-Anonymous data is collected about page load time and resources such as images and css files.
-
-![](./images/XRayWebPerformans.data.png)
 
 ### Configuration Options
 
