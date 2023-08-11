@@ -545,10 +545,7 @@ AccelerateWP settings
 ![](./images/XRayAdvancedMetrics.ui.awp.png)
 
 ### How to enable/disable via CLI
-To enable:  
-```cloudlinux-xray-manager advanced-metrics --enable```
-
-To disable:  
+```cloudlinux-xray-manager advanced-metrics --enable```  
 ```cloudlinux-xray-manager advanced-metrics --disable```
 
 ### How it works
