@@ -20,6 +20,11 @@ export default [
         link: "/shared-pro/accelerate-wp/",
     },
     {
+        title: "Apache2Nginx (BETA)",
+        description: "Apache2Nginx sets up Nginx hosting with .htaccess support",
+        link: "/shared-pro/apache2nginx/",
+    },
+    {
         title: "CLN",
         description: "CLN is a CloudLinux Network designed to easily manage your licenses of CloudLinux products and services by means of a user-friendly interface.",
         link: "/cln/introduction/",
