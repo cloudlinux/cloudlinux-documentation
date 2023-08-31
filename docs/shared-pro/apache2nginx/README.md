@@ -12,7 +12,7 @@ configuration.
 To use Apache2Nginx, first install the `apache2nginx` package:
 
 ```bash
-yum install apache2nginx
+yum --enablerepo=cloudlinux-updates-testing install apache2nginx
 ```
 
 ## Convert to NGINX hosting
