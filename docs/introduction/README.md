@@ -74,7 +74,7 @@ CloudLinux Manager allows you to maintain fine-tuned control over your resources
 including CPU, IO rate, memory, inodes, numbers of processes, and concurrent connections,
 that any single account can use. Now you can limit resource abuse, while allowing good customers to use what they need.
 
-[See more](/shared/lve_manager/).
+[See more](/legacy/lve_manager/).
 
 **CageFS**
 
@@ -83,7 +83,7 @@ preventing users from seeing each other and viewing sensitive information. CageF
 including most privilege escalation and information disclosure attacks. It is completely transparent to your customers,
 without any need for them to change their scripts.
 
-[See more](/shared/cloudlinux_os_components/#cagefs).
+[See more](/legacy/cloudlinux_os_components/#cagefs).
 
 **MySQL Governor**
 
@@ -93,42 +93,42 @@ This component is not available in the CloudLinux OS Admin edition.
 
 MySQL Governor tracks CPU and disk IO usage for every user in real time and throttles MySQL queries by using LVE limits. By using the [dbtop](/command-line_tools/#dbtop) utility, it is possible to see the database usage on a per-customer basis, ensuring that the system admin always know what is going on.
 
-[See more](/shared/cloudlinux_os_components/#mysql-governor).
+[See more](/legacy/cloudlinux_os_components/#mysql-governor).
 
 **PHP Selector**
 
 PHP Selector allows end users to select the specific version of PHP they need. It allows ultimate flexibility by offering all
 popular versions of PHP, with more than 120 PHP extensions to choose from.
 
-[See more](/shared/cloudlinux_os_components/#php-selector).
+[See more](/legacy/cloudlinux_os_components/#php-selector).
 
 **Ruby Selector**
 
 Ruby Selector allows end users to choose the Ruby version for applications and install additional modules
 to the application environment. Ruby Selector uses `mod_passenger` for delivering optimum performance.
 
-[See more](/shared/cloudlinux_os_components/#ruby-selector).
+[See more](/legacy/cloudlinux_os_components/#ruby-selector).
 
 **Python Selector**
 
 Python Selector allows end users to choose the Python version for applications and install additional modules.
 Python Selector uses `mod_passenger` to get the best performance from Python applications.
 
-[See more](/shared/cloudlinux_os_components/#python-selector).
+[See more](/legacy/cloudlinux_os_components/#python-selector).
 
 **Node.js Selector**
 
 Node.js Selector is a CloudLinux OS Shared component that allows each user to easily create Node.js applications,
 choose Node.js versions and other parameters for applications based on their needs.
 
-[See more](/shared/cloudlinux_os_components/#node-js-selector).
+[See more](/legacy/cloudlinux_os_components/#node-js-selector).
 
 **Apache mod_lsapi PRO**
 
 Mod_lsapi PRO is the fastest PHP handler for Apache. It is a drop-in replacement for SuPHP, FCGID, RUID2, and ITK.
 It has a low memory footprint and understands `.htaccess` PHP directives.
 
-[See more](/shared/cloudlinux_os_components/#apache-mod-lsapi-pro).
+[See more](/legacy/cloudlinux_os_components/#apache-mod-lsapi-pro).
 
 **Reseller limits**
 
@@ -139,14 +139,14 @@ limit the total amount of resources resellers’ end users can consume altogethe
 When a hoster has set reseller limits for the particular reseller he provides the reseller with an ability to
 set limits for his end users within the Reseller Interface.
 
-[See more](/shared/cloudlinux_os_components/#reseller-limits).
+[See more](/legacy/cloudlinux_os_components/#reseller-limits).
 
 **LVE-stats 2**
 
 LVE-stats 2 collects LVE usage statistics (CPU, memory, disk space usage),
 and allows to collect the usage data.
 
-[See more](/shared/cloudlinux_os_components/#lve-stats-2).
+[See more](/legacy/cloudlinux_os_components/#lve-stats-2).
 
 ## CloudLinux 9
 
