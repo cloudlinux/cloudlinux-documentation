@@ -7,7 +7,7 @@ export default [
     {
         title: "CloudLinux OS Shared",
         description: "CloudLinux OS Shared is designed for shared hosting providers. It isolates each customer into a separate “Lightweight Virtualized Environment” (LVE), which allocates and limits server resources.",
-        link: "/shared/cloudlinux_installation/",
+        link: "/legacy/cloudlinux_installation/",
     },
     {
         title: "CloudLinux OS Shared Pro",
@@ -17,7 +17,7 @@ export default [
     {
         title: "Apache2Nginx (BETA)",
         description: "Apache2Nginx sets up Nginx hosting with .htaccess support.",
-        link: "/shared/apache2nginx/",
+        link: "/legacy/apache2nginx/",
     },
     {
         title: "AccelerateWP",
