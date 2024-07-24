@@ -48,7 +48,7 @@ Make sure that `cm.cloudlinux.com` is available on your end server.
 
 
 \* AccelerateWP Free activation also automatically installs and configures 
-[Autotracing](/shared/command-line_tools/#x-ray-autotracing) on server.
+[Autotracing](/legacy/command-line_tools/#x-ray-autotracing) on server.
 
 
 ## Centralized Monitoring: mode without session expired
