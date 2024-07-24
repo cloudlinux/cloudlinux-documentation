@@ -691,17 +691,17 @@ Selected version will be applied for all user domains.
 ## NodeJS/Python Selectors
 Since CloudLinux Manager version 7.11.0-1 added support of NodeJS/Python selectors.
 Detailed instructions of how yo use them can be found by the links below:
-* [Node.js Selector client plugin](https://docs.cloudlinux.com/shared/lve_manager/#node-js-selector-client-plugin)
-* [Python Selector client plugin](https://docs.cloudlinux.com/shared/lve_manager/#python-selector-client-plugin)
+* [Node.js Selector client plugin](https://docs.cloudlinux.com/legacy/lve_manager/#node-js-selector-client-plugin)
+* [Python Selector client plugin](https://docs.cloudlinux.com/legacy/lve_manager/#python-selector-client-plugin)
 
 ## Resource Usage client plugin
 Since CloudLinux Manager version 7.11.0-1 added support of Resource Usage client plugin.
 
 :::tip Note:
 Because the CloudLinux OS Solo does not support LVE, customer can only see the Inodes usage.
-Follow this documentation to [setup Inodes limits](https://docs.cloudlinux.com/shared/limits/#inodes)
+Follow this documentation to [setup Inodes limits](https://docs.cloudlinux.com/legacy/limits/#inodes)
 :::
 
 ![](./images/ResourceUsageWithoutLVE.png)
 
-See [Resource Usage client plugin](https://docs.cloudlinux.com/shared/lve_manager/#resource-usage-client-plugin)
+See [Resource Usage client plugin](https://docs.cloudlinux.com/legacy/lve_manager/#resource-usage-client-plugin)
