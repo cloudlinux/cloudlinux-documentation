@@ -40,10 +40,9 @@ const getRecursiveLevelPath = (child, rootPath) => {
 
 onMounted(async () => {
   // check of the current path starts with /shared/ replace it with /legacy/ without losing the rest of the path or query
-  if (route.path.startsWith('/shared')) {
-    const newPath = route.path.replace('/shared', '/legacy');
-    // go to the new path and update the url in the browser
-    router.replace(newPath);
+  if (route.fullPath.startsWith('/shared')) {
+    const newPath = route.fullPath.replace('/shared', '/legacy');
+    router.push(newPath);
   } else {
     window.location.href = '/not-found.html';
   }
