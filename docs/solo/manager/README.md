@@ -579,7 +579,7 @@ To delete the continuous tracing task completely, see [Creating a new continuous
 
 ### X-Ray Autotracing
 
-X-Ray Autotracing automatically creates tracing tasks for slow URLs that were found during a day by the [PHP Slow Site Analyzer](/shared/lve_manager/#website-monitoring-tool-and-slow-site-analyzer) (SSA).
+X-Ray Autotracing automatically creates tracing tasks for slow URLs that were found during a day by the [PHP Slow Site Analyzer](/legacy/lve_manager/#website-monitoring-tool-and-slow-site-analyzer) (SSA).
 
 :::warning Warning
 To use X-Ray Autotracing, update your alt-php-ssa and alt-php-xray packages to versions alt-php-ssa-0.2-1 and alt-php-xray-0.4-1 or higher by running the following command:
@@ -1188,7 +1188,7 @@ requests come in and may be helpful in case when full page caching cannot be use
 * the website must be served with Apache web server;
 * the website must use one of the following PHP handlers:
   * [php-fpm](https://blog.cpanel.com/how-to-use-php-fpm-with-cpanel/)
-  * [lsapi](/shared/cloudlinux_os_components/#apache-mod-lsapi-pro)
+  * [lsapi](/legacy/cloudlinux_os_components/#apache-mod-lsapi-pro)
 * the website must use ea-PHP version 7.4 or 8.0.
 * the WordPress version must be 3.7 and higher.
 * the other WordPress Caching plugins must not be installed.
@@ -1821,7 +1821,7 @@ Please find the AccelerateWP Suite End-User documentation [here](/user-docs/user
 
 ## Limits
 
-Cloudlinux Solo supports only inodes limits. More informormation is available [here](/shared/limits/#inodes)
+Cloudlinux Solo supports only inodes limits. More informormation is available [here](/legacy/limits/#inodes)
 
 ## PHP Selector
 

@@ -32,7 +32,7 @@ There are multiple ISO types available:
 * `CloudLinux-*-minimal.iso` - this one contains only a minimal set of packages to set up a light server without GUI and Development tools.
 
 :::tip Note
-Once you install a server from the ISO, make sure you [register your system](/shared/cloudlinux_installation/#license-activation) 
+Once you install a server from the ISO, make sure you [register your system](/legacy/cloudlinux_installation/#license-activation) 
 and then run the `yum update` command to get all recent updates.
 :::
 

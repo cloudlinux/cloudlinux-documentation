@@ -7,7 +7,7 @@
 
 CloudLinux OS Solo is designed for installation on VPS or dedicated servers with a single hosting account for any number of websites.
 
-Unlike [CloudLinux OS Shared](/introduction/), this edition is not designed for Shared Hosting usage and it does not include any [LVE-related](/shared/lve_manager/) features.
+Unlike [CloudLinux OS Shared](/introduction/), this edition is not designed for Shared Hosting usage and it does not include any [LVE-related](/legacy/lve_manager/) features.
 
 We provide the CloudLinux OS Solo with pre-installed features, but for grafical interface, please install a control panel on your server.
 
@@ -132,5 +132,5 @@ Currently, the following version are supported:
 
 ## What's next
 
-1. The [Installation](/shared/installation) section contains information about how to install this OS.
+1. The [Installation](/legacy/installation) section contains information about how to install this OS.
 2. The [landing page](https://lp.cloudlinux.com/cloudlinux-os-solo) contains the instructions about how to buy license or get trial.

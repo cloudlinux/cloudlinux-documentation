@@ -5,13 +5,13 @@
 
 ### What is the difference between CloudLinux Solo and CloudLinux OS Shared?
 
-CloudLinux OS Solo is not designed for shared hosting usage and it does not include any [LVE-related](/shared/lve_manager/) features. 
+CloudLinux OS Solo is not designed for shared hosting usage and it does not include any [LVE-related](/legacy/lve_manager/) features. 
 
 CloudLinux OS Solo provides a set of tools for website monitoring and performance tracking out-of-box. [Read more](/solo/manager/).
 
 ### Can I convert CloudLinux Solo to CloudLinux Shared?
 
-Yes, you can follow the [instruction](/shared/cloudlinux_installation/#switch-license).
+Yes, you can follow the [instruction](/legacy/cloudlinux_installation/#switch-license).
 
 ### Is the CloudLinux OS Solo paid/unpaid?
 
@@ -85,7 +85,7 @@ No, it does not. We are still implementing this feature, so it will be available
 
 ### What is the process of upgrading if the customer adds more users to the server and will have to upgrade? (i.e., upgrading from CloudLinux OS Solo to CloudLinux OS Shared)
 
-Follow the edition switching [procedure](/shared/cloudlinux_installation/#switch-license).
+Follow the edition switching [procedure](/legacy/cloudlinux_installation/#switch-license).
 
 ### How to set up PHP-fpm handler for the domain?
 
