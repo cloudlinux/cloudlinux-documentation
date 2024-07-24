@@ -81,22 +81,22 @@ export default {
             ]
         },
     ],
-    '/shared/': [
+    '/legacy/': [
         {
             collapsable: false,
             children: [
-                "/shared/cloudlinux_installation/",
-                "/shared/elevate/",
-                "/shared/limits/",
-                "/shared/lve_manager/",
-                "/shared/cloudlinux_os_components/",
-                "/shared/command-line_tools/",
-                "/shared/apache2nginx/",
-                "/shared/alt-ea_packages/",
-                "/shared/control_panel_integration/",
-                "/shared/cloudlinux_os_kernel/",
-                "/shared/for_cloudlinux_partners/",
-                "/shared/deprecated/"
+                "/legacy/cloudlinux_installation/",
+                "/legacy/elevate/",
+                "/legacy/limits/",
+                "/legacy/lve_manager/",
+                "/legacy/cloudlinux_os_components/",
+                "/legacy/command-line_tools/",
+                "/legacy/apache2nginx/",
+                "/legacy/alt-ea_packages/",
+                "/legacy/control_panel_integration/",
+                "/legacy/cloudlinux_os_kernel/",
+                "/legacy/for_cloudlinux_partners/",
+                "/legacy/deprecated/"
             ]
         },
     ],
