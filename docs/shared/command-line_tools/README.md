@@ -2903,6 +2903,7 @@ testuser5 0  2   2   1%    52   0    0
 |||
 |----|--|
 |<span class="notranslate">`cldetect -h`/`-h`/`--help`</span>|show this message|
+|<span class="notranslate">`--detect-edition`</span>|detects and prints OS [edition](/introduction/#cloudlinux-os-editions) name:<ul><li><span class="notranslate">CloudLinux OS Solo</span></li><li><span class="notranslate">CloudLinux OS Admin</span></li><li><span class="notranslate">CloudLinux OS Shared</span></li><li><span class="notranslate">CloudLinux OS Shared Pro</span></li></ul><b>Note:</b> "<span class="notranslate">CloudLinux OS Shared</span>" is a historic name for "<span class="notranslate">CloudLinux OS Legacy</span>" edition and is kept here for backward-compatibility purpose.|
 |<span class="notranslate">`--detect-cp`</span>|prints control panel and its version (<span class="notranslate">CP_NAME,CP_VERSION</span>)|
 |<span class="notranslate">`--detect-cp-full`</span>|prints control panel, version and panel specific data (<span class="notranslate">CP_NAME,CP_VERSION</span>,...). Specific data: for <span class="notranslate">ISP Manager5 - Master/Node</span>|
 |<span class="notranslate">`--detect-cp-nameonly`</span>|prints control panel name (<span class="notranslate">CP_NAME</span>)|
