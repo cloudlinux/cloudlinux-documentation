@@ -3,13 +3,13 @@
 
 To go to account details click _User_ icon → _Settings_ in the top right corner.
 
-![](./images/settings_zoom70.png)
+![](/images/cln/account_settings/settings_zoom70.webp)
 
 
 ## Personal Information
 
 
-![](./images/personalinfo_zoom70.png)
+![](/images/cln/account_settings/personalinfo_zoom70.webp)
 
 
 On the _Account Details_ page choose _Personal Information_. Here you can add or change your personal information and change password.
@@ -25,7 +25,7 @@ Conversion is a critical procedure. Please contact the billing team by clicking 
 ## Company Information
 
 
-![](./images/companyinformation_zoom70.png)
+![](/images/cln/account_settings/companyinformation_zoom70.webp)
 
 
 On the _Account Details_ page choose _Company Information_. Here you can add or change company information.
@@ -36,7 +36,7 @@ On the _Account Details_ page choose _Company Information_. Here you can add or 
 
 You can create additional logins for your account in the form of the email address. The sub login can have any role with different permissions listed below. A master Server Administrator account has the full scope of permissions; he can create account sub logins.
 
-![](./images/sublogins_zoom70.png)
+![](/images/cln/account_settings/sublogins_zoom70.webp)
 
 You can choose one of the roles with special privileges for your sub logins.
 
@@ -103,5 +103,5 @@ You can choose one of the roles with special privileges for your sub logins.
 
 It is possible to set reports receiving for an account to the desired email address. To do so, click _Reports_ in the left side menu.
 
-![](./images/reports_zoom70.png)
+![](/images/cln/account_settings/reports_zoom70.webp)
 

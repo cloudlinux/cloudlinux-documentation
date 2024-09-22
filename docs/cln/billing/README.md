@@ -10,7 +10,7 @@ The following information is available:
 * **Server licenses** — displays the number of servers activated for each product.
 * **Paid until** — the date of the next payment.
 
-![](./images/billing_zoom70.png)
+![](/images/cln/billing/billing_zoom70.webp)
 
 The following actions are available for each product:
 
@@ -50,7 +50,7 @@ If you activate the server license on CloudLinux OS version 7 or higher then no 
 
 Go to _Billing → Invoices_ to get all information about all your invoices.
 
-![](./images/billinginvoices_zoom70.png)
+![](/images/cln/billing/billinginvoices_zoom70.webp)
 
 There are two tables _Paid Invoices_ and _Unpaid Invoices_.
 
@@ -93,21 +93,21 @@ To pay invoices under a customer, follow the next steps:
 
 2. Click PAY NOW
    
-    ![](./images/clnpaynowbtn_zoom50.png)
+    ![](/images/cln/billing/clnpaynowbtn_zoom50.webp)
 
      * If the selected payment method is not chosen, you’ll see the dialog with the direct link for payment
 
-      ![](./images/clnselectpaymentmethod_zoom60.png)
+      ![](/images/cln/billing/clnselectpaymentmethod_zoom60.webp)
 
      * If the selected payment method is chosen, you'll see the dialog for making payment
   
-      ![](./images/clnpaymentconfirmation_zoom60.png)
+      ![](/images/cln/billing/clnpaymentconfirmation_zoom60.webp)
 
      * In this dialog, you could select CHANGE PAYMENT METHOD and see the direct link for payment
 
-      ![](./images/clnselectpaymentmethod2_zoom60.png)
+      ![](/images/cln/billing/clnselectpaymentmethod2_zoom60.webp)
 
 3. After choosing the direct payment option you'll be redirected to the PayPal page
 
-    ![](./images/clncloudlinuxpaypal_zoom60.png)
+    ![](/images/cln/billing/clncloudlinuxpaypal_zoom60.webp)
 	
