@@ -31,7 +31,7 @@ Go to [https://cln.cloudlinux.com/console/auth/login](https://cln.cloudlinux.com
 This server license check tool allows you to check your server license status without entering to the CLN UI.
 Go to [https://cln.cloudlinux.com/console/check-license](https://cln.cloudlinux.com/console/check-license). Specify server IP address and click _Check server license_.
 
-![](./images/serverlicensecheck_zoom70.png)
+![](/images/cln/introduction/serverlicensecheck_zoom70.webp)
 
 :::tip Note
 Server License Check does not require signing in to the CLN portal - it is available for everyone.

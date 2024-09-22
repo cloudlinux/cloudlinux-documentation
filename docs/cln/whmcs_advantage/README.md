@@ -34,11 +34,11 @@ unzip whmcs-cl-advantage-plugin-latest.zip -d <whmcs_root>/modules/addons
 
 4. If your hosting requires specific files permissions, change them accordingly in the folder: <span class="notranslate">`<whmcs_root>/modules/addons/cloudlinux_advantage`</span>
 5. Go to the admin panel page "WHMCS/System Settings/Addon Modules", activate "CloudLinuxAdvantage"
-![](./images/whmcs-advantage-admin-addon-activate.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-activate.webp)
 6. Configure addon:
    1. Enable debug mode if necessary. Logs are stored in the "System Module Debug Log"
    2. Allow administrator access to the addon page to view information about the status of the servers
-![](./images/whmcs-advantage-admin-addon-configure.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-configure.webp)
 
 :::tip Notes
 When upgrading to a new version, be sure to open the "WHMCS/System Settings/Addon Modules" page to apply the module changes.
@@ -52,7 +52,7 @@ During addon activation, "Configurable options" AccelerateWP are created automat
 Don't change the name of the group, options and sub-options!
 :::
 
-![](./images/whmcs-advantage-admin-config-option.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-config-option.webp)
 
 In the AccelerateWP group settings, you need to configure:
 * Choose for which products (cPanel/Plesk/DirectAdmin) you can additionally order the service.
@@ -61,7 +61,7 @@ In the AccelerateWP group settings, you need to configure:
 * For the "accelerate_wp_cdn|AccelerateWP CDN" option, set the cost.
    * In the option price settings, there are options: Off, 50 GB, 100 GB etc. Adjust prices as you see fit. You can hide unwanted tariffs using the "Hide" checkbox.
 
-![](./images/whmcs-advantage-admin-config-option-price.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-config-option-price.webp)
 
 
 ### Product/Service setup
@@ -69,28 +69,28 @@ In the AccelerateWP group settings, you need to configure:
 Set up your service to work with "Configurable options" in the "System settings/Products/Services".
 
 1. Choose the payment type, One time or Recurrent.
-![](./images/whmcs-advantage-admin-product-price.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-product-price.webp)
 2. Make sure the product is associated with the Configurable option "AccelerateWP"
-![](./images/whmcs-advantage-admin-product-config-option.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-product-config-option.webp)
 3. Allow clients to upgrade Configurable options so they can purchase AccelerateWP for existing subscriptions.
-![](./images/whmcs-advantage-admin-product-upgrades.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-product-upgrades.webp)
 4. Save changes.
 5. Existing customers can upgrade their AccelerateWP Premium settings by changing the order using the "Upgrade/Downgrade options" button.
-![](./images/whmcs-advantage-admin-ui-upgrade-config-option.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-ui-upgrade-config-option.webp)
 6. New customers will be able to select AccelerateWP settings during order creation
-![](./images/whmcs-advantage-admin-ui-new-config-option.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-ui-new-config-option.webp)
 7. The administrator can manually change the setting of AccelerateWP by editing the purchased service by the customer
-![](./images/whmcs-advantage-admin-service-change-config-option.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-service-change-config-option.webp)
 
 ### CloudLinuxAdvantage addon page
 
 Module page contains information about the state of active features
 
-![](./images/whmcs-advantage-admin-addon-menu.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-menu.webp)
 
 In case the configurable options were accidentally removed, you can re-install them on the CloudLinuxAdvantage settings page.
 
-![](./images/whmcs-advantage-admin-addon-page.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-page.webp)
 
 The table shows the queue and history of requests to the servers for which the AccelerateWP status change will be applied.
 
@@ -110,7 +110,7 @@ An example of sending requests to the server for selected options for the user.
 Each line is a report of sending a request to the server for each module that the user enabled or disabled.
 In case of an error, the response from the server will be displayed in the "Message" column. In this case, you need to fix the problem and manually start sending the request using the "Retry now" button.
 
-![](./images/whmcs-advantage-admin-addon-page-example-cron.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-page-example-cron.webp)
 
 The "PUSH" button is displayed for "MyImunify - Account Protection" for a bulk operation to enable/disable the module on services for which the "MyImunify - Account Protection" option is linked.  
 
@@ -118,7 +118,7 @@ By default, the first sorted sub-option for the "MyImunify - Account Protection"
 
 More details: [https://docs.imunify360.com/myimunify/#what-is-myimunify-for-hosting-admin](https://docs.imunify360.com/myimunify/#what-is-myimunify-for-hosting-admin)
 
-![](./images/whmcs-advantage-admin-addon-page-push-modal.png)
+![](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-page-push-modal.webp)
 
 ### FAQ
 
@@ -211,18 +211,18 @@ The Plesk extension is available since accelerate-wp-1.3-2 version
 
 1. Open the services page through the menu "Services - My services"
 2. Choose the service you need
-   ![](./images/whmcs-advantage-user-services.png)
+   ![](/images/cln/whmcs_advantage/whmcs-advantage-user-services.webp)
 3. Select the action "Upgrade/Downgrade Options"
-   ![](./images/whmcs-advantage-user-services-config-option-upgrade.png)
+   ![](/images/cln/whmcs_advantage/whmcs-advantage-user-services-config-option-upgrade.webp)
 4. Choose a new configuration and place an order
-   ![](./images/whmcs-advantage-user-services-config-option-change.png)
+   ![](/images/cln/whmcs_advantage/whmcs-advantage-user-services-config-option-change.webp)
 5. Changes will occur automatically after 1 minute or after confirmation of the order by the service provider
 
 ### How to checkout new order
 
 1. Select a service in the service provider's WHMCS portal
 2. A service with AccelerateWP enabled will display options to enable them
-   ![](./images/whmcs-advantage-user-order.png)
+   ![](/images/cln/whmcs_advantage/whmcs-advantage-user-order.webp)
 3. Changes will occur automatically after 1 minute or after confirmation of the order by the service provider
 4. After purchase, you need to manually activate the modules in the AccelerateWP panel
 

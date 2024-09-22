@@ -11,7 +11,7 @@ Click _Billing → Payment Methods → Billing Information_ to go to _Billing In
 
 Here you can specify an email address for invoices. Specify an email and click _Save_. All invoices and notifications will be sent to this email. You can change it anytime. If you didn’t specify any email, billing information and invoices are available only in the CLN UI. You can download an invoice on the _Billing → Invoices_ page.
 
-![](./images/billinginformation_zoom70.png)
+![](/images/cln/payment_methods/billinginformation_zoom70.webp)
 
 
 ## Payment Method
@@ -28,7 +28,7 @@ The following methods are available:
 Only one payment method can be active in a single CLN account at a time.
 :::
 
-![](./images/billingpaymentmethods_zoom70.png)
+![](/images/cln/payment_methods/billingpaymentmethods_zoom70.webp)
 
 
 #### Credit or Debit Card
