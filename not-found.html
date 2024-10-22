@@ -86,7 +86,7 @@
          {
              title: "AccelerateWP",
              description: "AccelerateWP carries a suite of optimization features that can be enabled and automatically configured for the end user's site.",
-             link: "/cloudlinuxos/shared-pro/accelerate-wp/",
+             link: "/cloudlinuxos/shared-pro/#acceleratewp",
          },
          {
              title: "CLN - CloudLinux Licenses",
@@ -132,6 +132,7 @@
          $('.custom-button').click(function() {
             var link = $(this).data('link');
             window.location.href = link; // Navigate to the link
+            window.history.pushState({}, '', link);
          });
       });
    </script>
