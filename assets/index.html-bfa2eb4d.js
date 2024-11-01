@@ -1,1 +1,0 @@
-const e=JSON.parse('{"key":"v-528d7da2","path":"/solo/activation/","title":"Licensing","lang":"en-US","frontmatter":{},"headers":[{"level":2,"title":"Getting license","slug":"getting-license","link":"#getting-license","children":[]},{"level":2,"title":"License activation","slug":"license-activation","link":"#license-activation","children":[]}]}');export{e as data};

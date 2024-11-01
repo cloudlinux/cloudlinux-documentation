@@ -1,1 +1,0 @@
-const e=JSON.parse('{"key":"v-77964adc","path":"/admin/installation/","title":"Installation","lang":"en-US","frontmatter":{},"headers":[{"level":2,"title":"Switch license","slug":"switch-license","link":"#switch-license","children":[]}]}');export{e as data};
