@@ -2,10 +2,6 @@
 # Apache2Nginx (BETA)
 ---
 
-::: warning
-Development is temporarily paused until the end of Q3 2024.
-:::
-
 Apache2Nginx sets up NGINX hosting on the server and automatically converts `.htaccess` files into corresponding NGINX 
 configuration.
 
