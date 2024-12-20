@@ -137,7 +137,11 @@ The main configuration file <span class="notranslate">`/etc/sysconfig/lvestats2`
   Possible values:
   * <span class="notranslate">`true`</span>
   * <span class="notranslate">`false`</span>
-* <span class="notranslate">`hide_lve_more_than_maxuid`</span> - disable displaying of lve ids more than max uid in resource usage.
+* <span class="notranslate">`disable_mysql_snapshots`</span> - disable saving SQL queries to snapshots.
+  Possible values:
+  * <span class="notranslate">`true`</span>
+  * <span class="notranslate">`false`</span>
+* <span class="notranslate">`hide_lve_more_than_maxuid`</span> - disable displaying LVE IDs greater than the max UID in resource usage.
   Possible values:
   * <span class="notranslate">`true`</span>
   * <span class="notranslate">`false`</span>
