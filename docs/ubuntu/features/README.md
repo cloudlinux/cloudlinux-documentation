@@ -27,15 +27,13 @@ The documentation is available [here](/cloudlinuxos/limits/#reseller-limits).
 
 ## MySQL Governor
 
-MySQL Governor is software to monitor and restrict MySQL usage in a shared hosting environment. The monitoring is done
-via resource usage statistics per each MySQL thread.
+MySQL Governor is a software package that monitors and restricts MySQL usage in a shared hosting environment. The monitoring is done via resource usage statistics per each MySQL thread.
 
 MySQL Governor can also kill off slow SELECT queries.
 
-MySQL Governor has multiple modes of operations, depending on the configuration. It can work in monitor-only mode, or it
-can use different throttling scenarios.
+MySQL Governor has multiple modes of operations, depending on the configuration. It can work in monitor-only mode, or it can use different throttling scenarios.
 
-MySQL Governor allows restricting customers who use too many resources. It supports following limits:
+MySQL Governor allows restricting customers that use too many resources. It supports following limits:
 
 |       |       |                                                                                                        |
 |-------|-------|--------------------------------------------------------------------------------------------------------|
@@ -43,12 +41,9 @@ MySQL Governor allows restricting customers who use too many resources. It suppo
 | READ  | bytes | bytes read. Cached reads are not counted, only those that were actually read from disk will be counted |
 | WRITE | bytes | bytes written. Cached writes are not counted, only once data is written to disk, it is counted         |
 
-You can set different limits for different periods: current, short, med, long. By default those periods are defined as 1
-second, 5 seconds, 1 minute and 5 minutes. They can be re-defined using
-the [configuration file](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation). The idea is
-to use larger acceptable values for shorter periods. Like you could allow a customer to use two cores (200%) for one
-second, but only 1 core (on average) for 1 minute, and only 70% within 5 minutes. That would make sure that customer can
-burst for short periods of time.
+You can set different limits for different periods: current, short, mid, long. By default those periods are defined as 1 second, 5 seconds, 1 minute and 5 minutes. They can be re-defined using the [configuration file](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
+The idea is to use larger acceptable values for shorter periods. Like you could allow a customer to use two cores (200%) for one second, but only 1 core (on average) for 1 minute, and only 70% within 5 minutes.
+That would make sure that customer can burst for short periods of time.
 
 When a customer is restricted, the customer will be placed into special LVE with ID 3. All restricted customers will be
 placed into that LVE, and you can control the amount of resources available to restricted customers. Restricted
@@ -60,10 +55,9 @@ connections to the server.
 :::warning Attention!
 MySQL Governor on Ubuntu supports the following only:
 
-* cl-MySQL80 on non-panel system
+* cl-MySQL80 on non-panel systems
 * cl-MySQL80 on cPanel
-* cl-MariaDB103 on non-panel system
-  :::
+:::
 
 1. Install MySQL Governor
 

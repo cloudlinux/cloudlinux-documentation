@@ -5,14 +5,17 @@
 * [Ubuntu](https://ubuntu.com/) is a registered trademark of Canonical Ltd.
 :::
 
-CloudLinux subsystem on Ubuntu is a scope of deb-packages which allows using CloudLinux features on Ubuntu OS. It is a Stable version of a free extension designed exclusively for Ubuntu® 20.04 LTS users. 
+CloudLinux subsystem on Ubuntu is a scope of deb-packages which allows using CloudLinux features on Ubuntu OS. It is a Stable version of a free extension designed exclusively for Ubuntu® 22.04 LTS users.
 
 ## Supported version of Ubuntu
 
-We support Ubuntu 20.04 LTS.
+We support Ubuntu 22.04 LTS.
 
 ## CloudLinux OS editions comparison
 
+CloudLinux Subsystem for Ubuntu supports the same editions as CloudLinux OS, with some exceptions.
+
+In the table below, a feature marked with "No" for the CloudLinux Subsystem for Ubuntu means that no edition of CloudLinux Subsystem for Ubuntu supports this feature.
 
 |**Features**|**CloudLinux OS Solo**|**CloudLinux OS Admin**|**CloudLinux OS Legacy (Shared)**|**CloudLinux OS Shared Pro**|**<font color="#2c98f0">CloudLinux Subsystem For Ubuntu</font>**|
 |:-:|:-:|:-:|:-:|:-:|:-:|
@@ -38,7 +41,7 @@ We support Ubuntu 20.04 LTS.
 
 \** Limits are disabled by default.
 
-\*** Python/Node.js/Ruby Selectors are available only for cPanel, DirectAdmin servers, and servers with custom panel with own integration.
+\*** Python/Node.js/Ruby Selectors are available only for cPanel, DirectAdmin, and servers with custom panels with own integration.
 
 ## Supported control panels
 
