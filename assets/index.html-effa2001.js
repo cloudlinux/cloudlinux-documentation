@@ -1,1 +1,0 @@
-const t=JSON.parse('{"key":"v-00097080","path":"/ubuntu/uninstalling/","title":"Uninstalling","lang":"en-US","frontmatter":{},"headers":[{"level":3,"title":"Deleting the CloudLinux Subsystem For Ubuntu","slug":"deleting-the-cloudlinux-subsystem-for-ubuntu","link":"#deleting-the-cloudlinux-subsystem-for-ubuntu","children":[]}]}');export{t as data};

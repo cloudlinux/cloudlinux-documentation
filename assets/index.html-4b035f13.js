@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-f23b5fb8","path":"/ubuntu/troubleshooting/","title":"Troubleshooting and Known Issues","lang":"en-US","frontmatter":{},"headers":[{"level":2,"title":"Troubleshooting","slug":"troubleshooting","link":"#troubleshooting","children":[]},{"level":2,"title":"Known issues","slug":"known-issues","link":"#known-issues","children":[]}]}');export{e as data};
