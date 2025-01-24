@@ -821,7 +821,7 @@ The most popular errors and solutions:
 
 ![](/images/cloudlinuxos/lve_manager/Issue1.webp)
    
-**Solution**: install `mod_suexec` (see instructions [here](/cloudlinuxos/cloudlinux_os_components/#installation-5)) and then run the following command:
+**Solution**: install `mod_suexec` (see instructions [here](/shared/cloudlinux_os_components/#installing-on-cpanel-servers-with-easyapache-4-1)) and then run the following command:
 
 <div class="notranslate">
 
