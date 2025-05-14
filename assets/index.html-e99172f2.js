@@ -762,7 +762,7 @@ VERYLONG - restrict info, _all_tracked_values_, load average and vmstat info, sl
 &lt;!-- script -- path to script to be triggered when account is restricted --&gt;
 &lt;!-- user_max_connections - The number of simultaneous connections of blocked user (in LVE mode) --&gt; 
 
-&lt;!-- restriction levels/format are deprecated --&gt;
+&lt;!-- restriction levels/format/script are deprecated --&gt;
 &lt;restrict level1=&quot;60s&quot; level2=&quot;15m&quot; level3=&quot;1h&quot; level4=&quot;1d&quot; timeout=&quot;1h&quot;
 log=&quot;/var/log/dbgovernor-restrict.log&quot; format=&quot;SHORT|MEDIUM|LONG|VERYLONG&quot;
 script=&quot;/path/to/script&quot;
