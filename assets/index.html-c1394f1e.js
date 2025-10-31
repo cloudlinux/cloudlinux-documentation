@@ -131,7 +131,7 @@ sudo opt/cpvendor/bin/domains_real
     {
       &quot;name&quot;: &quot;package&quot;,
       &quot;owner&quot;: &quot;reseller&quot;
-    }  
+    }
   ],
   &quot;metadata&quot;: {
     &quot;result&quot;: &quot;ok&quot;
@@ -146,7 +146,7 @@ sudo opt/cpvendor/bin/domains_real
       &quot;owner&quot;: &quot;root&quot;,
       &quot;domain&quot;: &quot;ins5yo3.com&quot;,
       &quot;package&quot;: {
-        &quot;name&quot;: &quot;package&quot;, 
+        &quot;name&quot;: &quot;package&quot;,
         &quot;owner&quot;: &quot;root&quot;
       },
       &quot;email&quot;: &quot;ins5yo3@ins5yo3.com&quot;,
@@ -158,12 +158,12 @@ sudo opt/cpvendor/bin/domains_real
       &quot;owner&quot;: &quot;root&quot;,
       &quot;domain&quot;: &quot;ins5yo4.com&quot;,
       &quot;package&quot;: {
-        &quot;name&quot;: &quot;package&quot;, 
+        &quot;name&quot;: &quot;package&quot;,
         &quot;owner&quot;: &quot;root&quot;
       },
       &quot;email&quot;: &quot;ins5yo4@ins5yo4.com&quot;,
       &quot;locale_code&quot;: &quot;EN_us&quot;
-    }  
+    }
   ],
   &quot;metadata&quot;: {
     &quot;result&quot;: &quot;ok&quot;
@@ -179,7 +179,7 @@ sudo opt/cpvendor/bin/domains_real
     {
       &quot;id&quot;: 1001,
       &quot;email&quot;: &quot;ins5yo3@ins5yo3.com&quot;
-    }  
+    }
   ],
   &quot;metadata&quot;: {
     &quot;result&quot;: &quot;ok&quot;
@@ -196,7 +196,7 @@ sudo opt/cpvendor/bin/domains_real
     &quot;subdomain.domain.com&quot;: {
       &quot;owner&quot;: &quot;username&quot;,
       &quot;document_root&quot;: &quot;/home/username/public_html/subdomain/&quot;,
-      &quot;is_main&quot;: false  
+      &quot;is_main&quot;: false
     }
   },
   &quot;metadata&quot;: {
@@ -241,7 +241,7 @@ sudo opt/cpvendor/bin/domains_real
       &quot;name&quot;: &quot;reseller&quot;,
       &quot;locale_code&quot;: &quot;EN_us&quot;,
       &quot;email&quot;: &quot;reseller@domain.zone&quot;,
-      &quot;id&quot;: 10001   
+      &quot;id&quot;: 10001
     }
   ],
   &quot;metadata&quot;: {
@@ -385,8 +385,8 @@ export APXS2=&quot;\${PATH_IN_YOUR_SYSTEM}/bin/apxs&quot;
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div><ol start="2"><li>Rebuild the package with your Apache using rpmbuild</li></ol><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>rpmbuild --rebuild mod_hostinglimits-ver.el7.cloudlinux.1.src.rpm
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div><ol start="3"><li><p>Remove dependencies such as <code>httpd</code>, (<code>-devel</code> packages as well) and set your Apache packages instead, in the mod_hostinglimits spec file. Also, check the paths that lead to the <span class="notranslate"><code>modules</code></span> or <span class="notranslate"><code>conf.d</code></span> directories and change them if they are different on your system.</p></li><li><p>Rebuild the package again, this time you should get to the compilation stage. During compilation, you may encounter the following errors:</p></li></ol><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>-- Not Found Apache Bin Directory: APACHE2_2_HTTPD_BIN-NOTFOUND, APACHE2_2_HTTPD_MODULES-NOTFOUND
 -- Can&#39;t find Apache2.2: APACHE2_2_HTTPD_INCLUDE_DIR-NOTFOUND
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div></div><p>In this case, you should specify the paths of your custom Apache in <span class="notranslate"><code>mod_hostinglimits-1.0/cmake/FindApacheForBuild.cmake</code></span> file. According to macros above, add the paths to the directory where httpd bin is located, to the dir where apache modules are located and to the dir where include files are located. It may look the following way:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>FIND_PATH (APACHE2_2_HTTPD_INCLUDE_DIR 
-   NAMES 
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div></div><p>In this case, you should specify the paths of your custom Apache in <span class="notranslate"><code>mod_hostinglimits-1.0/cmake/FindApacheForBuild.cmake</code></span> file. According to macros above, add the paths to the directory where httpd bin is located, to the dir where apache modules are located and to the dir where include files are located. It may look the following way:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>FIND_PATH (APACHE2_2_HTTPD_INCLUDE_DIR
+   NAMES
       httpd.h
    PATHS
       \${APACHE2_2_INCLUDES_DIR}
@@ -405,14 +405,14 @@ yum install -y python-lxml pytest python-mock
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div><div class="warning custom-block"><p class="custom-block-title">Note</p><p>Make sure that versions of all installed and downloaded</p><ul><li><code>mod_lsapi</code></li><li><code>liblsapi</code></li><li><code>liblsapi-devel</code> packages completely coincide. Ensure that the copy of mod_lsapi.so visible to Apache is configured to load liblscapi.so of the same version. Mismatched versions can cause errors or unexpected behavior.</li></ul></div><ol start="3"><li>Rebuild the package with your Apache using rpmbuild</li></ol><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>rpmbuild --rebuild mod_lsapi-ver.el7.cloudlinux.src.rpm
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div><div class="tip custom-block"><p class="custom-block-title">Note</p><p>This command will fail, but it will create a ~/rpmbuild/SPECS/mod_lsapi.spec file. This ~/rpmbuild/SPECS/mod_lsapi.spec file will need to be modified.</p></div><ol start="4"><li><p>Remove building dependency from <code>httpd-devel</code> in the <span class="notranslate"><code>mod_lsapi.spec</code></span> spec file located in the <span class="notranslate"><code>~/rpmbuild/SPECS/</code></span> directory.</p></li><li><p>Change the paths to copy <code>mod_lsapi.so</code> and <code>mod_lsapi.conf</code> in the %install section of the <code>mod_lsapi.spec</code> file. For example, if Apache root is <code>/usr/local/apache</code>, then modules directory and config files directory will be <span class="notranslate"><code>/usr/local/apache/modules</code></span> and <span class="notranslate"><code>/usr/local/apache/conf.d</code></span> respectively. So for the config file you should substitute the following line in the <span class="notranslate"><code>%install</code></span> section:</p></li></ol><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>install -D -m 644 conf/mod_lsapi.conf $RPM_BUILD_ROOT%{g_path}/confs/lsapi.conf
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div><p>with the following line:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>install -D -m 644 conf/mod_lsapi.conf $RPM_BUILD_ROOT/usr/local/apache/conf/lsapi.conf
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div><p>And, also, for the module you should substitute the following line in the <span class="notranslate"><code>%install</code></span> section:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>install -D -m 755 build/lib/mod_lsapi.so $RPM_BUILD_ROOT%{g_path}standard/mod_lsapi.so 
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div><p>And, also, for the module you should substitute the following line in the <span class="notranslate"><code>%install</code></span> section:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>install -D -m 755 build/lib/mod_lsapi.so $RPM_BUILD_ROOT%{g_path}standard/mod_lsapi.so
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div><p>with the following line:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>install -D -m 755 build/lib/mod_lsapi.so $RPM_BUILD_ROOT/usr/local/apache/modules/mod_lsapi.so
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div><p>Also you should add mentions of both module and config files in the <span class="notranslate"><code>%files</code></span> section of <span class="notranslate"><code>mod_lsapi.spec</code></span>. For example, for <span class="notranslate"><code>/usr/local/apache</code></span> Apache root the following two lines should be added:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>%config /usr/local/apache/conf.d/lsapi.conf
 /usr/local/apache/modules/mod_lsapi.conf
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div></div><ol start="6"><li>Rebuild the package again, this time you should get to the compilation stage.</li></ol><p>Use this command to rebuild a package</p><div class="notranslate"> \`\`\` rpmbuild -bb ~/rpmbuild/SPECS/mod_lsapi.spec \`\`\` </div><p>During compilation, you may encounter some errors:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>-- Not Found Apache Bin Directory: APACHE2_2_HTTPD_BIN-NOTFOUND, APACHE2_2_HTTPD_MODULES-NOTFOUND
 -- Can&#39;t find Apache2.2: APACHE2_2_HTTPD_INCLUDE_DIR-NOTFOUND
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div></div><p>In this case, you should specify the paths of your custom Apache in the <span class="notranslate"><code>mod_lsapi-1.1/cmake/FindApacheForBuild.cmake</code></span> file. According to macros above, add the paths to the directory where httpd binary is located, to the dir where apache modules are located and to the dir where include files are located. It may look a such way:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>FIND_PATH (APACHE2_2_HTTPD_INCLUDE_DIR 
-   NAMES 
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div></div><p>In this case, you should specify the paths of your custom Apache in the <span class="notranslate"><code>mod_lsapi-1.1/cmake/FindApacheForBuild.cmake</code></span> file. According to macros above, add the paths to the directory where httpd binary is located, to the dir where apache modules are located and to the dir where include files are located. It may look a such way:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>FIND_PATH (APACHE2_2_HTTPD_INCLUDE_DIR
+   NAMES
       httpd.h
    PATHS
       \${APACHE2_2_INCLUDES_DIR}
@@ -423,7 +423,7 @@ yum install -y python-lxml pytest python-mock
 )
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></div><p>Starting from mod_lsapi-1.1-57, you can use macros for custom paths to the Apache/APR includes/binaries.</p><p>A custom Apache location can be defined via the <code>CUSTOM_APACHE_ROOT</code> variable. This implies the following structure under the <code>\${CUSTOM_APACHE_ROOT}</code>:</p><table><thead><tr><th style="text-align:left;"></th><th style="text-align:left;"></th></tr></thead><tbody><tr><td style="text-align:left;"><code>\${CUSTOM_APACHE_ROOT}/bin</code></td><td style="text-align:left;">Apache binary directory, apachectl location</td></tr><tr><td style="text-align:left;"><code>\${CUSTOM_APACHE_ROOT}/include</code></td><td style="text-align:left;">Apache include directory, httpd.h location</td></tr><tr><td style="text-align:left;"><code>\${CUSTOM_APACHE_ROOT}/include</code></td><td style="text-align:left;">apr include directory, apr.h location</td></tr><tr><td style="text-align:left;"><code>\${CUSTOM_APACHE_ROOT}/include</code></td><td style="text-align:left;">apr-util include directory, apu.h location</td></tr><tr><td style="text-align:left;"><code>\${CUSTOM_APACHE_ROOT}/lib</code></td><td style="text-align:left;">apr lib directory, libapr.so location</td></tr><tr><td style="text-align:left;"><code>\${CUSTOM_APACHE_ROOT}/lib</code></td><td style="text-align:left;">apr-util lib directory, libaprutil.so location</td></tr><tr><td style="text-align:left;"><code>\${CUSTOM_APACHE_ROOT}/modules</code></td><td style="text-align:left;">Apache modules directory, mod_alias.so location</td></tr></tbody></table><p>If the real structure of Apache root differs from the implied one, it&#39;s possible to define a custom location for every single component.</p><table><thead><tr><th style="text-align:left;"></th><th style="text-align:left;"></th></tr></thead><tbody><tr><td style="text-align:left;"><code>CUSTOM_APACHE_BIN</code></td><td style="text-align:left;">Apache binary directory, apachectl location</td></tr><tr><td style="text-align:left;"><code>CUSTOM_APACHE_INC_HTTPD</code></td><td style="text-align:left;">Apache include directory, httpd.h location</td></tr><tr><td style="text-align:left;"><code>CUSTOM_APACHE_INC_APR</code></td><td style="text-align:left;">apr include directory, apr.h location</td></tr><tr><td style="text-align:left;"><code>CUSTOM_APACHE_INC_APU</code></td><td style="text-align:left;">apr-util include directory, apu.h location</td></tr><tr><td style="text-align:left;"><code>CUSTOM_APACHE_LIB_APR</code></td><td style="text-align:left;">apr lib directory, libapr.so location</td></tr><tr><td style="text-align:left;"><code>CUSTOM_APACHE_LIB_APU</code></td><td style="text-align:left;">apr-util lib directory, libaprutil.so location</td></tr><tr><td style="text-align:left;"><code>CUSTOM_APACHE_MODULES</code></td><td style="text-align:left;">Apache modules directory, mod_alias.so location</td></tr></tbody></table><ol start="7"><li>To customize the switch_mod_lsapi script add into <code>mod_lsapi.spec</code> custom script and its configuration file. Configuration file name should be <code>config.ini</code> file. Script file name can be arbitrary, because its name should be mentioned in <code>config.ini</code> file. Both of them should be copied into <em>/usr/share/lve/modlscapi/custom</em> in the <em>%install</em> section of the <code>mod_lsapi.spec</code> file. For example, if script file name is <code>custom.sh</code>, you should add the following lines into <em>%install</em> section of <code>mod_lsapi.spec</code> file:</li></ol><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>install -D -m 644 config.ini $RPM_BUILD_ROOT%{g_path}/custom/config.ini
 install -D -m 755 custom.sh $RPM_BUILD_ROOT%{g_path}/custom/custom.sh
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><p>Also you should add mentions of both files in the <em>%files</em> section of <code>mod_lsapi.spec</code>:</p><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>/usr/share/lve/modlscapi/custom/config.ini 
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><p>Also you should add mentions of both files in the <em>%files</em> section of <code>mod_lsapi.spec</code>:</p><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>/usr/share/lve/modlscapi/custom/config.ini
 /usr/share/lve/modlscapi/custom/custom.sh
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><p>The requirements to the <code>config.ini</code> file and script file are described in the following <a href="#how-to-integrate-switch_mod_lsapi-script-with-custom-panels">section</a></p><ol start="8"><li>Rebuild the package again, if you set everything correctly, there shouldn&#39;t be any problems.</li></ol><p>Use this command to rebuild a package</p><div class="notranslate"> \`\`\` rpmbuild -bb ~/rpmbuild/SPECS/mod_lsapi.spec \`\`\` </div><ol start="9"><li>Install the module, check that it is successfully loaded into Apache.</li></ol><h4 id="how-to-integrate-switch-mod-lsapi-script-with-custom-panels" tabindex="-1"><a class="header-anchor" href="#how-to-integrate-switch-mod-lsapi-script-with-custom-panels" aria-hidden="true">#</a> How to integrate switch_mod_lsapi script with custom panels</h4><p>To be able to use switch_mod_lsapi you have to do the steps mentioned below. We assume that if the /usr/share/lve/modlscapi/custom/config.ini file exists, then it is a Custom Panel.</p><ol><li>Create config.ini file /usr/share/lve/mod_lsapi/custom/ directory. As an example we have created a config.ini.example file. <strong>All directives that are shown in example file needed in GLOBAL section:</strong></li></ol><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>[GLOBAL]
 VERSION = 1.0.0
@@ -461,50 +461,50 @@ application/x-lsphp72 /opt/alt/php72/usr/bin/lsphp
 
 application/x-httpd-php81-lsphp /usr/local/apps/php81/bin/lsphp
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><strong>An example of executable.sh script:</strong></p><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>#!/bin/bash
- 
+
 CMD=$1
- 
+
 if [ &quot;$CMD&quot; == &quot;--setup&quot; ]; then
     	echo &quot;application/x-httpd-php81-lsphp /usr/local/apps/php81/bin/lsphp&quot;     &gt;&gt;/etc/container/php.handler
-fi 
- 
+fi
+
 if [ &quot;$CMD&quot; == &quot;--uninstall&quot; ]; then
     sed -i &quot;#application/x-httpd-php81-lsphp#d&quot; /etc/container/php.handler
 fi
- 
+
 if [ &quot;$CMD&quot; == &quot;--enable-domain&quot; ]; then
     http_root=\`/opt/ExamplePanel/domain2root $2\`
     if [ -e $http_root/.htaccess ]; then
         sed -i &#39;/lsphp/d&#39; $http_root/.htaccess
     fi
-fi 
- 
+fi
+
 if [ &quot;$CMD&quot; == &quot;--disable-domain&quot; ]; then
     http_root=\`/opt/ExamplePanel/domain2root $2\`
     if [ -e $http_root/.htaccess ]; then
         sed -i &#39;/lsphp/d&#39; $http_root/.htaccess
     fi
-fi 
- 
+fi
+
 # if command not supported
 if [ &quot;$CMD&quot; == &quot;--enable-global&quot; ]; then
     echo &quot;LSAPI enable global command is not supported by ExamplePanel&quot;; exit 1
-fi 
+fi
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="mysql-governor" tabindex="-1"><a class="header-anchor" href="#mysql-governor" aria-hidden="true">#</a> MySQL Governor</h2><p>:::Warning MySQL Governor is not available in CloudLinux OS Admin edition. :::</p><ol><li>Install MySQL Governor</li></ol><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>yum install governor-mysql
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div>`,22)),t("ol",k,[t("li",null,[e[286]||(e[286]=n("MySQL Governor supports only ",-1)),e[287]||(e[287]=t("code",null,"cl-MariaDB**",-1)),e[288]||(e[288]=n(" or ",-1)),e[289]||(e[289]=t("code",null,"cl-MySQL**",-1)),e[290]||(e[290]=n(" packages. Follow the ",-1)),s(i,{to:"/cloudlinuxos/cloudlinux_os_components/#mysql-governor"},{default:a(()=>e[285]||(e[285]=[n("documentation",-1)])),_:1,__:[285]}),e[291]||(e[291]=n(" to figure out all supported versions.",-1))])]),e[422]||(e[422]=o(`<div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>/usr/share/lve/dbgovernor/mysqlgovernor.py --mysql-version=mysqlXX
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div><ol start="3"><li><p>Backup your databases.</p></li><li><p>Run the cl-MySQL/cl-MariaDB installation.</p></li></ol><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>/usr/share/lve/dbgovernor/mysqlgovernor.py --install
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div>`,3)),t("ol",S,[e[302]||(e[302]=t("li",null,[t("p",null,[n("After installation, check that the database server is working properly. If you have any problems, contact "),t("a",{href:"https://helpdesk.cloudlinux.com/",target:"_blank",rel:"noopener noreferrer"},"support")])],-1)),t("li",null,[t("p",null,[e[293]||(e[293]=n("Configure user mapping to the database. The mapping format is described in the following ",-1)),s(i,{to:"/cloudlinuxos/cloudlinux_os_components/#mapping-a-user-to-a-database"},{default:a(()=>e[292]||(e[292]=[n("section",-1)])),_:1,__:[292]}),e[294]||(e[294]=n(". The control panel should automatically generate such mapping and write it to ",-1)),e[295]||(e[295]=t("span",{class:"notranslate"},[t("code",null,"/etc/container/dbuser-map")],-1)),e[296]||(e[296]=n(". Usually, it is enough to write a hook when adding, deleting or renaming a database for a user. The control panel should implement such a mechanism for MySQL Governor to operate properly. MySQL Governor automatically applies changes from the dbuser-map file every five minutes.",-1))])]),t("li",null,[t("p",null,[e[298]||(e[298]=n("MySQL Governor configuration can be found in the following ",-1)),s(i,{to:"/cloudlinuxos/cloudlinux_os_components/#configuration-3"},{default:a(()=>e[297]||(e[297]=[n("section",-1)])),_:1,__:[297]}),e[299]||(e[299]=n(".",-1))])]),t("li",null,[t("p",null,[e[301]||(e[301]=n("MySQL Governor CLI tools description can be found in the following ",-1)),s(i,{to:"/cloudlinuxos/command-line_tools/#mysql-governor"},{default:a(()=>e[300]||(e[300]=[n("section",-1)])),_:1,__:[300]})])]),e[303]||(e[303]=t("li",null,[t("p",null,[n("Having configured the mapping use "),t("code",null,"dbtop"),n(" to see the current user load on the database (you'd need to make some database queries).")])],-1))]),e[423]||(e[423]=o(`<div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>dbtop
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div><ol start="10"><li>If the load appears in the dbtop output, then you have successfully configured MySQL Governor.</li></ol><h2 id="cloudlinux-os-lve-and-cagefs-patches" tabindex="-1"><a class="header-anchor" href="#cloudlinux-os-lve-and-cagefs-patches" aria-hidden="true">#</a> CloudLinux OS LVE and CageFS patches</h2><div class="tip custom-block"><p class="custom-block-title">Note</p><p>If you are using Apache from the CloudLinux OS repository (such as httpd or httpd24-httpd), skip this section.</p></div><p>If you use custom Apache, you need to apply patches so that the processes launched by the Apache are working with LVE and CageFS properly. Cloudlinux OS provides patches for the following packages:</p><ul><li><code>suphp</code></li><li><code>suexec</code></li><li><code>php-fpm</code></li><li><code>apr</code> library</li><li><code>Apache mpm itk</code></li></ul><p>First of all, download patches using the following link <a href="https://repo.cloudlinux.com/cloudlinux/sources/da/cl-apache-patches.tar.gz" target="_blank" rel="noopener noreferrer">https://repo.cloudlinux.com/cloudlinux/sources/da/cl-apache-patches.tar.gz</a></p><p>To apply the patch, follow these steps.</p><ol><li><p>Untar archive which you were going to patch and go to the created directory with sources.</p></li><li><p>Transfer the patch to the directory with sources.</p></li><li><p>Use the patch utility inside the directory with sources</p></li><li><p>Recompile your project.</p></li></ol><p>Here&#39;s an example with <code>apr</code> library:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code># ls 
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div></div><ol start="10"><li>If the load appears in the dbtop output, then you have successfully configured MySQL Governor.</li></ol><h2 id="cloudlinux-os-lve-and-cagefs-patches" tabindex="-1"><a class="header-anchor" href="#cloudlinux-os-lve-and-cagefs-patches" aria-hidden="true">#</a> CloudLinux OS LVE and CageFS patches</h2><div class="tip custom-block"><p class="custom-block-title">Note</p><p>If you are using Apache from the CloudLinux OS repository (such as httpd or httpd24-httpd), skip this section.</p></div><p>If you use custom Apache, you need to apply patches so that the processes launched by the Apache are working with LVE and CageFS properly. Cloudlinux OS provides patches for the following packages:</p><ul><li><code>suphp</code></li><li><code>suexec</code></li><li><code>php-fpm</code></li><li><code>apr</code> library</li><li><code>Apache mpm itk</code></li></ul><p>First of all, download patches using the following link <a href="https://repo.cloudlinux.com/cloudlinux/sources/da/cl-apache-patches.tar.gz" target="_blank" rel="noopener noreferrer">https://repo.cloudlinux.com/cloudlinux/sources/da/cl-apache-patches.tar.gz</a></p><p>To apply the patch, follow these steps.</p><ol><li><p>Untar archive which you were going to patch and go to the created directory with sources.</p></li><li><p>Transfer the patch to the directory with sources.</p></li><li><p>Use the patch utility inside the directory with sources</p></li><li><p>Recompile your project.</p></li></ol><p>Here&#39;s an example with <code>apr</code> library:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code># ls
 apr-1.4.8.tar.bz2  apr-2.4-httpd.2.patch
 # tar xvjf apr-1.4.8.tar.bz2
 # cp apr-2.4-httpd.2.patch ./apr-1.4.8
 # cd ./apr-1.4.8
-# patch -p3 &lt; apr-2.4-httpd.2.patch 
+# patch -p3 &lt; apr-2.4-httpd.2.patch
 patching file include/apr_thread_proc.h
 Hunk #1 succeeded at 204 (offset -2 lines).
 patching file threadproc/unix/proc.c
 
-Patch applied Successfully, recompile apr. 
+Patch applied Successfully, recompile apr.
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div></div><p>If you build custom RPM packages, it might make sense to apply patches using spec file.</p><p>In this case, add to the Source section (example for <code>apr</code>):</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>Source0: apr-1.4.8.tar.bz2
 Patch100: apr-2.4-httpd.2.patch
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div></div><p>Then apply this patch in the <span class="notranslate"><code>%setup</code></span> section:</p><div class="notranslate"><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>%prep
@@ -527,8 +527,8 @@ lrwxrwxrwx 1 root root 17 Feb 10  2023 /usr/local/apps/apache2/lib/libapr-1.so.0
 Check fs.enforce_symlinksifowner is correctly enabled in sysctl conf:
 	OK: fs.enforce_symlinksifowner = 1
 
-There are 0 errors found.  
-............ 
+There are 0 errors found.
+............
 
 cldiag --check-symlinkowngid
 Check fs.symlinkown_gid:
