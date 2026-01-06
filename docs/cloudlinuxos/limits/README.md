@@ -784,10 +784,13 @@ web_resource_limit_mode = unlimited
 
 Possible parameter values:
 
-* `all`: the default option. All processes will run inside CageFS and with LVE limits being applied.
-* `heavy`: there is a list of processes that are considered lightweight. In this mode, they will be executed inside CageFS, but no resource limits: CPU, IO, memory, and NUMPROC. List of ligthweight processes is defined by CloudLinux and it's guarantied that user can't bypass LVE limits for a long-term.
+* `all`: All processes will run inside CageFS and with LVE limits being applied.
+* `heavy`: the default option. there is a list of processes that are considered lightweight. In this mode, they will be executed inside CageFS, but no resource limits: CPU, IO, memory, and NUMPROC. List of ligthweight processes is defined by CloudLinux and it's guarantied that user can't bypass LVE limits for a long-term.
     For example, this mode allows a user to execute the `cloudlinux-selector stop` process, even if the user hits the NUMPROC limit.
 * `unlimited`: All processes run without CPU, memory, IO, and NUMPROC limits. CageFS isolation is still applied when available for security. Not recommended for production environments.
+
+### Changes
+The default option has been updated from all to heavy starting with lvemanager-7.11.25-1.
 
 ### Requirements:
 
