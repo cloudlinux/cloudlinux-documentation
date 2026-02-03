@@ -93,7 +93,7 @@ For CloudLinux OS 10, it's the primary installation method.
 
 ### CloudLinux OS 10 Subsystem Mode
 
-With CloudLinux OS 10, the system operates in **subsystem mode**. This means that CloudLinux components are added as a layer on top of the base operating system (AlmaLinux), rather than replacing it entirely.
+With CloudLinux OS 10, the system operates in **subsystem mode**. This means that CloudLinux components are added as a layer on top of the base operating system (e.x AlmaLinux), rather than replacing it entirely.
 
 Key differences from previous CloudLinux versions:
 
