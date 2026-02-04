@@ -91,6 +91,20 @@ Sometimes it's required to convert already existing servers with CentOS or AlmaL
 
 For CloudLinux OS 10, it's the primary installation method.
 
+### CloudLinux OS 10 Subsystem Mode
+
+With CloudLinux OS 10, the system operates in **subsystem mode**. This means that CloudLinux components are added as a layer on top of the base operating system (e.x AlmaLinux), rather than replacing it entirely.
+
+Key differences from previous CloudLinux versions:
+
+* The OS identification files are **not altered** during conversion. The `/etc/os-release` file will continue to identify the operating system as AlmaLinux.
+* The `almalinux-release` package remains installed and is not removed.
+* The `cloudlinux-release` package does not replace base OS release files.
+
+To detect whether CloudLinux OS is installed and functional on a system, use the `cldetect` or `cldiag` scripts provided by CloudLinux, rather than checking `/etc/os-release`.
+
+### Conversion Process
+
 It's easy to convert your existing installation through the `cldeploy` script.
 The process takes a few minutes and replaces just a handful of packages.
 
