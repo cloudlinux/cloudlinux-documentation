@@ -26,15 +26,15 @@ When Website Isolation is enabled for a domain:
 
 #### Compatible PHP Handlers
 
-| Handler | Status                       |
-| ------- | ---------------------------- |
-| LSAPI   | ✅ Supported (Recommended)   |
-| CGI     | ✅ Supported                 |
-| FPM     | 🔜 Coming in future releases |
-| FCGI    | 🔜 Coming in future releases |
+| Handler | Status                                                                            |
+| ------- | --------------------------------------------------------------------------------- |
+| LSAPI   | ✅ Supported (Recommended)                                                        |
+| CGI     | ✅ Supported                                                                      |
+| FPM     | ⚠️ Partially Supported - see [Compatible PHP Versions](#compatible-php-versions) |
+| FCGI    | 🔜 Coming in future releases                                                      |
 
 :::tip Warning
-Website Isolation currently supports LSAPI and CGI handlers only. FPM and FCGI support is planned for future releases
+Website Isolation fully supports LSAPI and CGI handlers. FPM has partial support for specific ea-php versions only. FCGI support is planned for future releases.
 :::
 
 #### Compatible Control Panels
@@ -46,6 +46,29 @@ Website Isolation currently supports LSAPI and CGI handlers only. FPM and FCGI s
 | Integration Scripts*     | ✅ Supported                 |
 
 *[Control Panel Integration](/cloudlinuxos/control_panel_integration/#control-panel-api-integration)
+
+#### Compatible PHP Versions
+
+Website Isolation provides partial FPM handler support for ea-php (cPanel). The following ea-php versions are compatible:
+
+| Package       | Minimum Version                    |
+| ------------- | ---------------------------------- |
+| ea-php56-php  | 5.6.40-25.cloudlinux.3             |
+| ea-php70-php  | 7.0.33-29.cloudlinux.3             |
+| ea-php71-php  | 7.1.33-20.cloudlinux.3             |
+| ea-php72-php  | 7.2.34-12.cloudlinux.3             |
+| ea-php73-php  | 7.3.33-15.cloudlinux.3             |
+| ea-php74-php  | 7.4.33-16.cloudlinux.1             |
+| ea-php80-php  | 8.0.30-9.cloudlinux.1              |
+| ea-php81-php  | 8.1.33-2.cloudlinux.3              |
+| ea-php82-php  | 8.2.29-2.cloudlinux.3              |
+| ea-php83-php  | 8.3.30-1.cloudlinux.1              |
+| ea-php84-php  | 8.4.17-1.cloudlinux.2              |
+| ea-php85-php  | 8.5.2-1.cloudlinux.1               |
+
+:::tip Note
+alt-php support is coming soon.
+:::
 
 ***
 
