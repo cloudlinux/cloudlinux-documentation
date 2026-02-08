@@ -588,4 +588,328 @@ First, try to enable feature manually using AccelerateWP interface.
 Most likely you will find human-readable error message there.
 
 If the issue persists, or you cannot resolve it yourself, 
-contact your hoster and attach `~/.clwpos/main.log` for further investigation. 
+contact your hoster and attach `~/.clwpos/main.log` for further investigation.
+
+## AccelerateWP Standalone
+
+### Overview
+
+AccelerateWP Standalone is a complex solution to help customers increase their WordPress site performance.
+With AccelerateWP Standalone you can manage optimization features, like Critical CSS, Image Optimization, CDN, JavaScript
+preprocessing and website preloading.
+
+In order to start using AccelerateWP Standalone, go to the https://awp.cloudlinux.com/ interface and and get a license key with the plugin distribution.
+
+After installing and activating the plugin, enter your license key to access caching features and additional optimization modules.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPStandaloneKeyWindow.webp)
+
+Depending on your license key settings, you may have access to Image Optimization/CriticalCSS/CDN features.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPStandalonePlugin.webp)
+
+
+#### Limitations
+* the website must use PHP version 7.3 or higher.
+* the WordPress version must be 5.8 and higher.
+* the other WordPress Caching plugins must not be installed.
+* the WordPress should not run in Multisite mode.
+
+
+### AccelerateWP feature additional options
+Find more additional options in WordPress admin page.
+
+#### Mobile caching
+Use it only if you website is adapted to use on smartphones and mobile phones.
+
+Separate cache files for mobile devices. In this case the content for mobile devices will be cached
+into different cache file as for desktop\tablets.
+
+This option is necessary if you have some functionality only for mobile devices, not for desktop\tablets.
+
+The following diagram helps you understand if you need mobile caching.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/MobileDiag.webp)
+
+:::tip Note
+If you use an additional layer of Cache (Varnish, NGINX , etc.) make sure it can distinguish between desktop and mobile visitors.
+:::
+
+
+#### User Cache
+It is recommended to use such an option when your website has a unique content for each logged-in user. If the user is not logged-in, a common site cache will be used, otherwise each logged-in user’s content will be cached separately.
+
+
+#### File Optimization
+File Optimization consists of Minification and file Combining.
+
+Minification is the process of minimizing code in your web pages and script files. Webmasters look at minification as a primary method of reducing website load times via the bandwidth they use.
+
+Minification also reduces JS, CSS and HTML files. The goal is removing comments and extra spaces. It crunches variables that minimize code and ultimately reduces the file size.
+
+After minification, the file still functions as it should. The difference is a reduction in bandwidth due to network requests.
+
+**By combining CSS & JS files, HTTP/1 does not allow multiple requests from the same TCP connection between a host server and a web browser.**
+
+Putting CSS and JS files into their respective groups, makes requests for downloads from a browser safe and more efficient. The old way meant multiple connections that took up bandwidth.
+
+**File (CSS & JS) combining is not necessary for HTTP/2 (see https://webspeedtools.com/should-i-combine-css-js/)**
+
+HTTP/2 introduced multiplexing. Now, the browser can send unlimited number of requests to the server, then download all files simultaneously with only one TCP connection.
+
+Consequently, HTTP/2 takes care of multiple TCP connections and the waiting time before each download. In one sense, consolidating CSS and JS files might be unnecessary.
+
+To verify which HTTP version is used for requests on your site, you can use https://tools.keycdn.com/http2-test
+
+
+#### CSS Files
+**Minify CSS**
+
+Minify CSS reduces file sizes by taking out white space and comments embedded in the code.
+
+**Combine CSS**
+
+Combine CSS reduces HTTP requests by merging all your files into one. Combine CSS is not recommended if your site uses HTTP/2.
+
+**Excluded CSS Files**
+
+To single out those CSS files that should not be minimized, list the URLs attached to the CSS files that should be excluded from minification and concatenation (one per line).
+
+:::warning Caution!
+Minification removes the domain from the URL.
+:::
+
+To prevent that, use (. *).CSS wildcards to exclude all files in a specific location.
+
+3rd Party: when excluding external CSS files, use the domain or the full URL path.
+
+**Optimize CSS delivery (Critical Path CSS)**
+
+Critical Path CSS eliminates render-blocking CSS on your website and improves browser page render performance. Your website will load much faster for your visitors.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPCriticalCSSEnabled.webp)
+
+The function starts automatically after switching on. It takes some time to generate the Critical CSS. You will see a notification with the generation status. If necessary, you can add additional styles to the Critical CSS in the fallback CSS field.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPCriticalCSSStarted.webp)
+
+Each time you change the site's theme, the Critical CSS will be regenerated. Also, if you have made any changes to the styles of your site, you need to manually regenerate the Critical CSS by clicking on the "Regenerate critical CSS" button.
+
+#### JavaScript Files
+**Minify javascript files**
+
+Minify JavaScript removes whitespace and comments to reduce the file size.
+
+**Combine JavaScripts files**
+
+This option will be active only if you choose Minify javascript files. It is not recommended for HTTP2.
+
+**Load JavaScript deferred**
+
+One major cause of slow web pages is a so-called blocking script: [https://www.dummies.com/web-design-development/javascript/deferred-loading-with-javascript/](https://www.dummies.com/web-design-development/javascript/deferred-loading-with-javascript/).
+
+Loading JavaScript called a blocking script blocks the webpage from loading.
+
+Using the `defer` attribute alerts the browser not to wait for the script. Things will continue as usual per the build HTML and DOM processes. Quietly, the script rests in the background, then runs once the DOM is built.
+
+So, the `Load JavaScript deferred` option adds to each script tag the `defer` attribute.
+
+**Delay JavaScript Execution**
+
+This option helps to decrease the page load time by delaying loading of all JavaScripts on the page. This option can be applied only for already cached pages, it is incompatible with the Combine JavaScripts files option.
+
+
+#### Media
+**LazyLoad**
+
+LazyLoad affects the page in the next way - if the user opens the page for the first loading there will be only first displayed (visible to user) images, others will be loaded if the user scrolls down. Images added via CSS file, the `<style>` tag or via `Elementor` will not be affected by the LazyLoad.
+
+The following options allows working with LazyLoad
+* Enable LazyLoad for images
+* Enable LazyLoad for iframes and videos
+* Excluded images or iframes
+
+
+#### Image Dimensions
+Add Missing Image Dimensions
+
+Correct image dimensions help the browser to recognize page structure without delays, because the browser knows how much space is needed for the image.
+
+Cases when image will not be affected by the *Add Missing Image Dimensions*:
+
+* Images which have any attribute with name containing `*height*` or `*width*`
+* Images which are part of the `<picture>` tag
+* SVG images
+* Image from external domains
+
+
+#### Image Optimization
+Optimize image delivery by minifying the existing images and serving next-gen image formats when possible.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPStandaloneImageOptimizationSettings.webp)
+
+After activating the function, it will start searching for files in the `WP_CONTENT_DIR/uploads` folder in supported formats - jpg, jpeg, gif and png.
+
+Each found file (except those already optimized) will be queued for optimization using CloudLinux SaaS.
+
+In the WordPress admin interface, the number of images to optimize will be displayed at the top of the AccelerateWP settings screen.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationProgress.webp)
+
+After the file is successfully optimized, a notification will be sent to the special API of the site that the file is ready.
+
+The original file will be copied to the backup folder:  
+`WP_CONTENT_DIR/accelerate-wp/images/backup/uploads/{relative_path_of_the_file}`  
+Then it was replaced with an optimized one and added with an additional file in the webp format.
+
+The image optimization function automatically activates the ability of the plugin to replace the original images with the WebP format if they are present in the file system.
+
+When a new image is uploaded to your site using the WordPress functions/interface, it will be submitted for optimization with high priority.
+
+After optimization of all images is completed, you will see the notification in the admin panel.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationSuccess.webp)
+
+**Restore images from backup folder**
+
+`WP_CONTENT_DIR` - path to your site's wp-content folder
+
+Test before run (dry run):  
+```rsync -avnI WP_CONTENT_DIR/accelerate-wp/images/backup/uploads/ WP_CONTENT_DIR/uploads```
+
+Restore and override files from backup folder:  
+```rsync -avI WP_CONTENT_DIR/accelerate-wp/images/backup/uploads/ WP_CONTENT_DIR/uploads```
+
+**Troubleshooting**
+
+**Wrong file permissions** - Image optimization will not start and show an admin notice. You can try re-enabling the optimization feature again or create folders manually.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationWrongFilePermissions.webp)
+
+**Database table cannot be created** - Image optimization will not start and show an admin notice. You can try re-enabling the optimization feature or contact your system administrator.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationDatabaseTableCannotBeCreated.webp)
+
+**Monthly quota exceeded** - Your plan has reached the feature usage limit for current month. The plugin will show an admin notice and pause the image optimization until the start of the next month.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationMonthlyQuotaExceeded.webp)
+
+**Authentication failed** - The plugin will postpone the image optimization process and retry every 15 minutes. If the authentication is failing for more then 24 hours, the plugin will stop the process and show an admin notice. Contact your system administrator.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationAuthenticationFailed.webp)
+
+**SaaS service not available** - The plugin will show an admin notice, pause processing other jobs in the queue and retry every 5  minutes for the next hour and then every hour.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationSaaSServiceNotAvailable.webp)
+
+#### Preload
+**Preload Cache**
+
+Usually, a page cache is created when this page is first visited. You can activate the preload page cache. It means that the cache for the page will be created when the page is created or updated.
+
+If sitemap-based cache preloading is activated, a specified sitemap file will be used for preliminary cache generation.
+
+**Preload Links**
+
+Provides functionality to preload the HTML content of the hovered link for acceleration loading pages after click.
+
+**Prefetch DNS Requests**
+
+If your website uses external resources (e.g. Google fonts, YouTube video, etc.), AccelerateWP can preload these resources for accelerating loading pages. To activate preloading external URLs, provide a list of external URLs.
+
+**Preload Fonts**
+
+Accelerates the loading of fonts by the browser, informing the browser at the very beginning of the request about the full list of fonts to download
+
+
+#### Advanced Rules
+Advanced site caching settings. If you have specific pages that must be processed individually you can add a custom rule for them.
+
+**Never Cache URL(s)**
+
+Provide a list of URLs that cannot be cached.
+
+**Never Cache Cookies**
+
+Provide a list of Cookie files that cannot be cached.
+
+**Never Cache User Agent(s)**
+
+Provide a list of User Agent names that cannot be cached.
+
+**Always Purge URL(s)**
+
+You can specify URLs that will be deleted from the cache when any post or page will be updated.
+
+**Cache Query String(s)**
+
+By default AccelerateWP does not cache URLs with query strings, but in this option, you can specify GET-parameters that must be cached.
+
+
+#### Database
+Database optimization provides clearing database from expired and unused data.
+
+**Post Cleanup**
+
+Provides clearing posts revisions, autosaved drafts, and deleted posts from the trash. Be careful, you will not be able to restore this data after clearing it.
+
+**Comments Cleanup**
+
+Provides clearing spam and deleted comments from the trash. Be careful, you will not be able to restore this data after clearing it.
+
+**Transients Cleanup**
+
+Provides clearing temporary options for existing plugins and older unused options that keep after deleting plugins.
+
+**Database Cleanup**
+
+Provides table optimizations in your database server.
+
+**Automatic cleanup**
+
+Allows you to schedule periodic database cleanups.
+
+
+#### Heartbeat
+WordPress Heartbeat is a function of server polling that provides delivery data from server to browser periodically.
+
+**Reduce or disable Heartbeat activity**
+
+To control server loads you can activate the *Control Heartbeat* function and reduce or disable Heartbeat activity. You can manage Heartbeat activity separately for backend, frontend, and post-editing parts. Be careful, disabling Heartbeat can break plugins that use this functionality.
+
+
+#### One-click AccelerateWP Add-ons
+
+##### MaxCache activation steps
+
+:::tip
+The **MAx Cache** feature requires AccelerateWP version **3.20.0.3-1.1-33** or higher. Please make sure you are using the latest version of the plugin.
+:::
+:::tip
+Only available on the servers where MAx Cache Apache module is installed.
+:::
+
+To turn on MAx Cache:
+1. In the WordPress Admin Dashboard, navigate to **AccelerateWP** -> **Settings** -> **Add-Ons**.
+2. Click on the toggle next to the **MAx Cache** feature to activate it.
+3. Directives for the Apache module "maxcache_module" will be added to .htaccess, which will automatically enable cache serving using Apache.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/awp-maxcache-addons.png)
+
+#### CDN
+
+Use the plugin interface to automatically configure and set up PullZone.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPStandaloneCDNEnabled.webp)
+
+CDN stands for Content Delivery Network, the feature that simplifies and speeds up resources loading for your customers.
+
+In order to start using 3rd party CDN, you need:
+1. Public website on the Internet with a valid domain name
+2. PullZone of CDN
+
+In order to check CDN is working, open website in incognito mode with Developer Tools open in your browser. Go to the "Network" tab, find the "Domain" column, you should see the specified address in the CDN settings of the AccelerateWP plugin for your js/css/image files.
+
+
+#### Tools
+For backing up the settings, there is a function for exporting settings. To use it, click the *Download settings* button. When you need to restore settings, choose your saved settings file and click the *Upload file and import settings* button.
