@@ -2919,17 +2919,35 @@ add <span class="notranslate"> `clean_user_php_sessions=false` line to _/etc/sys
 #### Syslog
 
 
-By default, <span class="notranslate"> _/dev/log_ </span> should be available inside end user's <span class="notranslate"> CageFS </span> . This is needed so that user's cronjobs and other things that user <span class="notranslate"> _dev/log_ </span> would get recorded in the system log files.
+By default, <span class="notranslate"> _/dev/log_ </span> should be available inside end user's <span class="notranslate"> CageFS </span> . This is needed so that user's cronjobs and other things that use <span class="notranslate"> _/dev/log_ </span> would get recorded in the system log files.
 
-This is controlled using file <span class="notranslate"> _/etc/rsyslog.d/schroot.conf_ </span> with the following content:
+##### Disabling /dev/log in CageFS
+
+When <span class="notranslate"> _/dev/log_ </span> is available inside CageFS, jailed users can write arbitrary messages to the system log (e.g. via the <span class="notranslate"> `logger` </span> binary or by writing to the socket directly), which may be used to insert or spoof log entries. To prevent this, disable <span class="notranslate"> _/dev/log_ </span> inside CageFS using the <span class="notranslate"> `cagefs-no-dev-log` </span> feature flag:
+
 <div class="notranslate">
 
 ```
-$AddUnixListenSocket /usr/share/cagefs-skeleton/dev/log
+cagefsctl --enable-cagefs-no-dev-log
 ```
 </div>
 
-To remove presence of <span class="notranslate"> _dev/log_ </span> inside CageFS, remove that file, and restart rsyslog service.
+This command removes <span class="notranslate"> _/dev/log_ </span> from the CageFS skeleton, updates the syslog configuration, and remounts all CageFS users. User processes inside CageFS will no longer be able to write to the system log via <span class="notranslate"> _/dev/log_ </span>.
+
+To restore <span class="notranslate"> _/dev/log_ </span> in CageFS:
+
+<div class="notranslate">
+
+```
+cagefsctl --disable-cagefs-no-dev-log
+```
+</div>
+
+These commands automatically update the syslog configuration depending on the system setup:
+
+* **Legacy syslog** (systems with <span class="notranslate"> _/etc/sysconfig/syslog_ </span>): the <span class="notranslate"> `-a /usr/share/cagefs-skeleton/dev/log` </span> option is removed from or added back to <span class="notranslate"> `SYSLOGD_OPTIONS` </span>, and the syslog service is restarted.
+* **rsyslog** (systems with <span class="notranslate"> _/etc/rsyslog.conf_ </span>): the drop-in config file <span class="notranslate"> _/etc/rsyslog.d/cagefs-syslog-socket.conf_ </span> (containing <span class="notranslate"> `$AddUnixListenSocket /usr/share/cagefs-skeleton/dev/log` </span>) is deleted or recreated, and the rsyslog service is restarted.
+* **systemd-journal** (systems where <span class="notranslate"> _/dev/log_ </span> is a symlink to <span class="notranslate"> _/run/systemd/journal/dev-log_ </span>): the socket is mounted directly into the CageFS skeleton as a hardlink; no syslog or rsyslog configuration changes are needed.
 
 
 #### Excluding mount points

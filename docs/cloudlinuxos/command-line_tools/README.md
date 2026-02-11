@@ -50,6 +50,8 @@ Options:
 | | <span class="notranslate"> --force-update </span> |force update of CageFS (ignore period of update)|
 | | <span class="notranslate"> --force-update-etc </span> |force update of _/etc_ directories for users in CageFS|
 | | <span class="notranslate"> --reconfigure-cagefs </span> |configure CageFS integration with other software (control panels, database servers, etc)|
+| | <span class="notranslate"> --enable-cagefs-no-dev-log </span> |stop creating <span class="notranslate"> _/dev/log_ </span> inside CageFS skeleton and remount all users (see [Syslog](/cloudlinuxos/cloudlinux_os_components/#syslog))|
+| | <span class="notranslate"> --disable-cagefs-no-dev-log </span> |restore <span class="notranslate"> _/dev/log_ </span> inside CageFS skeleton and remount all users (see [Syslog](/cloudlinuxos/cloudlinux_os_components/#syslog))|
 
 Use the following syntax to manage users:    
 <span class="notranslate"> `/usr/sbin/cagefsctl [OPTIONS] username [more usernames]` </span>
