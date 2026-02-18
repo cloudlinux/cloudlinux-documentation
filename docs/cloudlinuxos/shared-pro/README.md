@@ -1886,7 +1886,267 @@ MAx Cache will not work in AccelerateWP when:
 * The site is a WordPress Multisite (the MAx Cache .htaccess block is skipped).
 * The site language is Korean (ko_KR) (the MAx Cache .htaccess block is skipped).
 * Using the AccelerateWP PHP filter to replace dots with underscores.
-* Using the AccelerateWP PHP filter forces the full path to cache files instead of using DOCUMENT_ROOT.
+* Using the AccelerateWP PHP filter forces the full path to cache files instead of using DOCUMENT_ROOT. 
+
+## MAx Cache for NGINX
+
+### Overview
+
+MAx Cache for NGINX (`ea-nginx-maxcache`) is the NGINX counterpart of the [Apache MAx Cache module](/cloudlinuxos/shared-pro/#max-cache-documentation) . It serves pre-generated static HTML cache files produced by AccelerateWP directly from disk, bypassing PHP on cache hits. The module shares the same `libmaxcache` core library as the Apache module for device detection, WebP support, cookie handling, and query-string normalization.
+
+:::note MAx Cache for NGINX is currently supported on cPanel control panels only. :::
+
+### Installation
+
+```
+yum install accelerate-wp cloudlinux-site-optimization-module libmaxcache libmaxcache-configd --enablerepo=cloudlinux-updates-testing
+yum install ea-nginx-maxcache --enablerepo=cl-ea4-testing
+```
+
+This pulls in all required dependencies:
+
+| Package               | Description                                                     |
+| --------------------- | --------------------------------------------------------------- |
+| `ea-nginx-maxcache`   | NGINX dynamic module (`.so` file) and module loader config      |
+| `libmaxcache`         | Shared C library for device detection, WebP, cookie/QS handling |
+| `libmaxcache-configd` | Configuration daemon: parses `.htaccess`, writes shared memory  |
+
+Verify the module is loaded:
+
+```
+nginx -T 2>&1 | grep maxcache
+# Expected: load_module "/usr/lib64/nginx/modules/ngx_http_maxcache_module.so";
+```
+
+The `maxcache-configd` daemon is enabled automatically on package install:
+
+```
+systemctl status maxcache-configd
+journalctl -u maxcache-configd -f
+```
+
+### Supported modes
+
+#### Default: automatic via maxcache-configd daemon
+
+In the default mode, the `maxcache-configd` daemon reads AccelerateWP `.htaccess` directives and writes parsed per-domain configuration to shared memory (`/dev/shm/maxcache_config`). The NGINX module reads this shared memory on each request. No manual NGINX configuration is needed per domain.
+
+The `maxcache_dynamic` directive (enabled by default) and `maxcache_shm_path` are the only `http`-level directives required. The `ea-nginx-maxcache` package configures them automatically.
+
+#### ea-nginx reverse proxy (proxy\_pass)
+
+NGINX sits in front of Apache. On a cache hit, the module serves the file directly and Apache is never contacted. On a miss, the request is proxied to Apache as usual.
+
+#### ea-nginx standalone (fastcgi\_pass)
+
+NGINX handles all traffic without Apache. PHP requests go to PHP-FPM via `fastcgi_pass`. On a cache hit, the module serves the file directly and PHP-FPM is never contacted.
+
+#### Manual NGINX configuration
+
+For domains not managed by AccelerateWP, static directives (`maxcache on`, `maxcache_path`, exclusions, etc.) can be set directly in `nginx.conf` or included config files. These also serve as fallbacks when the daemon does not have configuration for a domain.
+
+### Activation
+
+Use the `cloudlinux-awp-admin` tool to enable MAx Cache:
+
+```
+# Enable for all compatible sites on the server
+cloudlinux-awp-admin maxcache enable --all
+
+# Enable for a specific site
+cloudlinux-awp-admin maxcache --enable --user {USERNAME} --domain {USERDOMAIN}
+```
+
+:::tip
+The AccelerateWP plugin must be installed and up-to-date on the target WordPress sites. 
+:::
+
+### Known issues
+
+#### mod\_ruid2 and NGINX standalone mode
+
+:::warning 
+When using NGINX in **standalone mode** (without Apache), `mod_ruid2` can cause permission issues. 
+:::
+
+`mod_ruid2` changes file ownership to match the site owner's UID/GID. Cache files may end up with restrictive permissions (e.g., `0700`) that the NGINX `nobody` user cannot read, resulting in cache misses.
+
+**Symptoms:**
+
+* NGINX always passes requests to the backend despite MaxCache being enabled.
+* NGINX error log shows `permission denied` when opening cache files.
+
+**Resolution:**
+
+1. Grant group read access to cache directories:
+
+```
+chmod -R g+rX /home/username/public_html/wp-content/cache/
+```
+
+2. Or use ACLs:
+
+```
+setfacl -R -m u:nobody:rX /home/username/public_html/wp-content/cache/
+setfacl -R -d -m u:nobody:rX /home/username/public_html/wp-content/cache/
+```
+
+3. Or switch to **ea-nginx reverse proxy (proxy\_pass) mode** (recommended when `mod_ruid2` is active).
+
+### Configuration directives
+
+All directives below map directly to their [Apache MAx Cache counterparts](https://docs.cloudlinux.com/cloudlinuxos/shared-pro/#max-cache-documentation) . In most deployments with `maxcache_dynamic on` (the default), these are managed automatically by the daemon.
+
+#### maxcache
+
+Enables or disables the module.
+
+**Syntax:** `maxcache on | off;` **Default:** `off` **Context:** `http`, `server`, `location`
+
+#### maxcache\_path
+
+Cache file path template with variable substitution.
+
+**Syntax:** `maxcache_path "<template>";` **Default:** none (required when `maxcache on`) **Context:** `http`, `server`, `location`
+
+Supported template variables:
+
+| Variable                  | Description                               | Example value       |
+| ------------------------- | ----------------------------------------- | ------------------- |
+| `{HTTP_HOST}`             | Request hostname                          | `example.com`       |
+| `{REQUEST_URI}`           | Request URI path                          | `/blog/hello-world` |
+| `{SSL_SUFFIX}`            | `-https` if HTTPS, empty otherwise        | `-https`            |
+| `{MOBILE_SUFFIX}`         | `-mobile` for mobile/tablet devices       | `-mobile`           |
+| `{WEBP_SUFFIX}`           | `-webp` if browser supports WebP          | `-webp`             |
+| `{GZIP_SUFFIX}`           | `_gzip` if client accepts gzip            | `_gzip`             |
+| `{QS_SUFFIX}`             | Normalized query string suffix            | `#lang=en`          |
+| `{USER_SUFFIX}`           | Per-user cache suffix for logged-in users | `-admin-a1b2c3`     |
+| `{USER_SHARED_SUFFIX}`    | Shared logged-in cache suffix             | `-loggedin-a1b2c3`  |
+| `{DYNAMIC_COOKIE_SUFFIX}` | Dynamic cookie variant suffix             | `-fr-eur`           |
+
+#### maxcache\_options
+
+Behavior options for mobile handling.
+
+**Syntax:** `maxcache_options [+|-]skip_mobile [+|-]tablet_as_mobile [+|-]export_vars;` **Default:** all disabled **Context:** `http`, `server`, `location`
+
+| Option             | Description                                                        |
+| ------------------ | ------------------------------------------------------------------ |
+| `skip_mobile`      | Mobile devices bypass cache and receive dynamic content.           |
+| `tablet_as_mobile` | Tablets are treated as mobile devices.                             |
+| `export_vars`      | Exports `$cl_device_type` and `$cl_supports_webp` NGINX variables. |
+
+#### maxcache\_exclude\_uri
+
+Regex (case-insensitive) to exclude matching URIs from caching.
+
+**Syntax:** `maxcache_exclude_uri "<regex>";` **Default:** none **Context:** `http`, `server`, `location`
+
+#### maxcache\_exclude\_ua
+
+Regex (case-insensitive) to exclude matching User-Agents from caching.
+
+**Syntax:** `maxcache_exclude_ua "<regex>";` **Default:** none **Context:** `http`, `server`, `location`
+
+#### maxcache\_exclude\_cookie
+
+Regex (case-insensitive) to exclude requests with matching cookies from caching.
+
+**Syntax:** `maxcache_exclude_cookie "<regex>";` **Default:** none **Context:** `http`, `server`, `location`
+
+#### maxcache\_mandatory\_cookies
+
+Cookies that must be present for the module to serve cached content.
+
+**Syntax:** `maxcache_mandatory_cookies <cookie1> [cookie2] ...;` **Default:** none **Context:** `http`, `server`, `location`
+
+##### maxcache\_dynamic\_cookies
+
+Cookies that create dynamic cache variants (e.g., for multi-currency or multi-language).
+
+**Syntax:** `maxcache_dynamic_cookies <cookie1> [cookie2] ...;` **Default:** none **Context:** `http`, `server`, `location`
+
+#### maxcache\_qs\_allowed\_params
+
+Query string parameters allowed in the cache key. Without this, any query string bypasses the cache.
+
+**Syntax:** `maxcache_qs_allowed_params <param1> [param2] ...;` **Default:** none **Context:** `http`, `server`, `location`
+
+#### maxcache\_qs\_ignored\_params
+
+Query string parameters to strip from the cache key (typically tracking params).
+
+**Syntax:** `maxcache_qs_ignored_params <param1> [param2] ...;` **Default:** none **Context:** `http`, `server`, `location`
+
+#### maxcache\_ignore\_headers
+
+Request header/value pairs that bypass the cache. Format: `"Header-Name: value"`.
+
+**Syntax:** `maxcache_ignore_headers "<Header>: <value>";` **Default:** none **Context:** `http`, `server`, `location`
+
+#### maxcache\_logged\_hash
+
+Secret hash for logged-in user cache keys. Must match AccelerateWP's `secret_cache_key` setting.
+
+**Syntax:** `maxcache_logged_hash "<secret_key>";` **Default:** none **Context:** `http`, `server`, `location`
+
+#### maxcache\_dynamic
+
+Enables dynamic per-domain configuration from the `maxcache-configd` daemon via shared memory.
+
+**Syntax:** `maxcache_dynamic on | off;` **Default:** `on` **Context:** `http`
+
+#### maxcache\_shm\_path
+
+Path to the shared memory file for daemon-to-module configuration exchange.
+
+**Syntax:** `maxcache_shm_path <path>;` **Default:** `/dev/shm/maxcache_config` **Context:** `http`
+
+Must match the `shm_path` setting in `/etc/maxcache/configd.conf`.
+
+### Troubleshooting
+
+**Module not loaded:**
+
+```
+nginx -T 2>&1 | grep maxcache
+```
+
+**Cache files missing or wrong permissions:**
+
+```
+ls -la /home/user/public_html/wp-content/cache/example.com/
+sudo -u nobody test -r /home/user/public_html/wp-content/cache/example.com/index-https.html && echo "OK" || echo "Permission denied"
+```
+
+**Daemon not running:**
+
+```
+systemctl status maxcache-configd
+journalctl -u maxcache-configd --since "1 hour ago"
+ls -la /dev/shm/maxcache_config
+```
+
+**Force rescan after migrations:**
+
+```
+systemctl reload maxcache-configd
+```
+
+**Check domain is registered in daemon:**
+
+```
+echo '{"action":"status"}' | socat - UNIX-CONNECT:/opt/cloudlinux/maxcache/notify.sock
+```
+
+**Debug logging:**
+
+```
+error_log /var/log/nginx/error.log debug;
+```
+
+Look for entries prefixed with `maxcache:`.
+
 
 ## Centralized Monitoring
 
