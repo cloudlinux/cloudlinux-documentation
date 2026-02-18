@@ -1894,7 +1894,9 @@ MAx Cache will not work in AccelerateWP when:
 
 MAx Cache for NGINX (`ea-nginx-maxcache`) is the NGINX counterpart of the [Apache MAx Cache module](/cloudlinuxos/shared-pro/#max-cache-documentation) . It serves pre-generated static HTML cache files produced by AccelerateWP directly from disk, bypassing PHP on cache hits. The module shares the same `libmaxcache` core library as the Apache module for device detection, WebP support, cookie handling, and query-string normalization.
 
-:::note MAx Cache for NGINX is currently supported on cPanel control panels only. :::
+:::tip 
+MAx Cache for NGINX is currently supported on cPanel control panels only. 
+:::
 
 ### Installation
 
