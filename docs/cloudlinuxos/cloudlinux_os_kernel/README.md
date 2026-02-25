@@ -546,21 +546,39 @@ The kernel exposes the functionality to /proc/sys/fs/datacycle/ folder.
 
 The <span class="notranslate"> **_tuned-profiles-cloudlinux_** </span> package brings a range of kernel under-the-hood tunings to address high LA, iowait issues what were detected earlier on particular users deploys. The package also encloses OOM adjustments to prioritize the elimination of overrun PHP, <span class="notranslate"> lsphp, Phusion Passenger </span> workers processes over other processes (e.g. ssh, a cron job).
 
-There are three profiles provided by CloudLinux OS:
+The following profiles are provided by CloudLinux OS:
 <div class="notranslate">
 
 ```
 # tuned-adm list | grep cloudlinux
-- cloudlinux-default          - Default CloudLinux tuned profile
-- cloudlinux-dummy            - Empty CloudLinux tuned profile
-- cloudlinux-vz               - Empty CloudLinux tuned profile
+- cloudlinux-default              - CloudLinux hosting profile (DEPRECATED)
+- cloudlinux-default-base         - Base CloudLinux hosting profile
+- cloudlinux-default-cgv1         - Optimized CloudLinux hosting Servers with cgroups v1
+- cloudlinux-default-cgv2         - Optimized CloudLinux hosting Servers with cgroups v2 (NOT SUPPORTED YET)
+- cloudlinux-dummy                - Empty CloudLinux tuned profile
+- cloudlinux-latency-performance  - CloudLinux latency-performance profile (DEPRECATED)
+- cloudlinux-latency-performance-base  - Base CloudLinux latency-performance profile
+- cloudlinux-latency-performance-cgv1  - Optimized CloudLinux hosting Servers with cgroups v1
+- cloudlinux-latency-performance-cgv2  - Optimized CloudLinux hosting Servers with cgroups v2 (NOT SUPPORTED YET)
+- cloudlinux-vz                   - Empty CloudLinux tuned profile
 ```
 </div>
 
+::: warning Profile structure
+The recommended profile for most servers is **<span class="notranslate">cloudlinux-default-cgv1</span>**. For latency-sensitive workloads, use **<span class="notranslate">cloudlinux-latency-performance-cgv1</span>**.
+
+The profiles are organized in a hierarchy:
+- **<span class="notranslate">cloudlinux-default-base</span>** / **<span class="notranslate">cloudlinux-latency-performance-base</span>** — contain all generic tuning parameters (sysctl, CPU governor, OOM adjustments). Not intended for direct use.
+- **<span class="notranslate">cloudlinux-default-cgv1</span>** / **<span class="notranslate">cloudlinux-latency-performance-cgv1</span>** — include the base profile and add cgroups v1 boot parameters. **Recommended for most servers.**
+- **<span class="notranslate">cloudlinux-default-cgv2</span>** / **<span class="notranslate">cloudlinux-latency-performance-cgv2</span>** — reserved for future cgroups v2 support. Not supported yet.
+- **<span class="notranslate">cloudlinux-default</span>** / **<span class="notranslate">cloudlinux-latency-performance</span>** — **deprecated** wrappers that internally include the <span class="notranslate">-cgv1</span> variants. They remain functional for backward compatibility (e.g. existing Ansible scripts), but new installations should use the <span class="notranslate">-cgv1</span> profiles directly.
+
+When upgrading from older versions, the deprecated profiles are automatically switched to their <span class="notranslate">-cgv1</span> equivalents.
+:::
 
 <span class="notranslate"> cloudlinux-dummy</span> and  <span class="notranslate"> cloudlinux-vz</span> are used for internal needs or when  <span class="notranslate"> Virtuozzo/OpenVZ </span>  detected and actually do nothing.
 
-<span class="notranslate"> cloudlinux-default </span> is one to be used, it actually does the following:
+<span class="notranslate"> cloudlinux-default-cgv1 </span> (or the deprecated <span class="notranslate"> cloudlinux-default</span>) is the one to be used. It actually does the following:
 
 1. Switches CPU power consumption mode to the maximum. CPU operates at maximum performance at the maximum clock rate:
 
@@ -633,7 +651,7 @@ To start using a profile:
 <div class="notranslate">
 
 ```
-tuned-adm profile cloudlinux-default
+tuned-adm profile cloudlinux-default-cgv1
 ```
 </div>
 
