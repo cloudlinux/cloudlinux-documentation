@@ -4,6 +4,7 @@
 * [LVE-Stats 2](./#lve-stats-2)
 * [CageFS](./#cagefs)
 * [MySQL Governor](./#mysql-governor)
+* [ALT-ELS repositories (CloudLinux 10)](./#alt-els-repositories-cloudlinux-10)
 * [PHP Selector](./#php-selector)
 * [Python Selector](./#python-selector)
 * [Ruby Selector](./#ruby-selector)
@@ -4095,6 +4096,61 @@ This technique was provided with the early 1.1.5 version of MySQL Governor.
 It turned out that memory limitation for MySQLrequests causes the OOM (Out Of Memory) issues and as a result database corruptions. So, it was decided not to apply LVE memory limits for SQL queries supplied by MySQL Governor. But the internal implementation of LVE is such that I/O and memory limits work together. That’s why the I/O LVE limits do not apply for user’s SQL queries now.
 
 Nevertheless, SQL queries inside LVE are restricted by CPU limit which indirectly limits I/O usage, too.
+
+
+## ALT-ELS repositories (CloudLinux 10)
+
+:::tip CloudLinux 10 only
+The ALT-ELS repository scheme is used starting from CloudLinux 10. Older CloudLinux versions (7, 8, 9) will follow this model in future updates.
+:::
+
+### What are ALT-ELS repositories?
+
+With the release of CloudLinux 10 (CL10), you may notice new repositories on your system with names like `alt-*-release`. These are part of the new **ALT-ELS** delivery scheme.
+
+**ALT-ELS** is the unified method used by the CloudLinux team to distribute "ALT" packages. In the context of CloudLinux OS, these repositories provide the various versions of software used by our Selectors (PHP, Python, NodeJS, and Ruby).
+
+Previously, ALT packages were mirrored across multiple locations for different products (CLOS, ELS, etc.). To simplify updates and ensure consistency, we have created a single, unified location for all new package releases.
+
+### Deployment during system conversion
+
+The deployment is handled automatically by the `cldeploy` script during the system conversion process:
+
+1. **Initial setup:** The `alt-common-release` package is installed along with the standard `cloudlinux-release`.
+2. **Module installation:** The script then installs the specific release packages for each language:
+   * `els-php-release`
+   * `els-python-release`
+   * `els-nodejs-release`
+   * `els-ruby-release`
+
+:::warning Installation failure
+If you see a log message stating: "Unable to set up PHP/NodeJS/Python/Ruby auxiliary repositories", the installation failed. In this case, please contact [CloudLinux Support](https://cloudlinux.zendesk.com/hc/requests/new).
+:::
+
+These `els-*-release` packages are **required** for proper installation of PHP, Python, NodeJS, and Ruby Selector packages on CloudLinux 10.
+
+### Authentication and access
+
+Unlike standard CloudLinux repositories, ALT-ELS repositories require separate authentication. This is because these packages are shared across different products (CloudLinux OS, Imunify360, and standalone ELS) under different licensing schemes.
+
+**How it works for you:**
+
+* If your machine is registered with a valid license, access is handled automatically.
+* Upon successful registration, a primary CloudLinux JWT (JSON Web Token) is generated on your machine.
+* The `rhn-client-tools` package (version 3.0.2-1 or higher) automatically links this token to your package manager's variables:
+  * `/etc/dnf/vars/phpelstoken`
+  * `/etc/dnf/vars/altpythonelstoken`
+  * `/etc/dnf/vars/altrubyelstoken`
+  * `/etc/dnf/vars/altnodejselstoken`
+* When you run an update, DNF uses these tokens within the repository URLs to verify your access.
+
+### Frequently asked questions
+
+**Do I need to configure these tokens manually?**  
+No. As long as you have a valid license and your machine is registered, the system creates the necessary symlinks automatically.
+
+**What happens if my license expires?**  
+Since access depends on a valid JWT token, you will lose access to the ALT-ELS repositories (and thus updates for PHP/Python/NodeJS/Ruby Selectors) if the license is no longer active.
 
 
 ## PHP Selector

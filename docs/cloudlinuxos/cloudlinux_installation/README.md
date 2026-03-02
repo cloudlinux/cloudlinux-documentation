@@ -362,6 +362,7 @@ Here's what the cldeploy script does when you run it:
 * Checks that <span class="notranslate">`/etc/fstab`</span> has correct <span class="notranslate">`/dev/root`</span>
 * Checks for EFI and performs the necessary configuration.
 * Installs CloudLinux kernel, lve-utils, liblve, lve-stats RPMs.
+* On CloudLinux 10: installs ALT-ELS repository packages (`alt-common-release`, `els-php-release`, `els-python-release`, `els-nodejs-release`, `els-ruby-release`) required for PHP, Python, NodeJS, and Ruby Selectors. See [ALT-ELS repositories](/cloudlinuxos/cloudlinux_os_components/#alt-els-repositories-cloudlinux-10) for details.
 * Installs CloudLinux Manager for the supported control panels.
 * Installs mod_hostinglimits Apache module <sup>*</sup>:
   * RPM install for supported control panels;
