@@ -162,6 +162,16 @@ To prevent that, use (. *).CSS wildcards to exclude all files in a specific loca
 
 3rd Party: when excluding external CSS files, use the domain or the full URL path.
 
+**Aggressive mobile CSS optimization**
+
+Reduces CSS exclusions on mobile, keeping only critical ones (`admin-bar`, `dashicons`, `wp-admin`). This option is a child of "Optimize CSS delivery" and requires "Separate cache files for mobile devices" to be enabled.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPAgressiveMobileCssOptimizationOption.webp)
+
+:::tip
+Default: OFF. Aggressive CSS optimization may break styling on some sites. Each site needs individual testing after enabling.
+:::
+
 ### JavaScript Files
 
 **Minify javascript files**
@@ -190,6 +200,16 @@ So, the `Load JavaScript deferred` option adds to each script tag the `defer` at
 This option helps to decrease the page load time by delaying loading of all JavaScripts on the page. This option can be
 applied only for already cached pages, it is incompatible with the Combine JavaScripts files option.
 
+**Apply Delay JS only on mobile devices**
+
+When enabled, Delay JS is applied only for mobile visitors while desktop visitors get standard JavaScript loading. This option is a child of "Delay JavaScript Execution" and requires "Separate cache files for mobile devices" to be enabled.
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPApplyDelayJsOnlyOnMobileOption.webp)
+
+:::tip
+Default: OFF. Aggressive optimization may affect JavaScript interactivity on some sites. Each site needs individual testing after enabling.
+:::
+
 ### Media
 
 **LazyLoad**
@@ -204,6 +224,21 @@ The following options allows working with LazyLoad
 * Enable for CSS background images
 * Enable LazyLoad for iframes and videos
 * Excluded images or iframes
+
+**Reduce font-related layout shifts**
+
+Generates `@font-face` rules with CSS metric overrides (`size-adjust`, `ascent-override`, `descent-override`, `line-gap-override`) that adjust fallback fonts to match web font dimensions, reducing Cumulative Layout Shift (CLS).
+
+Supported font sources:
+* Google Fonts URLs (`fonts.googleapis.com`)
+* `@font-face` rules in CSS
+* `font-family` declarations
+
+![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPReduceFontRelatedLayoutShiftsOption.webp)
+
+:::tip Note
+Default: ON.
+:::
 
 ### Image Dimensions
 
