@@ -35,7 +35,7 @@ When Website Isolation is enabled for a domain:
 | FCGI    | 🔜 Coming in future releases                                                      |
 
 :::tip Warning
-Website Isolation fully supports LSAPI and CGI handlers. FPM has partial support for specific ea-php versions only. FCGI support is planned for future releases.
+Website Isolation fully supports LSAPI and CGI handlers. FPM has partial support for specific ea-php and alt-php versions only. FCGI support is planned for future releases.
 :::
 
 #### Compatible Control Panels
@@ -50,7 +50,9 @@ Website Isolation fully supports LSAPI and CGI handlers. FPM has partial support
 
 #### Compatible PHP Versions
 
-Website Isolation provides partial FPM handler support for ea-php (cPanel). The following ea-php versions are compatible:
+Website Isolation provides partial FPM handler support for both ea-php (cPanel) and alt-php.
+
+##### ea-php (cPanel)
 
 | Package       | Minimum Version                    |
 | ------------- | ---------------------------------- |
@@ -67,8 +69,28 @@ Website Isolation provides partial FPM handler support for ea-php (cPanel). The 
 | ea-php84-php  | 8.4.17-1.cloudlinux.2              |
 | ea-php85-php  | 8.5.2-1.cloudlinux.1               |
 
+##### alt-php
+
+| Package              | Minimum Version   |
+| -------------------- | ----------------- |
+| alt-php53-php-fpm    | 5.3.29-189        |
+| alt-php54-php-fpm    | 5.4.45-172        |
+| alt-php55-php-fpm    | 5.5.38-152        |
+| alt-php56-php-fpm    | 5.6.40-116        |
+| alt-php70-php-fpm    | 7.0.33-117        |
+| alt-php71-php-fpm    | 7.1.33-83         |
+| alt-php72-php-fpm    | 7.2.34-65         |
+| alt-php73-php-fpm    | 7.3.33-51         |
+| alt-php74-php-fpm    | 7.4.33-48         |
+| alt-php80-php-fpm    | 8.0.30-36         |
+| alt-php81-php-fpm    | 8.1.34-5          |
+| alt-php82-php-fpm    | 8.2.30-5          |
+| alt-php83-php-fpm    | 8.3.30-5          |
+| alt-php84-php-fpm    | 8.4.18-2          |
+| alt-php85-php-fpm    | 8.5.3-3           |
+
 :::tip Note
-alt-php support is coming soon.
+alt-php53, alt-php54, and alt-php55 are supported on CL7/CL8/CL9 only. CL10 support starts from alt-php56.
 :::
 
 ***
