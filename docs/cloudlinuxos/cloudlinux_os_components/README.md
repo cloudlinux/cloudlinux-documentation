@@ -4205,6 +4205,7 @@ The mark `x` stands for a supported version.
 | alt-php 8.2 |       x       |       x       |       x       |       x       |       x       |
 | alt-php 8.3 |       x       |       x       |       x       |       x       |       x       |
 | alt-php 8.4 |       –       |       x       |       x       |       x       |       x       |
+| alt-php 8.5 |       –       |       -       |       x       |       x       |       x       |
 
 ### Installation and update
 
