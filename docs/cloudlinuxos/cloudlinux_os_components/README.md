@@ -3651,13 +3651,70 @@ MySQL Governor allows setting the burstable limits for accounts. To provide that
 * `long` on the contrary, should not be more than the LVE limit
 * setting the `middle` and `long` limits less than the LVE limit prevents abuse of other processes in the account (Apache, PHP) by MySQL
 
+**Coefficients for calculating limits**
+
+MySQL Governor limits should be calculated based on the corresponding LVE limits using the following coefficients:
+
+*CPU limits:*
+
+| Limit level | Formula | Description |
+|---|---|---|
+| `current` | `LVE_CPUSPEED + 1` | Slightly above the LVE CPU limit to avoid bottlenecks |
+| `short` | `LVE_CPUSPEED × 0.95` | Short-term burst allowance |
+| `middle` | `LVE_CPUSPEED × 0.87` | Medium-term average |
+| `long` | `LVE_CPUSPEED × 0.75` | Long-term sustained maximum |
+
+*IO limits:*
+
+| Limit level | Formula | Description |
+|---|---|---|
+| `current` | `LVE_IO + 1` | Slightly above the LVE IO limit |
+| `short` | `LVE_IO × 0.83` | Short-term burst allowance |
+| `middle` | `LVE_IO × 0.76` | Medium-term average |
+| `long` | `LVE_IO × 0.59` | Long-term sustained maximum |
+
+**How IO limits are calculated**
+
+:::warning Important
+The MySQL IO value tracked by MySQL Governor is the **combined total of read and write operations**. For example, if a user's LVE IO limit is 100 MB/s, the corresponding MySQL IO total is 200 MB/s (100 MB/s read + 100 MB/s write).
+:::
+
+In the MySQL Governor configuration (`/etc/container/mysql-governor.xml`), the `read` and `write` limits are specified separately. The coefficients above are applied to each limit individually.
+
 **Example of choosing MySQL Governor limits**
 
-* With the default LVE SPEED limit is `100`, the possible values of the MySQL Governor CPU limits can be 100/95/87/75. I.e., we admit the short-term exceeding of the limits for processing SQL requests.
+* With the default LVE SPEED limit of `100`, the corresponding MySQL Governor CPU limits are `101/95/87/75` (applying the coefficients above). We admit the short-term exceeding of the limits for processing SQL requests.
 * If you face spike CPU consumption with these limits, it is recommended to reduce the excess of the `current` and `short` limits over the LVE limit. For example, to the values 150/110/100/90.
 * If the average level of CPU consumption is too high, then it is recommended to reduce the `middle` and `long` limits, too. For example, to the values 150/100/80/50.
 * Then MySQL processes will fall into LVE and be limited by LVE limits more often.
 * The same clues are applicable to the IO limits – the `current` and `short` IO limits for MySQL Governor can exceed IO LVE limits, but the `middle` and `long` cannot.
+
+**Configuration example**
+
+For a user with a 400% LVE CPU (SPEED) limit and a 100 MB/s LVE IO limit, the MySQL Governor limits would be configured as follows:
+
+<div class="notranslate">
+
+```
+<user name="USERNAME" mode="restrict">
+  <limit name="cpu" current="400" short="380" mid="348" long="300"/>
+  <limit name="read" current="104857600" short="87031808" mid="79691776" long="61865984"/>
+  <limit name="write" current="104857600" short="87031808" mid="79691776" long="61865984"/>
+</user>
+```
+</div>
+
+You can verify the applied limits using `dbctl list`:
+
+<div class="notranslate">
+
+```
+[root@server ~]# dbctl list
+user             cpu(%)                     read(MB/s)                 write(MB/s)
+USERNAME          400/380/348/300            100/83/76/59               100/83/76/59
+```
+</div>
+
 
 
 #### Starting and stopping
