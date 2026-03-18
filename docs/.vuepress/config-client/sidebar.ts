@@ -53,6 +53,7 @@ export default {
             collapsable: false,
             children: [
                 "/cloudlinuxos/cloudlinux_installation/",
+                "/cloudlinuxos/repositories_and_mirrors/",
                 "/cloudlinuxos/elevate/",
                 "/cloudlinuxos/limits/",
                 "/cloudlinuxos/lve_manager/",
