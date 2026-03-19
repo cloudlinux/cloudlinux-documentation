@@ -1291,7 +1291,9 @@ yum reinstall ea-php80-php-mbstring
 
 This design eliminates per-request regex compilation in `.htaccess`, resulting in significantly faster cache delivery. The module is fully compatible with AccelerateWP's cache directory layout and can be used by any caching plugin that follows similar conventions.
 
-AccelerateWP uses this module to serve the correct static page without invoking PHP or writing complex RewriteRule-based configurations. This document summarizes the module's directives and describes how any page cache plugin can integrate with the same capabilities. 
+AccelerateWP uses this module to serve the correct static page without invoking PHP or writing complex RewriteRule-based configurations. This document summarizes the module's directives and describes how any page cache plugin can integrate with the same capabilities.
+
+The module includes two independent subsystems: **cache serving** (serves pre-generated static HTML files, bypassing PHP) and **HTCache** (caches parsed `.htaccess` files in shared memory, eliminating per-request disk I/O). Both are included in the same `ea-apache24-mod_maxcache` package and can be enabled independently.
 
 :::warning Note:
 MAx Cache is currently supported on cPanel control panels only. 
@@ -1302,11 +1304,19 @@ MAx Cache is currently supported on cPanel control panels only.
 To install MAx Cache, run the following commands: 
 
 ```
-yum install accelerate-wp cloudlinux-site-optimization-module libmaxcache --enablerepo=cloudlinux-updates-testing 
+yum install accelerate-wp cloudlinux-site-optimization-module libmaxcache maxcache-htcache-watchd --enablerepo=cloudlinux-updates-testing 
 ```
 ```
-yum install ea-apache24-mod_maxcache --enablerepo-cl-ea4-testing
+yum install ea-apache24-mod_maxcache --enablerepo=cl-ea4-testing
 ``` 
+
+| Package | Description |
+| --- | --- |
+| `ea-apache24-mod_maxcache` | Apache module with cache serving and HTCache subsystems |
+| `maxcache-htcache-watchd` | Filesystem watcher daemon for real-time `.htaccess` change detection |
+| `libmaxcache` | Shared C library for device detection, WebP, cookie/QS handling |
+
+After installation, the HTCache subsystem is enabled by default (`MaxCacheHTCache On`) and the `maxcache-htcache-watchd` daemon is automatically started and enabled on boot.
 
 ### MAx Cache Activation Guide 
 
@@ -1887,6 +1897,219 @@ MAx Cache will not work in AccelerateWP when:
 * The site language is Korean (ko_KR) (the MAx Cache .htaccess block is skipped).
 * Using the AccelerateWP PHP filter to replace dots with underscores.
 * Using the AccelerateWP PHP filter forces the full path to cache files instead of using DOCUMENT_ROOT. 
+
+### HTCache (.htaccess caching)
+
+HTCache is the second subsystem of `mod_maxcache`. It caches parsed `.htaccess` files in shared memory, so Apache does not re-read and re-parse them from disk on every request. On shared-hosting servers with thousands of sites, this eliminates thousands of `stat()` and `open()` syscalls per second.
+
+HTCache benefits **all** `.htaccess`-heavy sites regardless of whether MAx Cache page caching is enabled.
+
+#### How it works
+
+By default, Apache re-reads and re-parses `.htaccess` files from disk on every request. On shared-hosting servers with thousands of sites, this creates significant disk I/O overhead. HTCache parses each `.htaccess` once (on first request) and stores the result in shared memory so all Apache workers can reuse it without touching the disk again. The cache populates lazily as traffic arrives.
+
+#### Change detection
+
+HTCache detects `.htaccess` changes through two mechanisms:
+
+| Mode | Detection latency | When active |
+| --- | --- | --- |
+| **watchd (real-time)** | Sub-second | When `maxcache-htcache-watchd` service is running |
+| **Polling (fallback)** | Up to `MaxCacheHTCacheRevalidateInterval` seconds (default 60) | Always active as a safety net |
+
+When the `maxcache-htcache-watchd` daemon is running, it monitors the filesystem and signals Apache through shared memory whenever a `.htaccess` file is created, modified, or deleted.
+
+:::warning CloudLinux 7/8 limitations
+On CloudLinux 7 and 8, the kernel's `fanotify` interface only supports file write events. This means the watchd daemon detects `.htaccess` **modifications** instantly, but **deletes**, **renames**, and **moves** are not detected in real time — they rely on the polling fallback (`MaxCacheHTCacheRevalidateInterval`, default 60 seconds). If you need faster detection of these operations on CL7/CL8, lower the revalidation interval (e.g. `MaxCacheHTCacheRevalidateInterval 10`).
+
+On CloudLinux 9+ (kernel 5.14+), all change types — including deletes, renames, and moves — are detected in real time.
+:::
+
+#### Configuration directives
+
+All HTCache directives go inside `<IfModule mod_maxcache.c>` in the Apache configuration. HTCache is configured in `/etc/apache2/conf.d/maxcache_htcache.conf`.
+
+#### MaxCacheHTCache
+
+* **Syntax**: `MaxCacheHTCache On|Off`
+* **Default**: On (in shipped config)
+* **Context**: server config, virtual host
+* **Description**: Master enable/disable switch for the HTCache subsystem.
+
+#### MaxCacheHTCacheRevalidateInterval
+
+* **Syntax**: `MaxCacheHTCacheRevalidateInterval <seconds>`
+* **Default**: 60
+* **Range**: 1–3600
+* **Context**: server config, virtual host
+* **Description**: Polling interval for `mtime` checks when the watchd daemon is not running or for event types not detected by `fanotify` on the current platform. Lower values mean faster detection of changes via polling; higher values reduce `stat()` syscalls.
+
+#### MaxCacheHTCacheEntries
+
+* **Syntax**: `MaxCacheHTCacheEntries <count>`
+* **Default**: 50000
+* **Range**: 10–500000
+* **Context**: server config, virtual host
+* **Description**: Maximum number of cached `.htaccess` entries in shared memory. When this limit is reached, new directories fall back to Apache's standard processing.
+
+#### MaxCacheHTCacheMemorySize
+
+* **Syntax**: `MaxCacheHTCacheMemorySize <MB>`
+* **Default**: auto (derived from `MaxCacheHTCacheEntries`)
+* **Range**: 1–4096
+* **Context**: server config, virtual host
+* **Description**: Shared memory arena size in megabytes. Normally sized automatically — only set this if you see `htcache: arena memory exhausted` in the error log.
+
+#### MaxCacheHTCacheExclude
+
+* **Syntax**: `MaxCacheHTCacheExclude <path> [path2] ...`
+* **Default**: none
+* **Context**: server config, virtual host
+* **Description**: Exclude directory trees from HTCache. The path is matched as a prefix.
+* **Example**:
+```
+MaxCacheHTCacheExclude /home/staging /tmp
+```
+
+#### MaxCacheHTCacheMaxFileSize
+
+* **Syntax**: `MaxCacheHTCacheMaxFileSize <KB>`
+* **Default**: 256
+* **Range**: 0–10240
+* **Context**: server config, virtual host
+* **Description**: Maximum `.htaccess` file size (in KB) that HTCache will process. Files exceeding this limit are skipped and served via Apache's standard processing. Set to `0` for unlimited.
+
+#### MaxCacheHTCacheMaxEntriesPerDocroot
+
+* **Syntax**: `MaxCacheHTCacheMaxEntriesPerDocroot <count>`
+* **Default**: 256
+* **Range**: 0–100000
+* **Context**: server config, virtual host
+* **Description**: Maximum cached entries under a single document root. Prevents one user from monopolizing the shared cache on multi-tenant servers. Set to `0` for unlimited (the global `MaxCacheHTCacheEntries` limit still applies).
+
+#### Configuration examples
+
+##### Minimal setup
+
+```
+MaxCacheHTCache On
+```
+
+Enables HTCache globally with default settings (50,000 max entries, 60-second revalidation).
+
+##### Production shared hosting
+
+For a server with ~5,000 WordPress sites:
+
+```
+<IfModule mod_maxcache.c>
+    MaxCacheHTCache On
+    MaxCacheHTCacheEntries 100000
+</IfModule>
+```
+
+##### Per-vhost with exclusions
+
+```
+<VirtualHost *:443>
+    ServerName example.com
+    DocumentRoot /home/example/public_html
+
+    MaxCacheHTCache On
+    MaxCacheHTCacheEntries 10000
+    MaxCacheHTCacheExclude /home/example/public_html/tmp
+</VirtualHost>
+```
+
+##### Disable HTCache for a specific vhost
+
+Enable globally but opt out specific vhosts:
+
+```
+# httpd.conf (global)
+MaxCacheHTCache On
+
+<VirtualHost *:443>
+    ServerName staging.example.com
+    DocumentRoot /home/staging/public_html
+    MaxCacheHTCache Off
+</VirtualHost>
+```
+
+#### Status endpoint
+
+HTCache provides a status handler for monitoring. To enable it, add a `<Location>` block to your Apache configuration:
+
+```
+<Location /htcache-status>
+    SetHandler htcache-status
+    Require local
+</Location>
+```
+
+Then query it:
+
+```
+curl -s http://localhost/htcache-status
+```
+
+Example output:
+
+```
+mod_maxcache HTCache Status
+===========================
+
+Mode: lazy on-demand
+Enabled: yes
+Ready: yes
+Entries: 1234 / 50000
+Lazy compiles: 5678
+PCRE mode: shared (GOT patched)
+
+Arena Architecture: Base + Patch Pool + Shadow
+Active Base: Arena A
+Arena size: 50MB each (x 2)
+Arena usage: 8192KB / 50MB (16%)
+Patch Pool: 256KB / 12MB used (2%)
+Compacting: no
+Compaction threshold: 80%
+
+Invalidation SHM: connected
+Revalidate interval: 60s
+
+Cache (global):
+  Hits:     45000
+  Misses:   1234
+```
+
+Key fields to check:
+
+| Field | Healthy value | Problem indicator |
+| --- | --- | --- |
+| Enabled | `yes` | `no` — HTCache is turned off in config |
+| Ready | `yes` | `no` — engine failed to initialize |
+| Entries | below max | at max — increase `MaxCacheHTCacheEntries` |
+| Arena usage | below 90% | above 90% — increase `MaxCacheHTCacheMemorySize` |
+| Invalidation SHM | `connected` | `not available` — watchd is not running or SHM file is missing |
+| Hits | increasing | staying at 0 — HTCache is not serving cached results |
+
+:::warning
+The status endpoint should be restricted to localhost or trusted IPs. Remove or restrict the `<Location>` block in production.
+:::
+
+#### Troubleshooting
+
+| Check | Command | Expected |
+| --- | --- | --- |
+| watchd running? | `systemctl is-active maxcache-htcache-watchd` | `active` |
+| SHM file exists? | `ls -la /dev/shm/htcache_invalidate` | File present |
+| File too large? | `wc -c /path/to/.htaccess` | Under 256 KB (default `MaxCacheHTCacheMaxFileSize`) |
+| Path excluded? | `grep MaxCacheHTCacheExclude /etc/apache2/conf.d/maxcache_htcache.conf` | Path not listed |
+| Log: `htcache: entry limit reached (50000/50000), skipping /path` | Cache is full — increase `MaxCacheHTCacheEntries` | Remaining directories use standard Apache processing |
+| Log: `htcache: per-docroot entry limit reached (256/256) for /home/user` | Single user filled their quota — increase `MaxCacheHTCacheMaxEntriesPerDocroot` | Other users are not affected |
+| Log: `htcache: arena memory exhausted (400MB/400MB)` | Shared memory arena is full — increase `MaxCacheHTCacheMemorySize` | Restart Apache after changing |
+
+If changes must take effect immediately, restart Apache: `systemctl restart httpd`.
 
 ## MAx Cache for NGINX
 
