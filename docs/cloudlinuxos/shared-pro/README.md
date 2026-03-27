@@ -1293,7 +1293,7 @@ This design eliminates per-request regex compilation in `.htaccess`, resulting i
 
 AccelerateWP uses this module to serve the correct static page without invoking PHP or writing complex RewriteRule-based configurations. This document summarizes the module's directives and describes how any page cache plugin can integrate with the same capabilities.
 
-The module includes two independent subsystems: **cache serving** (serves pre-generated static HTML files, bypassing PHP) and **HTCache** (caches parsed `.htaccess` files in shared memory, eliminating per-request disk I/O). Both are included in the same `ea-apache24-mod_maxcache` package and can be enabled independently.
+The module includes two independent subsystems: **cache serving** (serves pre-generated static HTML files, bypassing PHP) and **full .htaccess caching** (caches parsed `.htaccess` files in shared memory, eliminating per-request disk I/O). Both are included in the same `ea-apache24-mod_maxcache` package and can be enabled independently.
 
 :::warning Note:
 MAx Cache is currently supported on cPanel control panels only. 
@@ -1312,11 +1312,11 @@ yum install ea-apache24-mod_maxcache --enablerepo=cl-ea4-testing
 
 | Package | Description |
 | --- | --- |
-| `ea-apache24-mod_maxcache` | Apache module with cache serving and HTCache subsystems |
+| `ea-apache24-mod_maxcache` | Apache module with cache serving and full .htaccess caching subsystems |
 | `maxcache-htcache-watchd` | Filesystem watcher daemon for real-time `.htaccess` change detection |
 | `libmaxcache` | Shared C library for device detection, WebP, cookie/QS handling |
 
-After installation, the HTCache subsystem is enabled by default (`MaxCacheHTCache On`) and the `maxcache-htcache-watchd` daemon is automatically started and enabled on boot.
+After installation, the full .htaccess caching subsystem is enabled by default (`MaxCacheHTCache On`) and the `maxcache-htcache-watchd` daemon is automatically started and enabled on boot.
 
 ### MAx Cache Activation Guide 
 
@@ -1898,19 +1898,19 @@ MAx Cache will not work in AccelerateWP when:
 * Using the AccelerateWP PHP filter to replace dots with underscores.
 * Using the AccelerateWP PHP filter forces the full path to cache files instead of using DOCUMENT_ROOT. 
 
-### HTCache (.htaccess caching)
+### Full .htaccess caching
 
-HTCache is the second subsystem of `mod_maxcache`. It caches parsed `.htaccess` files in shared memory, so Apache does not re-read and re-parse them from disk on every request. On shared-hosting servers with thousands of sites, this eliminates thousands of `stat()` and `open()` syscalls per second.
+Full .htaccess caching is the second subsystem of `mod_maxcache`. It caches parsed `.htaccess` files in shared memory, so Apache does not re-read and re-parse them from disk on every request. On shared-hosting servers with thousands of sites, this eliminates thousands of `stat()` and `open()` syscalls per second.
 
-HTCache benefits **all** `.htaccess`-heavy sites regardless of whether MAx Cache page caching is enabled.
+Full .htaccess caching benefits **all** `.htaccess`-heavy sites regardless of whether MAx Cache page caching is enabled.
 
 #### How it works
 
-By default, Apache re-reads and re-parses `.htaccess` files from disk on every request. On shared-hosting servers with thousands of sites, this creates significant disk I/O overhead. HTCache parses each `.htaccess` once (on first request) and stores the result in shared memory so all Apache workers can reuse it without touching the disk again. The cache populates lazily as traffic arrives.
+By default, Apache re-reads and re-parses `.htaccess` files from disk on every request. On shared-hosting servers with thousands of sites, this creates significant disk I/O overhead. Full .htaccess caching parses each `.htaccess` once (on first request) and stores the result in shared memory so all Apache workers can reuse it without touching the disk again. The cache populates lazily as traffic arrives.
 
 #### Change detection
 
-HTCache detects `.htaccess` changes through two mechanisms:
+Full .htaccess caching detects `.htaccess` changes through two mechanisms:
 
 | Mode | Detection latency | When active |
 | --- | --- | --- |
@@ -1927,14 +1927,14 @@ On CloudLinux 9+ (kernel 5.14+), all change types — including deletes, renames
 
 #### Configuration directives
 
-All HTCache directives go inside `<IfModule mod_maxcache.c>` in the Apache configuration. HTCache is configured in `/etc/apache2/conf.d/maxcache_htcache.conf`.
+All full .htaccess caching directives go inside `<IfModule mod_maxcache.c>` in the Apache configuration. Full .htaccess caching is configured in `/etc/apache2/conf.d/maxcache_htcache.conf`.
 
 #### MaxCacheHTCache
 
 * **Syntax**: `MaxCacheHTCache On|Off`
 * **Default**: On (in shipped config)
 * **Context**: server config, virtual host
-* **Description**: Master enable/disable switch for the HTCache subsystem.
+* **Description**: Master enable/disable switch for the full .htaccess caching subsystem.
 
 #### MaxCacheHTCacheRevalidateInterval
 
@@ -1965,7 +1965,7 @@ All HTCache directives go inside `<IfModule mod_maxcache.c>` in the Apache confi
 * **Syntax**: `MaxCacheHTCacheExclude <path> [path2] ...`
 * **Default**: none
 * **Context**: server config, virtual host
-* **Description**: Exclude directory trees from HTCache. The path is matched as a prefix.
+* **Description**: Exclude directory trees from full .htaccess caching. The path is matched as a prefix.
 * **Example**:
 ```
 MaxCacheHTCacheExclude /home/staging /tmp
@@ -1977,7 +1977,7 @@ MaxCacheHTCacheExclude /home/staging /tmp
 * **Default**: 256
 * **Range**: 0–10240
 * **Context**: server config, virtual host
-* **Description**: Maximum `.htaccess` file size (in KB) that HTCache will process. Files exceeding this limit are skipped and served via Apache's standard processing. Set to `0` for unlimited.
+* **Description**: Maximum `.htaccess` file size (in KB) that full .htaccess caching will process. Files exceeding this limit are skipped and served via Apache's standard processing. Set to `0` for unlimited.
 
 #### MaxCacheHTCacheMaxEntriesPerDocroot
 
@@ -1995,7 +1995,7 @@ MaxCacheHTCacheExclude /home/staging /tmp
 MaxCacheHTCache On
 ```
 
-Enables HTCache globally with default settings (50,000 max entries, 60-second revalidation).
+Enables full .htaccess caching globally with default settings (50,000 max entries, 60-second revalidation).
 
 ##### Production shared hosting
 
@@ -2021,7 +2021,7 @@ For a server with ~5,000 WordPress sites:
 </VirtualHost>
 ```
 
-##### Disable HTCache for a specific vhost
+##### Disable full .htaccess caching for a specific vhost
 
 Enable globally but opt out specific vhosts:
 
@@ -2038,7 +2038,7 @@ MaxCacheHTCache On
 
 #### Status endpoint
 
-HTCache provides a status handler for monitoring. To enable it, add a `<Location>` block to your Apache configuration:
+Full .htaccess caching provides a status handler for monitoring. To enable it, add a `<Location>` block to your Apache configuration:
 
 ```
 <Location /htcache-status>
@@ -2086,12 +2086,12 @@ Key fields to check:
 
 | Field | Healthy value | Problem indicator |
 | --- | --- | --- |
-| Enabled | `yes` | `no` — HTCache is turned off in config |
+| Enabled | `yes` | `no` — full .htaccess caching is turned off in config |
 | Ready | `yes` | `no` — engine failed to initialize |
 | Entries | below max | at max — increase `MaxCacheHTCacheEntries` |
 | Arena usage | below 90% | above 90% — increase `MaxCacheHTCacheMemorySize` |
 | Invalidation SHM | `connected` | `not available` — watchd is not running or SHM file is missing |
-| Hits | increasing | staying at 0 — HTCache is not serving cached results |
+| Hits | increasing | staying at 0 — full .htaccess caching is not serving cached results |
 
 :::warning
 The status endpoint should be restricted to localhost or trusted IPs. Remove or restrict the `<Location>` block in production.
