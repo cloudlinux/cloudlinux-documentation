@@ -664,6 +664,39 @@ tuned-adm off
 ```
 </div>
 
+### Switching between cgroup v1 and cgroup v2
+
+Starting from **kmod-lve 2.1-57**, CloudLinux OS supports **cgroup v2**. This is available on **CloudLinux OS 8, 9, and 10** only — CloudLinux OS 7 is not supported.
+
+To switch between cgroup versions, apply the appropriate tuned profile and reboot the server.
+
+**Enable cgroup v2:**
+<div class="notranslate">
+
+```
+tuned-adm profile cloudlinux-default-cgv2
+reboot
+```
+</div>
+
+**Revert to cgroup v1:**
+<div class="notranslate">
+
+```
+tuned-adm profile cloudlinux-default-cgv1
+reboot
+```
+</div>
+
+To verify that the server has booted with cgroup v2 and that the LVE module is operating correctly, check the kernel log after reboot:
+<div class="notranslate">
+
+```
+dmesg | grep -i "cgroups"
+```
+</div>
+
+The presence of the message **"detected cgroups v2"** in the output confirms that the system is running with cgroup v2.
 
 ## Kernel config variables
 
