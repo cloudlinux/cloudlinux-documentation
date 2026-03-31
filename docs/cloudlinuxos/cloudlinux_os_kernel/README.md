@@ -666,7 +666,7 @@ tuned-adm off
 
 ### Switching between cgroup v1 and cgroup v2
 
-CloudLinux OS supports **cgroup v2** on **CloudLinux OS 8, 9, and 10** only — CloudLinux OS 7 is not supported.
+CloudLinux OS supports **cgroup v2** on **CloudLinux OS 8, 9, 10, and Ubuntu 22** — CloudLinux OS 7 is not supported.
 
 The following package versions are required:
 
