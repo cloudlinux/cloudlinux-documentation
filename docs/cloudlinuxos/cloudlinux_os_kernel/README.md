@@ -554,12 +554,12 @@ The following profiles are provided by CloudLinux OS:
 - cloudlinux-default              - CloudLinux hosting profile (DEPRECATED)
 - cloudlinux-default-base         - Base CloudLinux hosting profile
 - cloudlinux-default-cgv1         - Optimized CloudLinux hosting Servers with cgroups v1
-- cloudlinux-default-cgv2         - Optimized CloudLinux hosting Servers with cgroups v2 (NOT SUPPORTED YET)
+- cloudlinux-default-cgv2         - Optimized CloudLinux hosting Servers with cgroups v2
 - cloudlinux-dummy                - Empty CloudLinux tuned profile
 - cloudlinux-latency-performance  - CloudLinux latency-performance profile (DEPRECATED)
 - cloudlinux-latency-performance-base  - Base CloudLinux latency-performance profile
 - cloudlinux-latency-performance-cgv1  - Optimized CloudLinux hosting Servers with cgroups v1
-- cloudlinux-latency-performance-cgv2  - Optimized CloudLinux hosting Servers with cgroups v2 (NOT SUPPORTED YET)
+- cloudlinux-latency-performance-cgv2  - Optimized CloudLinux hosting Servers with cgroups v2
 - cloudlinux-vz                   - Empty CloudLinux tuned profile
 ```
 </div>
@@ -570,7 +570,7 @@ The recommended profile for most servers is **<span class="notranslate">cloudlin
 The profiles are organized in a hierarchy:
 - **<span class="notranslate">cloudlinux-default-base</span>** / **<span class="notranslate">cloudlinux-latency-performance-base</span>** — contain all generic tuning parameters (sysctl, CPU governor, OOM adjustments). Not intended for direct use.
 - **<span class="notranslate">cloudlinux-default-cgv1</span>** / **<span class="notranslate">cloudlinux-latency-performance-cgv1</span>** — include the base profile and add cgroups v1 boot parameters. **Recommended for most servers.**
-- **<span class="notranslate">cloudlinux-default-cgv2</span>** / **<span class="notranslate">cloudlinux-latency-performance-cgv2</span>** — reserved for future cgroups v2 support. Not supported yet.
+- **<span class="notranslate">cloudlinux-default-cgv2</span>** / **<span class="notranslate">cloudlinux-latency-performance-cgv2</span>** — include the base profile and add cgroups v2 boot parameters. Supported starting from **kmod-lve 2.1-57** on **CloudLinux OS 8, 9, and 10**.
 - **<span class="notranslate">cloudlinux-default</span>** / **<span class="notranslate">cloudlinux-latency-performance</span>** — **deprecated** wrappers that internally include the <span class="notranslate">-cgv1</span> variants. They remain functional for backward compatibility (e.g. existing Ansible scripts), but new installations should use the <span class="notranslate">-cgv1</span> profiles directly.
 
 When upgrading from older versions, the deprecated profiles are automatically switched to their <span class="notranslate">-cgv1</span> equivalents.
