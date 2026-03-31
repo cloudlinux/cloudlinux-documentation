@@ -673,7 +673,7 @@ The following package versions are required:
 | Package | CL8 | CL9 | CL10 |
 |---------|-----|-----|------|
 | `kmod-lve` | 2.1-57+ | 2.1-57+ | 2.1-57+ |
-| `tuned-profiles-cloudlinux` | 0.2-11+ | 0.2-11+ | 0.3-3+ |
+| `tuned-profiles-cloudlinux` | 0.2-14+ | 0.2-15+ | 0.3-6+ |
 
 To switch between cgroup versions, apply the appropriate tuned profile and reboot the server.
 
