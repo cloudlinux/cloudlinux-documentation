@@ -10,7 +10,7 @@ The following information is available:
 * **Server licenses** — displays the number of servers activated for each product.
 * **Paid until** — the date of the next payment.
 
-![](/images/cln/billing/billing_zoom70.webp)
+![CloudLinux Network Billing Products page with three product cards, circular server-license displays, paid-until, and actions](/images/cln/billing/billing_zoom70.webp)
 
 The following actions are available for each product:
 
@@ -50,7 +50,7 @@ If you activate the server license on CloudLinux OS version 7 or higher then no 
 
 Go to _Billing → Invoices_ to get all information about all your invoices.
 
-![](/images/cln/billing/billinginvoices_zoom70.webp)
+![CLN Invoices page with numbered red callouts on Billing tab and Invoices sidebar, unpaid and paid tables, orange PAY NOW](/images/cln/billing/billinginvoices_zoom70.webp)
 
 There are two tables _Paid Invoices_ and _Unpaid Invoices_.
 
@@ -93,21 +93,21 @@ To pay invoices under a customer, follow the next steps:
 
 2. Click PAY NOW
    
-    ![](/images/cln/billing/clnpaynowbtn_zoom50.webp)
+    ![Invoices page with unpaid and paid tables; red arrow points to the orange PAY NOW button next to total due](/images/cln/billing/clnpaynowbtn_zoom50.webp)
 
      * If the selected payment method is not chosen, you’ll see the dialog with the direct link for payment
 
-      ![](/images/cln/billing/clnselectpaymentmethod_zoom60.webp)
+      ![Select payment method modal: add debit or credit card, add PayPal account; Direct payment PayPal tile with red arrow](/images/cln/billing/clnselectpaymentmethod_zoom60.webp)
 
      * If the selected payment method is chosen, you'll see the dialog for making payment
   
-      ![](/images/cln/billing/clnpaymentconfirmation_zoom60.webp)
+      ![Payment confirmation dialog: charge line for PayPal; Cancel; red arrow on Change payment method; green Confirm and Pay](/images/cln/billing/clnpaymentconfirmation_zoom60.webp)
 
      * In this dialog, you could select CHANGE PAYMENT METHOD and see the direct link for payment
 
-      ![](/images/cln/billing/clnselectpaymentmethod2_zoom60.webp)
+      ![Select payment method modal: add card tile, active PayPal with edit and delete; Direct payment PayPal tile with red arrow](/images/cln/billing/clnselectpaymentmethod2_zoom60.webp)
 
 3. After choosing the direct payment option you'll be redirected to the PayPal page
 
-    ![](/images/cln/billing/clncloudlinuxpaypal_zoom60.webp)
+    ![PayPal checkout for Cloud Linux Inc: USD total, One Touch login, ship-to, saved MasterCard, preferred-pay checkbox, blue Pay now](/images/cln/billing/clncloudlinuxpaypal_zoom60.webp)
 	

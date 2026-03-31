@@ -15,7 +15,7 @@ IP license allows to register server only by it's IP (without a need to create a
 IP Licenses page allows resellers to add and remove IP licenses using automated tools via API.
 
 Click required product at the top menu and then _IP Licenses_ at the left sidebar.
-![](/images/cln/cln_for_resellers/clniplicense_zoom60.webp)
+![CLN Imunify360 IP Licenses page: sidebar, product filter chips, IP table with actions, orange Add IP](/images/cln/cln_for_resellers/clniplicense_zoom60.webp)
 
 The table contains the following information:
 
@@ -34,11 +34,11 @@ The following actions are available:
 * Remove IP from using this license. Tick IP(s) and click _Bin_ icon in the IP line or above the table for bulk action.
 * Filter servers list by IP and product type. Click _IP_ and select an IP, or click _Product Type_ and select a product.
 * Search in the list by a specific query. Type a search query in the search field to show specific servers.
-* Activate backup. Click ![](/images/cln/cln_for_resellers/clnactivatebackup.webp). In the opened popup specify backup size and datacenter and click _Create_ to complete the action or Cancel to close the popup.
+* Activate backup. Click ![Grey cloud icon with white upward arrow for activate backup](/images/cln/cln_for_resellers/clnactivatebackup.webp). In the opened popup specify backup size and datacenter and click _Create_ to complete the action or Cancel to close the popup.
   
-    ![](/images/cln/cln_for_resellers/clncreatebackup_zoom70.webp)
+    ![Create backup modal: server row, GB size stepper, datacenter dropdown, Cancel and Create buttons](/images/cln/cln_for_resellers/clncreatebackup_zoom70.webp)
 
-* Manage backup. Click ![](/images/cln/cln_for_resellers/clnmanagebackup.webp). In the opened popup click _Go to the backup management_ to go to backup management system interface (opens in a new tab) or click _Cancel_ to close the popup.
+* Manage backup. Click ![Grey cloud with diagonal pencil icon for manage backup](/images/cln/cln_for_resellers/clnmanagebackup.webp). In the opened popup click _Go to the backup management_ to go to backup management system interface (opens in a new tab) or click _Cancel_ to close the popup.
 
 ## Converting your account to CloudLinux OS Shared PRO type
 
@@ -49,7 +49,7 @@ You can find the process description [here](/cln/purchase/#cloudlinux-os-plus)
 
 Navigate to Billing → Payment Methods → Autopayment.
 
-![](/images/cln/cln_for_resellers/clnautopayments_zoom60.webp)
+![Billing sidebar with Payment methods Autopayment: type dropdown on Auto repay, explanatory text, Save](/images/cln/cln_for_resellers/clnautopayments_zoom60.webp)
 
 The following autopayment types are available:
 
@@ -65,7 +65,7 @@ When you have selected and configured autopayment type, click _Save_.
 
 Go to Billing → Invoices. There is a table with all invoices and appropriate information.
 
-![](/images/cln/cln_for_resellers/clnresellerinvoices_zoom60.webp)
+![Billing Invoices table: columns for id, dates, type, pay period, total, balance; eye and download row icons](/images/cln/cln_for_resellers/clnresellerinvoices_zoom60.webp)
 
 The table contains the following columns:
 
@@ -79,10 +79,10 @@ The table contains the following columns:
 * Total — the total amount of money you have to pay
 * Balance — amount of money on your account
 * Actions
-    * ![](/images/cln/cln_for_resellers/clniconshow.webp) — open invoice in a popup (you can download it)
-    * ![](/images/cln/cln_for_resellers/clnicondownload.webp) — open invoice in a new tab (you can download it)
+    * ![Grey eye icon for viewing an invoice in a popup](/images/cln/cln_for_resellers/clniconshow.webp) — open invoice in a popup (you can download it)
+    * ![Grey downward arrow over bar download icon](/images/cln/cln_for_resellers/clnicondownload.webp) — open invoice in a new tab (you can download it)
 
-Click ![](/images/cln/cln_for_resellers/clnarrow.webp) near invoice id to show detailed bill information:
+Click ![Small grey right-pointing triangle expand icon](/images/cln/cln_for_resellers/clnarrow.webp) near invoice id to show detailed bill information:
 
 * Title — license name
 * Quantity — licenses quantity
@@ -100,12 +100,12 @@ For managing these features via CLN for IP-based licensing:
 2. Go to the 'CloudLinux' tab
 3. Go to the IP Licenses section
 
-![](/images/cln/cln_for_resellers/cln-ip-licenses-section.png)
+![CloudLinux OS IP Licenses portal: left sidebar, top nav, filter chips, table with Features and pencil or trash actions](/images/cln/cln_for_resellers/cln-ip-licenses-section.webp)
 
 4. Press edit
 5. Choose new permissions 
 
-![](/images/cln/cln_for_resellers/cln-edit-ip-license.png)
+![Edit IP License modal: CL6/CL7 repo checkbox, Billable Premium Services and CDN checkboxes, Cancel, Save IP](/images/cln/cln_for_resellers/cln-edit-ip-license.webp)
 
 6. Save permissions 
 
@@ -115,15 +115,15 @@ For managing these features via CLN for key-based licensing:
 2. Go to the 'CloudLinux' tab
 3. Go to the  'Activation keys' section 
 
-![](/images/cln/cln_for_resellers/cln-activation-keys.png)
+![Activation Keys portal table: Server limits and License type filters, key links with default badges, servers used/limits column](/images/cln/cln_for_resellers/cln-activation-keys.webp)
 
 4. Select the activation key that you need 
 
-![](/images/cln/cln_for_resellers/cln-activation-key-details.png)
+![Activation Key Details page: key card with string and default badge, Edit Key, Servers List table with one cPanel row](/images/cln/cln_for_resellers/cln-activation-key-details.webp)
 
 5. Press edit 
 
-![](/images/cln/cln_for_resellers/cln-edit-activation-key.png)
+![Edit activation key modal: unlimited server limit checked, note field, Premium and CDN feature boxes, Cancel, Save Changes](/images/cln/cln_for_resellers/cln-edit-activation-key.webp)
 
 6. Choose new permissions
 7. Save permissions

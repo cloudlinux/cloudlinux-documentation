@@ -26,19 +26,19 @@ In order to start using AccelerateWP, go to the cPanel interface and find the `A
 application in the `Software` section.
 
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPApp.webp)
+![cPanel Software section icon grid including AccelerateWP, Select PHP Version, and app installer tools](/images/user-docs/user-docs-solo-cloudlinux/AWPApp.webp)
 
 If you use Plesk control panel, (1) trigger the side panel and (2) choose the AccelerateWP widget.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPPlesk.webp)
+![Plesk Websites & Domains view with numbered callouts on sidebar control and AccelerateWP in the right menu](/images/user-docs/user-docs-solo-cloudlinux/AWPPlesk.webp)
 
 If you use DirectAdmin control panel, hover over the main menu and choose the AccelerateWP in the Extra Features group.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPDirectAdmin.webp)
+![DirectAdmin sidebar with AccelerateWP highlighted under Extra Features beside dashboard activity cards](/images/user-docs/user-docs-solo-cloudlinux/AWPDirectAdmin.webp)
 
 Click the application button and get into the AccelerateWP interface.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPUserUI.webp)
+![AccelerateWP My WordPress Sites table listing domainuser.com with No advice in standard and Premium columns](/images/user-docs/user-docs-solo-cloudlinux/AWPUserUI.webp)
 
 Each row in the table is the WordPress website that was found on server and each column is the 
 optimization feature.
@@ -51,17 +51,17 @@ a best suited optimization feature to increase it significantly.
 Use the `Advice available` link to check advice details and click the `Apply advice` 
 button to activate the feature.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AdviceReview.webp)
+![Advice modal with Review badge for Turn on AccelerateWP listing a speed-up URL and Apply advice button](/images/user-docs/user-docs-solo-cloudlinux/AdviceReview.webp)
 
 After a couple of minutes, the feature will be activated and advice becomes `Applied`.
 Close the window and see `Active` link in the corresponding cell of the table.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AdviceApplied.webp)
+![Advice modal with Applied badge for awpuser.com/awp, Rollback button, dimmed My WordPress Sites table behind](/images/user-docs/user-docs-solo-cloudlinux/AdviceApplied.webp)
 
 If you still would like to try the feature on the website where advice was not issued,
 click on the gear icon and enable the feature.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPEnableManually.webp)
+![Feature modal for domainuser.com with AccelerateWP toggle off and text explaining manual enable without SmartAdvice](/images/user-docs/user-docs-solo-cloudlinux/AWPEnableManually.webp)
 
 ### AccelerateWP feature: WordPress optimization plugin
 AccelerateWP is a base feature that provides full page caching, GZIP compression and some other useful 
@@ -70,20 +70,20 @@ optimizations.
 In order to start working with AccelerateWP feature, check if advice is available in the corresponding 
 cell on the intersection of website and AccelerateWP column.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPUserUI.webp)
+![AccelerateWP My WordPress Sites table listing domainuser.com with No advice in standard and Premium columns](/images/user-docs/user-docs-solo-cloudlinux/AWPUserUI.webp)
 
 And click the "Apply advice" button to activate the AccelerateWP feature.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AdviceReview.webp)
+![Advice modal with Review badge for Turn on AccelerateWP listing a speed-up URL and Apply advice button](/images/user-docs/user-docs-solo-cloudlinux/AdviceReview.webp)
 
 After a couple of minutes, the plugin will be installed.
 Login into the WordPress Admin and find the AccelerateWP in the list of active plugins.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/WPPlugins.webp)
+![WordPress Installed Plugins table with active AccelerateWP row showing Settings, Deactivate, and version line](/images/user-docs/user-docs-solo-cloudlinux/WPPlugins.webp)
 
 Page caching will be enabled by default. Click the "Settings" link below the plugin name to configure additional options.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPPlugin.webp)
+![AccelerateWP plugin Dashboard in WordPress with green activation banner and Clear cache quick actions](/images/user-docs/user-docs-solo-cloudlinux/AWPPlugin.webp)
 
 
 #### Limitations
@@ -106,7 +106,7 @@ This option is necessary if you have some functionality only for mobile devices,
 
 The following diagram helps you understand if you need mobile caching.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/MobileDiag.webp)
+![Flowchart with yes-no diamonds for mobile-optimized site and mobile-only content leading to caching recommendations](/images/user-docs/user-docs-solo-cloudlinux/MobileDiag.webp)
 
 :::tip Note
 If you use an additional layer of Cache (Varnish, NGINX , etc.) make sure it can distinguish between desktop and mobile visitors.
@@ -168,11 +168,11 @@ Critical Path CSS eliminates render-blocking CSS on your website and improves br
 This feature can only be activated in the AccelerateWP hosting panel interface or in the SmartAdvice WordPress plugin. Once activated, you will be able to manage the options in the AccelerateWP WordPress plugin.
 :::
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPCriticalCSSEnabled.webp)
+![AccelerateWP File Optimization panel with Minify CSS and Optimize CSS delivery checked and excluded CSS field](/images/user-docs/user-docs-solo-cloudlinux/AWPCriticalCSSEnabled.webp)
 
 The function starts automatically after switching on. It takes some time to generate the Critical CSS. You will see a notification with the generation status. If necessary, you can add additional styles to the Critical CSS in the fallback CSS field.
 
-![AWPCriticalCSSStarted](/images/user-docs/user-docs-solo-cloudlinux/AWPCriticalCSSStarted.webp)
+![AccelerateWP Dashboard blue notice Critical CSS generation progress plus Regenerate Critical CSS quick action](/images/user-docs/user-docs-solo-cloudlinux/AWPCriticalCSSStarted.webp)
 
 Each time you change the site's theme, the Critical CSS will be regenerated. Also, if you have made any changes to the styles of your site, you need to manually regenerate the Critical CSS by clicking on the "Regenerate critical CSS" button.
 
@@ -180,7 +180,7 @@ Each time you change the site's theme, the Critical CSS will be regenerated. Als
 
 Reduces CSS exclusions on mobile, keeping only critical ones (`admin-bar`, `dashicons`, `wp-admin`). This option is a child of "Optimize CSS delivery" and requires "Separate cache files for mobile devices" to be enabled.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPAgressiveMobileCssOptimizationOption.webp)
+![File Optimization CSS options with Aggressive mobile CSS optimization checked; red arrow points to checkbox](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPAgressiveMobileCssOptimizationOption.webp)
 
 :::tip
 Default: OFF. Aggressive CSS optimization may break styling on some sites. Each site needs individual testing after enabling.
@@ -213,7 +213,7 @@ This option helps to decrease the page load time by delaying loading of all Java
 
 When enabled, Delay JS is applied only for mobile visitors while desktop visitors get standard JavaScript loading. This option is a child of "Delay JavaScript Execution" and requires "Separate cache files for mobile devices" to be enabled.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPApplyDelayJsOnlyOnMobileOption.webp)
+![Delay JavaScript execution panel with delay on and Apply Delay JS only on mobile devices checked; red arrow](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPApplyDelayJsOnlyOnMobileOption.webp)
 
 :::tip
 Default: OFF. Aggressive optimization may affect JavaScript interactivity on some sites. Each site needs individual testing after enabling.
@@ -240,7 +240,7 @@ Supported font sources:
 * `@font-face` rules in CSS
 * `font-family` declarations
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPReduceFontRelatedLayoutShiftsOption.webp)
+![AccelerateWP Media Fonts: Reduce font-related layout shifts checked; red arrow points to that checkbox](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPReduceFontRelatedLayoutShiftsOption.webp)
 
 :::tip Note
 Default: ON.
@@ -265,7 +265,7 @@ Optimize image delivery by minifying the existing images and serving next-gen im
 This feature can only be activated/deactivated in the AccelerateWP hosting panel interface or in the SmartAdvice WordPress plugin.
 :::
 
-![AWPImageOptimizationSettings](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationSettings.webp)
+![AccelerateWP WordPress Media settings: Enable image optimization checked but disabled; use AccelerateWP control panel note](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationSettings.webp)
 
 After activating the function, it will start searching for files in the `WP_CONTENT_DIR/uploads` folder in supported formats - jpg, jpeg, gif and png.
 
@@ -273,7 +273,7 @@ Each found file (except those already optimized) will be queued for optimization
 
 In the WordPress admin interface, the number of images to optimize will be displayed at the top of the AccelerateWP settings screen.
 
-![AWPImageOptimizationProgress](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationProgress.webp)
+![AccelerateWP Media tab blue banner reporting thousands of images in minification queue above LazyLoad options](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationProgress.webp)
 
 After the file is successfully optimized, a notification will be sent to the special API of the site that the file is ready.
 
@@ -287,7 +287,7 @@ When a new image is uploaded to your site using the WordPress functions/interfac
 
 After optimization of all images is completed, you will see the notification in the admin panel.
 
-![AWPImageOptimizationSuccess](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationSuccess.webp)
+![Green admin notice Image minification successfully completed on AccelerateWP Media settings page](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationSuccess.webp)
 
 
 **Restore images from backup folder**
@@ -304,23 +304,23 @@ Restore and override files from backup folder:
 
 **Wrong file permissions** - Image optimization will not start and show an admin notice. You can try re-enabling the optimization feature again or create folders manually.
 
-![AWPImageOptimizationWrongFilePermissions](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationWrongFilePermissions.webp)
+![Red-accent error notice listing accelerate-wp backup and temp folders missing write permissions for optimization](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationWrongFilePermissions.webp)
 
 **Database table cannot be created** - Image optimization will not start and show an admin notice. You can try re-enabling the optimization feature or contact your system administrator.
 
-![AWPImageOptimizationDatabaseTableCannotBeCreated](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationDatabaseTableCannotBeCreated.webp)
+![Red-accent error Could not create wp_wpr_image_optimization table with re-enable after fixing DB permissions note](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationDatabaseTableCannotBeCreated.webp)
 
 **Monthly quota exceeded** - Your plan has reached the feature usage limit for current month. The plugin will show an admin notice and pause the image optimization until the start of the next month.
 
-![AWPImageOptimizationMonthlyQuotaExceeded](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationMonthlyQuotaExceeded.webp)
+![Yellow left-bar notice image optimization paused after reaching the monthly usage limit](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationMonthlyQuotaExceeded.webp)
 
 **Authentication failed** - The plugin will postpone the image optimization process and retry every 15 minutes. If the authentication is failing for more then 24 hours, the plugin will stop the process and show an admin notice. Contact your system administrator.
 
-![AWPImageOptimizationAuthenticationFailed](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationAuthenticationFailed.webp)
+![Red-accent admin notice: optimization stopped after 24h failed auth to minification service; contact administrator](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationAuthenticationFailed.webp)
 
 **SaaS service not available** - The plugin will show an admin notice, pause processing other jobs in the queue and retry every 5  minutes for the next hour and then every hour.
 
-![AWPImageOptimizationSaaSServiceNotAvailable](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationSaaSServiceNotAvailable.webp)
+![Yellow-accent admin notice: optimization paused; image minification service temporarily unavailable](/images/user-docs/user-docs-solo-cloudlinux/AWPImageOptimizationSaaSServiceNotAvailable.webp)
 
 **Some WebP images not loading on nginx**
 
@@ -437,7 +437,7 @@ To turn on MAx Cache:
 2. Click on the toggle next to the **MAx Cache** feature to activate it. 
 3. Directives for the Apache module "maxcache_module" will be added to .htaccess, which will automatically enable cache serving using Apache.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/awp-maxcache-addons.png)
+![AccelerateWP Add-ons page MAx Cache card with add-on status toggle off and red arrow; User Cache card below](/images/user-docs/user-docs-solo-cloudlinux/awp-maxcache-addons.webp)
 
 
 #### CDN
@@ -449,7 +449,7 @@ When using AccelerateWP CDN, then the enabling/disabling can only be done in the
 
 Enabling AccelerateWP Content Delivery Network using Advice will automatically set up your AccelerateWP WordPress plugin.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPCDNEnabled.webp)
+![AccelerateWP CDN settings in WordPress with Enable Content Delivery Network checked and purge CDN cache button](/images/user-docs/user-docs-solo-cloudlinux/AWPCDNEnabled.webp)
 
 CDN stands for Content Delivery Network, the feature that simplifies and speeds up resources loading for your customers.
 
@@ -461,7 +461,7 @@ To set up a CDN in the AccelerateWP you must register CDN zone and get pull zone
 
 Go to the WP Admin of your WordPress site, open the settings of the AccelerateWP (Step 1) and select the CDN section (Step 2). Select the option: Enable Content Delivery Network (Step 3) and fill in the "CDN CNAME(s)" field with CDN pull zone address (Step 4).
 
-![](/images/user-docs/user-docs-solo-cloudlinux/CDNFlow.webp)
+![AccelerateWP CDN screen with red numbered steps from Settings menu through enable CDN CNAME fields to Save changes](/images/user-docs/user-docs-solo-cloudlinux/CDNFlow.webp)
 
 Click the "Save changes" button (Step 5).
 
@@ -492,39 +492,39 @@ The Object caching feature is recommended to use in the following:
 In order to start working with Object caching feature, check if advice is available in the corresponding
 cell on the intersection of website and AccelerateWP Premium column.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPPremiumUI.webp)
+![AccelerateWP sites table Premium column showing No advice and blue Incompatible link for domainuser.com](/images/user-docs/user-docs-solo-cloudlinux/AWPPremiumUI.webp)
 
 And click the "Apply advice" button to activate the Object caching feature.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPPremiumReview.webp)
+![Advice modal with Review and Premium badges for Turn on Object Caching, Apply advice, dimmed My WordPress Sites](/images/user-docs/user-docs-solo-cloudlinux/AWPPremiumReview.webp)
 
 If you still would like to try the feature on the website where advice was not issued,
 click on the gear icon and enable the feature.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPEnableManually.webp)
+![Feature modal for domainuser.com with AccelerateWP toggle off and text explaining manual enable without SmartAdvice](/images/user-docs/user-docs-solo-cloudlinux/AWPEnableManually.webp)
 
 In case if you still don't have active Premium subscription, you will see the following
 window with link to the page where you can upgrade subscription.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPUpgradeLink.webp)
+![Upgrade your subscription modal for Object cache with blue Upgrade subscription and Close over My WordPress Sites](/images/user-docs/user-docs-solo-cloudlinux/AWPUpgradeLink.webp)
 
 When upgrade link is clicked, you will see the billing interface opened in new browser window.
 Successful upgrade of your subscription will automatically close the billing window and start
 background upgrade process. Once your payment is processed, feature will be automatically installed
 on the website.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPUpgradeModuleWait.webp)
+![Modules billing dialog showing payment received and Object cache line with blue enabled toggle for domain.com](/images/user-docs/user-docs-solo-cloudlinux/AWPUpgradeModuleWait.webp)
 
 If you don't see any links, contact your hoster to upgrade your subscription manually.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPUpgradeNoLink.webp)
+![Upgrade subscription modal: contact administrator text, Object cache description, Close over dimmed My WordPress Sites](/images/user-docs/user-docs-solo-cloudlinux/AWPUpgradeNoLink.webp)
 
 If subscription is active, you will bypass the subscription window and proceed
 directly to the plugin installation.
 
 After a couple of minutes, the redis instance will be configured, plugin will be installed and activated.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/AWPPremiumApplied.webp)
+![Advice modal Applied and Premium badges for Turn on Object Caching with Rollback over My WordPress Sites table](/images/user-docs/user-docs-solo-cloudlinux/AWPPremiumApplied.webp)
 
 Close the window and see "Active" link in the corresponding cell of the table.
 
@@ -548,11 +548,11 @@ When you see the `Advice available` link in the corresponding feature cell, it m
 AccelerateWP decided that this feature will significantly improve the performance of your website. 
 Otherwise you see the `No advice` note.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/FAQAdviceTable.webp)
+![cPanel AccelerateWP My WordPress Sites table with Advice available in Premium column and No advice in standard](/images/user-docs/user-docs-solo-cloudlinux/FAQAdviceTable.webp)
 
 Click the `Advice available` link and push `Apply advice` button to automatically enable the feature.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/FAQAdviceReview.webp)
+![Advice modal Review badge Turn on AccelerateWP for awpuser.com with speed-up URL and Apply advice buttons](/images/user-docs/user-docs-solo-cloudlinux/FAQAdviceReview.webp)
 
 #### What should I do if I see both the "No advice" note and the "Incompatible" link?
 Causes of the `Incompatible` note are always Limitations: [AccelerateWP](/user-docs/user-docs-solo-cloudlinux/#limitations) or
@@ -560,9 +560,9 @@ Causes of the `Incompatible` note are always Limitations: [AccelerateWP](/user-d
 
 Each message has a small "how to", so you can try to fix them by yourself via control panel or WordPress Admin interface.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/FAQIncompatible.webp)
+![AccelerateWP sites table with Incompatible link and dark tooltip The website is incompatible with this module](/images/user-docs/user-docs-solo-cloudlinux/FAQIncompatible.webp)
 
-![](/images/user-docs/user-docs-solo-cloudlinux/FAQIncMessage.webp)
+![Incompatibility dialog Unsupported PHP handler listing php-fpm and lsapi with How to fix guidance and Close](/images/user-docs/user-docs-solo-cloudlinux/FAQIncMessage.webp)
 
 #### What should I do if I see the "Misconfiguration"?
 The misconfiguration message can appear in the cases when optimization feature was activated, but AccelerateWP detects it as not working anymore.
@@ -627,20 +627,20 @@ contact your hoster and attach `~/.clwpos/main.log` for further investigation.
 
 The end-user X-Ray plugin can be installed and enabled by the server administrator via CloudLinux Manager.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/solo_XRayEndUserPluginUIIcon.webp)
+![cPanel SOFTWARE section icons with red arrow pointing to X-Ray App link among PHP and site software tools](/images/user-docs/user-docs-solo-cloudlinux/solo_XRayEndUserPluginUIIcon.webp)
 
 ### How to manage the end-user X-Ray plugin
 
 The web interface of the end-user X-Ray plugin is almost the same as the X-Ray administrator interface.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/XRayEndUserUI.webp)
+![PHP X-Ray dashboard Tracing tasks table one Running task for user1.com/wordpress and green Start tracing button](/images/user-docs/user-docs-solo-cloudlinux/XRayEndUserUI.webp)
 
 But there are some differences and they are described further.
 
 * End-users can create tasks only for their domains from the drop-down list:
-  ![](/images/user-docs/user-docs-solo-cloudlinux/XRayEndUserUIStart.webp)
+  ![Start tracing dialog open Choose domain dropdown listing user1.com and sub.user1.com with Please specify mask error](/images/user-docs/user-docs-solo-cloudlinux/XRayEndUserUIStart.webp)
 * To specify URL or wildcard, end-users should use the input field next to the domain:
-  ![](/images/user-docs/user-docs-solo-cloudlinux/XRayEndUserUiSpecifyURL.webp)
+  ![Start tracing dialog domain user1.com with Specify mask field wordpress/* outlined and Run button visible](/images/user-docs/user-docs-solo-cloudlinux/XRayEndUserUiSpecifyURL.webp)
 
 :::warning Note
 Tracing tasks created by an end-user will also be displayed in the administrator interface and administrators can manage
@@ -658,7 +658,7 @@ other end-users will not be displayed in the UI of the current user.
 * If continuous tracing is enabled for the domain, the end-user will not be able to create a new task for this domain
   because the same rule works - it will be a duplicate of the existing tracing tasks. The next warning will appear:
 
-  ![](/images/user-docs/user-docs-solo-cloudlinux/XRayEndUserUIWarning.webp)
+  ![Orange Warning banner Task is duplicated by URL with guidance to contact administrator and dismiss control](/images/user-docs/user-docs-solo-cloudlinux/XRayEndUserUIWarning.webp)
 
   To solve this, the existing running tasks for the same Domain/URL should be stopped or completed. You can find more
   details about this in
@@ -684,12 +684,12 @@ If there is available advice, a widget will be displayed in the Dashboard of the
 The table displays a list of advice, their status (1) and the ability to go to their settings (2).
 Click _See advice_ (2) to go to the detailed information of the advice.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/SmartAdviceDashboard.webp)
+![WordPress Dashboard SmartAdvice widget table two advices with Review buttons and See advice links annotated](/images/user-docs/user-docs-solo-cloudlinux/SmartAdviceDashboard.webp)
 
 On the plugin page, you can see detailed information on each Advice (2), get acquainted with their statuses (1) and
 apply them to automatically improve the website (3).
 
-![](/images/user-docs/user-docs-solo-cloudlinux/SmartAdviceDetails.webp)
+![WordPress SmartAdvice settings table: Review, Details, Apply columns; tooltip on Turn on Object Caching row](/images/user-docs/user-docs-solo-cloudlinux/SmartAdviceDetails.webp)
 
 Advice in the "Applied"(1) status can be deactivated using the "Rollback"(3) button.
 Advice that is in the process of applying or rolling back, displays the percentage of progress (4).
@@ -698,11 +698,11 @@ Advice that is in the process of applying or rolling back, displays the percenta
 Advice activation may take some time.
 :::
 
-![](/images/user-docs/user-docs-solo-cloudlinux/SmartAdviceApply.webp)
+![SmartAdvice table Applied badge and Rollback on AccelerateWP plus 70% spinner on Object Caching row](/images/user-docs/user-docs-solo-cloudlinux/SmartAdviceApply.webp)
 
 If the application of Advice caused an error, you would be notified.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/SmartAdviceError.webp)
+![SmartAdvice settings red error banner plugin activation failed reverted caching plus advice Apply links](/images/user-docs/user-docs-solo-cloudlinux/SmartAdviceError.webp)
 
 Please contact our [Support team](https://www.cloudlinux.com/support-portal/) if you are unable to resolve the issue
 yourself.
@@ -714,7 +714,7 @@ yourself.
 
 To manager PHP versions and modules for user domains find “ Select PHP selector “
 
-![](/images/user-docs/user-docs-solo-cloudlinux/userdoc_php_selector_1.webp)
+![cPanel Software section grid icons Select PHP Version MultiPHP editors AccelerateWP and related tools](/images/user-docs/user-docs-solo-cloudlinux/userdoc_php_selector_1.webp)
 
 There are several tabs in PHP selector plugin:
 
@@ -722,15 +722,15 @@ There are several tabs in PHP selector plugin:
 domain php version by CloudLinux PHP selector.
 Selected version will be applied for all user domains.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/userdoc_php_selector_2.webp)
+![PHP Selector My domains tab current PHP 8.1 summary and table row zoya.com ea-php80 handled by CloudLinux](/images/user-docs/user-docs-solo-cloudlinux/userdoc_php_selector_2.webp)
 
 **Extensions** tab gives the ability to manage extensions for selected PHP version.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/userdoc_php_selector_3.webp)
+![PHP Selector Extensions tab PHP 8.1 alphabet-grouped grid of extension checkboxes enabled or disabled](/images/user-docs/user-docs-solo-cloudlinux/userdoc_php_selector_3.webp)
 
 **Options** tab gives the ability to manage extensions for selected PHP version.
 
-![](/images/user-docs/user-docs-solo-cloudlinux/userdoc_php_selector_4.webp)
+![PHP Selector Options tab PHP 8.1 list allow_url_fopen display_errors error_reporting dropdown and path fields](/images/user-docs/user-docs-solo-cloudlinux/userdoc_php_selector_4.webp)
 
 ## NodeJS/Python Selectors
 Since CloudLinux Manager version 7.11.0-1 added support of NodeJS/Python selectors.
@@ -746,6 +746,6 @@ Because the CloudLinux OS Solo does not support LVE, customer can only see the I
 Follow this documentation to [setup Inodes limits](https://docs.cloudlinux.com/cloudlinuxos/limits/#inodes)
 :::
 
-![](/images/user-docs/user-docs-solo-cloudlinux/ResourceUsageWithoutLVE.webp)
+![Resource usage dashboard Current usage table one Inodes usage row with numeric usage and limit columns](/images/user-docs/user-docs-solo-cloudlinux/ResourceUsageWithoutLVE.webp)
 
 See [Resource Usage client plugin](https://docs.cloudlinux.com/cloudlinuxos/lve_manager/#resource-usage-client-plugin)

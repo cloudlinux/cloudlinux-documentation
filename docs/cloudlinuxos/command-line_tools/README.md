@@ -1295,7 +1295,7 @@ Acceptable options are:
 
 Charts examples:
 
-![](/images/cloudlinuxos/command-line_tools/1111_2.webp)
+![Three stacked line charts: CPU %, read KB/s, write KB/s; green average and red limit lines, 5.12 17:30–18:09](/images/cloudlinuxos/command-line_tools/1111_2.webp)
 
 
 ## PHP Selector

@@ -236,10 +236,10 @@ These are configuration steps:
 
     * **Via MultiPHP Manager**
 
-    ![](/images/solo/faq/InstallationViaMultiPHPManager.webp)
+    ![MultiPHP Manager (new), User Domain Settings: other.wposuser.com, PHP 7.4 (ea-php74), PHP-FPM enabled, PHP-FPM SETTINGS button](/images/solo/faq/InstallationViaMultiPHPManager.webp)
 
 
 2. Enable PHP-fpm handler for domain via MultiPHP Manager
 
-![](/images/solo/faq/EnablePHPFpm.webp)
+![MultiPHP Manager (new), User Domain Settings: other.wposuser.com, PHP 7.4 (ea-php74), PHP-FPM enabled, PHP-FPM SETTINGS button](/images/solo/faq/EnablePHPFpm.webp)
 

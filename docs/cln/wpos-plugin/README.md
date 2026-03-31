@@ -12,15 +12,15 @@ application in the `Software` section.
 
 If you use Plesk control panel, (1) trigger the side panel and (2) choose the AccelerateWP widget.
 
-![](/images/wpos-plugin/AWPPlesk.webp)
+![Plesk Websites & Domains dashboard with numbered callouts for the view control and AccelerateWP in the right tools list.](/images/wpos-plugin/AWPPlesk.webp)
 
 If you use DirectAdmin control panel, hover over the main menu and choose the AccelerateWP in the Extra Features group.
 
-![](/images/wpos-plugin/AWPDirectAdmin.webp)
+![DirectAdmin dashboard with AccelerateWP highlighted under Extra Features in the left navigation sidebar.](/images/wpos-plugin/AWPDirectAdmin.webp)
 
 Click the application button and get into the AccelerateWP interface.
 
-![](/images/wpos-plugin/AWPUserUI.webp)
+![AccelerateWP Beta My WordPress Sites table listing domains with Advice available, Active, and No advice with Incompatible.](/images/wpos-plugin/AWPUserUI.webp)
 
 Each row in the table is the WordPress website that was found on server and each column is the
 optimization feature.
@@ -33,12 +33,12 @@ a best suited optimization feature to increase it significantly.
 Use the `Advice available` link to check advice details and click the `Apply advice`
 button to activate the feature.
 
-![](/images/wpos-plugin/AdviceReview.webp)
+![Advice modal for awpuser.com/awp titled Turn on AccelerateWP feature with page link and Apply advice button.](/images/wpos-plugin/AdviceReview.webp)
 
 After a couple of minutes, the feature will be activated and advice becomes `Applied`.
 Close the window and see `Active` link in the corresponding cell of the table.
 
-![](/images/wpos-plugin/AdviceApplied.webp)
+![Advice modal with green Applied badge, Rollback and Close buttons, over the My WordPress Sites table.](/images/wpos-plugin/AdviceApplied.webp)
 
 If you still would like to try the feature on the website where advice was not issued,
 click on the gear icon and enable the feature.
@@ -52,21 +52,21 @@ optimizations.
 In order to start working with AccelerateWP feature, check if advice is available in the corresponding
 cell on the intersection of website and AccelerateWP column.
 
-![](/images/wpos-plugin/AWPUserUI.webp)
+![AccelerateWP Beta My WordPress Sites table listing domains with Advice available, Active, and No advice with Incompatible.](/images/wpos-plugin/AWPUserUI.webp)
 
 And click the "Apply advice" button to activate the AccelerateWP feature.
 
-![](/images/wpos-plugin/AdviceReview.webp)
+![Advice modal for awpuser.com/awp titled Turn on AccelerateWP feature with page link and Apply advice button.](/images/wpos-plugin/AdviceReview.webp)
 
 After a couple of minutes, the plugin will be installed.
 Login into the WordPress Admin and find the AccelerateWP in the list of active plugins.
 
-![](/images/wpos-plugin/WPPlugins.webp)
+![WordPress Installed Plugins screen with active AccelerateWP row, Settings and Deactivate links, and CloudLinux byline.](/images/wpos-plugin/WPPlugins.webp)
 
 Page caching will be enabled by default. Click the "Settings" link below the plugin name to configure additional
 options.
 
-![](/images/wpos-plugin/AWPPlugin.webp)
+![AccelerateWP plugin Dashboard in WordPress admin with green activation banner, cache actions, and vertical settings menu.](/images/wpos-plugin/AWPPlugin.webp)
 
 ### Limitations
 
@@ -97,7 +97,7 @@ This option is necessary if you have some functionality only for mobile devices,
 
 The following diagram helps you understand if you need mobile caching.
 
-![](/images/wpos-plugin/MobileDiag.webp)
+![Flowchart on mobile site adoption and mobile-only features branching to recommended mobile cache settings or do not use.](/images/wpos-plugin/MobileDiag.webp)
 
 :::tip Note
 If you use an additional layer of Cache (Varnish, NGINX , etc.) make sure it can distinguish between desktop and mobile
@@ -166,7 +166,7 @@ To prevent that, use (. *).CSS wildcards to exclude all files in a specific loca
 
 Reduces CSS exclusions on mobile, keeping only critical ones (`admin-bar`, `dashicons`, `wp-admin`). This option is a child of "Optimize CSS delivery" and requires "Separate cache files for mobile devices" to be enabled.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPAgressiveMobileCssOptimizationOption.webp)
+![AccelerateWP File Optimization CSS area with Optimize CSS delivery and Aggressive mobile CSS optimization checked; red arrow.](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPAgressiveMobileCssOptimizationOption.webp)
 
 :::tip
 Default: OFF. Aggressive CSS optimization may break styling on some sites. Each site needs individual testing after enabling.
@@ -204,7 +204,7 @@ applied only for already cached pages, it is incompatible with the Combine JavaS
 
 When enabled, Delay JS is applied only for mobile visitors while desktop visitors get standard JavaScript loading. This option is a child of "Delay JavaScript Execution" and requires "Separate cache files for mobile devices" to be enabled.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPApplyDelayJsOnlyOnMobileOption.webp)
+![Delay JavaScript execution panel with exclusions and Apply Delay JS only on mobile devices checked; red arrow.](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPApplyDelayJsOnlyOnMobileOption.webp)
 
 :::tip
 Default: OFF. Aggressive optimization may affect JavaScript interactivity on some sites. Each site needs individual testing after enabling.
@@ -234,7 +234,7 @@ Supported font sources:
 * `@font-face` rules in CSS
 * `font-family` declarations
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPReduceFontRelatedLayoutShiftsOption.webp)
+![AccelerateWP Media settings with Fonts section; Reduce font-related layout shifts checked; red arrow points to option.](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPReduceFontRelatedLayoutShiftsOption.webp)
 
 :::tip Note
 Default: ON.
@@ -364,13 +364,13 @@ To set up a CDN in the AccelerateWP you must register CDN zone and get pull zone
 
 After setting up the Pull zone, you will receive an address, for example: domain.b-cdn.net
 
-![](/images/wpos-plugin/CDNGeneral.webp)
+![CDN control panel Pull Zone General view with Hostname field clwp.b-cdn.net highlighted on an orange bar.](/images/wpos-plugin/CDNGeneral.webp)
 
 Go to the WP Admin of your WordPress site, open the settings of the AccelerateWP (Step 1) and select the CDN section (
 Step 2). Select the option: Enable Content Delivery Network (Step 3) and fill in the "CDN CNAME(s)" field with the
 previously received domain.b-cdn.net address (Step 4).
 
-![](/images/wpos-plugin/CDNFlow.webp)
+![AccelerateWP CDN settings in WordPress with red numbered steps for menu, CDN tab, enable CDN, CNAME field, and Save.](/images/wpos-plugin/CDNFlow.webp)
 
 Click the "Save changes" button (Step 5).
 
@@ -405,11 +405,11 @@ The Object caching feature is recommended to use in the following:
 In order to start working with Object caching feature, check if advice is available in the corresponding
 cell on the intersection of website and AccelerateWP Premium column.
 
-![](/images/wpos-plugin/AWPPremiumUI.webp)
+![AccelerateWP My WordPress Sites table with AccelerateWP and Premium columns, advice links, Active, and Incompatible rows.](/images/wpos-plugin/AWPPremiumUI.webp)
 
 And click the "Apply advice" button to activate the Object caching feature.
 
-![](/images/wpos-plugin/AWPPremiumReview.webp)
+![Premium Advice modal for Turn on Object Caching with yellow beta notice, URL line, and Apply advice button.](/images/wpos-plugin/AWPPremiumReview.webp)
 
 If you still would like to try the feature on the website where advice was not issued,
 click on the gear icon and enable the feature.
@@ -433,7 +433,7 @@ directly to the plugin installation.
 
 After a couple of minutes, the redis instance will be configured, plugin will be installed and activated.
 
-![](/images/wpos-plugin/AWPPremiumApplied.webp)
+![Premium Advice modal with green Applied badge, Turn on Object Caching heading, yellow beta notice, speed-up page link, Rollback and Close.](/images/wpos-plugin/AWPPremiumApplied.webp)
 
 Close the window and see "Active" link in the corresponding cell of the table.
 
@@ -459,11 +459,11 @@ When you see the `Advice available` link in the corresponding feature cell, it m
 AccelerateWP decided that this feature will significantly improve the performance of your website.
 Otherwise you see the `No advice` note.
 
-![](/images/wpos-plugin/FAQAdviceTable.webp)
+![Table of sites with AccelerateWP and Premium columns showing Advice available, Active, No advice, and Incompatible.](/images/wpos-plugin/FAQAdviceTable.webp)
 
 Click the `Advice available` link and push `Apply advice` button to automatically enable the feature.
 
-![](/images/wpos-plugin/FAQAdviceReview.webp)
+![Advice modal with yellow Review badge, Turn on AccelerateWP feature text, page link, Apply advice and Close.](/images/wpos-plugin/FAQAdviceReview.webp)
 
 ### What should I do if I see both the "No advice" note and the "Incompatible" link?
 
@@ -473,9 +473,9 @@ Causes of the `Incompatible` note are always Limitations: [AccelerateWP](/wpos-p
 Each message has a small "how to", so you can try to fix them by yourself via control panel or WordPress Admin
 interface.
 
-![](/images/wpos-plugin/FAQIncompatible.webp)
+![Sites table with oldwp row selected; tooltip on info icon: The website is incompatible with this module.](/images/wpos-plugin/FAQIncompatible.webp)
 
-![](/images/wpos-plugin/FAQIncMessage.webp)
+![Incompatibility modal: Unsupported WordPress version 5.3.13 with How to fix upgrade guidance and Close button.](/images/wpos-plugin/FAQIncMessage.webp)
 
 ### What should I do if I see the "Misconfiguration"?
 

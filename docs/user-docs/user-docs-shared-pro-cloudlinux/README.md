@@ -23,11 +23,11 @@ If there is available advice, a widget will be displayed in the Dashboard of the
 The table displays a list of advice, their status (1) and the ability to go to their settings (2).
 Click _See advice_ (2) to go to the detailed information of the advice.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/SmartAdviceDashboard.webp)
+![WordPress dashboard SmartAdvice widget with two advices, blue Review buttons, and See advice links](/images/user-docs/user-docs-shared-pro-cloudlinux/SmartAdviceDashboard.webp)
 
 On the plugin page, you can see detailed information on each Advice (2), get acquainted with their statuses (1) and apply them to automatically improve the website (3).
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/SmartAdviceDetails.webp)
+![SmartAdvice settings table with Review, Details, Apply links and tooltip over Object Caching row](/images/user-docs/user-docs-shared-pro-cloudlinux/SmartAdviceDetails.webp)
 
 Advice in the "Applied"(1) status can be deactivated using the "Rollback"(3) button.
 Advice that is in the process of applying or rolling back, displays the percentage of progress (4).
@@ -36,11 +36,11 @@ Advice that is in the process of applying or rolling back, displays the percenta
 Advice activation may take some time.
 :::
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/SmartAdviceApply.webp)
+![SmartAdvice table: Applied badge and Rollback on first row; Object Caching row at 70% progress](/images/user-docs/user-docs-shared-pro-cloudlinux/SmartAdviceApply.webp)
 
 If the application of Advice caused an error, you would be notified.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/SmartAdviceError.webp)
+![SmartAdvice page with red-bordered error about plugin activation failure and advice table below](/images/user-docs/user-docs-shared-pro-cloudlinux/SmartAdviceError.webp)
 
 Please contact our [Support team](https://www.cloudlinux.com/support-portal/) if you are unable to resolve the issue yourself.
 
@@ -55,19 +55,19 @@ preprocessing and website preloading.
 In order to start using AccelerateWP, go to the cPanel interface and find the `AccelerateWP` 
 application in the `Software` section.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPApp.webp)
+![cPanel tools view with Security and Software sections; AccelerateWP icon among software tiles](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPApp.webp)
 
 If you use Plesk control panel, go to the `Websites & Domains` section on the left, (1) trigger the side panel and (2) choose the AccelerateWP widget.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPPlesk.webp)
+![Plesk Websites & Domains: callout on view control and AccelerateWP highlighted in right-hand menu](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPPlesk.webp)
 
 If you use DirectAdmin control panel, hover over the main menu and choose the AccelerateWP in the Extra Features group.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPDirectAdmin.webp)
+![DirectAdmin Control Panel sidebar: Extra Features expanded with AccelerateWP row highlighted](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPDirectAdmin.webp)
 
 Click the application button and get into the AccelerateWP interface.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPUserUI.webp)
+![cPanel AccelerateWP sites table: No advice in AccelerateWP column; Premium column No advice with Error log](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPUserUI.webp)
 
 Each row in the table is the WordPress website that was found on server and each column is the 
 optimization feature.
@@ -80,17 +80,17 @@ a best suited optimization feature to increase it significantly.
 Use the `Advice available` link to check advice details and click the `Apply advice` 
 button to activate the feature.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AdviceReview.webp)
+![Advice modal over sites table: Review badge, Turn on AccelerateWP text, Apply advice and Close](/images/user-docs/user-docs-shared-pro-cloudlinux/AdviceReview.webp)
 
 After a couple of minutes, the feature will be activated and advice becomes `Applied`.
 Close the window and see `Active` link in the corresponding cell of the table.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AdviceApplied.webp)
+![Advice modal with green Applied badge, speed-up URL summary, Close and Rollback buttons](/images/user-docs/user-docs-shared-pro-cloudlinux/AdviceApplied.webp)
 
 If you still would like to try the feature on the website where advice was not issued,
 click on the gear icon and enable the feature.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPEnableManually.webp)
+![Feature modal: manual AccelerateWP toggle off with note when no Smart Advice; dimmed sites table](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPEnableManually.webp)
 
 ### AccelerateWP feature: WordPress optimization plugin
 AccelerateWP is a base feature that provides full page caching, GZIP compression and some other useful 
@@ -99,20 +99,20 @@ optimizations.
 In order to start working with AccelerateWP feature, check if advice is available in the corresponding 
 cell on the intersection of website and AccelerateWP column.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPUserUI.webp)
+![cPanel AccelerateWP sites table: No advice in AccelerateWP column; Premium column No advice with Error log](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPUserUI.webp)
 
 And click the "Apply advice" button to activate the AccelerateWP feature.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AdviceReview.webp)
+![Advice modal over sites table: Review badge, Turn on AccelerateWP text, Apply advice and Close](/images/user-docs/user-docs-shared-pro-cloudlinux/AdviceReview.webp)
 
 After a couple of minutes, the plugin will be installed.
 Login into the WordPress Admin and find the AccelerateWP in the list of active plugins.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/WPPlugins.webp)
+![WordPress Plugins screen: AccelerateWP listed active with Settings, Deactivate, version and description](/images/user-docs/user-docs-shared-pro-cloudlinux/WPPlugins.webp)
 
 Page caching will be enabled by default. Click the "Settings" link below the plugin name to configure additional options.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPPlugin.webp)
+![AccelerateWP plugin dashboard: green activation banner, Clear/Preload cache, vertical settings menu](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPPlugin.webp)
 
 
 #### Limitations
@@ -135,7 +135,7 @@ This option is necessary if you have some functionality only for mobile devices,
 
 The following diagram helps you understand if you need mobile caching.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/MobileDiag.webp)
+![Flowchart: blue diamonds for mobile optimization and mobile-only content; red/green arrows to outcomes](/images/user-docs/user-docs-shared-pro-cloudlinux/MobileDiag.webp)
 
 :::tip Note
 If you use an additional layer of Cache (Varnish, NGINX , etc.) make sure it can distinguish between desktop and mobile visitors.
@@ -197,11 +197,11 @@ Critical Path CSS eliminates render-blocking CSS on your website and improves br
 This feature can only be activated in the AccelerateWP hosting panel interface or in the SmartAdvice WordPress plugin. Once activated, you will be able to manage the options in the AccelerateWP WordPress plugin.
 :::
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPCriticalCSSEnabled.webp)
+![File Optimization CSS: minify on, optimize delivery on, excluded CSS and fallback critical CSS fields](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPCriticalCSSEnabled.webp)
 
 The function starts automatically after switching on. It takes some time to generate the Critical CSS. You will see a notification with the generation status. If necessary, you can add additional styles to the Critical CSS in the fallback CSS field.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPCriticalCSSStarted.webp)
+![AccelerateWP Dashboard: Critical CSS generation progress banner, success box, regenerate CSS actions](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPCriticalCSSStarted.webp)
 
 Each time you change the site's theme, the Critical CSS will be regenerated. Also, if you have made any changes to the styles of your site, you need to manually regenerate the Critical CSS by clicking on the "Regenerate critical CSS" button.
 
@@ -209,7 +209,7 @@ Each time you change the site's theme, the Critical CSS will be regenerated. Als
 
 Reduces CSS exclusions on mobile, keeping only critical ones (`admin-bar`, `dashicons`, `wp-admin`). This option is a child of "Optimize CSS delivery" and requires "Separate cache files for mobile devices" to be enabled.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPAgressiveMobileCssOptimizationOption.webp)
+![File Optimization: red arrow to Aggressive mobile CSS optimization checked under Optimize CSS delivery](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPAgressiveMobileCssOptimizationOption.webp)
 
 :::tip
 Default: OFF. Aggressive CSS optimization may break styling on some sites. Each site needs individual testing after enabling.
@@ -242,7 +242,7 @@ This option helps to decrease the page load time by delaying loading of all Java
 
 When enabled, Delay JS is applied only for mobile visitors while desktop visitors get standard JavaScript loading. This option is a child of "Delay JavaScript Execution" and requires "Separate cache files for mobile devices" to be enabled.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPApplyDelayJsOnlyOnMobileOption.webp)
+![Delay JavaScript execution panel: red arrow to Apply Delay JS only on mobile devices checked](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPApplyDelayJsOnlyOnMobileOption.webp)
 
 :::tip
 Default: OFF. Aggressive optimization may affect JavaScript interactivity on some sites. Each site needs individual testing after enabling.
@@ -268,7 +268,7 @@ Supported font sources:
 * `@font-face` rules in CSS
 * `font-family` declarations
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPReduceFontRelatedLayoutShiftsOption.webp)
+![Fonts/Image Dimensions section: red arrow to Reduce font-related layout shifts checkbox checked](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPReduceFontRelatedLayoutShiftsOption.webp)
 
 :::tip Note
 Default: ON.
@@ -295,7 +295,7 @@ Optimize image delivery by minifying the existing images and serving next-gen im
 This feature can only be activated/deactivated in the AccelerateWP hosting panel interface or in the SmartAdvice WordPress plugin.
 :::
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationSettings.webp)
+![AccelerateWP settings: grayed checked Enable image optimization; note to use control panel to disable](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationSettings.webp)
 
 After activating the function, it will start searching for files in the `WP_CONTENT_DIR/uploads` folder in supported formats - jpg, jpeg, gif and png.
 
@@ -303,7 +303,7 @@ Each found file (except those already optimized) will be queued for optimization
 
 In the WordPress admin interface, the number of images to optimize will be displayed at the top of the AccelerateWP settings screen.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationProgress.webp)
+![Media tab: banner image minification in progress with queue count; LazyLoad options below](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationProgress.webp)
 
 After the file is successfully optimized, a notification will be sent to the special API of the site that the file is ready.
 
@@ -317,7 +317,7 @@ When a new image is uploaded to your site using the WordPress functions/interfac
 
 After optimization of all images is completed, you will see the notification in the admin panel.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationSuccess.webp)
+![Media tab: green banner image minification completed; LazyLoad checkboxes and exclusions below](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationSuccess.webp)
 
 **Restore images from backup folder**
 
@@ -333,23 +333,23 @@ Restore and override files from backup folder:
 
 **Wrong file permissions** - Image optimization will not start and show an admin notice. You can try re-enabling the optimization feature again or create folders manually.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationWrongFilePermissions.webp)
+![Red-accent admin notice listing backup/temp paths missing write permissions for image optimization](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationWrongFilePermissions.webp)
 
 **Database table cannot be created** - Image optimization will not start and show an admin notice. You can try re-enabling the optimization feature or contact your system administrator.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationDatabaseTableCannotBeCreated.webp)
+![Red-accent notice: could not create wp_wpr_image_optimization table; re-enable after DB fix](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationDatabaseTableCannotBeCreated.webp)
 
 **Monthly quota exceeded** - Your plan has reached the feature usage limit for current month. The plugin will show an admin notice and pause the image optimization until the start of the next month.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationMonthlyQuotaExceeded.webp)
+![Yellow-accent banner: image optimization paused, monthly usage limit reached](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationMonthlyQuotaExceeded.webp)
 
 **Authentication failed** - The plugin will postpone the image optimization process and retry every 15 minutes. If the authentication is failing for more then 24 hours, the plugin will stop the process and show an admin notice. Contact your system administrator.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationAuthenticationFailed.webp)
+![Red-accent banner: optimization stopped after 24h auth failure to minification service](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationAuthenticationFailed.webp)
 
 **SaaS service not available** - The plugin will show an admin notice, pause processing other jobs in the queue and retry every 5  minutes for the next hour and then every hour.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationSaaSServiceNotAvailable.webp)
+![Yellow-accent banner: minification service unavailable; image optimization paused temporarily](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationSaaSServiceNotAvailable.webp)
 
 #### Preload
 **Preload Cache**
@@ -443,7 +443,7 @@ To turn on MAx Cache:
 2. Click on the toggle next to the **MAx Cache** feature to activate it. 
 3. Directives for the Apache module "maxcache_module" will be added to .htaccess, which will automatically enable cache serving using Apache.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/awp-maxcache-addons.png)
+![Add-ons tab: red arrow points to MAx Cache add-on status toggle in OFF position](/images/user-docs/user-docs-shared-pro-cloudlinux/awp-maxcache-addons.webp)
 
 #### CDN
 
@@ -453,7 +453,7 @@ When using AccelerateWP CDN, then the enabling/disabling can only be done in the
 
 Enabling AccelerateWP Content Delivery Network using Advice will automatically set up your AccelerateWP WordPress plugin.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPCDNEnabled.webp)
+![AccelerateWP CDN settings: Enable CDN checked, purple clear CDN cache button, exclude URLs area](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPCDNEnabled.webp)
 
 CDN stands for Content Delivery Network, the feature that simplifies and speeds up resources loading for your customers.
 
@@ -465,7 +465,7 @@ To set up a CDN in the AccelerateWP you must register CDN zone and get pull zone
 
 Go to the WP Admin of your WordPress site, open the settings of the AccelerateWP (Step 1) and select the CDN section (Step 2). Select the option: Enable Content Delivery Network (Step 3) and fill in the "CDN CNAME(s)" field with CDN pull zone address (Step 4).
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/CDNFlow.webp)
+![CDN panel with red Step 1–5 labels on Settings menu, CDN tab, enable checkbox, CNAME, Save](/images/user-docs/user-docs-shared-pro-cloudlinux/CDNFlow.webp)
 
 Click the "Save changes" button (Step 5).
 
@@ -496,39 +496,39 @@ The Object caching feature is recommended to use in the following:
 In order to start working with Object caching feature, check if advice is available in the corresponding
 cell on the intersection of website and AccelerateWP Premium column.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPPremiumUI.webp)
+![Sites table: No advice in AccelerateWP column; Incompatible link in AccelerateWP Premium column](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPPremiumUI.webp)
 
 And click the "Apply advice" button to activate the Object caching feature.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPPremiumReview.webp)
+![Premium Advice modal: beta notice, Turn on Object Caching, URL note, Apply advice button](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPPremiumReview.webp)
 
 If you still would like to try the feature on the website where advice was not issued,
 click on the gear icon and enable the feature.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPEnableManually.webp)
+![Feature modal: manual AccelerateWP toggle off with note when no Smart Advice; dimmed sites table](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPEnableManually.webp)
 
 In case if you still don't have active Premium subscription, you will see the following
 window with link to the page where you can upgrade subscription.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPUpgradeLink.webp)
+![Upgrade your subscription modal: Object cache description and blue Upgrade subscription button](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPUpgradeLink.webp)
 
 When upgrade link is clicked, you will see the billing interface opened in new browser window.
 Successful upgrade of your subscription will automatically close the billing window and start
 background upgrade process. Once your payment is processed, feature will be automatically installed
 on the website.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPUpgradeModuleWait.webp)
+![Modules dialog: payment successful notice; Object cache toggle on; Cancel button](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPUpgradeModuleWait.webp)
 
 If you don't see any links, contact your hoster to upgrade your subscription manually.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPUpgradeNoLink.webp)
+![Upgrade modal: contact administrator for subscription; Object cache feature description text](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPUpgradeNoLink.webp)
 
 If subscription is active, you will bypass the subscription window and proceed
 directly to the plugin installation.
 
 After a couple of minutes, the redis instance will be configured, plugin will be installed and activated.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPPremiumApplied.webp)
+![Premium Advice modal: Applied badge, Turn on Object Caching details, Close and Rollback buttons](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPPremiumApplied.webp)
 
 Close the window and see "Active" link in the corresponding cell of the table.
 
@@ -551,11 +551,11 @@ When you see the `Advice available` link in the corresponding feature cell, it m
 AccelerateWP decided that this feature will significantly improve the performance of your website. 
 Otherwise you see the `No advice` note.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/FAQAdviceTable.webp)
+![Sites table: No advice under AccelerateWP; Advice available under Premium for same domain](/images/user-docs/user-docs-shared-pro-cloudlinux/FAQAdviceTable.webp)
 
 Click the `Advice available` link and push `Apply advice` button to automatically enable the feature.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/FAQAdviceReview.webp)
+![Advice modal: Review badge, Turn on AccelerateWP explanation, Apply advice and Close buttons](/images/user-docs/user-docs-shared-pro-cloudlinux/FAQAdviceReview.webp)
 
 #### What should I do if I see both the "No advice" note and the "Incompatible" link?
 Causes of the `Incompatible` note are always Limitations: [AccelerateWP](/user-docs/user-docs-shared-pro-cloudlinux/#limitations) or
@@ -563,9 +563,9 @@ Causes of the `Incompatible` note are always Limitations: [AccelerateWP](/user-d
 
 Each message has a small "how to", so you can try to fix them by yourself via control panel or WordPress Admin interface.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/FAQIncompatible.webp)
+![Sites table with Incompatible link; dark tooltip stating website incompatible with this module](/images/user-docs/user-docs-shared-pro-cloudlinux/FAQIncompatible.webp)
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/FAQIncMessage.webp)
+![Incompatibility modal: Unsupported PHP handler warning, how to fix steps, Close button](/images/user-docs/user-docs-shared-pro-cloudlinux/FAQIncMessage.webp)
 
 #### What should I do if I see the "Misconfiguration"?
 The misconfiguration message can appear in the cases when optimization feature was activated, but AccelerateWP detects it as not working anymore.
@@ -637,11 +637,11 @@ In order to start using AccelerateWP Standalone, go to the https://awp.cloudlinu
 
 After installing and activating the plugin, enter your license key to access caching features and additional optimization modules.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPStandaloneKeyWindow.webp)
+![License section: AccelerateWP could not validate license; Api key field and Validate License button](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPStandaloneKeyWindow.webp)
 
 Depending on your license key settings, you may have access to Image Optimization/CriticalCSS/CDN features.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPStandalonePlugin.webp)
+![AccelerateWP Dashboard: License Active; Clear cache, Regenerate Critical CSS, Priority Elements Clear, docs box](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPStandalonePlugin.webp)
 
 
 #### Limitations
@@ -664,7 +664,7 @@ This option is necessary if you have some functionality only for mobile devices,
 
 The following diagram helps you understand if you need mobile caching.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/MobileDiag.webp)
+![Flowchart: blue diamonds for mobile optimization and mobile-only content; red/green arrows to outcomes](/images/user-docs/user-docs-shared-pro-cloudlinux/MobileDiag.webp)
 
 :::tip Note
 If you use an additional layer of Cache (Varnish, NGINX , etc.) make sure it can distinguish between desktop and mobile visitors.
@@ -722,11 +722,11 @@ To prevent that, use (. *).CSS wildcards to exclude all files in a specific loca
 
 Critical Path CSS eliminates render-blocking CSS on your website and improves browser page render performance. Your website will load much faster for your visitors.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPCriticalCSSEnabled.webp)
+![File Optimization CSS: minify on, optimize delivery on, excluded CSS and fallback critical CSS fields](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPCriticalCSSEnabled.webp)
 
 The function starts automatically after switching on. It takes some time to generate the Critical CSS. You will see a notification with the generation status. If necessary, you can add additional styles to the Critical CSS in the fallback CSS field.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPCriticalCSSStarted.webp)
+![AccelerateWP Dashboard: Critical CSS generation progress banner, success box, regenerate CSS actions](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPCriticalCSSStarted.webp)
 
 Each time you change the site's theme, the Critical CSS will be regenerated. Also, if you have made any changes to the styles of your site, you need to manually regenerate the Critical CSS by clicking on the "Regenerate critical CSS" button.
 
@@ -734,7 +734,7 @@ Each time you change the site's theme, the Critical CSS will be regenerated. Als
 
 Reduces CSS exclusions on mobile, keeping only critical ones (`admin-bar`, `dashicons`, `wp-admin`). This option is a child of "Optimize CSS delivery" and requires "Separate cache files for mobile devices" to be enabled.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPAgressiveMobileCssOptimizationOption.webp)
+![File Optimization: red arrow to Aggressive mobile CSS optimization checked under Optimize CSS delivery](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPAgressiveMobileCssOptimizationOption.webp)
 
 :::tip
 Default: OFF. Aggressive CSS optimization may break styling on some sites. Each site needs individual testing after enabling.
@@ -767,7 +767,7 @@ This option helps to decrease the page load time by delaying loading of all Java
 
 When enabled, Delay JS is applied only for mobile visitors while desktop visitors get standard JavaScript loading. This option is a child of "Delay JavaScript Execution" and requires "Separate cache files for mobile devices" to be enabled.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPApplyDelayJsOnlyOnMobileOption.webp)
+![Delay JavaScript execution panel: red arrow to Apply Delay JS only on mobile devices checked](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPApplyDelayJsOnlyOnMobileOption.webp)
 
 :::tip
 Default: OFF. Aggressive optimization may affect JavaScript interactivity on some sites. Each site needs individual testing after enabling.
@@ -793,7 +793,7 @@ Supported font sources:
 * `@font-face` rules in CSS
 * `font-family` declarations
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPReduceFontRelatedLayoutShiftsOption.webp)
+![Fonts/Image Dimensions section: red arrow to Reduce font-related layout shifts checkbox checked](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPReduceFontRelatedLayoutShiftsOption.webp)
 
 :::tip Note
 Default: ON.
@@ -816,7 +816,7 @@ Cases when image will not be affected by the *Add Missing Image Dimensions*:
 #### Image Optimization
 Optimize image delivery by minifying the existing images and serving next-gen image formats when possible.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPStandaloneImageOptimizationSettings.webp)
+![Settings panel: red arrow to Enable image optimization in Image Optimization section, Save changes](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPStandaloneImageOptimizationSettings.webp)
 
 After activating the function, it will start searching for files in the `WP_CONTENT_DIR/uploads` folder in supported formats - jpg, jpeg, gif and png.
 
@@ -824,7 +824,7 @@ Each found file (except those already optimized) will be queued for optimization
 
 In the WordPress admin interface, the number of images to optimize will be displayed at the top of the AccelerateWP settings screen.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationProgress.webp)
+![Media tab: banner image minification in progress with queue count; LazyLoad options below](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationProgress.webp)
 
 After the file is successfully optimized, a notification will be sent to the special API of the site that the file is ready.
 
@@ -838,7 +838,7 @@ When a new image is uploaded to your site using the WordPress functions/interfac
 
 After optimization of all images is completed, you will see the notification in the admin panel.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationSuccess.webp)
+![Media tab: green banner image minification completed; LazyLoad checkboxes and exclusions below](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationSuccess.webp)
 
 **Restore images from backup folder**
 
@@ -854,23 +854,23 @@ Restore and override files from backup folder:
 
 **Wrong file permissions** - Image optimization will not start and show an admin notice. You can try re-enabling the optimization feature again or create folders manually.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationWrongFilePermissions.webp)
+![Red-accent admin notice listing backup/temp paths missing write permissions for image optimization](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationWrongFilePermissions.webp)
 
 **Database table cannot be created** - Image optimization will not start and show an admin notice. You can try re-enabling the optimization feature or contact your system administrator.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationDatabaseTableCannotBeCreated.webp)
+![Red-accent notice: could not create wp_wpr_image_optimization table; re-enable after DB fix](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationDatabaseTableCannotBeCreated.webp)
 
 **Monthly quota exceeded** - Your plan has reached the feature usage limit for current month. The plugin will show an admin notice and pause the image optimization until the start of the next month.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationMonthlyQuotaExceeded.webp)
+![Yellow-accent banner: image optimization paused, monthly usage limit reached](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationMonthlyQuotaExceeded.webp)
 
 **Authentication failed** - The plugin will postpone the image optimization process and retry every 15 minutes. If the authentication is failing for more then 24 hours, the plugin will stop the process and show an admin notice. Contact your system administrator.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationAuthenticationFailed.webp)
+![Red-accent banner: optimization stopped after 24h auth failure to minification service](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationAuthenticationFailed.webp)
 
 **SaaS service not available** - The plugin will show an admin notice, pause processing other jobs in the queue and retry every 5  minutes for the next hour and then every hour.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationSaaSServiceNotAvailable.webp)
+![Yellow-accent banner: minification service unavailable; image optimization paused temporarily](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPImageOptimizationSaaSServiceNotAvailable.webp)
 
 #### Preload
 **Preload Cache**
@@ -964,13 +964,13 @@ To turn on MAx Cache:
 2. Click on the toggle next to the **MAx Cache** feature to activate it.
 3. Directives for the Apache module "maxcache_module" will be added to .htaccess, which will automatically enable cache serving using Apache.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/awp-maxcache-addons.png)
+![Add-ons tab: red arrow points to MAx Cache add-on status toggle in OFF position](/images/user-docs/user-docs-shared-pro-cloudlinux/awp-maxcache-addons.webp)
 
 #### CDN
 
 Use the plugin interface to automatically configure and set up PullZone.
 
-![](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPStandaloneCDNEnabled.webp)
+![AccelerateWP CDN settings page: Enable CDN unchecked; red arrow on Create Pullzone; CNAME and exclude list](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPStandaloneCDNEnabled.webp)
 
 CDN stands for Content Delivery Network, the feature that simplifies and speeds up resources loading for your customers.
 
