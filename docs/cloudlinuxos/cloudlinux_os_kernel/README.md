@@ -670,10 +670,10 @@ CloudLinux OS supports **cgroup v2** on **CloudLinux OS 8, 9, and 10** only — 
 
 The following package versions are required:
 
-| Package | CL8 | CL9 | CL10 |
-|---------|-----|-----|------|
-| `kmod-lve` | 2.1-58+ | 2.1-58+ | 2.1-58+ |
-| `tuned-profiles-cloudlinux` | 0.2-14+ | 0.2-15+ | 0.3-6+ |
+| Package | CL8 | CL9 | CL10 | Ubuntu 22 |
+|---------|-----|-----|------|-----------|
+| `kmod-lve` / `kmodlve-dkms` | 2.1-58+ | 2.1-58+ | 2.1-58+ | 2.1-58+ |
+| `tuned-profiles-cloudlinux` | 0.2-14+ | 0.2-15+ | 0.3-6+ | 0.2-10+ |
 
 To switch between cgroup versions, apply the appropriate tuned profile and reboot the server.
 
