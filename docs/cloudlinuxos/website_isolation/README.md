@@ -1,12 +1,12 @@
-# Website Isolation (BETA)
+# CloudLinux Isolates (BETA)
 
 ## CageFS Per Domain
 
-Website Isolation is a security feature that provides domain-level isolation within CageFS. It allows server administrators to isolate individual websites from each other, even when they belong to the same hosting account. This prevents cross-site attacks where a compromised website could access files or data from other websites on the same account.
+CloudLinux Isolates is a security feature that provides domain-level isolation within CageFS. It allows server administrators to isolate individual websites from each other, even when they belong to the same hosting account. This prevents cross-site attacks where a compromised website could access files or data from other websites on the same account.
 
 ### Overview
 
-When Website Isolation is enabled for a domain:
+When CloudLinux Isolates is enabled for a domain:
 
 * Each isolated website runs in its own isolated environment
 * PHP processes for isolated websites cannot access files from other websites
@@ -35,7 +35,7 @@ When Website Isolation is enabled for a domain:
 | FCGI    | 🔜 Coming in future releases                                                      |
 
 :::tip Warning
-Website Isolation fully supports LSAPI and CGI handlers. FPM has partial support for specific ea-php and alt-php versions only. FCGI support is planned for future releases.
+CloudLinux Isolates fully supports LSAPI and CGI handlers. FPM has partial support for specific ea-php and alt-php versions only. FCGI support is planned for future releases.
 :::
 
 #### Compatible Control Panels
@@ -50,7 +50,7 @@ Website Isolation fully supports LSAPI and CGI handlers. FPM has partial support
 
 #### Compatible PHP Versions
 
-Website Isolation provides partial FPM handler support for both ea-php (cPanel) and alt-php.
+CloudLinux Isolates provides partial FPM handler support for both ea-php (cPanel) and alt-php.
 
 ##### ea-php (cPanel)
 
@@ -97,7 +97,7 @@ alt-php53, alt-php54, and alt-php55 are supported on CL7/CL8/CL9 only. CL10 supp
 
 ### Quick Start
 
-Follow these steps to enable Website Isolation for a domain:
+Follow these steps to enable CloudLinux Isolates for a domain:
 
 **1. Allow the feature server-wide (administrator only, one-time setup):**
 
@@ -129,13 +129,13 @@ cagefsctl --site-isolation-disable <example.com>
 
 #### Server-Wide Management
 
-##### Allow Website Isolation for All Users
+##### Allow CloudLinux Isolates for All Users
 
 ```
 cagefsctl --site-isolation-allow-all
 ```
 
-Enables the Website Isolation feature server-wide in "Allow All" mode. All users are allowed to use Website Isolation by default (individual users can be denied with `--site-isolation-deny`).
+Enables the CloudLinux Isolates feature server-wide in "Allow All" mode. All users are allowed to use CloudLinux Isolates by default (individual users can be denied with `--site-isolation-deny`).
 
 **Example:**
 
@@ -154,13 +154,13 @@ Website isolation was allowed for all users.
 
 ***
 
-##### Deny Website Isolation for All Users
+##### Deny CloudLinux Isolates for All Users
 
 ```
 cagefsctl --site-isolation-deny-all
 ```
 
-Disables the Website Isolation feature server-wide and switches to "Deny All" mode. Removes all domain isolation configurations for all users.
+Disables the CloudLinux Isolates feature server-wide and switches to "Deny All" mode. Removes all domain isolation configurations for all users.
 
 **Example:**
 
@@ -181,24 +181,24 @@ Website isolation was denied for all users.
 
 #### Per-User Management
 
-Website Isolation uses a two-mode user model to control which users can use the feature:
+CloudLinux Isolates uses a two-mode user model to control which users can use the feature:
 
 * **Allow All mode** (`allow_all`): All users are allowed by default. Individual users can be denied (added as exceptions).
 * **Deny All mode** (`deny_all`): No users are allowed by default. Individual users can be allowed (added as exceptions).
 
-##### Allow Website Isolation for a Specific User
+##### Allow CloudLinux Isolates for a Specific User
 
 ```
 cagefsctl --site-isolation-allow <username> [<username2> ...]
 ```
 
-Allows Website Isolation for one or more specific users.
+Allows CloudLinux Isolates for one or more specific users.
 
 **Parameters:**
 
 | Parameter    | Description                             |
 | ------------ | --------------------------------------- |
-| `<username>` | Username(s) to allow Website Isolation for |
+| `<username>` | Username(s) to allow CloudLinux Isolates for |
 
 **Behavior depends on current mode:**
 
@@ -218,19 +218,19 @@ Website isolation was allowed for user(s): john, jane
 
 ***
 
-##### Deny Website Isolation for a Specific User
+##### Deny CloudLinux Isolates for a Specific User
 
 ```
 cagefsctl --site-isolation-deny <username> [<username2> ...]
 ```
 
-Denies Website Isolation for one or more specific users and disables all their domain isolation.
+Denies CloudLinux Isolates for one or more specific users and disables all their domain isolation.
 
 **Parameters:**
 
 | Parameter    | Description                            |
 | ------------ | -------------------------------------- |
-| `<username>` | Username(s) to deny Website Isolation for |
+| `<username>` | Username(s) to deny CloudLinux Isolates for |
 
 **Behavior depends on current mode:**
 
@@ -247,7 +247,7 @@ Website isolation was denied for user(s): john
 **Notes:**
 
 * Also cleans up all existing domain isolation for the denied user(s)
-* Website Isolation must be enabled server-wide first
+* CloudLinux Isolates must be enabled server-wide first
 
 ***
 
@@ -289,7 +289,7 @@ Website isolation user mode toggled to 'deny_all'.
 cagefsctl --site-isolation-enable <domain> [<domain2> ...]
 ```
 
-Enables Website Isolation for one or more specified domains.
+Enables CloudLinux Isolates for one or more specified domains.
 
 **Parameters:**
 
@@ -311,8 +311,8 @@ site1.com,site2.com
 
 **Requirements:**
 
-* Website Isolation must be allowed server-wide first
-* Website Isolation must be allowed for the domain's user
+* CloudLinux Isolates must be allowed server-wide first
+* CloudLinux Isolates must be allowed for the domain's user
 * The domain must exist and be associated with a valid user account
 * Must be run with root privileges
 
@@ -334,7 +334,7 @@ site1.com,site2.com
 cagefsctl --site-isolation-disable <domain> [<domain2> ...]
 ```
 
-Disables Website Isolation for one or more specified domains.
+Disables CloudLinux Isolates for one or more specified domains.
 
 **Parameters:**
 
@@ -372,7 +372,7 @@ example.com
 cagefsctl --site-isolation-list [<username> ...]
 ```
 
-Lists all users and domains that have Website Isolation enabled.
+Lists all users and domains that have CloudLinux Isolates enabled.
 
 **Parameters:**
 
@@ -418,7 +418,7 @@ No users with enabled Website isolation
 cagefsctl --site-isolation-regenerate <username> [<username2> ...]
 ```
 
-Regenerates the Website Isolation configuration for specified users. Use this command after manual configuration changes or when troubleshooting isolation issues.
+Regenerates the CloudLinux Isolates configuration for specified users. Use this command after manual configuration changes or when troubleshooting isolation issues.
 
 **Parameters:**
 
@@ -446,10 +446,10 @@ jane
 
 ### User-Level Management
 
-End users can manage Website Isolation for their own domains using the `cagefsctl-user` utility. This command runs inside CageFS via proxyexec and allows users to enable, disable, and list isolation for domains they own — without requiring root access.
+End users can manage CloudLinux Isolates for their own domains using the `cagefsctl-user` utility. This command runs inside CageFS via proxyexec and allows users to enable, disable, and list isolation for domains they own — without requiring root access.
 
 :::tip Note
-User-level management requires that Website Isolation is allowed server-wide **and** allowed for the specific user by the server administrator.
+User-level management requires that CloudLinux Isolates is allowed server-wide **and** allowed for the specific user by the server administrator.
 :::
 
 #### Enable Isolation for a Domain (User-Level)
@@ -458,7 +458,7 @@ User-level management requires that Website Isolation is allowed server-wide **a
 cagefsctl-user site-isolation-enable --domain <domain>[,<domain2>,...]
 ```
 
-Enables Website Isolation for one or more domains owned by the calling user.
+Enables CloudLinux Isolates for one or more domains owned by the calling user.
 
 **Parameters:**
 
@@ -479,7 +479,7 @@ $ cagefsctl-user site-isolation-enable --domain site1.com,site2.com
 **Notes:**
 
 * The user can only manage domains they own
-* Website Isolation must be allowed for the user by the server administrator
+* CloudLinux Isolates must be allowed for the user by the server administrator
 
 ***
 
@@ -489,7 +489,7 @@ $ cagefsctl-user site-isolation-enable --domain site1.com,site2.com
 cagefsctl-user site-isolation-disable --domain <domain>[,<domain2>,...]
 ```
 
-Disables Website Isolation for one or more domains owned by the calling user.
+Disables CloudLinux Isolates for one or more domains owned by the calling user.
 
 **Parameters:**
 
@@ -512,7 +512,7 @@ $ cagefsctl-user site-isolation-disable --domain example.com
 cagefsctl-user site-isolation-list
 ```
 
-Lists all domains with Website Isolation enabled for the calling user.
+Lists all domains with CloudLinux Isolates enabled for the calling user.
 
 **Example:**
 
@@ -552,7 +552,7 @@ $ cagefs_enter_site example.com /bin/ls /home/user/public_html
 
 ### Per-Domain PHP Selector
 
-When Website Isolation is enabled for a domain, per-domain PHP Selector configuration is automatically set up. This allows each isolated website to have its own PHP version and module configuration, independent of other websites on the same account.
+When CloudLinux Isolates is enabled for a domain, per-domain PHP Selector configuration is automatically set up. This allows each isolated website to have its own PHP version and module configuration, independent of other websites on the same account.
 
 **Key behaviors:**
 
@@ -634,7 +634,7 @@ cagefsctl --site-isolation-allow-all
 
 ### Integration with Control Panels
 
-Website Isolation integrates automatically with supported control panels. When domains are:
+CloudLinux Isolates integrates automatically with supported control panels. When domains are:
 
 * **Created**: No automatic action (isolation must be explicitly enabled)
 * **Renamed**: Isolation configuration is automatically updated
