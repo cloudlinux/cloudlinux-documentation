@@ -675,9 +675,9 @@ The following package versions are required:
 | `kmod-lve` / `kmodlve-dkms` | 2.1-58+ | 2.1-58+ | 2.1-58+ | 2.1-58+ |
 | `tuned-profiles-cloudlinux` | 0.2-14+ | 0.2-15+ | 0.3-6+ | 0.2-10+ |
 
-To switch between cgroup versions, apply the appropriate tuned profile and reboot the server.
+To switch between cgroup versions, apply the appropriate tuned profile and reboot the server. Choose the profile that matches your current profile family (`cloudlinux-default` or `cloudlinux-latency-performance`).
 
-**Enable cgroup v2:**
+**Enable cgroup v2 (default profile):**
 <div class="notranslate">
 
 ```
@@ -686,11 +686,29 @@ reboot
 ```
 </div>
 
-**Revert to cgroup v1:**
+**Enable cgroup v2 (latency-performance profile):**
+<div class="notranslate">
+
+```
+tuned-adm profile cloudlinux-latency-performance-cgv2
+reboot
+```
+</div>
+
+**Revert to cgroup v1 (default profile):**
 <div class="notranslate">
 
 ```
 tuned-adm profile cloudlinux-default-cgv1
+reboot
+```
+</div>
+
+**Revert to cgroup v1 (latency-performance profile):**
+<div class="notranslate">
+
+```
+tuned-adm profile cloudlinux-latency-performance-cgv1
 reboot
 ```
 </div>
