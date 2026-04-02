@@ -267,7 +267,7 @@ The configured PMEM lower bound value is stored in the <span class="notranslate"
 Since kmod-lve 2.0-53 (for CL8) and 2.1-17 (for CL9) we have released the new sysctl param `kernel.memstat_nocache`.
 
 By default the LVE kernel module includes page cache amount when it accounts a physical memory consumption per-LVE. It can lead to the following case:
-![](/images/cloudlinuxos/limits/PhysicalMemoryUsageDisablePageCacheAccounting.webp)
+![LVE statistics charts: physical memory and I/O usage over time with red limit lines and green average traces](/images/cloudlinuxos/limits/PhysicalMemoryUsageDisablePageCacheAccounting.webp)
 
 The page cache stays in the memory after the processes that triggered him ended their work. It potentially confuses end customers.
 
@@ -416,13 +416,13 @@ The limits can be set on the level of individual [account](/cloudlinuxos/lve_man
 
 Sometimes <span class="notranslate">disk quota</span> breaks, so do <span class="notranslate"> inodes </span> limits. You can reset them through the <span class="notranslate">_Options_</span> tab of <span class="notranslate">LVE Manager</span>:
 
-![](/images/cloudlinuxos/limits/inodelimitsoptions_zoom70.webp)
+![LVE Manager Options tab with Inode limits expanded: Reset button and show end-user inode usage checkbox](/images/cloudlinuxos/limits/inodelimitsoptions_zoom70.webp)
 
 The same can be achieved using [cloudlinux-config](/cloudlinuxos/command-line_tools/#cloudlinux-config) CLI utility
 
 End users can monitor their inodes usage through cPanel only (not available on Plesk and DirectAdmin):
 
-![](/images/cloudlinuxos/limits/inodescpanel.webp)
+![cPanel Statistics sidebar listing inodes 151 of 100,000 with progress bar and other resource quotas](/images/cloudlinuxos/limits/inodescpanel.webp)
 
 End user can also see the usage inside resource usage menu.
 
@@ -686,7 +686,7 @@ Reseller cannot manage INODE or MYSQL limits. Neither his own, nor for his users
 
 To understand the quirks of how Reseller Limits operate, we need to look more closely into the four types of users that a typical shared hosting server has:
 
-![](/images/cloudlinuxos/limits/ResellerLimits-diagram.webp)
+![Flowchart diagram of hoster, reseller, and end users with LVE Limits arrows showing who enforces resource caps](/images/cloudlinuxos/limits/ResellerLimits-diagram.webp)
 
 Reseller himself (green box on the scheme) is a virtual entity. When a hoster enables reseller limits, the entity itself cannot hit the limits. There is usually an end-user with the same username as the reseller that acts as a regular reseller’s end-user. When the hoster sets Reseller limits, he limits the group of end-users he owns, including the reseller's end-user with the same username.
 
@@ -720,14 +720,14 @@ If you have decided to jump on board and enable Reseller limits for your reselle
 3. You can create a new reseller account or configure an existing reseller account to have Reseller limits enabled. Consult your control panel documentation on how to do that.
 4. For cPanel servers when creating an account, make sure to tick two checkboxes **Make this account a reseller** and **Make the account own itself** in the _Reseller Settings_ box.
 
-![](/images/cloudlinuxos/limits/ResellerLimits-cPanel.webp)
+![Reseller Settings panel with Make the account a reseller and Make the account own itself both checked](/images/cloudlinuxos/limits/ResellerLimits-cPanel.webp)
 
 Selecting **Make the account own itself** makes the reseller full owner of all his accounts, including the end-user account with the same username. This option is integral to making reseller limits work for the reseller account. If you don’t select it, Reseller limits will not be applied. If the reseller account you want to limit with Reseller limits has already existed, you need to make sure it is properly owned. Go to _WHM_ -> _Modify account_ -> find the account with the same username as your reseller -> change the owner to the username of your reseller.
 
 5. Now that preparations are done, go to _CloudLinux OS LVE Manager_ -> _Users_ tab, choose a reseller and click on the pencil icon.
 6. When the pop-up opens, move the slider _Manage Limits_ -> Click _AGREE_  when asked _Are you sure you want to enable limits_ -> assign the limits to that reseller. Finally, click _Save_.
 
-![](/images/cloudlinuxos/limits/ResellerLimits-enabling.webp)
+![LVE Manager Users table with modal for reseller res1; Manage Limits toggle off, pencil edit icon marked](/images/cloudlinuxos/limits/ResellerLimits-enabling.webp)
 
 ::: tip Note
 Managing Reseller limits are not available for Solo and Admin editions. More at [Cloudlinux OS editions](/introduction/#cloudlinux-os-editions)

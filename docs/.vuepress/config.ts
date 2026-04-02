@@ -10,6 +10,16 @@ export default defineUserConfig({
       level: [2, 3, 4, 5],
     },
   },
+  extendsMarkdown: (md) => {
+    const defaultRender = md.renderer.rules.image
+    md.renderer.rules.image = (tokens, idx, options, env, self) => {
+      tokens[idx].attrSet('loading', 'lazy')
+      if (defaultRender) {
+        return defaultRender(tokens, idx, options, env, self)
+      }
+      return self.renderToken(tokens, idx, options)
+    }
+  },
   plugins,
   bundler: viteBundler({
     viteOptions: {

@@ -6,7 +6,7 @@ Dashboard helps quickly navigate to user's _Products_. It includes the following
 
 Click _Dashboard_. You will be redirected to the _Products_ page.
 
-![](/images/cln/dashboard/dashboard_zoom70.webp)
+![CLN My Products page with three product license cards and sidebar navigation](/images/cln/dashboard/dashboard_zoom70.webp)
 
 On the _Products_ page you can see all your products.
 
@@ -26,20 +26,20 @@ There are no trials available for the ELS subscription
 
 On the _Product_ tab a user can activate a trial license if trial product hasn't been activated yet.
 
-![](/images/cln/dashboard/freetrial_zoom70.webp)
+![CLN Other Products section: KernelCare card with Start Free Trial link outlined in red](/images/cln/dashboard/freetrial_zoom70.webp)
 
 Just click _Free Trial_ and proceed with trial activation instructions.
 
 Also, a user is able to activate trial license from the _Purchase_ page.
 
-![](/images/cln/dashboard/fretrialpurchase_zoom70.webp)
+![KernelCare Purchase page with pricing tiers, trial TRY banner, and cart bar](/images/cln/dashboard/fretrialpurchase_zoom70.webp)
 
 ### CloudLinux OS Activation Keys
 
 
 Click _CloudLinux OS_ at the top menu to go to _CloudLinux OS Activation Keys_ page. Here you can see server licenses used/limits.
 
-![](/images/cln/dashboard/cloudlinuxosactivationkeys_zoom70.webp)
+![CloudLinux OS Activation Keys page with default key card, licenses gauge, and keys table](/images/cln/dashboard/cloudlinuxosactivationkeys_zoom70.webp)
 
 The following actions are available:
 
@@ -74,7 +74,7 @@ Default Activation Key cannot be deleted.
 
 On the _CloudLinux OS Activation Keys_ page click an activation key string in the table to go to _CloudLinux Activation Key Details_ page.
 
-![](/images/cln/dashboard/cloudlinuxactivationkeysdetails_zoom70.webp)
+![Activation Key Details page: key card with blue header, Edit/Remove actions, and servers table](/images/cln/dashboard/cloudlinuxactivationkeysdetails_zoom70.webp)
 
 This page contains the following information:
 
@@ -87,7 +87,7 @@ The following actions are available:
 
 * **Edit key**. Click _Edit Key_ button. In the opened popup you can change a number of servers that can be activated with this key and enter some notes for your own needs so that you can easily find an activation key when there are a lot of different keys. To apply changes click _Save Changes_ or _Cancel_ to close the popup.
 
-    ![](/images/cln/dashboard/editactivationkey.webp)
+    ![Edit activation key modal with server quantity, Unlimited checkbox, Note, Save Changes](/images/cln/dashboard/editactivationkey.webp)
 
 
 * **Remove key**. Click _Remove Activation Key_ button. In the opened popup click _Remove_ to apply changes or _Cancel_ to close the popup.
@@ -95,7 +95,7 @@ The following actions are available:
     You cannot delete a default activation key.
     :::
 
-    ![](/images/cln/dashboard/removeactivationkey.webp)
+    ![Remove activation key dialog with warning, Cancel and red Remove buttons](/images/cln/dashboard/removeactivationkey.webp)
 
 
 Below, there is a table with all servers activated with this activation key.
@@ -119,7 +119,7 @@ The following actions are available:
 
 Click _KernelCare_ at the top menu to go to _KernelCare Activation Keys_ page. Here you can see server licenses (used/limits).
 
-![](/images/cln/dashboard/kcactivationkeypage_zoom70.webp)
+![KernelCare Activation Keys page with default key card, 0/10 licenses gauge, keys table](/images/cln/dashboard/kcactivationkeypage_zoom70.webp)
 
 There are two types of KernelCare licenses available: IP-based and key-based. IP-based license can only be used by IP address it is issued to, while key-based licenses can be migrated to another server within the IP range defined for the key.
 
@@ -131,7 +131,7 @@ The following actions are available:
 
 * **Copy a Default Activation Key**. Click a key to copy it to a clipboard.
 * **Generate a new Activation Key**. Click _Generate new activation key_. In an opened popup specify _Server quantity limit_, _IP range limit_, _Sticky tag_, and add some _Notes_, if any, and click _Save Changes_ to confirm the action or _Cancel_ to close the popup.
-    ![](/images/cln/dashboard/kceditpng.webp)
+    ![Edit activation key dialog with IP range, Sticky tag date, Note field, Save Changes](/images/cln/dashboard/kceditpng.webp)
 * **[Manage servers](/cln/billing/#overview-products)**.
 * **[Add server licenses](/cln/purchase/#purchase)**.
 * **Remove unused server licenses** . Click _Remove unused server licenses_ to delete all server licenses that are not used to activate a server. Do it to reduce your monthly bill as a customer pays per each server license and NOT per an activated server. Confirm your action in the opened popup by clicking _Remove_ or click _Cancel_ to close the popup.
@@ -158,7 +158,7 @@ Default Activation Key cannot be deleted.
 
 On the _KernelCare Activation Keys_ page click an activation key in the table to go to _KernelCare Activation Key Details_ page.
 
-![](/images/cln/dashboard/kernelcareactivationkeydetails_zoom70.webp)
+![KernelCare Activation Key Details page with usage, actions, and registered servers table](/images/cln/dashboard/kernelcareactivationkeydetails_zoom70.webp)
 
 This page contains the following information:
 
@@ -177,7 +177,7 @@ The following actions are available:
 You cannot delete a default activation key.
 :::
 
-![](/images/cln/dashboard/kcremovekey.webp)
+![Remove activation key dialog listing servers with DNS and IP, red Remove button](/images/cln/dashboard/kcremovekey.webp)
 
 Below, there is a table with all servers activated with this activation key.
 
@@ -204,7 +204,7 @@ To use this tag, go to _CLN portal → KernelCare tab → click a key to edit �
 
 You should provide a separate key for each environment and set them to a particular sticky tag which is actually the date to which all the servers in an environment have to be patched.
 
-![](/images/cln/dashboard/kcstickytag.webp)
+![Edit activation key dialog with red arrow on Sticky tag calendar control](/images/cln/dashboard/kcstickytag.webp)
 
 The date in _Sticky tag_ field can be any date from May 28, 2018 up to one day before today.
 
@@ -233,7 +233,7 @@ Find more details in [KernelCare documentation](https://docs.kernelcare.com/kc-a
 
 Click _Imunify360_ at the top menu to go to _Imunify360 License Types_ page.
 
-![](/images/cln/dashboard/im360licensetypes_zoom70.webp)
+![Imunify360 License Types page with tier cards, license gauges, and orange Buy buttons](/images/cln/dashboard/im360licensetypes_zoom70.webp)
 
 Here you can see all available license types, buy and manage them.
 
@@ -265,7 +265,7 @@ If you have only one license then after the deletion, you will not have any lice
 
 Click _Imunify360_ at the top menu, then click _Activation Keys_ on the left menu to go to _Imunify360 Activation Keys_ page.
 
-![](/images/cln/dashboard/imunify360activationkeys_zoom70.webp)
+![Imunify360 Activation Keys table with filter tags, license type, and server limits](/images/cln/dashboard/imunify360activationkeys_zoom70.webp)
 
 Here you can see the table with a list of all Imunify360 Activation Keys. It contains the following columns:
 
@@ -291,7 +291,7 @@ Default Activation Key cannot be deleted.
 
 Click Imunify360 at the top menu then _Activation Keys → desired type of license (Single User, Up to 30 users, Up to 250 users, Unlimited)_ on the left menu to go to _Imunify360 License Type Activation Keys_.
 
-![](/images/cln/dashboard/im360upto30activationkey_zoom70.webp)
+![Imunify360 Up to 30 Activation Keys with default key card, gauge, and keys table](/images/cln/dashboard/im360upto30activationkey_zoom70.webp)
 
 This page contains the following information:
 
@@ -337,7 +337,7 @@ You cannot delete the default activation key.
 
 On the _Imunify360 Activation Keys_ page click an activation key string in the table to go to _Imunify360 Activation Key Details_ page.
 
-![](/images/cln/dashboard/imunify360activationkeydetails_zoom70.webp)
+![Imunify360 Activation Key Details with key card, Edit Key, and servers table](/images/cln/dashboard/imunify360activationkeydetails_zoom70.webp)
 
 This page contains the following information:
 
@@ -348,7 +348,7 @@ This page contains the following information:
 The following actions are available:
 
 * **Edit key**. Click _Edit Key_ button. In the opened popup you can change a number of servers that can be activated with this key and enter some notes. To apply changes, click _Save Changes_ or _Cancel_ to close the popup.
-    ![](/images/cln/dashboard/im360editactivationkey.webp)
+    ![Edit activation key dialog with unlimited server quantity checkbox and Note field](/images/cln/dashboard/im360editactivationkey.webp)
 * **Remove key**. Click _Remove Activation Key_ button. In the opened popup click _Remove_ to apply changes or _Cancel_ to close the popup.
 
 :::tip Note
@@ -379,7 +379,7 @@ You can enable Imunify Email on 3 levels:
 
 1. **Account**
 
-![](/images/cln/dashboard/imunify-email-global-level.webp)
+![Imunify Email settings page with Global level radios; Enabled for all servers selected](/images/cln/dashboard/imunify-email-global-level.webp)
 
 * When you enable the feature on an account level, the script will install  Imunify Email on all Imunify360 servers in your account in 24 hours.  You can also run `imunify360-agent update-license` command to speed up the process. 
 * When disabling the feature on an account level, the script will deactivate the Imunify Email on all Imunify360 servers in your account in 24 hours.
@@ -389,11 +389,11 @@ You can enable Imunify Email on 3 levels:
 
 You can manage permission on a key level. Go to the 'Activation keys' tab and select 'add-ons'. 
 
-![](/images/cln/dashboard/imunify-email-manage-permission-cln.webp) 
+![Up to 250 Activation Keys table with Add-ons plus button highlighted in red](/images/cln/dashboard/imunify-email-manage-permission-cln.webp) 
 
 You will see this screen: 
 
-![](/images/cln/dashboard/imunify-email-manage-permissions2.webp) 
+![Permissions modal for Imunify Email; Depends on server settings selected, Save/Cancel](/images/cln/dashboard/imunify-email-manage-permissions2.webp) 
 
 * When you enable the feature on all servers in the key, the script will install Imunify Email on all Imunify360 servers under this key in 24 hours. You can also run `imunify360-agent update-license` command to speed up the process.
 * When disabling the feature on a key level, the script will deactivate the Imunify Email on all Imunify360 servers under this key in your account in 24 hours.
@@ -403,11 +403,11 @@ You will see this screen:
 
 You can manage permission on a server level. Go to the 'Servers' tab and select 'add-ons'. 
 
-![](/images/cln/dashboard/imunify-email-permissions-server-level.webp)
+![Imunify360 Up to 250 servers table with Add-ons plus icon outlined in red](/images/cln/dashboard/imunify-email-permissions-server-level.webp)
 
 You will see this pop-up: 
 
-![](/images/cln/dashboard/imunify-email-popup-cln.webp) 
+![Imunify Email toggle in off position with Cancel and Save buttons](/images/cln/dashboard/imunify-email-popup-cln.webp) 
 
 * When you enable the feature, the script will install Imunify Email on this server. You can also run `imunify360-agent update-license` command to speed up the process.
 * When disabling the feature, the script will deactivate the Imunify Email on a server in 24 hours. 
@@ -422,7 +422,7 @@ You can enable Imunify Email on 3 levels:
 
 1. **Account** 
 
-![](/images/cln/dashboard/imunifyemail-cln-global-level.webp) 
+![Imunify Email settings with Depends on lower level selected and Save button](/images/cln/dashboard/imunifyemail-cln-global-level.webp) 
 
 * When you enable the feature on an account level, the script will install Imunify Email on all Imunify360 servers in your account in 24 hours. You can also run `imunify360-agent update-license` command to speed up the process.
 * When disabling the feature on an account level, the script will deactivate the Imunify Email on all Imunify360 servers in your account in 24 hours.
@@ -432,11 +432,11 @@ You can enable Imunify Email on 3 levels:
 
 You can manage permission on a key level. Go to the 'Activation keys' tab and select 'add-ons'. 
 
-![](/images/cln/dashboard/imunifyemail-cln-permission-by-key.webp) 
+![Activation Keys table with Add-ons plus on a row highlighted in red](/images/cln/dashboard/imunifyemail-cln-permission-by-key.webp) 
 
 You will see this screen: 
 
-![](/images/cln/dashboard/ie-cln-permission-popup.webp) 
+![Permissions modal for Imunify Email; Depends on server settings option selected](/images/cln/dashboard/ie-cln-permission-popup.webp) 
 
 * When you enable the feature on all servers in the key, the script will install Imunify email on all Imunify360 servers under this key in 24 hours. You can also run imunify360-agent update-license command to speed up the process.
 * When disabling the feature on a key level, the script will deactivate the Imunify email on all Imunify360 servers under this key in your account in 24 hours.
@@ -445,15 +445,15 @@ You will see this screen:
 3. **Server/ IP license**
 You can manage permission on a server level. Go to the 'Servers' tab and select 'add-ons'. 
 
-![](/images/cln/dashboard/ie-cln-permission-server-level.webp)  
+![Imunify360 servers table with Add-ons plus for one server highlighted in red](/images/cln/dashboard/ie-cln-permission-server-level.webp)  
 
 **IP Licenses**
 
-![](/images/cln/dashboard/ie-cl-permission-iplicense.webp) 
+![IP Licenses table with Addons column plus icon on first row outlined in red](/images/cln/dashboard/ie-cl-permission-iplicense.webp) 
 
 You will see this pop-up: 
 
-![](/images/cln/dashboard/ie-cln-popup-window.webp) 
+![Imunify Email toggle off with Cancel and Save in a compact dialog](/images/cln/dashboard/ie-cln-popup-window.webp) 
 
 * When you enable the feature, the script will install Imunify email on this server. You can also run `imunify360-agent update-license` command to speed up the process.
 * When disabling the feature, the script will deactivate the Imunify email on a server in 24 hours. 
@@ -484,7 +484,7 @@ Available only if CLoudLinux Backup is purchased and activated.
 
 Click _CL Backup_ in the main header menu to go to _CloudLinux Backup_ page. Here you can see a table with all your backups for CloudLinux products.
 
-![](/images/cln/dashboard/newclnclbackup_zoom70.webp)
+![CL Backup page with servers table, region, used/total GB, edit and settings icons](/images/cln/dashboard/newclnclbackup_zoom70.webp)
 
 The table includes  the following columns:
 
@@ -508,7 +508,7 @@ The table includes  the following columns:
 
 Click _Dashboard → Servers_ to go to _All Servers_ page. A list of all servers with activated products belonged to this account is available.
 
-![](/images/cln/dashboard/allserverspng_zoom70.webp)
+![All Servers table with expanded rows for KernelCare and Imunify360 product details](/images/cln/dashboard/allserverspng_zoom70.webp)
 
 The table includes all servers that have been activated in all products within the account. The table contains the following columns:
 
@@ -528,7 +528,7 @@ Click a server name to show server details:
 When you have changed the server license successfully, you need to get a new activation key and activate Imunify360 on the server using [CLI command](https://docs.imunify360.com/command_line_interface/#register) (register). Otherwise, Imunify360 will not be registered and activated, and will not work on the server.
 :::
 
-![](/images/cln/dashboard/imunify360changeserverlisencetype.webp)
+![Change server license type dialog with New License Type dropdown and Change button](/images/cln/dashboard/imunify360changeserverlisencetype.webp)
 
 The following actions are available:
 
@@ -545,15 +545,15 @@ The _Server groups_ feature allows you to add servers in one group and perform g
 
 * Go to _Servers_ and select a required product, then click _Manage server groups_
     
-    ![](/images/cln/dashboard/manage_server_groups.webp)
+    ![All Servers page with Manage server groups button highlighted in red](/images/cln/dashboard/manage_server_groups.webp)
   
 * Click _Create your first group_ or _Create new group_
 
-    ![](/images/cln/dashboard/create_group.webp)
+    ![Manage groups panel with group list and Create new group button outlined in red](/images/cln/dashboard/create_group.webp)
 
 * Type a group name and description if needed
 
-    ![](/images/cln/dashboard/new_group.webp)
+    ![Manage groups dialog with New group form, name and description fields, Save](/images/cln/dashboard/new_group.webp)
 
 * Then click _Save_ to apply changes or click _Cancel_ to close the popup.
 * Close the popup.
@@ -562,39 +562,39 @@ The _Server groups_ feature allows you to add servers in one group and perform g
 
 * Go to _Servers_ and click _Manage server groups_
 
-    ![](/images/cln/dashboard/manage_group.webp)
+    ![All Servers page with Manage server groups button highlighted in red](/images/cln/dashboard/manage_group.webp)
 
-* Select a group and click _Bin_ (![](/images/cln/dashboard/bin.webp))
+* Select a group and click _Bin_ (![Gray trash can delete icon](/images/cln/dashboard/bin.webp))
 * When the group is removed you can close the popup
 
 #### How to add a server to a group
 
-* Go to _Servers_ and select a required product. Click ![](/images/cln/dashboard/plus.webp) in the _Group_ column.
+* Go to _Servers_ and select a required product. Click ![Gray circle with white plus icon](/images/cln/dashboard/plus.webp) in the _Group_ column.
 
-    ![](/images/cln/dashboard/add_server.webp)
+    ![All Servers table with Group column plus icon for a server row in red box](/images/cln/dashboard/add_server.webp)
 
 * Choose a group from the list or create a new one by typing its name
 
-    ![](/images/cln/dashboard/add_item.webp)
+    ![Add to group dialog with open dropdown listing groups and Add to group button](/images/cln/dashboard/add_item.webp)
 
 * Click _Add to group_ to apply changes or click _Cancel_ to close the popup
 * You will see that the server is added to the group
 
-    ![](/images/cln/dashboard/added_result.webp)
+    ![All Servers table with Group 1 cell in Group column highlighted in red](/images/cln/dashboard/added_result.webp)
 
 * Or for group action, select servers in the list and click _Add to server group_.
 
-    ![](/images/cln/dashboard/add_mass_action.webp)
+    ![All Servers with row checked and Add to server group button in red outline](/images/cln/dashboard/add_mass_action.webp)
 
 #### How to remove a server from a group
 
 * Go to _Servers_ and click _Manage server groups_
 
-    ![](/images/cln/dashboard/manage_group.webp)
+    ![All Servers page with Manage server groups button highlighted in red](/images/cln/dashboard/manage_group.webp)
 
-* Scroll to _Servers_ and click ![](/images/cln/dashboard/cross.webp) for a server to be removed from the group
+* Scroll to _Servers_ and click ![Light gray X icon](/images/cln/dashboard/cross.webp) for a server to be removed from the group
 
-    ![](/images/cln/dashboard/remove_server.webp)
+    ![Manage groups dialog with Group 2 selected; server row with X remove control in Servers](/images/cln/dashboard/remove_server.webp)
 
 * Then click _Save_ to apply changes or click _Cancel_ to close the popup
 * Close the popup
@@ -603,11 +603,11 @@ The _Server groups_ feature allows you to add servers in one group and perform g
 
 * Go to _Servers_, select server(s) in the list and click _Add to server group_
 
-    ![](/images/cln/dashboard/add_mass_action.webp)
+    ![All Servers with row checked and Add to server group button in red outline](/images/cln/dashboard/add_mass_action.webp)
 
 * Choose a group or create a new one and click _Add to group_
 
-    ![](/images/cln/dashboard/move_to_another_group.webp)
+    ![Add to group dialog showing Group 2 selected with Add to group button](/images/cln/dashboard/move_to_another_group.webp)
 
 * The server(s) will be moved to another group  
 
@@ -625,17 +625,17 @@ For managing these features via CLN:
 
 2. Go to the 'CloudLinux' tab 
 
-![](/images/cln/dashboard/cln_shared-pro_activation-keys.webp)
+![CloudLinux OS Shared Pro Activation Keys dashboard with default key card and table](/images/cln/dashboard/cln_shared-pro_activation-keys.webp)
 
 3. Press a key when you want to enable/ disable Premium or CDN 
 
 4. Press Edit key 
 
-![](/images/cln/dashboard/cln_shared-pro_edit_key.webp) 
+![CloudLinux OS Activation Key Details with visible key, Edit Key, and servers table](/images/cln/dashboard/cln_shared-pro_edit_key.webp) 
 
 5. Choose new permissions 
 
-![](/images/cln/dashboard/cln_edit-activation_key_permissions.webp) 
+![Edit activation key modal with Premium and CDN feature checkboxes and Important note](/images/cln/dashboard/cln_edit-activation_key_permissions.webp) 
 
 6. Save permissions 
 

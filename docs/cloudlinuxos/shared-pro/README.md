@@ -32,7 +32,7 @@ AccelerateWP Free suite is enabled by default on all new servers. Proceed to [su
 
 ##### Activate AccelerateWP for a single server
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPAdminPaidPremium.webp)
+![WHM CloudLinux Manager AccelerateWP tab: Premium Features checked, upgrade URL field, CDN section](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPAdminPaidPremium.webp)
 
 
 
@@ -42,7 +42,7 @@ By default, AccelerateWP Premium suite includes Object Cache (which is not billa
 
 
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPAdminNonPaidPremium.webp)
+![AccelerateWP settings: Premium for Object Caching (Redis), upgrade URL field, Turn on button](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPAdminNonPaidPremium.webp)
 
 
 Enable AccelerateWP Free for all users on the server via [CLI](#enable-acceleratewp-free)
@@ -67,13 +67,13 @@ It is possible to activate AccelerateWP Free on all compatible servers via the [
 or via the [CLN UI](https://cln.cloudlinux.com/console/cloudlinux/centralized-monitoring). 
 Once Activate button is clicked - AccelerateWP Free will be set up automatically on all compatible servers within couple of minutes.
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/CMInstallationProd.webp)
+![CLN C-Monitoring: Centralized Monitoring and AccelerateWP cards each with orange ACTIVATE](/images/cloudlinuxos/shared-pro/accelerate-wp/CMInstallationProd.webp)
 
 ##### Activate AccelerateWP Premium on all servers via Centralized Monitoring
 
 Starting from ```lve-utils-6.5.11-1``` it is possible to activate AccelerateWP Premium via Centralized Monitoring as well.
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/CMInstallationPremium.webp)
+![Select features modal: Premium Features checked, upgrade URL required, Cancel and ACTIVATE](/images/cloudlinuxos/shared-pro/accelerate-wp/CMInstallationPremium.webp)
 
 AccelerateWP Premium will be activated on all compatible servers once activation button is clicked and upgrade url is provided.
 Before using AccelerateWP Premium features - all end-users will be requested to upgrade to Premium plan using provided upgrade url.
@@ -148,14 +148,14 @@ Resellers' users are not allowed to use AccelerateWP features.
 
 In the _CloudLinux Manager → AccelerateWP_ tab an administrator has the opportunity to provide end-users with a suite of features, which on its turn could be activated by end-users.
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPAdminPaidPremium.webp)
+![WHM CloudLinux Manager AccelerateWP tab: Premium Features checked, upgrade URL field, CDN section](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPAdminPaidPremium.webp)
 
 Once the feature suite is enabled by the administrator, end-users will see an AccelerateWP tab in their control panel interface and be able to activate the optimization feature.
 
 #### Suites usage statistics
 When AccelerateWP is enabled, the AccelerateWP usage statistics are shown.
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPStats.webp)
+![AccelerateWP stats dashboard: Active Users and WordPress sites cards and per-user table](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPStats.webp)
 
 It includes:
 * `Active Users` block with the total number of users and number of users who have activated the optimization feature/total users
@@ -170,12 +170,12 @@ The second column `AccelerateWP` shows a number of user's WordPress sites, optim
 
 To enable premium features, click on the "Activate premium features" link and select the options you want. To integrate functions with billing, you must specify the base URL for the purchase of the function by end users.
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPAdminPaidPremium.webp)
+![WHM CloudLinux Manager AccelerateWP tab: Premium Features checked, upgrade URL field, CDN section](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPAdminPaidPremium.webp)
 
 In case both AccelerateWP and AccelerateWP Premium feature suites are enabled, 
 the statistics are extended with AccelerateWP Premium metrics.
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPStatsPremium.webp)
+![AccelerateWP Premium stats: summary cards and user table with Premium and CDN columns](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPStatsPremium.webp)
 
 Please notice the `AccelerateWP Premium` rows in the `Active Users` and the `Wordpress sites on server` 
 blocks, and also the `AccelerateWP Premium` column in the statistics table.
@@ -188,7 +188,7 @@ If you want to get updated statistics immediately, use the "Rescan users website
 #### Filters
 You may use the following filters to browse AccelerateWP statistics slices.
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPFilters.webp)
+![AccelerateWP Show only filter menu open listing WordPress, AccelerateWP, Premium, CDN options](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPFilters.webp)
 
 * `Users with WordPress sites only` filter will show statistics for users who already have WordPress sites; users without WordPress installations will be hidden
 * `Users with AccelerateWP only` filter will show statistics for users who utilize the AccelerateWP optimization feature; users who did not activate AccelerateWP feature will be hidden
@@ -1004,7 +1004,7 @@ feature for their users.
 
 When AccelerateWP Premium is enabled in the admin interface, users get a proposal to upgrade their subscription.
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPUpgradeNoLink.webp)
+![Upgrade subscription dialog: contact admin for Object cache on cPanel AccelerateWP sites list](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPUpgradeNoLink.webp)
 
 When a user upgrades the subscription to the plan with AccelerateWP support, billing must execute the following command on the server:
 ```
@@ -1029,7 +1029,7 @@ The upgrade window can be customized with a link to the plan upgrade page, which
 cloudlinux-awp-admin set-options --upgrade-url https://plan.upgrade/splash
 ```
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPUpgradeLink.webp)
+![Upgrade subscription modal for Object cache with Upgrade subscription and Close buttons](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPUpgradeLink.webp)
 
 AccelerateWP automatically appends GET parameters when the link is displayed.
 
@@ -1078,14 +1078,14 @@ If you would like to stop using AccelerateWP Premium,
 click on the `manage` link and remove the `Premium Features` checkbox.
 AccelerateWP will be still available for your users.
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPDisablePremiumOnly.webp)
+![Manage dialog: Premium Features checked, SmartAdvice needs X-Ray warning, Save and Cancel](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPDisablePremiumOnly.webp)
 
 ### Disable AccelerateWP
 
 If you would like to stop using AccelerateWP completely, toggle the `AccelerateWP` back.
 Both AccelerateWP and AccelerateWP Premium will be turned off.
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPDisable.webp)
+![CloudLinux Manager AccelerateWP on with Premium manage, Rescan, stats cards, users table](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPDisable.webp)
 
 This operation will:
 * disable the AccelerateWP tab in the users' control panel interface
@@ -1172,7 +1172,7 @@ End-users will not be able to activate the Object Caching feature until the Redi
 
 Corresponding incompatibility warning will be displayed in the control panel's User interface:
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPNoRedis.webp)
+![Incompatibility dialog: Redis extension missing for selected PHP over My WordPress Sites](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPNoRedis.webp)
 
 The Redis extensions are configured for all installed and supported PHP versions automatically:
 * right after the AccelerateWP Premium suite is enabled
@@ -1253,7 +1253,7 @@ All errors will be displayed in standard output and logged into `/var/log/clwpos
 #### End-users of AccelerateWP encounter PHP-related issues during feature activation
 End-users may encounter PHP-related errors while activating the AccelerateWP features.
 
-![](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPBrokenPHP.webp)
+![Advice modal: PHP cannot load mbstring.so; Close and Try again over sites table](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPBrokenPHP.webp)
 
 The general examples of possible reasons are:
 * broken PHP binaries
@@ -2403,8 +2403,8 @@ Make sure that `cm.cloudlinux.com` is available on your end server.
     ```
 3. Log in to the [https://cm.cloudlinux.com/](https://cm.cloudlinux.com/) using CLN credentials (if you are already logged in via CLN, authorization via CM is not necessary, it uses SSO).
 4. Activate statistics collection on all your servers via the [Centralized Monitoring UI](https://cm.cloudlinux.com) or via the [CLN UI](https://cln.cloudlinux.com/console/cloudlinux/centralized-monitoring). Optionally, activate the [AccelerateWP Free](/cloudlinuxos/shared-pro/#acceleratewp-suite)* for all of your compatible servers.
-    ![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMInstallationProd.webp) Additionally, it is possible to activate the [AccelerateWP Premium](/cloudlinuxos/shared-pro/#acceleratewp-premium-suite)* for all compatible servers.
-    ![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMInstallationPremium.webp)
+    ![CLN C-Monitoring view: Centralized Monitoring and AccelerateWP cards with ACTIVATE buttons](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMInstallationProd.webp) Additionally, it is possible to activate the [AccelerateWP Premium](/cloudlinuxos/shared-pro/#acceleratewp-premium-suite)* for all compatible servers.
+    ![CLN Select features modal: Premium Features and customer upgrade link, Cancel and Activate](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMInstallationPremium.webp)
 5. Within couple minutes after the activation, statistics collection and sending to the central server, [AccelerateWP Free](/cloudlinuxos/shared-pro/#acceleratewp-suite)* and [AccelerateWP Premium](/cloudlinuxos/shared-pro/#acceleratewp-premium-suite) * will be set up automatically: all required packages and components will be installed. For new, just registered servers, actions can take up to 5 hours.
 6. Make sure you have activated statistics collection (see paragraph 4) otherwise you will not be able to set up your servers. For instant set up of a registered server after statistics collection was enabled, run the following commands for all servers:
     ```
@@ -2436,7 +2436,7 @@ To turn on the mode without session expired, follow the next steps:
 2. Open the [cm.cloudlinux.com](https://cm.cloudlinux.com/#/servers) in a new browser tab/window (please, use the same browser as in step 1)
 3. Use the toggle to turn on/off 10 min auto logout
 
-    ![](/images/cloudlinuxos/shared-pro/centralized-monitoring/AutoLogout.webp)
+    ![User menu dropdown: 10 min auto logout toggle off and Logout link](/images/cloudlinuxos/shared-pro/centralized-monitoring/AutoLogout.webp)
 
 Your session in the [cln.cloudlinux.com](https://cln.cloudlinux.com/console/) will expire in 10 min. But your session in the [cm.cloudlinux.com](https://cm.cloudlinux.com/#/servers) will not expire while your browser tab remains open.
 
@@ -2447,14 +2447,14 @@ Your session in the [cln.cloudlinux.com](https://cln.cloudlinux.com/console/) wi
 You can access <span class="notranslate">Centralized Monitoring</span> in your [CLN account](https://cln.cloudlinux.com/).
 Click <span class="notranslate">C-Monitoring</span> in the left menu.
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMCLNAccount.webp)
+![Centralized Monitoring Servers tab in CLN: hostname search, Refresh, metrics table row](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMCLNAccount.webp)
 
 #### Servers
 
 
 This page contains the list of all clients’ end servers. The server appears in the list after finishing [Installation](./#installation-2). By default, there is a descending sort by CPU usage.
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAllServers.webp)
+![All Servers table: load avg, CPU %, memory used/total bars, IO read/write per hostname](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAllServers.webp)
 
 The following values are available for each server:
 
@@ -2478,7 +2478,7 @@ Use the search tool to operate with the data.
 To get the detailed statistics for the server via charts, click a desired server line in the table.
 All charts are auto-refreshed and there is an ability to select the period for metrics data to be updated for the chart.
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMUPdates.webp)
+![Toolbar: Last 2 days range dropdown and 60s auto-refresh interval selector](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMUPdates.webp)
 
 :::warning Note
 We store the metrics data for one month only.
@@ -2488,51 +2488,51 @@ We store the metrics data for one month only.
 
 #### Visualization of the most popular server states
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMMostPopularStates.webp)
+![Dashboard cards: uptime, RAM, cores, CPU IOwait; bars for CPU busy, RAM, root disk %](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMMostPopularStates.webp)
 
 #### Disk space usage
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMDiskSpaceUsage.webp)
+![Disk Space Used Basic table: ext4 mounts with size, available, and used percent cells](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMDiskSpaceUsage.webp)
 
 #### Open file descriptor/Context switches
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMOpenFileDescriptorContextSwitches.webp)
+![Line chart Open File Descriptor and context switches dual axis over hours](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMOpenFileDescriptorContextSwitches.webp)
 
 #### System load 1m , 5m, 15m
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMSystemLoad.webp)
+![System Load chart: 1m, 5m, 15m lines with max/avg/current summary table](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMSystemLoad.webp)
 
 #### CPU usage (total, system, user, iowait, steal)
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMSCPUUsag.webp)
+![CPU Basic chart: Total, System, User lines with max/avg/current percentage table](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMSCPUUsag.webp)
 
 #### Network traffic usage
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMNetworkTrafficUsage.webp)
+![Network Traffic Basic chart: eth0 receive and transmit kbps over time](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMNetworkTrafficUsage.webp)
 
 #### Disk space usage
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMDiskSpaceUsageBasics.webp)
+![Disk Space Used Basic line chart for root and temp mountpoints across two days](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMDiskSpaceUsageBasics.webp)
 
 #### Memory usage (total, used, available)
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMMemoryUsage.webp)
+![Memory Basic chart: Total, Used, Available lines over two-day timeline](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMMemoryUsage.webp)
 
 #### Time spent doing I/Os
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMTimeSpentDoingIO.webp)
+![Time Spent Doing I/Os chart: vda IO time with tooltip and max/avg/current](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMTimeSpentDoingIO.webp)
 
 #### Disk IOps Completed
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMDiskIOpsCompleted.webp)
+![Disk IOps Completed chart: vda reads and writes with IOPS summary stats](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMDiskIOpsCompleted.webp)
 
 #### Disk read/write data
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMDiskReadWriteData.webp)
+![Disk R/W Data chart: vda read/write MB per second with max/avg/current table](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMDiskReadWriteData.webp)
 
 #### Disk read/write time
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMDiskReadWriteTime.webp)
+![Disk R/W Time chart: large vda write latency spike; read near zero](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMDiskReadWriteTime.webp)
 
 #### Apache connections (number)/Number of requests per minute/Max connections
 
@@ -2547,13 +2547,13 @@ In the current version, we collect these metrics only for Apache (NOT for LiteSp
 
 #### MySQL queries
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMMySQLQueries.webp)
+![MySQL queries line chart with disclaimer if MySQL unused; Queries legend stats](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMMySQLQueries.webp)
 
 MySQL queries collector gets number of queries executed on the server per minute. It takes data from the MySQL server variable "Questions". You may manually check variable value by executing query `SHOW GLOBAL STATUS LIKE 'Questions';`. For more information about MySQL server variables - please, see MySQL documentation.
 
 #### The most loaded server users for the last minute
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMMostLoadedUsers.webp)
+![Top 5 Users table: CPU, PMem, IOPS, IO bars, MySQL columns, orange Refresh](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMMostLoadedUsers.webp)
 
 We calculate the user’s load by LVE statistics that we collect on the end server.
 The idle state for the user means that the LVE statistics were not collected for the last minute for some reason.
@@ -2585,7 +2585,7 @@ This page contains all users for the all server of the client and their LVE stat
 The description of this page is the same as [*The most loaded server users for the last minute*](./#the-most-loaded-server-users-for-the-last-minute) of the top 5 loaded users.
 
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMUsers.webp)
+![Users tab table: sort and filters; red rows for high CPU vs limit ratios](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMUsers.webp)
 
 User’s metrics data can be sorted by the load-to-limit ratio and by the absolute value.
 
@@ -2593,7 +2593,7 @@ The absolute value is used to analyse the load produced by unlimited users.
 
 The value of the load-to-limit ratio is convenient to use in the analysis of how many resources the users consume and whether they need to change the limits.
 
-The values like this ![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMvalue.webp) means that the resource is unlimited and 500.2 MB is the current usage of it.
+The values like this ![Usage text 500.2MB / ∞ for unlimited LVE limit with current consumption](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMvalue.webp) means that the resource is unlimited and 500.2 MB is the current usage of it.
 
 Metrics data of _Idle users_ is not used in the sorting, so such users always will be at the end of the list.  The sorting can be done for only one metric.
 
@@ -2605,7 +2605,7 @@ We store the metrics data for one month only.
 
 On the user details page, the admin can find the charts for all LVE limits.
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMUsersCharts.webp)
+![Grid of user LVE charts: CPU, memory, IO, MySQL usage vs limits and faults](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMUsersCharts.webp)
 
 
 ### Alert Manager
@@ -2614,23 +2614,23 @@ Alert Manager allows you to create a server or user alert for selected metrics a
 
 #### Alert Manager page
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager1.webp)
+![Alert Manager table: names, metrics, server/user counts, thresholds, email, type](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager1.webp)
 
 The Alert Manager page contains a table with the following:
 
 * **Alert name** - a unique alert name
 * **Tracking metric** - a name of a server/user metric which will trigger the alert notification
 * **# of servers** - number of servers on which the metric will be tracked
-  * click ![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager2.webp) to view a list of servers host names
+  * click ![Gray eye icon to expand server hostnames for an alert rule](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager2.webp) to view a list of servers host names
 * **# of users** - number of users for which the metric will be tracked
-  * click ![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager2.webp) to view a list of users names
+  * click ![Gray eye icon to expand usernames covered by an alert rule](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager2.webp) to view a list of users names
 * **Value** - a condition for the alert rule which will be applied to the tracking metrics
 * **Email** - email to send the triggered events notifications
 * **Type** - a type of the alert rule
 * **# of triggered events** - the number of events from the time, when alert rule was created
-  * ![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager3.webp) the event is still firing
+  * ![Orange warning triangle for alert rows still firing](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager3.webp) the event is still firing
 * **Time  of the last trigger** - the time of last triggered event, it is the time in your browser time zone
-* **Actions** - click ![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager4.webp) to edit and ![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager5.webp) to delete the alert rule
+* **Actions** - click ![Gray pencil edit icon in alert Actions](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager4.webp) to edit and ![Gray trash delete icon in alert Actions](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager5.webp) to delete the alert rule
 
 **Color Codes**
 
@@ -2641,11 +2641,11 @@ The Alert Manager page contains a table with the following:
 
 To create a new alert, click the _Create alert_ button.
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager7.webp)
+![Orange CREATE ALERT button with plus icon](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager7.webp)
 
 Next, fill out the opened popup.
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager6.webp)
+![Create alert modal: Server type, Apache connections metric, threshold errors, notify email](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager6.webp)
 
 * **Name of alert** - a unique alert name
 * **Alert type** - an admin can create a **user** or a **server** alert. [What is the difference between them?](./#difference-between-the-server-alert-and-the-user-alert)
@@ -2750,7 +2750,7 @@ This is the state of an alert that has been active for longer than the configure
 
 #### Alert notifications
 
-![](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager8.webp)
+![Email Alert report table: alert name, time, metric, firing target hostname](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAlertManager8.webp)
 
 * **Alert name** - the link to the alert page
 * **Firing target** - the link to the server details page
@@ -2981,7 +2981,7 @@ X-Ray Autotracing is installed and enabled by default on all new compatible serv
         * Go to the <span class="notranslate">_X-Ray_</span> tab.
         * Click <span class="notranslate">_Install_</span> to start installation.
 
-        ![](/images/cloudlinuxos/shared-pro/x-ray/XRayUI.webp)
+        ![LVE Manager X-Ray tab: not installed message and blue INSTALL button](/images/cloudlinuxos/shared-pro/x-ray/XRayUI.webp)
 
     * Via SSH by running the following command:
   
@@ -2994,7 +2994,7 @@ X-Ray Autotracing is installed and enabled by default on all new compatible serv
 
 6. After installation, use the <span class="notranslate">_Start tracing_</span> button to create your first tracing task for a slow site.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayStartTracing.webp)
+![X-Ray header: Search for URL, Refresh, and green Start tracing button](/images/cloudlinuxos/shared-pro/x-ray/XRayStartTracing.webp)
 
 ### X-Ray serverwide mode
 
@@ -3049,7 +3049,7 @@ Need to be enabled separately, see [How to enable X-Ray Autotracing](/cloudlinux
 
 The *Tracing tasks* tab contains a list of all tracing tasks created both manually and automatically via continuous tasks.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayTracingTaskCreated.webp)
+![Tracing tasks table: Completed rows, Created by column, view/delete, Start tracing](/images/cloudlinuxos/shared-pro/x-ray/XRayTracingTaskCreated.webp)
 
 The *Created* column shows how a task was created – automatically (by continuous task) or manually.
 
@@ -3064,7 +3064,7 @@ yum update lvemanager alt-php-xray
 
 The *Continuous tracing* tab contains a list of continuous tasks for which tracing tasks will be created automatically for a new day for a specific domain.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTasksList.webp)
+![Continuous tracing tab: Running status, domain, report email, Stop and Delete icons](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTasksList.webp)
 
 ### Managing tracing task
 
@@ -3076,12 +3076,12 @@ The *Continuous tracing* tab contains a list of continuous tasks for which traci
 4. Click the <span class="notranslate">_Run_</span> button
 5. Tracing will run in the default mode. In the default mode <span class="notranslate">X-Ray</span> traces the first 20 requests for a specified URL
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayTracingTask.webp)
+![Start tracing dialog: URL error, Record for Request 20, Cancel and Run](/images/cloudlinuxos/shared-pro/x-ray/XRayTracingTask.webp)
 
 * <span class="notranslate">**URL**</span> should be a valid URL of the domain which exists on the current hosting server. The URL field supports wildcard matching. To learn more about wildcard matching, click _How to use special characters_.
 * <span class="notranslate">**Advanced settings**</span> allow you to set an IP address and tracing options: by time or by number of queries.
 
-    ![](/images/cloudlinuxos/shared-pro/x-ray/XRayAdvanced.webp)
+    ![Start tracing dialog: Advanced on, URL and time period validation errors, Client IP *, Run](/images/cloudlinuxos/shared-pro/x-ray/XRayAdvanced.webp)
 
 **Advanced settings**
 
@@ -3092,11 +3092,11 @@ Record for
 
 After creating, the task appears in the list of tracing tasks.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayTrcingTaskList.webp)
+![Tracing tasks compact table: Running with times left, view and stop actions](/images/cloudlinuxos/shared-pro/x-ray/XRayTrcingTaskList.webp)
 
 #### Viewing tracing tasks list
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayTrcingTaskList1.webp)
+![Tracing tasks table: filters, statuses Running Completed On Hold, pagination](/images/cloudlinuxos/shared-pro/x-ray/XRayTrcingTaskList1.webp)
 
 Tasks created *Manually* are simply tracing tasks.
 
@@ -3115,15 +3115,15 @@ A tracing task can have the following statuses:
 Collected requests are available in the UI for 30 days.
 :::
 
-Click ![](/images/cloudlinuxos/shared-pro/x-ray/XRayView.webp) to open a list of collected requests.
+Click ![Eye icon to open collected requests for a tracing task](/images/cloudlinuxos/shared-pro/x-ray/XRayView.webp) to open a list of collected requests.
 
 #### Tracing tasks
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayCollectedRequests.webp)
+![Recorded sessions: summary counts and slow-request rows with duration tooltip](/images/cloudlinuxos/shared-pro/x-ray/XRayCollectedRequests.webp)
 
 The slowest request is highlighted.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRaySlowestRequest.webp)
+![Highlighted request row #1 with URL, IP, timestamp, green duration 12.295 sec](/images/cloudlinuxos/shared-pro/x-ray/XRaySlowestRequest.webp)
 
 * <span class="notranslate">**Total**</span> displays how many requests were collected according to tasks requirements.
 * <span class="notranslate">**Pending**</span> displays how many of collected requests are not visible in the table yet.
@@ -3132,11 +3132,11 @@ The slowest request is highlighted.
 
 There are filters for the request types and the indicator of a filter used now.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/FilterIndicator.webp)
+![Search bar and Requests menu with Slow checked; active blue Slow filter tag](/images/cloudlinuxos/shared-pro/x-ray/FilterIndicator.webp)
 
 If slow requests were not detected during the tracing task, the following is displayed. Here, you can also view all requests.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/RecordedSession.webp)
+![Recorded sessions: no slow requests state; Show all requests; throttled count](/images/cloudlinuxos/shared-pro/x-ray/RecordedSession.webp)
 
 
 <span class="notranslate">X-Ray</span> collects the following data for each request:
@@ -3149,7 +3149,7 @@ If slow requests were not detected during the tracing task, the following is dis
 
 #### Software modules/plugins
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRaySoftwareModulesPlugins.webp)
+![Top plugins by execution time: buddypress vs bbpress duration and percent columns](/images/cloudlinuxos/shared-pro/x-ray/XRaySoftwareModulesPlugins.webp)
 
 The <span class="notranslate">_Software modules/plugins_</span> section displays the following data:
 
@@ -3160,7 +3160,7 @@ The <span class="notranslate">_Software modules/plugins_</span> section displays
 
 #### Database queries
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayDatabaseQueries.webp)
+![Top database queries table: SQL, file, module, calls, Duration (%) green text](/images/cloudlinuxos/shared-pro/x-ray/XRayDatabaseQueries.webp)
 
 The <span class="notranslate">_Database queries_</span> section displays the following data:
 
@@ -3172,7 +3172,7 @@ The <span class="notranslate">_Database queries_</span> section displays the fol
  
 #### External requests
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayExternalRequests.webp)
+![External requests table: URL, file path, Duration (%) for wp-cron call](/images/cloudlinuxos/shared-pro/x-ray/XRayExternalRequests.webp)
 
 The <span class="notranslate">_External requests_</span> section displays the following data:
 
@@ -3182,7 +3182,7 @@ The <span class="notranslate">_External requests_</span> section displays the fo
  
 #### System functions
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRaySystemFunctions.webp)
+![Other system functions table: PHP functions, files, green Duration (%) values](/images/cloudlinuxos/shared-pro/x-ray/XRaySystemFunctions.webp)
 
 The <span class="notranslate">_System functions_</span> section displays the following data:
 
@@ -3192,15 +3192,15 @@ The <span class="notranslate">_System functions_</span> section displays the fol
 
 #### Stopping tracing task
 
-Click ![](/images/cloudlinuxos/shared-pro/x-ray/XRayStop.webp) to stop the tracing task.
+Click ![Square stop icon in tracing task actions column](/images/cloudlinuxos/shared-pro/x-ray/XRayStop.webp) to stop the tracing task.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayStopped.webp)
+![Task row Stopped Finished with asterisk IP and view play delete icons](/images/cloudlinuxos/shared-pro/x-ray/XRayStopped.webp)
 
-The tracing task status will be changed to <span class="notranslate">**Stopped**</span>. Data will not be collected anymore but you can see already collected information or continue tracing later by clicking ![](/images/cloudlinuxos/shared-pro/x-ray/XRayStart.webp).
+The tracing task status will be changed to <span class="notranslate">**Stopped**</span>. Data will not be collected anymore but you can see already collected information or continue tracing later by clicking ![Play triangle icon to continue or start tracing from task row](/images/cloudlinuxos/shared-pro/x-ray/XRayStart.webp).
 
 #### Deleting tracing task 
 
-Click ![](/images/cloudlinuxos/shared-pro/x-ray/XRayDelete.webp) to delete the tracing task.
+Click ![Trash can delete icon in tracing task row](/images/cloudlinuxos/shared-pro/x-ray/XRayDelete.webp) to delete the tracing task.
 
 :::warning Warning!
 When you have deleted a tracing task, all collected data will be unavailable.
@@ -3212,15 +3212,15 @@ When you have deleted a tracing task, all collected data will be unavailable.
 
 1. Click the *Create continuous tracing*  button 
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayCreateContinuousTaskBtn.webp)
+![Create continuous tracing button highlighted beside Start tracing on Tracing tasks tab](/images/cloudlinuxos/shared-pro/x-ray/XRayCreateContinuousTaskBtn.webp)
 
 2. Specify URL in the *Domain* field and email in the *Email for reports* field and click the *Create* button.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayCreateContinuousTaskForm.webp)
+![Create continuous tracing modal: Domain and Email for reports, Create/Cancel](/images/cloudlinuxos/shared-pro/x-ray/XRayCreateContinuousTaskForm.webp)
 
 3. You can see a new task in the *Continuous tracing* tab in the X-Ray UI.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTab.webp)
+![Continuous tracing tab: multiple domains with Created, report emails, Stop/Delete](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTab.webp)
 
 4. If you stop a continuous tracing task, a new task for the next 24 hours will not be created. The task for the current day will be finished at midnight and the report will be emailed.
 
@@ -3230,21 +3230,21 @@ When you have deleted a tracing task, all collected data will be unavailable.
 
 You can find a list of continuous tracing tasks in the _Continuous tracing_ tab.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTasksList.webp)
+![WHM X-Ray Continuous tracing: domain row, Created, email, actions, pagination](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTasksList.webp)
 
 You can find automatically created tasks in the _Tracing tasks_ tab marked as _Automatically_ in the _Created_ column.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTasksListCreated.webp)
+![Tracing tasks: Created Automatically or Manually; Running and Completed rows](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTasksListCreated.webp)
 
 The [statuses for automatically created tasks](/cloudlinux-os-plus/#tracing-status) are the same as for tracing task.
 
-To view detailed info about an automatically created task, click ![](/images/cloudlinuxos/shared-pro/x-ray/XRayView1.webp). You will get requests grouped by hour.
+To view detailed info about an automatically created task, click ![Small eye icon to open hourly collected-requests drill-down](/images/cloudlinuxos/shared-pro/x-ray/XRayView1.webp). You will get requests grouped by hour.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTasksListGrouped.webp)
+![Collected requests by hour: Period, # requests, Duration, Average duration table](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTasksListGrouped.webp)
 
 Click to a group to open a list of the requests.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTasksRequestsList.webp)
+![Hour slice table: Request, URL, Client IP, Start time, Duration columns](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTasksRequestsList.webp)
 
 The following data is collected for each request:
 
@@ -3271,19 +3271,19 @@ To delete the continuous tracing task completely, see [Creating a new continuous
 
 1. Users get daily reports on their emails. An example of a report is shown below:
 
-    ![](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTaskDaylyReportExample.webp)
+    ![Email: daily X-Ray continuous tracing report ready with vok.com link](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTaskDaylyReportExample.webp)
 
 2. Click the link in the email to show the detailed report:
 
-    ![](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTaskDaylyReportCollectedRequests.webp)
+    ![Web report: hourly collected requests table for date with green first row](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTaskDaylyReportCollectedRequests.webp)
 
 3. You can view requests grouped by hour:
 
-    ![](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTaskDaylyReportByHourRequests.webp)
+    ![Recorded sessions for hour: three requests to vok.com/1.php with durations](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTaskDaylyReportByHourRequests.webp)
 
 4. You can also view the detailed information about request:
 
-    ![](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTaskDaylyReportRequestDetails.webp)
+    ![Request detail: Top issue phpinfo system function; Download as PDF button](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTaskDaylyReportRequestDetails.webp)
 
 
 ### X-Ray Autotracing
@@ -3320,7 +3320,7 @@ Check [CLI documentation](/command-line_tools/#x-ray-autotracing) for a descript
 A new tab for Autotracing tasks was added to the X-Ray UI:
 
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayAutotracingtaskstab.webp)
+![Autotracing tasks tab: Running trace Created Automatically (Autotracing)](/images/cloudlinuxos/shared-pro/x-ray/XRayAutotracingtaskstab.webp)
 
 
 #### Autotracing FAQ
@@ -3382,14 +3382,14 @@ Advice will not be generated by old tracing tasks.
 
 While the tracing task is running, X-Ray will look for places where advice can be applied. New advice will be displayed on the *Smart Advice* tab. 
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRaySmartAdviceMainTab.webp)
+![Smart Advice: suggestion counts and table with Review Applied Outdated badges](/images/cloudlinuxos/shared-pro/x-ray/XRaySmartAdviceMainTab.webp)
 
 After the X-Ray finds advice you will see new advice in the *Review* status on the *Smart Advice* tab. 
 Then you may use the *Details* button to see which URLs were found by X-Ray that will be speed up by that advice and use *Quick Action* to enable advice for a site.
 
 Example of details:
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRaySmartAdviceDetails.webp)
+![Advice dialog Review: Turn on Object Cache module with URL and Turn on caching](/images/cloudlinuxos/shared-pro/x-ray/XRaySmartAdviceDetails.webp)
 
 After you apply the advice by using *Quick Action*, the status will change to the *Applied*.
 
@@ -3403,7 +3403,7 @@ If the process of applying advice fails you will see an error log with a detaile
 
 Example when an error appears during advice applying:
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRaySmartAdviceError.webp)
+![Smart Advice table: Quick action Error log and Try again on Review row](/images/cloudlinuxos/shared-pro/x-ray/XRaySmartAdviceError.webp)
 
 #### Smart Advice FAQ
 
@@ -3591,11 +3591,11 @@ You can manage the setting in several interfaces:
 
 **X-Ray settings:**
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayAdvancedMetrics.ui.xray.webp)
+![WHM PHP X-Ray Settings: Advanced performance analytics checked; arrow from tab](/images/cloudlinuxos/shared-pro/x-ray/XRayAdvancedMetrics.ui.xray.webp)
 
 **AccelerateWP settings:**  
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayAdvancedMetrics.ui.awp.webp)
+![AccelerateWP YOUR PRODUCT OPTIONS: Advanced performance analytics only checked](/images/cloudlinuxos/shared-pro/x-ray/XRayAdvancedMetrics.ui.awp.webp)
 
 #### How to enable/disable via CLI
 
@@ -3613,11 +3613,11 @@ To start advanced performance monitoring, you can enable tracing tasks that invo
 
 Once tracing tasks are enabled, the JavaScript snippet will periodically send POST requests to our secure analytics service.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayAdvancedMetrics.request.webp)
+![DevTools Network Headers: POST web-vitals 200 OK to xray.cloudlinux.com](/images/cloudlinuxos/shared-pro/x-ray/XRayAdvancedMetrics.request.webp)
 
 These requests capture anonymous data about page load time and resources.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayAdvancedMetrics.data.webp)
+![DevTools Payload: JSON web-vitals FCP and TTFB poor ratings](/images/cloudlinuxos/shared-pro/x-ray/XRayAdvancedMetrics.data.webp)
 
 
 ### End-user X-Ray plugin
@@ -3635,26 +3635,26 @@ You can hide or show the end-user X-Ray plugin icon by ticking or unticking the 
 
 Go to _LVE Manager → Options Tab → User interface settings_.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/HideXRayAppCheckbox.webp)
+![User interface settings: Hide X-Ray App unchecked; red arrow on checkbox](/images/cloudlinuxos/shared-pro/x-ray/HideXRayAppCheckbox.webp)
 
 :::tip Note
 The X-Ray plugin icon in the end-user interface is hidden when the checkbox is ticked.
 :::
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayAppUIIcon.webp)
+![cPanel SOFTWARE section: X-Ray App tile with red arrow](/images/cloudlinuxos/shared-pro/x-ray/XRayAppUIIcon.webp)
 
 #### How to manage the end-user X-Ray plugin
 
 The web interface of the end-user X-Ray plugin is almost the same as the X-Ray administrator interface.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserUI.webp)
+![End-user PHP X-Ray Tracing tasks: Running row, Created, Start tracing button](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserUI.webp)
 
 But there are some differences and they are described further.
 
 * End-users can create tasks only for their domains from the drop-down list:
-    ![](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserUIStart.webp)
+    ![Start tracing: Choose domain dropdown open; mask field error Please specify mask](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserUIStart.webp)
 * To specify URL or wildcard, end-users should use the input field next to the domain:
-    ![](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserUiSpecifyURL.webp)
+    ![Start tracing: domain user1.com and wordpress/* mask highlighted; Run](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserUiSpecifyURL.webp)
 
 You can read about all other basic interface elements and managing tracing tasks in the [Managing tracing task section](/cloudlinux-os-plus/#managing-tracing-task).
 
@@ -3667,21 +3667,21 @@ Tracing tasks created by an end-user will also be displayed in the administrator
 * The end-user X-Ray plugin does not support creating continuous tasks.
 * The end-user has a limit of tracing tasks running at a time. Before starting the next task, the end-user should wait for the completion of the previous ones or forcefully stop the running ones. Otherwise, the user will get the next error:
     
-    ![](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserUIError.webp)
+    ![Red error banner: limit of running tasks is one already reached](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserUIError.webp)
     :::tip Note
     The current limit is one tracing task per user. 
     :::
 * The administrator and the end-user can’t run the tracing task for the same Domain/URL at the same time. Once, the administrator started a specific tracing task, the end-user will not be able to duplicate it. And the same is true for the administrators – they will just see the running task for the specific domain and see the notification that they're trying to create a tracing task with a duplicated URL.
 * If continuous tracing is enabled for the domain, the end-user will not be able to create a new task for this domain because the same rule works - it will be a duplicate of the existing tracing tasks. The next warning will appear:
     
-    ![](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserUIWarning.webp)
+    ![Orange warning banner: Task duplicated by URL with Show less link](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserUIWarning.webp)
 
     To solve this, the existing running tasks for the same Domain/URL should be stopped or completed. You can find more details about this in the [FAQ](/cloudlinux-os-plus/#what-should-i-do-if-i-see-the-warning-task-is-duplicated-by-url).
 
 * If a user's tracing task was created for a domain which is using the FPM handler there's an additional limitation.  To avoid  frequent reloads of the particular FPM service, **Start tracing** ,  **Stop tracing** or  **Continue tracing** action would be blocked in case if the latest reload of a corresponding FPM service was done less than 1 minute ago.  
 If a user gets such an error message - it means that  1 reload  in  1 minute for a particular FPM service has been already done.  Just try performing the same operation once again in a while.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserFPMerror.webp)
+![Red error: X-Ray User service busy; try again in one minute](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserFPMerror.webp)
     
 ### X-Ray automated throttling detection
 
@@ -3708,15 +3708,15 @@ If limiting by IO and IOPS in total was detected for a particular request, it is
 
 The case of both limiting for the request is also possible.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/CPUIOLimiting.webp)
+![Recorded sessions: throttled rows; tooltip CPU and IO LVE limits exceeded](/images/cloudlinuxos/shared-pro/x-ray/CPUIOLimiting.webp)
 
 Requests with exceeded LVE limits are also marked in the request detailed view.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/RequestDetails.webp)
+![Request detail: duration tooltip LVE limits; Top issues shell_exec table](/images/cloudlinuxos/shared-pro/x-ray/RequestDetails.webp)
 
 Requests with exceeded LVE limits are marked in the PDF report as well.
 
-![](/images/cloudlinuxos/shared-pro/x-ray/PDFReport.webp)
+![X-Ray monitoring report table: Duration notes CPU and IO LVE limits exceeded](/images/cloudlinuxos/shared-pro/x-ray/PDFReport.webp)
 
 
 ### X-Ray client
@@ -3988,11 +3988,11 @@ Note that the URL field supports wildcard matching and you can have a case when 
 1. <span class="notranslate">X-Ray</span> may not send data if a site uses a caching plugin, as the caching plugin is outputting HTML, thus there are no PHP scripts to examine. We encountered such issues with sites that use <span class="notranslate">LSCache</span> and <span class="notranslate">WP Super Cache</span> plugins. Check that your site does not use caching plugins. If so, disable it while tracing a site to get information from <span class="notranslate">X-Ray</span>. Moreover, it can also be because of caching on server side, for example NGINX Cache. Or when using CDN because requests are processed from another host. In such cases, during tracing, caching must also be disabled.
 2. If you set a client’s IP when creating the tracing task, check that your requests come to the server with this IP via phpinfo (since there may be NAT between your local machine and the server).
    
-    ![](/images/cloudlinuxos/shared-pro/x-ray/XRayPHPInfoRemoteAddr.webp)
+    ![phpinfo row: $_SERVER['REMOTE_ADDR'] value 10.106.1.145](/images/cloudlinuxos/shared-pro/x-ray/XRayPHPInfoRemoteAddr.webp)
 
 3. Check that <span class="notranslate">**xray**</span> extension is enabled for the domain. To do so, go to the <span class="notranslate">`phpinfo()`</span> page and make a request. In the phpinfo output try to find the following section:
    
-    ![](/images/cloudlinuxos/shared-pro/x-ray/XRayPHPInfo.webp)
+    ![phpinfo xray directives table: xray.enabled On and related values](/images/cloudlinuxos/shared-pro/x-ray/XRayPHPInfo.webp)
 
 If you cannot see that section, try to restart PHP processes for that user (the simplest way is to restart Apache) and check that you can see the <span class="notranslate">**xray**</span> extension.
 
@@ -4007,7 +4007,7 @@ If you managed to create a tracing task, this means that the <span class="notran
 1. PHP process wasn't reloaded after adding the xray.ini. To solve this, you should restart the Apache or fpm service for the domain on which the tracing was started. At the moment, this is done automatically by the <span class="notranslate">X-Ray</span> manager after creating the task.
 2. Your domain uses a PHP version different from the one which was detected by the <span class="notranslate">X-Ray</span> manager. To solve this, check the scan dir for additional ini files for your domain.
 
-    ![](/images/cloudlinuxos/shared-pro/x-ray/XRayScanDir.webp)
+    ![phpinfo row: Scan this dir for additional .ini files /opt/alt/php70/link/conf](/images/cloudlinuxos/shared-pro/x-ray/XRayScanDir.webp)
 
     Then check the <span class="notranslate">`ini_location`</span> that was passed to the <span class="notranslate">X-Ray</span> manager by running the following command:
 
@@ -4067,7 +4067,7 @@ If you are a reseller and interested in this feature, please leave your request 
 **How to link a server?** 
 If your server is linkable you will see in the Cloudlinux Manager UI (Dashboard tab) the component with input field which allows linking the server to CLN.
 
-![](/images/cm-ui-component.png)
+![WHM CloudLinux Manager Dashboard: Link server to CLN token field and button](/images/cm-ui-component.webp)
 
 To link the server, it is required to perform the following:
 
@@ -4077,7 +4077,7 @@ To link the server, it is required to perform the following:
 
 After these steps you server will be linked. And you will see it in the Centralized Monitoring.
 
-![](/images/linked-server-centralized-monitoring.png)
+![CLN Shared Pro servers table: Linked filter and server row with Linked tag](/images/linked-server-centralized-monitoring.webp)
 
 ### CLI utility /usr/sbin/cl-link-to-cln 
 

@@ -45,8 +45,8 @@ These are configuration steps:
 
     * Via MultiPHP Manager
 
-   ![](/images/ubuntu/faq/viaMultiPHP.webp)
+   ![cPanel MultiPHP screen: PHP 7.4 default, PHP-FPM unavailable with warning banner, Install and Refresh actions](/images/ubuntu/faq/viaMultiPHP.webp)
 
 2. Enable PHP-fpm handler for domain via MultiPHP Manager
 
-   ![](/images/ubuntu/faq/enablephp-fpm.webp)
+   ![MultiPHP Manager User Domain Settings table: domain row with PHP 7.4 and PHP-FPM toggle enabled](/images/ubuntu/faq/enablephp-fpm.webp)

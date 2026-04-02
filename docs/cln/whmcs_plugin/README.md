@@ -71,9 +71,9 @@ If your hosting requires specific files permissions, change them accordingly in 
 8. Click <span class="notranslate">_Save Changes_</span> to confirm.
 9. If you want to use a custom field to get the correct IP during order, you can fill the _Name of the custom IP_ field and add a custom field with the same name to the main product. For example:
    * linked CloudLinuxLicenses product
-      ![](/images/cln/whmcs_plugin/LinkedCLProducts.webp)
+      ![WHMCS product Module Settings: CloudLinuxLicenses, Imunify360 ImunifyAV+, custom IP field name, token, automation radios](/images/cln/whmcs_plugin/LinkedCLProducts.webp)
    * main product
-      ![](/images/cln/whmcs_plugin/MainProduct.webp)
+      ![WHMCS product Custom Fields tab: existing text field “Some custom IP field” with Show on Order Form, add-new field form below](/images/cln/whmcs_plugin/MainProduct.webp)
 10.  Setup desired <span class="notranslate">_Auto-setup_</span> options.
 
 :::tip Notes
@@ -88,11 +88,11 @@ If your hosting requires specific files permissions, change them accordingly in 
 1. Go to <span class="notranslate">_Setup → Add-on Modules_</span>, find <span class="notranslate">_CloudLinux Licenses Add-on_</span> and click <span class="notranslate">_Activate_</span> next to it.
 2. The next step is permitting access to this module. Click <span class="notranslate">_Configure_</span>, select admin roles and confirm by clicking <span class="notranslate">_Save Changes_</span>.
 
-![](/images/cln/whmcs_plugin/whmcsfig1imunify360licenseforwhmcs_zoom70.webp)
+![WHMCS product Module Settings: CloudLinuxLicenses with CloudLinux product, key-based license, Key Limit 2, masked API token, debug on](/images/cln/whmcs_plugin/whmcsfig1imunify360licenseforwhmcs_zoom70.webp)
 
 _Fig 1: Imunify360 License For WHMCS provisioning module configuration._
 
-![](/images/cln/whmcs_plugin/fig2imunify360licenseforwhmcsaddon_zoom70.webp)
+![CloudLinux Licenses Addon admin: Licenses List tab, five search filters, table of cPanel-linked KernelCare, Imunify360, CloudLinux licenses](/images/cln/whmcs_plugin/fig2imunify360licenseforwhmcsaddon_zoom70.webp)
 
 _Fig 2: Imunify360 License For WHMCS add-on module main page._
 
@@ -112,9 +112,9 @@ The following steps must be performed to prepare such connection:
 1. Go to <span class="notranslate">_Setup → Products/Services → Products Add-ons_</span> and click <span class="notranslate">_Add New Add-on_</span>.
 2. Fill addon name, set up billing cycle and price. Then tick <span class="notranslate">_Show on Order_</span> checkbox, assign add-on to the product and click <span class="notranslate">_Save Changes_</span>.
 
-![](/images/cln/whmcs_plugin/fig3configurationofproductaddon1_zoom50.webp)
+![WHMCS Product Add-ons Edit Addon Details: name “Imunify360 license”, Show on Order checked, Welcome Email None, Addon Weighting 0](/images/cln/whmcs_plugin/fig3configurationofproductaddon1_zoom50.webp)
 
-![](/images/cln/whmcs_plugin/fig3configurationofproductaddon2_zoom50.webp)
+![WHMCS Product Add-ons Applicable Products tab: dual lists with “Cloudlinux - Hosting” in Selected Products, arrow controls, Save Changes](/images/cln/whmcs_plugin/fig3configurationofproductaddon2_zoom50.webp)
 
 _Fig 3: Configuration of product add-on, which will trigger license product adding._
 
@@ -122,7 +122,7 @@ _Fig 3: Configuration of product add-on, which will trigger license product addi
 1. Go to <span class="notranslate">_Add-ons → CloudLinux Licenses Add-on → Add-on Relations_</span> and click <span class="notranslate">_Add Relation_</span>.
 2. Select previously created product add-on and license product as shown below and click <span class="notranslate">_Add Relation_</span>.
 
-![](/images/cln/whmcs_plugin/fig4creatingrelation_zoom70.webp)
+![CloudLinux Licenses Addon Addon Relations tab: Existing Addon Relations table plus Add Relation dialog with two dropdowns and blue ADD RELATION](/images/cln/whmcs_plugin/fig4creatingrelation_zoom70.webp)
 
 _Fig 4: Creating relation between product add-on and provisioning module._
 
@@ -139,7 +139,7 @@ Please do not set up pricing for license provisioning product. In exchange, you 
 2. Go to <span class="notranslate">_Add-ons → CloudLinux Licenses Add-on → Products Relations_</span> and click <span class="notranslate">_Add Relation_</span>.
 3. Select server provisioning product from the Main product drop-down list and license provisioning product from the <span class="notranslate">_Linked Product With License_</span> and click <span class="notranslate">_Add Relation_</span>.
 
-![](/images/cln/whmcs_plugin/fig5creatingrelationdirectly_zoom70.webp)
+![CloudLinux Licenses Addon Product Relations tab: table of cPanel to license links, Add Relation dialog with Main product and Linked Product dropdowns](/images/cln/whmcs_plugin/fig5creatingrelationdirectly_zoom70.webp)
 
 _Fig 5: Creating relations directly between server and license provisioning modules._
 
@@ -164,7 +164,7 @@ Below we will show what steps to proceed to prepare such connection:
    * If you have changed <span class="notranslate">Dedicated IP</span> of the main product, then each related IP-based product will terminate an old IP license and create a new one for a new IP
 :::
 
-![](/images/cln/whmcs_plugin/fig6creatingrelationdirectlybetweenserverandlicenseprovisioningmodules_zoom70.webp)
+![CloudLinux Licenses Addon Configurable Options Relations tab: existing mappings table and Add Relation dialog with three license/option dropdowns](/images/cln/whmcs_plugin/fig6creatingrelationdirectlybetweenserverandlicenseprovisioningmodules_zoom70.webp)
 
 _Fig 6: Creating relation directly between server and license provisioning modules._
 
@@ -181,7 +181,7 @@ In order to allow your client to decide whether he wants to order server with or
 3. Go to the <span class="notranslate">_Module Settings_</span> tab and select <span class="notranslate">_CloudLinux Licenses_</span> from <span class="notranslate">_Module Name_</span> drop-down.
 4. Fill <span class="notranslate">_Username_</span> and <span class="notranslate">_Password_</span> with your CloudLinux API access (API secret key) details and select desired license type from <span class="notranslate">_License Type_</span> drop-down. Click <span class="notranslate">_Save Changes_</span> to confirm.
 
-![](/images/cln/whmcs_plugin/fig6configurationofproductaddon_zoom50.webp)
+![WHMCS Product Add-on Module Settings: CloudLinuxLicenses, Imunify360, Use key checked, Max Users, Key Limit 1, auto-setup on order](/images/cln/whmcs_plugin/fig6configurationofproductaddon_zoom50.webp)
 
 _Fig 7: Configuration of product add-on with Provisioning Modules._
 
@@ -206,14 +206,14 @@ _Fig 7: Configuration of product add-on with Provisioning Modules._
   
 | |
 :-------------------------: 
-|![](/images/cln/whmcs_plugin/fig7setupkernelcarelicense_zoom70.webp)|
+|![WHMCS product Module Settings: KernelCare, Use Key checked, Key Limit 1, masked token, “Do not automatically setup this product” selected](/images/cln/whmcs_plugin/fig7setupkernelcarelicense_zoom70.webp)|
 |Fig 8.2: Setup KernelCare License.|
 
 * the _License Key Custom Field_ will be automatically added.
 
 | |
 :-------------------------: 
-|![](/images/cln/whmcs_plugin/fig8licensekeycustomfield_zoom70.webp)|
+|![WHMCS product Custom Fields tab: yellow “Changes Saved” banner, License Key text field with Admin Only checked, Delete Field button](/images/cln/whmcs_plugin/fig8licensekeycustomfield_zoom70.webp)|
 |Fig 9.2: License Key Custom Field is displayed while editing service.|
 
 ### Imunify360 Key Licenses
@@ -226,7 +226,7 @@ _Fig 7: Configuration of product add-on with Provisioning Modules._
    * in <span class="notranslate">_Max Users_</span> field enter the number of users per server
    * in <span class="notranslate">_Key Limit_</span> field enter the number of servers and click <span class="notranslate">_Save Changes_</span>
 
-![](/images/cln/whmcs_plugin/fig7imunify360productsettings_zoom50.webp)
+![WHMCS product Module Settings: yellow Changes Saved banner, Imunify360 key license, Use Key and Debug checked, setup on first payment](/images/cln/whmcs_plugin/fig7imunify360productsettings_zoom50.webp)
 
 _Fig 8.3: Imunify360 Product settings._
 
@@ -238,7 +238,7 @@ _Fig 8.3: Imunify360 Product settings._
   * when <span class="notranslate">_Service Created Successfully_</span> message appears, you can edit <span class="notranslate">_Service_</span>
   * enter information and settings and click <span class="notranslate">_Save Changes_</span>
 
-![](/images/cln/whmcs_plugin/fig8imunify360servicesettings_zoom50.webp)
+![WHMCS admin client Products/Services: green “Service Created Successfully”, Imunify360 Key Active, Create/Suspend/Terminate, license details table](/images/cln/whmcs_plugin/fig8imunify360servicesettings_zoom50.webp)
 
 _Fig 9.3: Imunify360 Service settings._
 
@@ -248,18 +248,18 @@ _Fig 9.3: Imunify360 Service settings._
 
 All the services registered in the account are displayed in <span class="notranslate">_My Products & Services_</span> area. When you choose a particular Product/Service and click <span class="notranslate">_View Details_</span>, you can view Product information, change license key, view Add-ons or make changes in <span class="notranslate">Management Actions</span> section.
 
-![](/images/cln/whmcs_plugin/fig9clientproductslist_zoom50.webp)
+![WHMCS client area My Products & Services: sidebar status counts, table with Imunify360 license and Hosting rows, Active badges, dev-license banner](/images/cln/whmcs_plugin/fig9clientproductslist_zoom50.webp)
 
 _Fig 10.1: Client’s products list._
 
-![](/images/cln/whmcs_plugin/fig10licensesdetails_zoom50.webp)
+![WHMCS client Manage Product for Imunify360 Key: overview card, ACTIVE, License Details table with Change beside key, server limit 1 / 2](/images/cln/whmcs_plugin/fig10licensesdetails_zoom50.webp)
 
 _Fig 11: Licenses details._
 
 To order and purchase a new service do the following:
 * choose <span class="notranslate">_Category → Imunify360 Group_</span> and click <span class="notranslate">_Order Now_</span> on a particular service
 
-![](/images/cln/whmcs_plugin/fig11orderproductsgroup_zoom50.webp)
+![WHMCS client store Imunify360 group category: left categories menu, Hosting card at $0.00 USD with green Order Now, dev-license warning](/images/cln/whmcs_plugin/fig11orderproductsgroup_zoom50.webp)
 
 _Fig 12: Order - Products group._
 
@@ -267,14 +267,14 @@ _Fig 12: Order - Products group._
 * enter information in <span class="notranslate">_Configure Server_</span> area
 * choose <span class="notranslate">_Available Add-ons_</span> and click <span class="notranslate">_Continue Shopping_</span> to proceed or <span class="notranslate">_Checkout_</span> to view service details
 
-![](/images/cln/whmcs_plugin/fig12orderconfigureproduct_zoom50.webp)
+![WHMCS configure Hosting: Available Add-ons with Imunify360 license added to cart, right sidebar order summary $100.00 USD, Continue button](/images/cln/whmcs_plugin/fig12orderconfigureproduct_zoom50.webp)
 
 _Fig 13: Order - Configure product._
 
 * enter <span class="notranslate">_Promotional Code_</span> in a specific field if you have one
 * choose <span class="notranslate">_Payment Method_</span> and click <span class="notranslate">_Continue Shopping_</span>
 
-![](/images/cln/whmcs_plugin/fig13orderreviewandcheckout_zoom50.webp)
+![WHMCS client Review & Checkout: cart lines Hosting and Imunify360 add-on, Promo Code field, Validate Code, sidebar total $100, green Checkout](/images/cln/whmcs_plugin/fig13orderreviewandcheckout_zoom50.webp)
 
 _Fig 14: Order - review and checkout._
 
@@ -288,7 +288,7 @@ Only change IP address functionality have to be ordered manually.
 
 You can also view the details of created license.
 
-![](/images/cln/whmcs_plugin/fig14imunify360licensesforwhmcsadminarea_zoom50.webp)
+![WHMCS Client Profile Products/Services: green Changes Saved banner, Imunify360 Key Active, Dedicated IP, Module Commands, License and Server Details](/images/cln/whmcs_plugin/fig14imunify360licensesforwhmcsadminarea_zoom50.webp)
 
 _Fig 15: Imunify360 Licenses For WHMCS admin area._
 
@@ -298,12 +298,12 @@ _Fig 15: Imunify360 Licenses For WHMCS admin area._
 
 The clients are also able to view their servers license details. And as well as you, they are able to change IP address of their licenses.
 
-![](/images/cln/whmcs_plugin/fig15imunify360licensesforwhmcsclientarea_zoom50.webp)
+![WHMCS client Manage Product: Imunify360 Key ACTIVE card, billing summary, License Details with Change beside key, max users, 1 / 2 server limit](/images/cln/whmcs_plugin/fig15imunify360licensesforwhmcsclientarea_zoom50.webp)
 
 _Fig 16: Imunify360 Licenses For WHMCS Client Area._
 
 To change IP address, click <span class="notranslate">_Change_</span> as shown on the screen above. Then specify IP address and click <span class="notranslate">_Save_</span>.
-![](/images/cln/whmcs_plugin/fig16changinglicenseipaddress_zoom70.webp)
+![WHMCS Manage tab: License Details with key in text field, blue Save button, Cancel link; Server Details table ServerId, IP, Created](/images/cln/whmcs_plugin/fig16changinglicenseipaddress_zoom70.webp)
 
 _Fig 17: Changing License IP Address._
 
@@ -314,7 +314,7 @@ _Fig 17: Changing License IP Address._
 You can view the list of all licenses owned by your client at our add-on → <span class="notranslate">_Licenses List_</span>.
 You can filter the list of licenses by client name, server provisioning products, license provisioning products and license IP address/Key.
 
-![](/images/cln/whmcs_plugin/fig18licenseslist_zoom70.webp)
+![CloudLinux Licenses Addon Licenses List: five filters, table (ID, Client, products, IP/key, type), three cPanel rows, pagination](/images/cln/whmcs_plugin/fig18licenseslist_zoom70.webp)
 
 _Fig 18: Licenses List._
 
@@ -325,7 +325,7 @@ _[for WHMCS 7.2.x and newer]_
 
 You can view list of all product add-on with <span class="notranslate">Provisioning Modules</span> licenses owned by your client at our addon → <span class="notranslate">Licenses List</span>.
 
-![](/images/cln/whmcs_plugin/fig19addonlicenseslist_zoom70.webp)
+![CloudLinux Licenses Addon Addon Licenses List tab: three filters, table with Client Name, three addon rows, IP/key column, red license types](/images/cln/whmcs_plugin/fig19addonlicenseslist_zoom70.webp)
 
 _Fig 19: Add-on Licenses List._
 
