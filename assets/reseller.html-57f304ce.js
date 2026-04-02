@@ -1,1 +1,0 @@
-const e=JSON.parse('{"key":"v-07bc00e4","path":"/cln/spacewalk/reseller.html","title":"","lang":"en-US","frontmatter":{},"headers":[{"level":2,"title":"Server Accounts and Spacewalk Account Management","slug":"server-accounts-and-spacewalk-account-management","link":"#server-accounts-and-spacewalk-account-management","children":[]}]}');export{e as data};
