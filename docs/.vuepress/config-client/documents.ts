@@ -30,8 +30,8 @@ export default [
         link: "/user-docs/user-docs-shared-pro-cloudlinux/",
     },
     {
-        title: "Website Isolation",
+        title: "CloudLinux Isolates",
         description: "A security feature that provides domain-level isolation within CageFS.",
-        link: "/cloudlinuxos/website_isolation/",
+        link: "/cloudlinuxos/isolates/",
     }
 ]
