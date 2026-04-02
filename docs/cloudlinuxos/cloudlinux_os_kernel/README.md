@@ -668,6 +668,10 @@ tuned-adm off
 
 CloudLinux OS supports **cgroup v2** on **CloudLinux OS 8, 9, 10, and Ubuntu 22** — CloudLinux OS 7 is not supported.
 
+::: tip Note
+**CloudLinux OS 10** uses **cgroup v2 by default**. On **CloudLinux OS 8, 9, and Ubuntu 22**, cgroup v1 is the default.
+:::
+
 The following package versions are required:
 
 | Package | CL8 | CL9 | CL10 | Ubuntu 22 |
