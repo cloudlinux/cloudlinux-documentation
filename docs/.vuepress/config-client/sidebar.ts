@@ -60,7 +60,7 @@ export default {
                 "/cloudlinuxos/shared-pro/",
                 "/cloudlinuxos/command-line_tools/",
                 "/cloudlinuxos/max_webserver/",
-                "/cloudlinuxos/website_isolation/",
+                "/cloudlinuxos/isolates/",
                 "/cloudlinuxos/alt-ea_packages/",
                 "/cloudlinuxos/control_panel_integration/",
                 "/cloudlinuxos/cloudlinux_os_kernel/",
