@@ -36,6 +36,10 @@ When CloudLinux Isolates is enabled for a domain:
 
 :::tip Warning
 CloudLinux Isolates fully supports LSAPI and CGI handlers. FPM has partial support for specific ea-php and alt-php versions only. FCGI support is planned for future releases.
+::: 
+
+:::tip Note
+LiteSpeed is not supported by site isolation.
 :::
 
 #### Compatible Control Panels
