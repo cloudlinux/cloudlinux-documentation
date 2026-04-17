@@ -21,6 +21,7 @@ When CloudLinux Isolates is enabled for a domain:
 | Package            | Minimum Version |
 | ------------------ | --------------- |
 | cagefs             | 7.6.29-1        |
+| lve-utils          | 6.6.30-1        |
 | lve (liblve)       | 2.2-1           |
 | lve-wrappers       | 0.7.13-1        |
 | alt-python27-cllib | 3.4.33-1        |
@@ -176,7 +177,7 @@ CloudLinux Isolates was allowed for all users.
 * Creates the feature flag at `/opt/cloudlinux/flags/enabled-flags.d/website-isolation.flag`
 * Sets up the per-user denied directory at `/etc/cagefs/site-isolation.users.denied`
 * Triggers a CageFS remount to apply necessary mount configurations
-* Registers the `cagefsctl-user` proxyexec command for user-level management
+* Registers the `isolatectl` proxyexec command for user-level management
 * Must be run with root privileges
 
 ***
@@ -471,18 +472,22 @@ jane
 
 ***
 
-### User-Level Management
+### User-Level Management (`isolatectl`)
 
-End users can manage CloudLinux Isolates for their own domains using the `cagefsctl-user` utility. This command runs inside CageFS via proxyexec and allows users to enable, disable, and list isolation for domains they own — without requiring root access.
+End users can manage CloudLinux Isolates and per-domain resource limits for their own domains using the `isolatectl` utility. All output is JSON.
+
+`isolatectl` must be run as a regular (non-root) user. It automatically identifies the calling user — no `--username` or `--lve-id` flags are needed.
 
 :::tip Note
 User-level management requires that CloudLinux Isolates is allowed server-wide **and** allowed for the specific user by the server administrator.
 :::
 
-#### Enable Isolation for a Domain (User-Level)
+#### Site Isolation
+
+##### Enable Isolation for a Domain (User-Level)
 
 ```
-cagefsctl-user site-isolation-enable --domain <domain>[,<domain2>,...]
+isolatectl site-isolation enable --domain <domain>[,<domain2>,...]
 ```
 
 Enables CloudLinux Isolates for one or more domains owned by the calling user.
@@ -496,10 +501,10 @@ Enables CloudLinux Isolates for one or more domains owned by the calling user.
 **Example:**
 
 ```
-$ cagefsctl-user site-isolation-enable --domain example.com
+$ isolatectl site-isolation enable --domain example.com
 {"result": "success", "enabled_sites": ["example.com"]}
 
-$ cagefsctl-user site-isolation-enable --domain site1.com,site2.com
+$ isolatectl site-isolation enable --domain site1.com,site2.com
 {"result": "success", "enabled_sites": ["site1.com", "site2.com"]}
 ```
 
@@ -510,10 +515,10 @@ $ cagefsctl-user site-isolation-enable --domain site1.com,site2.com
 
 ***
 
-#### Disable Isolation for a Domain (User-Level)
+##### Disable Isolation for a Domain (User-Level)
 
 ```
-cagefsctl-user site-isolation-disable --domain <domain>[,<domain2>,...]
+isolatectl site-isolation disable --domain <domain>[,<domain2>,...]
 ```
 
 Disables CloudLinux Isolates for one or more domains owned by the calling user.
@@ -527,16 +532,16 @@ Disables CloudLinux Isolates for one or more domains owned by the calling user.
 **Example:**
 
 ```
-$ cagefsctl-user site-isolation-disable --domain example.com
+$ isolatectl site-isolation disable --domain example.com
 {"result": "success", "enabled_sites": []}
 ```
 
 ***
 
-#### List Isolated Domains (User-Level)
+##### List Isolated Domains (User-Level)
 
 ```
-cagefsctl-user site-isolation-list
+isolatectl site-isolation list
 ```
 
 Lists all domains with CloudLinux Isolates enabled for the calling user.
@@ -544,8 +549,130 @@ Lists all domains with CloudLinux Isolates enabled for the calling user.
 **Example:**
 
 ```
-$ cagefsctl-user site-isolation-list
+$ isolatectl site-isolation list
 {"result": "success", "enabled_sites": ["example.com", "mysite.org"]}
+```
+
+***
+
+#### Per-Domain Resource Limits
+
+Per-domain resource limits allow end users to set and apply individual CPU, memory, I/O, and process limits for each isolated domain. Domain limits require site isolation to be enabled first.
+
+##### List Domain Limits
+
+```
+isolatectl limits list [--domain <domain>]
+```
+
+Shows the configured limits for all domains or a specific domain.
+
+**Parameters:**
+
+| Parameter  | Description                                          |
+| ---------- | ---------------------------------------------------- |
+| `--domain` | (Optional) Show limits for a specific domain only    |
+
+**Example:**
+
+```
+$ isolatectl limits list
+{
+  "result": "success",
+  "domains": [
+    {
+      "name": "example.com",
+      "lve_id": 1000,
+      "limits": {"cpu": 2500, "pmem": 1048576}
+    }
+  ]
+}
+
+$ isolatectl limits list --domain example.com
+{
+  "result": "success",
+  "domains": [
+    {
+      "name": "example.com",
+      "lve_id": 1000,
+      "limits": {"cpu": 2500, "pmem": 1048576}
+    }
+  ]
+}
+```
+
+***
+
+##### Set Domain Limits
+
+```
+isolatectl limits set --domain <domain> [--cpu VAL] [--pmem VAL] [--io VAL] [--nproc VAL] [--iops VAL] [--ep VAL] [--vmem VAL]
+```
+
+Stores per-domain limits in the user's config and applies them to the kernel.
+
+**Parameters:**
+
+| Parameter  | Description                                                |
+| ---------- | ---------------------------------------------------------- |
+| `--domain` | Domain name (required)                                     |
+| `--cpu`    | CPU limit (hundredths of percent, e.g. 2500 = 25%)        |
+| `--pmem`   | Physical memory limit (bytes)                              |
+| `--io`     | I/O limit (KB/s)                                           |
+| `--nproc`  | Max processes                                              |
+| `--iops`   | I/O operations per second                                  |
+| `--ep`     | Max entry processes (concurrent connections)               |
+| `--vmem`   | Virtual memory limit (bytes)                               |
+
+At least one limit parameter is required.
+
+**Example:**
+
+```
+$ isolatectl limits set --domain example.com --cpu 5000 --pmem 268435456 --io 2048 --nproc 30 --iops 500 --ep 20 --vmem 536870912
+{
+  "result": "success",
+  "domain": "example.com",
+  "limits": {
+    "cpu": 5000,
+    "pmem": 268435456,
+    "io": 2048,
+    "nproc": 30,
+    "iops": 500,
+    "ep": 20,
+    "vmem": 536870912
+  }
+}
+```
+
+This sets: CPU 50%, 256 MB PMEM, 2048 KB/s IO, 30 procs, 500 IOPS, 20 entry procs, 512 MB VMEM.
+
+
+***
+
+##### Apply Domain Limits
+
+```
+isolatectl limits apply --domain <domain>
+```
+
+Pushes the stored limits for a domain from the config file to the kernel. Use after manually editing the config or to re-apply limits after a restart.
+
+**Parameters:**
+
+| Parameter  | Description        |
+| ---------- | ------------------ |
+| `--domain` | Domain name        |
+
+**Example:**
+
+```
+$ isolatectl limits apply --domain example.com
+{
+  "result": "success",
+  "domain": "example.com",
+  "limits": {"cpu": 5000, "pmem": 268435456}
+}
 ```
 
 
