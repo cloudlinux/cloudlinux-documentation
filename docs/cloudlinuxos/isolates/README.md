@@ -25,21 +25,44 @@ When CloudLinux Isolates is enabled for a domain:
 | lve-wrappers       | 0.7.13-1        |
 | alt-python27-cllib | 3.4.33-1        |
 
+#### Compatible Web Servers
+
+| Web Server | Status | Notes |
+| --- | --- | --- |
+| Apache | ✅ Supported | See [Compatible PHP Handlers](#compatible-php-handlers) below for handler-specific requirements. |
+| NGINX | 🔜 Coming in future releases | |
+| LiteSpeed | 🔜 Coming in future releases | |
+
 #### Compatible PHP Handlers
 
-| Handler | Status                                                                            |
-| ------- | --------------------------------------------------------------------------------- |
-| LSAPI   | ✅ Supported (Recommended)                                                        |
-| CGI     | ✅ Supported                                                                      |
-| FPM     | ⚠️ Partially Supported - see [Compatible PHP Versions](#compatible-php-versions) |
-| FCGI    | 🔜 Coming in future releases                                                      |
+The following table applies to **Apache** — the only supported web server for CloudLinux Isolates.
 
-:::tip Warning
-CloudLinux Isolates fully supports LSAPI and CGI handlers. FPM has partial support for specific ea-php and alt-php versions only. FCGI support is planned for future releases.
-::: 
+| Handler | Status | Notes |
+| --- | --- | --- |
+| LSAPI | ✅ Supported (Recommended) | Requires `lsapi_per_user Off` (the default). See [LSAPI restriction](#lsapi-per-user-restriction) below. |
+| CGI | ✅ Supported | |
+| FPM | ⚠️ Partially supported | See [Compatible PHP Versions](#compatible-php-versions) for minimum package versions. |
+| FCGI | 🔜 Coming in future releases | |
 
-:::tip Note
-LiteSpeed is not supported by site isolation.
+##### LSAPI per-user restriction
+
+The mod_lsapi directive [`lsapi_per_user`](/cloudlinuxos/cloudlinux_os_components/#lsapi-per-user) controls how lsphp backend processes are spawned:
+
+* **`lsapi_per_user Off`** (default) — one lsphp master per virtual host. Each master receives the site's `DOCUMENT_ROOT` and enters the correct isolated environment. **This is the only mode compatible with CloudLinux Isolates.**
+* **`lsapi_per_user On`** — a single lsphp master serves all virtual hosts for a user. In this mode, mod_lsapi does not pass `DOCUMENT_ROOT` to the backend, so isolation cannot determine which site a request belongs to. **This mode is incompatible with CloudLinux Isolates.**
+
+To check your current setting, run:
+
+```
+grep -ri 'lsapi_per_user' /etc/apache2/conf.d/ /etc/httpd/conf.d/ 2>/dev/null
+```
+
+The directive is typically located in `/etc/apache2/conf.d/lsapi.conf` (cPanel) or `/etc/httpd/conf.d/lsapi.conf`. If the command returns no output, or all matches are commented out or show `Off`, your configuration is compatible (the default is `Off`). If any match shows `lsapi_per_user On` (uncommented), you must set it to `Off` before enabling CloudLinux Isolates.
+
+:::warning Important
+`lsapi_per_user On` is **incompatible** with CloudLinux Isolates. In per-user mode, a single lsphp master process handles all virtual hosts for a user, making per-domain isolation architecturally impossible. Switch to `lsapi_per_user Off` (the default) before enabling isolation.
+
+For full details on this directive, see [lsapi_per_user in mod_lsapi documentation](/cloudlinuxos/cloudlinux_os_components/#lsapi-per-user).
 :::
 
 #### Compatible Control Panels
