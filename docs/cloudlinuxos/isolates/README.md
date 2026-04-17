@@ -70,8 +70,8 @@ For full details on this directive, see [lsapi_per_user in mod_lsapi documentati
 | Handler                  | Status                       |
 | -------                  | ---------------------------- |
 | cPanel                   | ✅ Supported                 |
-| Plesk                    | 🔜 Coming in future releases |
-| DirectAdmin              | 🔜 Coming in future releases |
+| Plesk                    | ✅ Supported                 |
+| DirectAdmin              | ✅ Supported                 |
 | Integration Scripts*     | ✅ Supported                 |
 
 *[Control Panel Integration](/cloudlinuxos/control_panel_integration/#control-panel-api-integration)
