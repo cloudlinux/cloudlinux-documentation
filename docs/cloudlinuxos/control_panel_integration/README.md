@@ -715,12 +715,12 @@ All logic of running the script with or without this parameter is handled on the
   "data": {
     "domain.com": {
       "owner": "username",
-      "document_root": "/home/username/public_html/",
+      "document_root": "/home/username/public_html",
       "is_main": true
     },
     "subdomain.domain.com": {
       "owner": "username",
-      "document_root": "/home/username/public_html/subdomain/",
+      "document_root": "/home/username/public_html/subdomain",
       "is_main": false
     }
   },
@@ -740,7 +740,7 @@ All logic of running the script with or without this parameter is handled on the
   "data": {
     "domain.com": {
       "owner": "username",
-      "document_root": "/home/username/public_html/",
+      "document_root": "/home/username/public_html",
       "is_main": true,
       "php": {
         "php_version_id": "alt-php56",
@@ -752,7 +752,7 @@ All logic of running the script with or without this parameter is handled on the
     },
     "subdomain.domain.com": {
       "owner": "username",
-      "document_root": "/home/username/public_html/subdomain/",
+      "document_root": "/home/username/public_html/subdomain",
       "is_main": false,
       "php": {
         "php_version_id": "alt-php72",
@@ -2425,7 +2425,7 @@ PHP interpreter configuration for each domain is to be placed in the nested key-
   "data": {
     "domain.com": {
       "owner": "username",
-      "document_root": "/home/username/public_html/",
+      "document_root": "/home/username/public_html",
       "is_main": true,
       "php": {
         "version": "56",
@@ -2435,7 +2435,7 @@ PHP interpreter configuration for each domain is to be placed in the nested key-
     },
     "subdomain.domain.com": {
       "owner": "username",
-      "document_root": "/home/username/public_html/subdomain/",
+      "document_root": "/home/username/public_html/subdomain",
       "is_main": false,
       "php": {
         "version": "72",
