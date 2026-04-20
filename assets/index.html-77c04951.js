@@ -190,12 +190,12 @@ sudo opt/cpvendor/bin/domains_real
   &quot;data&quot;: {
     &quot;domain.com&quot;: {
       &quot;owner&quot;: &quot;username&quot;,
-      &quot;document_root&quot;: &quot;/home/username/public_html/&quot;,
+      &quot;document_root&quot;: &quot;/home/username/public_html&quot;,
       &quot;is_main&quot;: true
     },
     &quot;subdomain.domain.com&quot;: {
       &quot;owner&quot;: &quot;username&quot;,
-      &quot;document_root&quot;: &quot;/home/username/public_html/subdomain/&quot;,
+      &quot;document_root&quot;: &quot;/home/username/public_html/subdomain&quot;,
       &quot;is_main&quot;: false
     }
   },
@@ -207,7 +207,7 @@ sudo opt/cpvendor/bin/domains_real
   &quot;data&quot;: {
     &quot;domain.com&quot;: {
       &quot;owner&quot;: &quot;username&quot;,
-      &quot;document_root&quot;: &quot;/home/username/public_html/&quot;,
+      &quot;document_root&quot;: &quot;/home/username/public_html&quot;,
       &quot;is_main&quot;: true,
       &quot;php&quot;: {
         &quot;php_version_id&quot;: &quot;alt-php56&quot;,
@@ -219,7 +219,7 @@ sudo opt/cpvendor/bin/domains_real
     },
     &quot;subdomain.domain.com&quot;: {
       &quot;owner&quot;: &quot;username&quot;,
-      &quot;document_root&quot;: &quot;/home/username/public_html/subdomain/&quot;,
+      &quot;document_root&quot;: &quot;/home/username/public_html/subdomain&quot;,
       &quot;is_main&quot;: false,
       &quot;php&quot;: {
         &quot;php_version_id&quot;: &quot;alt-php72&quot;,
@@ -547,7 +547,7 @@ There are 0 errors found.
   &quot;data&quot;: {
     &quot;domain.com&quot;: {
       &quot;owner&quot;: &quot;username&quot;,
-      &quot;document_root&quot;: &quot;/home/username/public_html/&quot;,
+      &quot;document_root&quot;: &quot;/home/username/public_html&quot;,
       &quot;is_main&quot;: true,
       &quot;php&quot;: {
         &quot;version&quot;: &quot;56&quot;,
@@ -557,7 +557,7 @@ There are 0 errors found.
     },
     &quot;subdomain.domain.com&quot;: {
       &quot;owner&quot;: &quot;username&quot;,
-      &quot;document_root&quot;: &quot;/home/username/public_html/subdomain/&quot;,
+      &quot;document_root&quot;: &quot;/home/username/public_html/subdomain&quot;,
       &quot;is_main&quot;: false,
       &quot;php&quot;: {
         &quot;version&quot;: &quot;72&quot;,
