@@ -21,7 +21,7 @@ When CloudLinux Isolates is enabled for a domain:
 | Package            | Minimum Version |
 | ------------------ | --------------- |
 | cagefs             | 7.6.29-1        |
-| lve-utils          | 6.6.30-1        |
+| lve-utils          | 6.6.31-1        |
 | lve (liblve)       | 2.2-1           |
 | lve-wrappers       | 0.7.13-1        |
 | alt-python27-cllib | 3.4.33-1        |
