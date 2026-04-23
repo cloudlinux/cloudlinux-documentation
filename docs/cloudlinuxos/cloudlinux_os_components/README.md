@@ -3282,14 +3282,16 @@ Take a look at the next chart. The I/O load is synchronous with the CPU load.
 #### Installation
 
 :::danger IMPORTANT
-Please note that MariaDB 10.4 release isn’t supported by cPanel, thus you can’t install this version with MySQL Governor + cPanel. More details are available here: [https://features.cpanel.net/topic/maria-10-4-support](https://features.cpanel.net/topic/maria-10-4-support).
+Note the following cPanel-specific restrictions when using MySQL Governor:
+- **MariaDB 10.4** is not supported by cPanel on any CloudLinux OS version.
+- **MariaDB 10.11** is not supported by cPanel on CloudLinux OS 7, because cPanel added MariaDB 10.11 support only in cPanel 114, and the last cPanel version available on CloudLinux OS 7 is 110.
 :::
 
 ::: danger IMPORTANT
-Please make full database backup (including system tables) before you upgrade MySQL or switch to MariaDB. This action will prevent data loss in case if something goes wrong.
+Make a full database backup (including system tables) before you upgrade MySQL or switch to MariaDB. This action will prevent data loss in case if something goes wrong.
 :::
 
-**_MySQL Governor is compatible only with MySQL 5.x, 8.x, MariaDB and Percona Server 5.6._**
+**_MySQL Governor is compatible with MySQL 5.6–5.7, 8.0–8.4, MariaDB 10.2–10.6, 10.11, 11.4, and Percona Server 5.6._**
 
 To install <span class="notranslate"> MySQL Governor </span> on your server install <span class="notranslate"> governor-mysql </span> package at first:
 
@@ -3317,8 +3319,7 @@ If you are installing <span class="notranslate"> CloudLinux OS </span> on a serv
 
 Please make sure to specify your current MySQL version instead of XX as follows:
 
-* 55 — MySQL v5.5
-* 56 — MySQL v5.6
+* 56 — MySQL v5.6 (CloudLinux OS 7 and 8 only; not supported on CloudLinux OS 9+)
 * 57 — MySQL v5.7
 * 80 — MySQL v8.0 (requires MySQL Governor 1.2-37+)
 * 84 — MySQL v8.4 (requires MySQL Governor 1.2-129+)
@@ -3335,19 +3336,16 @@ If you are installing <span class="notranslate"> CloudLinux OS </span> on a serv
 
 Please make sure to specify your current <span class="notranslate"> MariaDB </span> version instead of <span class="notranslate"> XX </span> as follows:
 
-* 55 — MariaDB v5.5
-* 100 — MariaDB v10.0
-* 101 — MariaDB v10.1
 * 102 — MariaDB v10.2
 * 103 — MariaDB v10.3 [requires <span class="notranslate"> MySQL Governor 1.2-36+; for cPanel - MySQL Governor 1.2-41+] </span>
 * 104 – MariaDB v10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+]
 * 105 - MariaDB v10.5 [requires <span class="notranslate">MySQL Governor</span> 1.2-62+]
 * 106 - MariaDB v10.6 [requires <span class="notranslate">MySQL Governor</span> 1.2-76+]
 * 1011 - MariaDB v10.11 [requires <span class="notranslate">MySQL Governor</span>  1.2-103+]
-* 1104 - MariaDB v11.4 [requires <span class="notranslate">MySQL Governor</span>  1.2-122+]
+* 1104 - MariaDB v11.4 [requires <span class="notranslate">MySQL Governor</span>  1.2-122+] (not supported on CloudLinux OS 7)
 
-:::tip Updated note
-MariaDB version 10.4 is available for CloudLinux OS 6.
+:::warning Deprecated versions
+The following versions have been deprecated and are no longer supported: MySQL 5.1, MySQL 5.5, MariaDB 5.5, MariaDB 10.0, and MariaDB 10.1.
 :::
 
 Installation for <span class="notranslate"> Percona Server 5.6 </span> [requires <span class="notranslate"> MySQL Governor </span> 1.1-22+ or 1.2-21+]:
@@ -3377,22 +3375,17 @@ If you are installing <span class="notranslate"> MySQL Governor </span> on a ser
 
 | | |
 |-|-|
-|mysql51 |MySQL v5.1 |
-|mysql55 |MySQL v5.5 |
-|mysql56 |MySQL v5.6 |
+|mysql56 |MySQL v5.6 (CloudLinux OS 7 and 8 only; not supported on CloudLinux OS 9+) |
 |mysql57 |MySQL v5.7 |
 |mysql80 |MySQL v8.0 (requires MySQL Governor 1.2-37+)|
 |mysql84 |MySQL v8.4 (requires MySQL Governor 1.2-129+)|
-|mariadb55 |MariaDB v5.5 |
-|mariadb100 |MariaDB v10.0 |
-|mariadb101 |MariaDB v10.1 |
 |mariadb102 |MariaDB v 10.2 |
 |mariadb103 |MariaDB v 10.3 [requires <span class="notranslate"> MySQL Governor 1.2-36+; for cPanel - MySQL Governor 1.2-41+] </span> |
 |mariadb104 |MariaDB v 10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+]|
 |mariadb105 |MariaDB v 10.5 [requires <span class="notranslate">MySQL Governor</span> 1.2-62+]|
 |mariadb106 |MariaDB v 10.6 [requires <span class="notranslate">MySQL Governor</span> 1.2-76+]|
 |mariadb1011 |MariaDB v 10.11 [requires <span class="notranslate">MySQL Governor</span> 1.2-103+]|
-|mariadb1104 |MariaDB v 11.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-122+]|
+|mariadb1104 |MariaDB v 11.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-122+] (not supported on CloudLinux OS 7)|
 |percona56 | <span class="notranslate"> Percona Server v 5.6 </span> |
 
 Generally, <span class="notranslate"> stable </span> and <span class="notranslate"> beta </span> channels contain different version of MySQL packages - <span class="notranslate"> beta </span> contains newer version than <span class="notranslate"> stable </span> or the same one. If you would like to install  <span class="notranslate"> beta </span>  packages, use  <span class="notranslate"> --install-beta </span>  flag instead of  <span class="notranslate"> --install </span>  when calling installation script:
