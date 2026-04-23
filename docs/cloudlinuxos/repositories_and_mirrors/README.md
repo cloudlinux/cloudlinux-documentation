@@ -185,7 +185,7 @@ Recommendations:
 
 ### Examples
 
-For more examples, ready-to-use Ansible playbooks, and Docker Compose setups, refer to [https://github.com/cloudlinux/cloudlinux-mirrors](https://github.com/cloudlinux/cloudlinux-mirrors).
+More examples, ready-to-use Ansible playbooks, and Docker Compose setups can be found at [https://github.com/cloudlinux/cloudlinux-mirrors](https://github.com/cloudlinux/cloudlinux-mirrors).
 
 ## Troubleshooting
 
