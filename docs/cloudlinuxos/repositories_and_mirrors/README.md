@@ -183,6 +183,10 @@ Recommendations:
 - Ensure your HTTPS server can read the mirrored files.
 - Keep sync logs (cron output or systemd journal) so you can share errors with Support.
 
+### Examples
+
+For more examples, ready-to-use Ansible playbooks, and Docker Compose setups, refer to [https://github.com/cloudlinux/cloudlinux-mirrors](https://github.com/cloudlinux/cloudlinux-mirrors).
+
 ## Troubleshooting
 
 | Issue | Fix |
