@@ -130,52 +130,55 @@ Follow these steps to enable CloudLinux Isolates for a domain:
 **1. Allow the feature server-wide (administrator only, one-time setup):**
 
 ```
-cagefsctl --site-isolation-allow-all
+cagefsctl --isolates-allow-all
 ```
 
 **2. Enable isolation for a specific domain:**
 
 ```
-cagefsctl --site-isolation-enable <example.com>
+cagefsctl --isolates-enable <example.com>
 ```
 
 **3. Verify isolation is active:**
 
 ```
-cagefsctl --site-isolation-list
+cagefsctl --isolates-list
 ```
 
 To disable isolation for a domain:
 
 ```
-cagefsctl --site-isolation-disable <example.com>
+cagefsctl --isolates-disable <example.com>
 ```
 
 ***
 
 ### Command Reference
 
+:::tip Renamed flags
+Starting with cagefs 7.7, the `cagefsctl` flags use the `--isolates-*` naming. The previous `--site-isolation-*` flags continue to work but print a deprecation warning.
+:::
+
 #### Server-Wide Management
 
 ##### Allow CloudLinux Isolates for All Users
 
 ```
-cagefsctl --site-isolation-allow-all
+cagefsctl --isolates-allow-all
 ```
 
-Enables the CloudLinux Isolates feature server-wide in "Allow All" mode. All users are allowed to use CloudLinux Isolates by default (individual users can be denied with `--site-isolation-deny`).
+Enables the CloudLinux Isolates feature server-wide in "Allow All" mode. All users are allowed to use CloudLinux Isolates by default (individual users can be denied with `--isolates-deny`).
 
 **Example:**
 
 ```
-# cagefsctl --site-isolation-allow-all
+# cagefsctl --isolates-allow-all
 CloudLinux Isolates was allowed for all users.
 ```
 
 **Notes:**
 
-* Creates the feature flag at `/opt/cloudlinux/flags/enabled-flags.d/website-isolation.flag`
-* Sets up the per-user denied directory at `/etc/cagefs/site-isolation.users.denied`
+* Sets up the per-user denied directory at `/etc/cagefs/isolates.users.denied`
 * Triggers a CageFS remount to apply necessary mount configurations
 * Registers the `isolatectl` proxyexec command for user-level management
 * Must be run with root privileges
@@ -185,7 +188,7 @@ CloudLinux Isolates was allowed for all users.
 ##### Deny CloudLinux Isolates for All Users
 
 ```
-cagefsctl --site-isolation-deny-all
+cagefsctl --isolates-deny-all
 ```
 
 Disables the CloudLinux Isolates feature server-wide and switches to "Deny All" mode. Removes all domain isolation configurations for all users.
@@ -193,7 +196,7 @@ Disables the CloudLinux Isolates feature server-wide and switches to "Deny All" 
 **Example:**
 
 ```
-# cagefsctl --site-isolation-deny-all
+# cagefsctl --isolates-deny-all
 CloudLinux Isolates was denied for all users.
 ```
 
@@ -217,7 +220,7 @@ CloudLinux Isolates uses a two-mode user model to control which users can use th
 ##### Allow CloudLinux Isolates for a Specific User
 
 ```
-cagefsctl --site-isolation-allow <username> [<username2> ...]
+cagefsctl --isolates-allow <username> [<username2> ...]
 ```
 
 Allows CloudLinux Isolates for one or more specific users.
@@ -230,17 +233,17 @@ Allows CloudLinux Isolates for one or more specific users.
 
 **Behavior depends on current mode:**
 
-* **Allow All mode**: Removes the user from the denied list (undoes a previous `--site-isolation-deny`)
+* **Allow All mode**: Removes the user from the denied list (undoes a previous `--isolates-deny`)
 * **Deny All mode**: Adds the user to the allowed list
 * **Not initialized**: Sets up infrastructure in Deny All mode with the user as the first allowed user
 
 **Example:**
 
 ```
-# cagefsctl --site-isolation-allow john
+# cagefsctl --isolates-allow john
 CloudLinux Isolates was allowed for user(s): john
 
-# cagefsctl --site-isolation-allow john jane
+# cagefsctl --isolates-allow john jane
 CloudLinux Isolates was allowed for user(s): john, jane
 ```
 
@@ -249,7 +252,7 @@ CloudLinux Isolates was allowed for user(s): john, jane
 ##### Deny CloudLinux Isolates for a Specific User
 
 ```
-cagefsctl --site-isolation-deny <username> [<username2> ...]
+cagefsctl --isolates-deny <username> [<username2> ...]
 ```
 
 Denies CloudLinux Isolates for one or more specific users and disables all their domain isolation.
@@ -263,12 +266,12 @@ Denies CloudLinux Isolates for one or more specific users and disables all their
 **Behavior depends on current mode:**
 
 * **Allow All mode**: Adds the user to the denied list
-* **Deny All mode**: Removes the user from the allowed list (undoes a previous `--site-isolation-allow`)
+* **Deny All mode**: Removes the user from the allowed list (undoes a previous `--isolates-allow`)
 
 **Example:**
 
 ```
-# cagefsctl --site-isolation-deny john
+# cagefsctl --isolates-deny john
 CloudLinux Isolates was denied for user(s): john
 ```
 
@@ -282,7 +285,7 @@ CloudLinux Isolates was denied for user(s): john
 ##### Toggle User Mode
 
 ```
-cagefsctl --site-isolation-toggle-mode
+cagefsctl --isolates-toggle-mode
 ```
 
 Toggles the isolation user mode between "Allow All" and "Deny All" without modifying any per-user exception lists.
@@ -296,7 +299,7 @@ Toggles the isolation user mode between "Allow All" and "Deny All" without modif
 **Example:**
 
 ```
-# cagefsctl --site-isolation-toggle-mode
+# cagefsctl --isolates-toggle-mode
 CloudLinux Isolates user mode toggled to 'deny_all'.
 ```
 
@@ -314,7 +317,7 @@ CloudLinux Isolates user mode toggled to 'deny_all'.
 ##### Enable Isolation for a Domain
 
 ```
-cagefsctl --site-isolation-enable <domain> [<domain2> ...]
+cagefsctl --isolates-enable <domain> [<domain2> ...]
 ```
 
 Enables CloudLinux Isolates for one or more specified domains.
@@ -328,11 +331,11 @@ Enables CloudLinux Isolates for one or more specified domains.
 **Example:**
 
 ```
-# cagefsctl --site-isolation-enable example.com
+# cagefsctl --isolates-enable example.com
 CloudLinux Isolates was enabled for domain(s),
 example.com
 
-# cagefsctl --site-isolation-enable site1.com site2.com
+# cagefsctl --isolates-enable site1.com site2.com
 CloudLinux Isolates was enabled for domain(s),
 site1.com,site2.com
 ```
@@ -359,7 +362,7 @@ site1.com,site2.com
 ##### Disable Isolation for a Domain
 
 ```
-cagefsctl --site-isolation-disable <domain> [<domain2> ...]
+cagefsctl --isolates-disable <domain> [<domain2> ...]
 ```
 
 Disables CloudLinux Isolates for one or more specified domains.
@@ -373,7 +376,7 @@ Disables CloudLinux Isolates for one or more specified domains.
 **Example:**
 
 ```
-# cagefsctl --site-isolation-disable example.com
+# cagefsctl --isolates-disable example.com
 CloudLinux Isolates was disabled for domain(s),
 example.com
 ```
@@ -397,7 +400,7 @@ example.com
 ##### List Isolated Domains
 
 ```
-cagefsctl --site-isolation-list [<username> ...]
+cagefsctl --isolates-list [<username> ...]
 ```
 
 Lists all users and domains that have CloudLinux Isolates enabled.
@@ -411,7 +414,7 @@ Lists all users and domains that have CloudLinux Isolates enabled.
 **Example - List all isolated domains:**
 
 ```
-# cagefsctl --site-isolation-list
+# cagefsctl --isolates-list
 
 Domains with enabled CloudLinux Isolates for user john:
 example.com
@@ -424,7 +427,7 @@ shop.example.com
 **Example - List isolated domains for specific user:**
 
 ```
-# cagefsctl --site-isolation-list john
+# cagefsctl --isolates-list john
 
 Domains with enabled CloudLinux Isolates for user john:
 example.com
@@ -434,7 +437,7 @@ mysite.org
 **Output when no domains are isolated:**
 
 ```
-# cagefsctl --site-isolation-list
+# cagefsctl --isolates-list
 No users with enabled CloudLinux Isolates
 ```
 
@@ -443,7 +446,7 @@ No users with enabled CloudLinux Isolates
 ##### Regenerate Isolation Configuration
 
 ```
-cagefsctl --site-isolation-regenerate <username> [<username2> ...]
+cagefsctl --isolates-regenerate <username> [<username2> ...]
 ```
 
 Regenerates the CloudLinux Isolates configuration for specified users. Use this command after manual configuration changes or when troubleshooting isolation issues.
@@ -457,7 +460,7 @@ Regenerates the CloudLinux Isolates configuration for specified users. Use this 
 **Example:**
 
 ```
-# cagefsctl --site-isolation-regenerate john jane
+# cagefsctl --isolates-regenerate john jane
 Regenerated configuration CloudLinux Isolates for users:
 john
 jane
@@ -487,7 +490,7 @@ User-level management requires that CloudLinux Isolates is allowed server-wide *
 ##### Enable Isolation for a Domain (User-Level)
 
 ```
-isolatectl site-isolation enable --domain <domain>[,<domain2>,...]
+isolatectl isolates-enable --domain <domain>[,<domain2>,...]
 ```
 
 Enables CloudLinux Isolates for one or more domains owned by the calling user.
@@ -501,10 +504,10 @@ Enables CloudLinux Isolates for one or more domains owned by the calling user.
 **Example:**
 
 ```
-$ isolatectl site-isolation enable --domain example.com
+$ isolatectl isolates-enable --domain example.com
 {"result": "success", "enabled_sites": ["example.com"]}
 
-$ isolatectl site-isolation enable --domain site1.com,site2.com
+$ isolatectl isolates-enable --domain site1.com,site2.com
 {"result": "success", "enabled_sites": ["site1.com", "site2.com"]}
 ```
 
@@ -518,7 +521,7 @@ $ isolatectl site-isolation enable --domain site1.com,site2.com
 ##### Disable Isolation for a Domain (User-Level)
 
 ```
-isolatectl site-isolation disable --domain <domain>[,<domain2>,...]
+isolatectl isolates-disable --domain <domain>[,<domain2>,...]
 ```
 
 Disables CloudLinux Isolates for one or more domains owned by the calling user.
@@ -532,7 +535,7 @@ Disables CloudLinux Isolates for one or more domains owned by the calling user.
 **Example:**
 
 ```
-$ isolatectl site-isolation disable --domain example.com
+$ isolatectl isolates-disable --domain example.com
 {"result": "success", "enabled_sites": []}
 ```
 
@@ -541,7 +544,7 @@ $ isolatectl site-isolation disable --domain example.com
 ##### List Isolated Domains (User-Level)
 
 ```
-isolatectl site-isolation list
+isolatectl isolates-list
 ```
 
 Lists all domains with CloudLinux Isolates enabled for the calling user.
@@ -549,7 +552,7 @@ Lists all domains with CloudLinux Isolates enabled for the calling user.
 **Example:**
 
 ```
-$ isolatectl site-isolation list
+$ isolatectl isolates-list
 {"result": "success", "enabled_sites": ["example.com", "mysite.org"]}
 ```
 
@@ -763,7 +766,7 @@ The `--user` option is only required when running as root.
 
 ```
 # Solution: Allow server-wide first
-cagefsctl --site-isolation-allow-all
+cagefsctl --isolates-allow-all
 ```
 
 **"CloudLinux Isolates feature is not available on this platform"**
@@ -774,9 +777,9 @@ The server does not have the required packages installed. Ensure all [prerequisi
 
 ```
 # Solution: Allow for the specific user
-cagefsctl --site-isolation-allow <username>
+cagefsctl --isolates-allow <username>
 # Or allow for all users
-cagefsctl --site-isolation-allow-all
+cagefsctl --isolates-allow-all
 ```
 
 **"Please specify existing domain name and try again"**
