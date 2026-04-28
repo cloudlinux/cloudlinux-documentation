@@ -1304,7 +1304,7 @@ MAx Cache is currently supported on cPanel control panels only.
 To install MAx Cache, run the following commands: 
 
 ```
-yum install accelerate-wp cloudlinux-site-optimization-module libmaxcache maxcache-htcache-watchd --enablerepo=cloudlinux-updates-testing 
+yum install accelerate-wp cloudlinux-site-optimization-module libmaxcache --enablerepo=cloudlinux-updates-testing 
 ```
 ```
 yum install ea-apache24-mod_maxcache --enablerepo=cl-ea4-testing
@@ -1313,10 +1313,9 @@ yum install ea-apache24-mod_maxcache --enablerepo=cl-ea4-testing
 | Package | Description |
 | --- | --- |
 | `ea-apache24-mod_maxcache` | Apache module with cache serving and full .htaccess caching subsystems |
-| `maxcache-htcache-watchd` | Filesystem watcher daemon for real-time `.htaccess` change detection |
 | `libmaxcache` | Shared C library for device detection, WebP, cookie/QS handling |
 
-After installation, the full .htaccess caching subsystem is enabled by default (`MaxCacheHTCache On`) and the `maxcache-htcache-watchd` daemon is automatically started and enabled on boot.
+After installation, the full .htaccess caching subsystem is enabled by default (`MaxCacheHtaccess On`). Change detection uses per-request `stat()` polling — no separate daemon is required.
 
 ### MAx Cache Activation Guide 
 
@@ -1910,89 +1909,83 @@ By default, Apache re-reads and re-parses `.htaccess` files from disk on every r
 
 #### Change detection
 
-Full .htaccess caching detects `.htaccess` changes through two mechanisms:
+Full .htaccess caching detects `.htaccess` changes through per-request `stat()` polling. Each cached entry on the current request path is checked against disk when its per-entry timer expires (controlled by `MaxCacheHtaccessRevalidateInterval`).
 
-| Mode | Detection latency | When active |
+| `MaxCacheHtaccessRevalidateInterval` | Detection latency | Trade-off |
 | --- | --- | --- |
-| **watchd (real-time)** | Sub-second | When `maxcache-htcache-watchd` service is running |
-| **Polling (fallback)** | Up to `MaxCacheHTCacheRevalidateInterval` seconds (default 60) | Always active as a safety net |
+| `0` (default) | Immediate (next request) | Every request `stat()`s each cached directory on its path |
+| `N` seconds | Up to `N` seconds | Fewer `stat()` syscalls on busy paths, slower change pick-up |
 
-When the `maxcache-htcache-watchd` daemon is running, it monitors the filesystem and signals Apache through shared memory whenever a `.htaccess` file is created, modified, or deleted.
-
-:::warning CloudLinux 7/8 limitations
-On CloudLinux 7 and 8, the kernel's `fanotify` interface only supports file write events. This means the watchd daemon detects `.htaccess` **modifications** instantly, but **deletes**, **renames**, and **moves** are not detected in real time — they rely on the polling fallback (`MaxCacheHTCacheRevalidateInterval`, default 60 seconds). If you need faster detection of these operations on CL7/CL8, lower the revalidation interval (e.g. `MaxCacheHTCacheRevalidateInterval 10`).
-
-On CloudLinux 9+ (kernel 5.14+), all change types — including deletes, renames, and moves — are detected in real time.
-:::
+With the default value of `0`, any `.htaccess` create, modify, or delete is detected on the very next request through that directory — no separate daemon is required.
 
 #### Configuration directives
 
-All full .htaccess caching directives go inside `<IfModule mod_maxcache.c>` in the Apache configuration. Full .htaccess caching is configured in `/etc/apache2/conf.d/maxcache_htcache.conf`.
+All full .htaccess caching directives go inside `<IfModule mod_maxcache.c>` in the Apache configuration. Full .htaccess caching is configured in `/etc/apache2/conf.d/maxcache_htaccess.conf`.
 
-#### MaxCacheHTCache
+#### MaxCacheHtaccess
 
-* **Syntax**: `MaxCacheHTCache On|Off`
+* **Syntax**: `MaxCacheHtaccess On|Off`
 * **Default**: On (in shipped config)
 * **Context**: server config, virtual host
 * **Description**: Master enable/disable switch for the full .htaccess caching subsystem.
 
-#### MaxCacheHTCacheRevalidateInterval
+#### MaxCacheHtaccessRevalidateInterval
 
-* **Syntax**: `MaxCacheHTCacheRevalidateInterval <seconds>`
-* **Default**: 60
-* **Range**: 1–3600
+* **Syntax**: `MaxCacheHtaccessRevalidateInterval <seconds>`
+* **Default**: 0
+* **Range**: 0–3600
 * **Context**: server config, virtual host
-* **Description**: Polling interval for `mtime` checks when the watchd daemon is not running or for event types not detected by `fanotify` on the current platform. Lower values mean faster detection of changes via polling; higher values reduce `stat()` syscalls.
+* **Description**: Minimum seconds between `mtime` revalidation checks per cached entry on the request path. With the default of `0`, each entry is `stat()`'d on every request through that path for immediate change detection. Larger values reduce `stat()` syscall traffic on busy paths at the cost of slower pick-up of `.htaccess` edits.
 
-#### MaxCacheHTCacheEntries
+#### MaxCacheHtaccessEntries
 
-* **Syntax**: `MaxCacheHTCacheEntries <count>`
+* **Syntax**: `MaxCacheHtaccessEntries <count>`
 * **Default**: 50000
 * **Range**: 10–500000
 * **Context**: server config, virtual host
 * **Description**: Maximum number of cached `.htaccess` entries in shared memory. When this limit is reached, new directories fall back to Apache's standard processing.
 
-#### MaxCacheHTCacheMemorySize
+#### MaxCacheHtaccessMemorySize
 
-* **Syntax**: `MaxCacheHTCacheMemorySize <MB>`
-* **Default**: auto (derived from `MaxCacheHTCacheEntries`)
+* **Syntax**: `MaxCacheHtaccessMemorySize <MB>`
+* **Default**: auto (derived from `MaxCacheHtaccessEntries`)
 * **Range**: 1–4096
 * **Context**: server config, virtual host
-* **Description**: Shared memory arena size in megabytes. Normally sized automatically — only set this if you see `htcache: arena memory exhausted` in the error log.
+* **Description**: Shared memory arena size in megabytes. Normally sized automatically — only set this if you see `maxcache-htaccess: arena memory exhausted` in the error log.
 
-#### MaxCacheHTCacheExclude
+#### MaxCacheHtaccessExclude
 
-* **Syntax**: `MaxCacheHTCacheExclude <path> [path2] ...`
+* **Syntax**: `MaxCacheHtaccessExclude <path> [path2] ...`
 * **Default**: none
 * **Context**: server config, virtual host
 * **Description**: Exclude directory trees from full .htaccess caching. The path is matched as a prefix.
 * **Example**:
 ```
-MaxCacheHTCacheExclude /home/staging /tmp
+MaxCacheHtaccessExclude /home/staging /tmp
 ```
 
-#### MaxCacheHTCacheMaxFileSize
+#### MaxCacheHtaccessMaxFileSize
 
-* **Syntax**: `MaxCacheHTCacheMaxFileSize <KB>`
+* **Syntax**: `MaxCacheHtaccessMaxFileSize <KB>`
 * **Default**: 256
 * **Range**: 0–10240
 * **Context**: server config, virtual host
 * **Description**: Maximum `.htaccess` file size (in KB) that full .htaccess caching will process. Files exceeding this limit are skipped and served via Apache's standard processing. Set to `0` for unlimited.
 
-#### MaxCacheHTCacheMaxEntriesPerDocroot
+#### MaxCacheHtaccessMaxEntriesPerDocroot
 
-* **Syntax**: `MaxCacheHTCacheMaxEntriesPerDocroot <count>`
+* **Syntax**: `MaxCacheHtaccessMaxEntriesPerDocroot <count>`
 * **Default**: 256
 * **Range**: 0–100000
 * **Context**: server config, virtual host
-* **Description**: Maximum cached entries under a single document root. Prevents one user from monopolizing the shared cache on multi-tenant servers. Set to `0` for unlimited (the global `MaxCacheHTCacheEntries` limit still applies).
+* **Description**: Maximum cached entries under a single document root. Prevents one user from monopolizing the shared cache on multi-tenant servers. Set to `0` for unlimited (the global `MaxCacheHtaccessEntries` limit still applies).
 
 #### Configuration examples
 
 ##### Minimal setup
 
 ```
-MaxCacheHTCache On
+MaxCacheHtaccess On
 ```
 
 Enables full .htaccess caching globally with default settings (50,000 max entries, 60-second revalidation).
@@ -2003,8 +1996,8 @@ For a server with ~5,000 WordPress sites:
 
 ```
 <IfModule mod_maxcache.c>
-    MaxCacheHTCache On
-    MaxCacheHTCacheEntries 100000
+    MaxCacheHtaccess On
+    MaxCacheHtaccessEntries 100000
 </IfModule>
 ```
 
@@ -2015,9 +2008,9 @@ For a server with ~5,000 WordPress sites:
     ServerName example.com
     DocumentRoot /home/example/public_html
 
-    MaxCacheHTCache On
-    MaxCacheHTCacheEntries 10000
-    MaxCacheHTCacheExclude /home/example/public_html/tmp
+    MaxCacheHtaccess On
+    MaxCacheHtaccessEntries 10000
+    MaxCacheHtaccessExclude /home/example/public_html/tmp
 </VirtualHost>
 ```
 
@@ -2027,12 +2020,12 @@ Enable globally but opt out specific vhosts:
 
 ```
 # httpd.conf (global)
-MaxCacheHTCache On
+MaxCacheHtaccess On
 
 <VirtualHost *:443>
     ServerName staging.example.com
     DocumentRoot /home/staging/public_html
-    MaxCacheHTCache Off
+    MaxCacheHtaccess Off
 </VirtualHost>
 ```
 
@@ -2041,8 +2034,8 @@ MaxCacheHTCache On
 Full .htaccess caching provides a status handler for monitoring. To enable it, add a `<Location>` block to your Apache configuration:
 
 ```
-<Location /htcache-status>
-    SetHandler htcache-status
+<Location /maxcache-htaccess-status>
+    SetHandler maxcache-htaccess-status
     Require local
 </Location>
 ```
@@ -2050,14 +2043,14 @@ Full .htaccess caching provides a status handler for monitoring. To enable it, a
 Then query it:
 
 ```
-curl -s http://localhost/htcache-status
+curl -s http://localhost/maxcache-htaccess-status
 ```
 
 Example output:
 
 ```
-mod_maxcache HTCache Status
-===========================
+MaxCache Htaccess Caching Status
+================================
 
 Mode: lazy on-demand
 Enabled: yes
@@ -2074,8 +2067,7 @@ Patch Pool: 256KB / 12MB used (2%)
 Compacting: no
 Compaction threshold: 80%
 
-Invalidation SHM: connected
-Revalidate interval: 60s
+Revalidate interval: 0s
 
 Cache (global):
   Hits:     45000
@@ -2088,9 +2080,8 @@ Key fields to check:
 | --- | --- | --- |
 | Enabled | `yes` | `no` — full .htaccess caching is turned off in config |
 | Ready | `yes` | `no` — engine failed to initialize |
-| Entries | below max | at max — increase `MaxCacheHTCacheEntries` |
-| Arena usage | below 90% | above 90% — increase `MaxCacheHTCacheMemorySize` |
-| Invalidation SHM | `connected` | `not available` — watchd is not running or SHM file is missing |
+| Entries | below max | at max — increase `MaxCacheHtaccessEntries` |
+| Arena usage | below 90% | above 90% — increase `MaxCacheHtaccessMemorySize` |
 | Hits | increasing | staying at 0 — full .htaccess caching is not serving cached results |
 
 :::warning
@@ -2101,13 +2092,13 @@ The status endpoint should be restricted to localhost or trusted IPs. Remove or 
 
 | Check | Command | Expected |
 | --- | --- | --- |
-| watchd running? | `systemctl is-active maxcache-htcache-watchd` | `active` |
-| SHM file exists? | `ls -la /dev/shm/htcache_invalidate` | File present |
-| File too large? | `wc -c /path/to/.htaccess` | Under 256 KB (default `MaxCacheHTCacheMaxFileSize`) |
-| Path excluded? | `grep MaxCacheHTCacheExclude /etc/apache2/conf.d/maxcache_htcache.conf` | Path not listed |
-| Log: `htcache: entry limit reached (50000/50000), skipping /path` | Cache is full — increase `MaxCacheHTCacheEntries` | Remaining directories use standard Apache processing |
-| Log: `htcache: per-docroot entry limit reached (256/256) for /home/user` | Single user filled their quota — increase `MaxCacheHTCacheMaxEntriesPerDocroot` | Other users are not affected |
-| Log: `htcache: arena memory exhausted (400MB/400MB)` | Shared memory arena is full — increase `MaxCacheHTCacheMemorySize` | Restart Apache after changing |
+| Module loaded? | `httpd -M 2>&1 \| grep maxcache` | `maxcache_module` listed |
+| Config valid? | `httpd -t` | `Syntax OK` |
+| File too large? | `wc -c /path/to/.htaccess` | Under 256 KB (default `MaxCacheHtaccessMaxFileSize`) |
+| Path excluded? | `grep MaxCacheHtaccessExclude /etc/apache2/conf.d/maxcache_htaccess.conf` | Path not listed |
+| Log: `maxcache-htaccess: entry limit reached (50000/50000), skipping /path` | Cache is full — increase `MaxCacheHtaccessEntries` | Remaining directories use standard Apache processing |
+| Log: `maxcache-htaccess: per-docroot entry limit reached (256/256) for /home/user` | Single user filled their quota — increase `MaxCacheHtaccessMaxEntriesPerDocroot` | Other users are not affected |
+| Log: `maxcache-htaccess: arena memory exhausted (400MB/400MB)` | Shared memory arena is full — increase `MaxCacheHtaccessMemorySize` | Restart Apache after changing |
 
 If changes must take effect immediately, restart Apache: `systemctl restart httpd`.
 
