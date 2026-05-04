@@ -108,6 +108,115 @@ You may need to rename `*.rpmsave` files to original ones in order to restore se
 You can also use [LVE-stats 2 CLI](/cloudlinuxos/command-line_tools/#lve-stats-2)
 :::
 
+### LVE-stats 3 (optimized backend)
+
+Starting with <span class="notranslate">lve-stats 5.0.0</span>, every server gets an optimized
+implementation — <span class="notranslate">lve-stats3</span> — installed alongside the original
+<span class="notranslate">lve-stats</span>. Both implementations share the same configuration,
+database, file layout, command-line tools, and output formats; they differ only in how the work
+is performed under the hood.
+
+Once <span class="notranslate">lve-stats3</span> is installed, it becomes the active backend by default.
+The usual commands and the <span class="notranslate">`lvestats`</span> systemd service transparently
+use the new backend — all existing functionality and integrations continue to work unchanged,
+no configuration changes required.
+
+#### What's new
+
+<span class="notranslate">lve-stats3</span> is an optimized implementation of
+<span class="notranslate">lve-stats</span> with a noticeably smaller memory and disk footprint
+and faster startup.
+
+#### Switching between backends
+
+Both implementations are managed via the Linux <span class="notranslate">`alternatives`</span>
+system under the alternative group name <span class="notranslate">`lvestats`</span>. The master
+link is <span class="notranslate">`/usr/sbin/lvestats-server`</span>; all other binaries
+(<span class="notranslate">`lveinfo`</span>, <span class="notranslate">`lvechart`</span>,
+<span class="notranslate">`dbgovchart`</span>, <span class="notranslate">`cloudlinux-top`</span>,
+<span class="notranslate">`lve-create-db`</span>,
+<span class="notranslate">`lve-read-snapshot`</span>,
+<span class="notranslate">`cloudlinux-statsnotifier`</span>,
+<span class="notranslate">`cloudlinux-statistics`</span>,
+<span class="notranslate">`lve-bursting-info`</span>,
+<span class="notranslate">`lve-bursting-cleanup`</span>,
+<span class="notranslate">`lvestats-burstwatcher`</span>) follow the master selection
+automatically.
+
+##### Check the active backend
+
+<div class="notranslate">
+
+```
+# CloudLinux OS / RHEL-family
+alternatives --display lvestats
+
+# Ubuntu
+update-alternatives --display lvestats
+```
+
+</div>
+
+The line <span class="notranslate">`link currently points to ...`</span> shows which backend is
+active: a path ending in <span class="notranslate">`.rust`</span> means the new optimized
+backend, <span class="notranslate">`.python`</span> means the original backend.
+
+##### Switch to the original backend (Python)
+
+<div class="notranslate">
+
+```
+# CloudLinux OS / RHEL-family
+alternatives --set lvestats /usr/sbin/lvestats-server.python
+
+# Ubuntu
+update-alternatives --set lvestats /usr/sbin/lvestats-server.python
+
+systemctl restart lvestats
+```
+
+</div>
+
+##### Switch to the new optimized backend
+
+<div class="notranslate">
+
+```
+# CloudLinux OS / RHEL-family
+alternatives --set lvestats /usr/sbin/lvestats-server.rust
+
+# Ubuntu
+update-alternatives --set lvestats /usr/sbin/lvestats-server.rust
+
+systemctl restart lvestats
+```
+
+</div>
+
+##### Restore the default selection
+
+To return to automatic priority-based selection (which prefers the new optimized backend):
+
+<div class="notranslate">
+
+```
+# CloudLinux OS / RHEL-family
+alternatives --auto lvestats
+
+# Ubuntu
+update-alternatives --auto lvestats
+
+systemctl restart lvestats
+```
+
+</div>
+
+:::tip Note
+Switching the backend does not modify configuration or data. The collected statistics database,
+plugin configs, and snapshot files are shared between both backends, so historical data remains
+accessible regardless of which one is currently active.
+:::
+
 ### Configuration
 
 The main configuration file <span class="notranslate">`/etc/sysconfig/lvestats2`</span> contains the following options:
