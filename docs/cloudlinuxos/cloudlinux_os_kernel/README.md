@@ -38,18 +38,20 @@ Also, this kernel is available for CL8, serving as an alternative to the Hybrid 
 
 ### How To Install
 
+:::warning Note
 The LTS kernel is compatible with CL8 / CL9 systems.
-
-Install the LTS kernel main packages:
-
-```
-dnf install kernel-lts
-```
-::: tip Note
-If kernel-lts-purge-all was previously installed then add --allowerasing
 :::
 
-After that, you should reboot:
+1. Install the LTS kernel main packages:
+
+```
+dnf install kernel-lts kmod-lve-lts
+```
+::: tip Note
+If `kernel-lts-purge-all` was previously installed then add `--allowerasing`.
+:::
+
+2. After that, you should reboot:
 
 ```
 reboot
@@ -58,7 +60,7 @@ reboot
 Some systems might do additional SELinux relabeling and they will reboot one more time.
 :::
 
-After the reboot, replace all kernel packages with LTS versions
+3. After the reboot, replace all kernel packages with LTS versions
 ```
 dnf install --allowerasing kernel-lts-install-all
 ```
@@ -71,17 +73,17 @@ This will:
 
 Use this path to return from the LTS kernel to the generic kernel.
 
-Install the original kernel core
+1. Install the original kernel core
 ```
 dnf install --allowerasing kernel
 ```
 
-After that, you should reboot:
+2. After that, you should reboot:
 ```
 reboot
 ```
 
-Replace all LTS kernel packages with original versions
+3. Replace all LTS kernel packages with original versions
 ```
 dnf install --allowerasing kernel-lts-purge-all
 ```
