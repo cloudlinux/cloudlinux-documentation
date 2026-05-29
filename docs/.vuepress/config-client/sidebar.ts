@@ -65,6 +65,7 @@ export default {
                 "/cloudlinuxos/alt-ea_packages/",
                 "/cloudlinuxos/control_panel_integration/",
                 "/cloudlinuxos/cloudlinux_os_kernel/",
+                "/cloudlinuxos/docker/",
                 "/cloudlinuxos/for_cloudlinux_partners/",
                 "/cloudlinuxos/deprecated/"
             ]
