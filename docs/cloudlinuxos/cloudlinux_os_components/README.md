@@ -81,6 +81,12 @@ Settings of old <span class="notranslate">lve-stats</span> (ver. 0.x) are import
 
 SQLite database file is located in <span class="notranslate">`/var/lve/lvestats2.db`</span>, data from old <span class="notranslate">lve-stats</span> (ver. 0.x) are being migrated automatically in the background. Migrating process can last 2-8 hours (during this time lags are possible when admin is trying to check statistics, at the same time users will not be affected). Migrating the latest 30 days, <span class="notranslate">SQLite DB</span> stable migration is provided.
 
+:::warning
+The <span class="notranslate">SQLite</span> `WAL` journal mode is **not supported** for <span class="notranslate">`/var/lve/lvestats2.db`</span>. The <span class="notranslate">LVE Stats</span> daemon runs as `root` and is the only writer, while statistics are read by unprivileged, per-user (CageFS-isolated) processes such as <span class="notranslate">`cloudlinux-statistics`</span> and <span class="notranslate">`lveinfo`</span>. In `WAL` mode <span class="notranslate">SQLite</span> must write the `root`-owned <span class="notranslate">`-shm`</span> sidecar file even for read-only queries, so those non-root readers fail with `attempt to write a readonly database`.
+
+Only the default `DELETE` journal mode is supported. If you previously set <span class="notranslate">`PRAGMA journal_mode=WAL`</span> on the database, the daemon automatically resets it back to `DELETE` on startup — run <span class="notranslate">`service lvestats restart`</span> to apply the fix.
+:::
+
 Currently, the new <span class="notranslate">lve-stats</span> supports all databases available in CloudLinux OS.
 
 :::tip Note
