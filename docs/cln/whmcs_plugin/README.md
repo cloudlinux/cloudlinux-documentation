@@ -1,51 +1,65 @@
 # CloudLinux WHMCS Plugin
 
-## Overview
+The CloudLinux WHMCS Plugin provisions and manages CloudLinux, KernelCare, and Imunify360 licenses through CLN. A license can be sold as a standalone WHMCS product, as an optional product addon, or as a configurable option of another service such as a VPS. Bundle licenses are also supported for reseller accounts that have been explicitly granted access to them in CLN.
 
-CloudLinux Licenses For WHMCS allows you to automatically provision CloudLinux, Imunify360, and KernelCare licenses along with selected products. You can provision them for free or as a paid add-on to your product. Owing to CloudLinux Licenses add-on, all module commands on your main product are automatically reproduced on the license product.
+The plugin provides:
 
-**Admin Area Functionality**
+* IP-based and key-based license provisioning, depending on the selected product
+* automatic license creation and termination
+* IP license migration when the service IP changes for standalone products, module-backed addons, and configurable options
+* deferred provisioning for module-backed addons and configurable options when a VPS receives its Dedicated IP after the order is accepted
+* license and relation lists in the WHMCS admin area
+* a global policy that prevents the checkout or operator IP from being used as the server IP
 
-* Create license
-* Terminate license
-* Suspend/Unsuspend license (only IP-based licenses)
-* Change license IP address
-* View license details
+## Choose a provisioning model
 
-**Client Area Functionality**
+| Model | Use it when | Where the customer selects the license | IP source | If the IP is not available yet |
+| --- | --- | --- | --- | --- |
+| Standalone product | The license is the product being sold | A product in the WHMCS store | A required custom field or the service Dedicated IP | Module Create returns an error and the service remains `Pending` |
+| Module-backed product addon | The license is an optional extra for a VPS or hosting service | **Available Addons** during checkout | The parent service custom IP field or Dedicated IP | The parent service is not blocked; the addon waits and is retried after the parent receives an IP |
+| Configurable option | The customer chooses a license product or tier from a dropdown | **Configurable Options** during checkout | The parent service custom IP field or Dedicated IP | The parent service is not blocked; license provisioning waits for the IP |
+| Product Relation (legacy workflow) | Every order of a hosting product must include a particular license | The license is included automatically and is not selected separately | A separate child license service | Parent-IP inheritance and deferred retry are not automatic; see [Legacy relation workflows](#legacy-relation-workflows) |
+| Addon Relation (legacy workflow) | An existing non-CloudLinux product addon must trigger a separate license product | The existing product addon during checkout | A separate child license service | Parent-IP inheritance and deferred retry are not automatic; see [Legacy relation workflows](#legacy-relation-workflows) |
 
-* View license details
-* Change license IP address
+::: tip Recommended models
+Use a required custom IP field for a standalone IP-based license. Use a module-backed product addon or configurable option for a VPS whose Dedicated IP is assigned by the provisioning system after checkout.
+:::
 
-**Addon Functionality**
+## Supported license products
 
-* Manage relations between addon and license product
-* Manage relations between server and license product
-* Manage relations between configurable options and license product
-* Automatically add license product to order when relation is triggered
-* View existing license
-* Dependencies between module actions – every action: Create, Terminate, Suspend or Unsuspend called on the server product will result with the same action performed on the licensed products
-* Flexible filtering of existing licenses
+The following matrix shows which license modes the plugin supports for every value in the **Product** dropdown.
 
-**Additionally**
+| Product | IP-based | Key-based | Additional settings |
+| --- | :---: | :---: | --- |
+| `CloudLinuxLegacy` | Yes | No | — |
+| `CloudLinuxSolo` | Yes | No | — |
+| `CloudLinuxAdmin` | Yes | No | — |
+| `CloudLinuxSharedPro` | Yes | No | Requires the corresponding CloudLinux OS Shared Pro entitlement in CLN |
+| `KernelCare` | Yes | Yes | **Key Limit** is available in key-based mode |
+| `KernelCarePlus` | Yes | No | IP-based only |
+| `Imunify360` | Yes | Yes | Select an Imunify360 license tier; **Key Limit** is available in key-based mode |
+| `Bundle Licenses` | Yes | No | Available only to reseller accounts explicitly entitled to bundles in CLN |
 
-* Multi-Language Support – only provisioning module
-* Supports CloudLinux, KernelCare and Imunify360 Licenses (<span class="notranslate">_does not support CloudLinux Pro licenses, it should be supported soon in 2023_</span>)
-* Supports WHMCS V6 and later
+For Imunify360, the available tiers include Single User, up to 30 users, up to 250 users, Unlimited, and ImunifyAV+. The five-user tier is displayed only when it is enabled in the module installation.
 
+The **Create Key based license** and **Key Limit** fields apply only to `KernelCare` and `Imunify360`. The module hides and ignores these fields for all IP-only products, including `KernelCarePlus` and `Bundle Licenses`.
 
-## Installation and Configuration
+::: warning Bundle license availability
+`Bundle Licenses` is not a general-purpose product type available to every reseller. It can be used only when CloudLinux has enabled one or more bundles for the reseller account in CLN. The rest of this guide uses Imunify360, which is a standard license product, so the examples apply to a wider audience.
+:::
 
-In this section we will show you how to set up our products.
+::: tip CLN entitlements
+The matrix describes module capabilities. The reseller account must also be authorized to create the selected product and tier in CLN.
+:::
 
-### Installation and Update
+## Install or update the plugin
 
-
-1. Download CloudLinux Licenses For WHMCS:
-   * Production: [https://repo.cloudlinux.com/plugins/whmcs-cl-plugin-latest.zip](https://repo.cloudlinux.com/plugins/whmcs-cl-plugin-latest.zip)
-   * Beta: [https://repo.cloudlinux.com/plugins/whmcs-cl-plugin-beta.zip](https://repo.cloudlinux.com/plugins/whmcs-cl-plugin-beta.zip)
-2. Upload archive to your WHMCS root folder and extract it. Files should automatically jump into their places.
-3. Run the following script:
+1. Back up the WHMCS files and database.
+2. Download the module archive:
+   * [Production build](https://repo.cloudlinux.com/plugins/whmcs-cl-plugin-latest.zip)
+   * [Beta build](https://repo.cloudlinux.com/plugins/whmcs-cl-plugin-beta.zip)
+3. Extract the archive into the WHMCS installation directory. Allow it to overwrite the existing module files when updating.
+4. Run the database migration from the WHMCS server:
 
 <div class="notranslate">
 
@@ -55,290 +69,368 @@ php <whmcs_root>/clDeploy.php --migrate
 
 </div>
 
-::: tip Note
-If your hosting requires specific files permissions, change them accordingly in the folder: <span class="notranslate">`<whmcs_root>/modules/servers/CloudLinuxLicenses`</span>
+5. In WHMCS, open **System Settings → Addon Modules**.
+6. Activate **CloudLinux Licenses Addon** if it is not active.
+7. Click **Configure**, grant access to the required administrator roles, and save the settings.
+
+The migration is safe to run after every update. It creates or updates the module tables, including the durable license state used to track the exact registered IP or key. No manual database changes are required.
+
+::: warning Updating an existing installation
+Do not deactivate the addon as part of a normal update. Copy the new files over the existing installation and run the migration command.
 :::
 
-### Configuration of Product
+## CloudLinux Licenses Addon
 
-1. Log into your WHMCS admin area and go to <span class="notranslate">_Setup → Products/Services → Products/Services_</span>. Click <span class="notranslate">_Create a New Group_</span>
-2. Fill <span class="notranslate">_Product Group Name_</span> (product group will be visible under that name in your WHMCS system) and click <span class="notranslate">_Save Changes_</span>
-3. Click <span class="notranslate">_Create a New Product_</span>. Choose <span class="notranslate">_Other_</span> from <span class="notranslate">_Product Type_</span> drop-down menu and previously created product group from <span class="notranslate">Product Group</span> drop-down menu.
-4. Fill <span class="notranslate">_Product Name_</span> and click <span class="notranslate">_Continue_</span>.
-5. Set up this product as hidden through marking <span class="notranslate">_Hidden_</span> checkbox at <span class="notranslate">_Details_</span> tab. Do not set up pricing for this product, it will be done in another way.
-6. Go to the <span class="notranslate">_Module Settings_</span> tab and select <span class="notranslate">**_CloudLinux Licenses_**</span> from <span class="notranslate">_Module Name_</span> drop-down.
-7. Fill <span class="notranslate">_Username_</span> and <span class="notranslate">_Password_</span> with your CloudLinux API access details (you can find them on your CLN profile page, username is your login and password is API secret key) and select <span class="notranslate">**_Imunify360_**</span> from <span class="notranslate">_Product_</span> drop-down, then choose desired <span class="notranslate">_License Type_</span>. If you'd like to use key based licenses, tick <span class="notranslate">_Create Key based license_</span> checkbox.
-8. Click <span class="notranslate">_Save Changes_</span> to confirm.
-9. If you want to use a custom field to get the correct IP during order, you can fill the _Name of the custom IP_ field and add a custom field with the same name to the main product. For example:
-   * linked CloudLinuxLicenses product
-      ![WHMCS product Module Settings: CloudLinuxLicenses, Imunify360 ImunifyAV+, custom IP field name, token, automation radios](/images/cln/whmcs_plugin/LinkedCLProducts.webp)
-   * main product
-      ![WHMCS product Custom Fields tab: existing text field “Some custom IP field” with Show on Order Form, add-new field form below](/images/cln/whmcs_plugin/MainProduct.webp)
-10.  Setup desired <span class="notranslate">_Auto-setup_</span> options.
+The installation contains two cooperating WHMCS modules:
 
-:::tip Notes
-* You can use the CloudLinux license module as an individual product. By default, for IP license the client’s IP address is used on ordering, after ordering you can change the license IP to a desired one in the service settings (as administrator or user). 
-* To create CloudLinux OS Shared PRO licenses you should have an appropriate CLN account and use the same `CloudLinux` in the product module settings.
-* Products with `KernelCare+` can create only IP based licenses.
+* `CloudLinuxLicenses` is the server module attached to a product or product addon. It creates, changes, suspends, unsuspends, and terminates an individual CLN license.
+* **CloudLinux Licenses Addon** is the addon module that provides the administration page and registers the WHMCS lifecycle hooks. It manages relations between non-CloudLinux services and license products. For module-backed addons and configurable options, it also reconciles deferred provisioning, follows parent-service IP changes, and cleans up tracked licenses when services are removed.
+
+The addon module must remain active for Product Relations, Addon Relations, Configurable Options Relations, deferred provisioning, and automatic parent/child lifecycle handling to work.
+
+::: danger Do not deactivate the addon during an update
+Deactivation removes the relation and runtime-connection tables. Activating it again recreates empty tables, so the configured Addon, Product, and Configurable Options Relations must be restored. For a normal update, overwrite the module files and run `clDeploy.php --migrate` without deactivating the addon.
 :::
 
+### Addon administration tabs
 
-### Configuration of Add-on
+Open **Addons → CloudLinux Licenses Addon**. The page contains five tabs:
 
-1. Go to <span class="notranslate">_Setup → Add-on Modules_</span>, find <span class="notranslate">_CloudLinux Licenses Add-on_</span> and click <span class="notranslate">_Activate_</span> next to it.
-2. The next step is permitting access to this module. Click <span class="notranslate">_Configure_</span>, select admin roles and confirm by clicking <span class="notranslate">_Save Changes_</span>.
+| Tab | Purpose |
+| --- | --- |
+| **Licenses List** | Standalone licenses and license products created through Product, Addon, or Configurable Options Relations |
+| **Addon Licenses List** | Licenses stored directly on product addons whose Module Name is `CloudLinuxLicenses` |
+| **Addon Relations** | Legacy workflow that maps an existing non-CloudLinux product addon to a hidden CloudLinux license product |
+| **Product Relations** | Legacy relation workflow that automatically includes a hidden license product with a parent hosting product |
+| **Configurable Options Relations** | Maps individual dropdown, radio, or checkbox values to hidden license products |
 
-![WHMCS product Module Settings: CloudLinuxLicenses with CloudLinux product, key-based license, Key Limit 2, masked API token, debug on](/images/cln/whmcs_plugin/whmcsfig1imunify360licenseforwhmcs_zoom70.webp)
+The list tabs support filtering by client, product or addon, IP address, and license key. Relation rows can be added, edited, and deleted from the corresponding relation tab.
 
-_Fig 1: Imunify360 License For WHMCS provisioning module configuration._
+### Module-backed and legacy product-addon workflows
 
-![CloudLinux Licenses Addon admin: Licenses List tab, five search filters, table of cPanel-linked KernelCare, Imunify360, CloudLinux licenses](/images/cln/whmcs_plugin/fig2imunify360licenseforwhmcsaddon_zoom70.webp)
+There are two different ways to use a WHMCS product addon:
 
-_Fig 2: Imunify360 License For WHMCS add-on module main page._
+1. **Module-backed addon — recommended for current WHMCS versions.** Set the product addon's **Module Name** directly to `CloudLinuxLicenses` and configure its CLN product. The license belongs to the addon service itself and appears in **Addon Licenses List**. This is the workflow described in [Scenario 2](#scenario-2-optional-product-addon).
+2. **Addon Relation — legacy compatibility workflow.** Keep the existing product addon independent of the CloudLinux module, create a separate hidden `CloudLinuxLicenses` product, and map the two under **Addon Relations**. Activating the addon creates a separate child license service, which appears in **Licenses List**.
 
-## Management
+Use an Addon Relation when an existing addon must remain independent or when compatibility with an older configuration is required. Do not configure the same addon as module-backed and also map it through Addon Relations, because these are separate provisioning models.
 
+![CloudLinux addon relation](/images/cln/whmcs_plugin/addon-relations.webp)
 
-In this section you can find two ways of linking license product with your server product as well as other possibilities of the module.
+## Legacy relation workflows
 
+**Product Relations** and **Addon Relations** are retained for compatibility with installations that use the plugin's older child-service architecture. Both workflows create a separate free child service for the linked license product and record its relationship with the parent service.
 
-### Link Via Add-on – Optional License
+::: warning Legacy workflow limitations
+In version 1.3.23, Product Relations and Addon Relations do not provide the same deferred IP provisioning and parent-IP synchronization implemented for module-backed product addons and configurable options.
 
+For an IP-based license:
 
-In order to allow your client to decide whether he wants to order a server with or without the license, we will use Product Add-on. In this way, when the client orders an add-on, the relation will be triggered and the license product will be ordered along with the module.
+* enable **Do not use Order IP** on the hidden license product so an automatic provisioning attempt cannot register the checkout or operator IP;
+* a related license may not be provisioned automatically when the parent receives its Dedicated IP later;
+* changing the parent service IP does not automatically move the related license to the new address;
+* before canceling or deleting an order, run the related license service's **Terminate** action and verify in CLN that the license was removed.
 
-The following steps must be performed to prepare such connection:
-
-1. Go to <span class="notranslate">_Setup → Products/Services → Products Add-ons_</span> and click <span class="notranslate">_Add New Add-on_</span>.
-2. Fill addon name, set up billing cycle and price. Then tick <span class="notranslate">_Show on Order_</span> checkbox, assign add-on to the product and click <span class="notranslate">_Save Changes_</span>.
-
-![WHMCS Product Add-ons Edit Addon Details: name “Imunify360 license”, Show on Order checked, Welcome Email None, Addon Weighting 0](/images/cln/whmcs_plugin/fig3configurationofproductaddon1_zoom50.webp)
-
-![WHMCS Product Add-ons Applicable Products tab: dual lists with “Cloudlinux - Hosting” in Selected Products, arrow controls, Save Changes](/images/cln/whmcs_plugin/fig3configurationofproductaddon2_zoom50.webp)
-
-_Fig 3: Configuration of product add-on, which will trigger license product adding._
-
-
-1. Go to <span class="notranslate">_Add-ons → CloudLinux Licenses Add-on → Add-on Relations_</span> and click <span class="notranslate">_Add Relation_</span>.
-2. Select previously created product add-on and license product as shown below and click <span class="notranslate">_Add Relation_</span>.
-
-![CloudLinux Licenses Addon Addon Relations tab: Existing Addon Relations table plus Add Relation dialog with two dropdowns and blue ADD RELATION](/images/cln/whmcs_plugin/fig4creatingrelation_zoom70.webp)
-
-_Fig 4: Creating relation between product add-on and provisioning module._
-
-### Link Products Directly
-
-
-If you want to offer server along with the license, perform the following steps.
-
-::: tip Note
-Please do not set up pricing for license provisioning product. In exchange, you can increase a price for server provisioning product.
+Use a module-backed product addon or configurable option when the server IP can be assigned or changed after checkout.
 :::
 
-1. Prepare license provisioning product as described in the [Configuration of Product](/cln/whmcs_plugin/#configuration-of-product) section of this documentation.
-2. Go to <span class="notranslate">_Add-ons → CloudLinux Licenses Add-on → Products Relations_</span> and click <span class="notranslate">_Add Relation_</span>.
-3. Select server provisioning product from the Main product drop-down list and license provisioning product from the <span class="notranslate">_Linked Product With License_</span> and click <span class="notranslate">_Add Relation_</span>.
+### Addon Relations
 
-![CloudLinux Licenses Addon Product Relations tab: table of cPanel to license links, Add Relation dialog with Main product and Linked Product dropdowns](/images/cln/whmcs_plugin/fig5creatingrelationdirectly_zoom70.webp)
+Use **Addon Relations** only when an existing regular product addon must remain independent of the `CloudLinuxLicenses` provisioning module:
 
-_Fig 5: Creating relations directly between server and license provisioning modules._
+1. Create and configure a hidden `CloudLinuxLicenses` product for the license.
+2. Open **Addons → CloudLinux Licenses Addon → Addon Relations**.
+3. Click **Add Relation**.
+4. Select the existing regular addon under **Product Addon** and the hidden license product under **Linked License Product**.
+5. Save the relation.
 
+Activating the regular addon creates a separate free child service for the linked license product. For current WHMCS versions, prefer a module-backed product addon unless compatibility with an existing relation-based configuration is required.
 
+### Product Relations
 
-### Link Via Configurable Options
+Use **Product Relations** when every instance of a VPS or hosting product must include a license without asking the customer to select it:
 
+1. Create and configure a hidden `CloudLinuxLicenses` product for the license.
+2. Open **Addons → CloudLinux Licenses Addon → Product Relations**.
+3. Click **Add Relation**.
+4. Select the parent product under **Main product** and the hidden license product under **Linked License Product**.
+5. Save the relation.
 
-In order to allow your client to decide whether he wants to order server with or without license we can use <span class="notranslate">_Configurable Options_</span> ( [https://docs.whmcs.com/Addons_and_Configurable_Options](https://docs.whmcs.com/Addons_and_Configurable_Options)).
+The related license product is created as a free child service. Include its commercial cost in the parent product instead of pricing the hidden license product separately.
 
-Below we will show what steps to proceed to prepare such connection:
-1. Configure <span class="notranslate">_CloudLinuxLicenses_</span> product as described [here](/cln/whmcs_plugin/#configuration-of-product).
-2. Go to <span class="notranslate">_Setup → Products/Services → Configurable Options_</span> and click <span class="notranslate">_Create a New Group_</span>.
-3. Fill group name and add <span class="notranslate">_New Configurable Option_</span>, set up billing cycle, price and option type. Then save changes.
-4. Go to <span class="notranslate">_Add-ons → CloudLinux Licenses Add-on → Configurable Options Relations_</span> and click <span class="notranslate">_Add Relation_</span>.
-5. Choose appropriate configurable option and license product which it is assigned to and click <span class="notranslate">_Add relation_</span>.
+For an IP-based related license, enable **Do not use Order IP** on the hidden license product. After WHMCS creates the child license service, enter the correct server IP on that child and run its **Create** module action. If the parent IP changes later, update the related license service separately.
 
-::: tip Notes
+![CloudLinux product relation](/images/cln/whmcs_plugin/product-relations.webp)
 
-   * Plugin doesn’t support <span class="notranslate">“quantity”</span> type of <span class="notranslate">Configurable Options</span>
-   * A related product can’t contain two (or more) products with the same license type
-   * If you have changed <span class="notranslate">Dedicated IP</span> of the main product, then each related IP-based product will terminate an old IP license and create a new one for a new IP
+### Administrative and client operations
+
+For a service using `CloudLinuxLicenses`, the WHMCS administrator can:
+
+* create and terminate the license;
+* suspend or unsuspend an IP-based license;
+* view its registered IP or key and product details;
+* change the license IP or replace an existing license key.
+
+For key-based licenses, suspend and unsuspend do not remove or recreate the key. In the client area, the customer can view the license details and change the registered IP or key for an active service.
+
+Module-backed addon and configurable-option licenses participate in deferred provisioning and follow parent-service IP changes. Their stored License IP is updated after a successful move. Hard-deleting a parent service also cleans up tracked module-backed addon and configurable-option licenses.
+
+Product Relation child services receive suspend, unsuspend, and terminate actions when the corresponding module action runs for the parent service. An Addon Relation child is terminated when the mapped regular addon is terminated. These child services do not participate in automatic parent-IP reconciliation. Follow the operational precautions in [Legacy relation workflows](#legacy-relation-workflows) before canceling or deleting an order.
+
+## Connect a product to CLN
+
+Open the product or product addon, select the **Module Settings** tab, and set **Module Name** to `CloudLinuxLicenses`.
+
+| Setting | Description |
+| --- | --- |
+| **Username** | The CLN reseller username |
+| **IP registration token** | The API secret key from the CLN Profile page |
+| **Test credentials** | Verifies the saved credentials against CLN |
+| **Product** | The license product from the support matrix |
+| **License Type** | The Imunify360 tier; shown only for Imunify360 |
+| **Create Key based license** | Enables key mode for KernelCare or Imunify360 |
+| **Key Limit** | Maximum number of servers for the key |
+| **Name of the custom IP field** | Exact name of the WHMCS custom field that contains the server IP |
+| **Bundle** | A CLN bundle; shown only for Bundle Licenses |
+| **Do not use Order IP** | Disables the checkout IP fallback for this product |
+| **Debug Mode** | Sends module diagnostics to the WHMCS Module Log |
+
+The following example configures an IP-based Imunify360 Single User license. The same IP settings apply to all IP-based products.
+
+![Imunify360 product Module Settings](/images/cln/whmcs_plugin/imunify-product-settings.webp)
+
+## Configure the server IP source
+
+For a new IP-based license, the module resolves the IP in this order:
+
+1. The custom field named in **Name of the custom IP field**
+2. The WHMCS service **Dedicated IP**
+3. The order originator IP, but only when the fallback is allowed
+
+If the custom field and Dedicated IP contain different values, the custom field takes precedence. After successful provisioning, the module stores the exact registered IP and uses that value for later changes and cleanup.
+
+### Recommended policy: never use the order IP
+
+The order IP is the address from which checkout was submitted. For an order created or accepted by an administrator, it can be the operator IP. It is not a reliable server address.
+
+There are two controls:
+
+* **Never use Order IP** in **System Settings → Addon Modules → CloudLinux Licenses Addon → Configure** disables the fallback globally.
+* **Do not use Order IP** in a product's **Module Settings** disables the fallback for that product.
+
+The global setting overrides every product setting.
+
+![Global Never use Order IP setting](/images/cln/whmcs_plugin/never-use-order-ip.webp)
+
+### Legacy order IP fallback
+
+For compatibility with existing installations, the order IP can still be used when both controls are disabled. This can be useful in legacy workflows where the customer changes the address after activation, but it is not recommended for server licenses.
+
+The order IP fallback is never written into the service Dedicated IP merely by reading it. This prevents a browser or operator address from appearing as if it were the customer's server address.
+
+## Scenario 1: standalone license product
+
+Use this model when the customer orders the license itself rather than a parent VPS product.
+
+### Create the product
+
+1. Open **System Settings → Products/Services → Products/Services**.
+2. Create a product group, or select an existing license group.
+3. Create a product with **Product Type** set to **Other**.
+4. Configure its name, description, pricing, and welcome email.
+5. Open **Module Settings** and select `CloudLinuxLicenses`.
+6. Enter the CLN credentials and click **Test credentials**.
+7. Select the license product. For Imunify360, also select the required **License Type** tier.
+8. For an IP-based license, enter a custom field name such as `IP` in **Name of the custom IP field**.
+9. Enable **Do not use Order IP** unless the legacy fallback is intentional.
+10. Select the required WHMCS automatic setup rule and save the product.
+
+### Require the customer IP at checkout
+
+1. Open the product's **Custom Fields** tab.
+2. Add a **Text Box** field with exactly the same name used in **Name of the custom IP field**.
+3. Enable **Required Field**.
+4. Enable **Show on Order Form**.
+5. Save the product.
+
+![Required custom IP field](/images/cln/whmcs_plugin/required-ip-field.webp)
+
+The customer must now enter the server IP while ordering:
+
+![Standalone license checkout with required IP](/images/cln/whmcs_plugin/standalone-license-checkout.webp)
+
+::: warning Missing IP on a standalone service
+If Order IP is disabled and neither the custom field nor Dedicated IP is set, Module Create returns **Server IP required** and the service remains `Pending`. Enter the real IP on the service and run **Create** again. The WHMCS order acceptance form does not provide a Dedicated IP field, so collecting a required custom field during checkout is the safest automatic workflow.
 :::
 
-![CloudLinux Licenses Addon Configurable Options Relations tab: existing mappings table and Add Relation dialog with three license/option dropdowns](/images/cln/whmcs_plugin/fig6creatingrelationdirectlybetweenserverandlicenseprovisioningmodules_zoom70.webp)
+## Scenario 2: optional product addon
 
-_Fig 6: Creating relation directly between server and license provisioning modules._
+Use a module-backed product addon when the customer can add a license to a VPS or hosting product. The parent product does not need to use the CloudLinux license module.
 
-### Link Add-ons Directly
+### Create and attach the addon
 
-_[for WHMCS 7.2.x and newer]_
+1. Open **System Settings → Products/Services → Product Addons**.
+2. Create an addon and configure its name, description, billing cycle, and price.
+3. Enable **Show on Order**.
+4. In **Applicable Products**, select the parent VPS or hosting products.
+5. Open **Module Settings** and select `CloudLinuxLicenses`.
+6. Enter the CLN credentials, select `Imunify360`, and choose the required **License Type** tier.
+7. Enable **Do not use Order IP** for a deferred-IP VPS workflow.
+8. Select an automatic setup rule. Do not select **Do not automatically setup this addon** if the addon must activate automatically after the parent receives its IP.
+9. Save the addon.
 
-WHMCS 7.2 introduces the ability to associate <span class="notranslate">Product Add-ons</span> with <span class="notranslate">Provisioning Modules</span>.
+![Imunify360 product addon settings](/images/cln/whmcs_plugin/imunify-addon-settings.webp)
 
-In order to allow your client to decide whether he wants to order server with or without license we will use product addon. Below we will show you what steps to proceed to prepare such connection:
+The addon is displayed during checkout for the applicable parent products:
 
-1. Go to <span class="notranslate">_Setup → Products/Services → Products Add-ons_</span> and click <span class="notranslate">_Add New Add-on_</span>.
-2. Fill add-on name, set up billing cycle and price. Then tick <span class="notranslate">_Show on Order_</span> checkbox, assign add-on to product.
-3. Go to the <span class="notranslate">_Module Settings_</span> tab and select <span class="notranslate">_CloudLinux Licenses_</span> from <span class="notranslate">_Module Name_</span> drop-down.
-4. Fill <span class="notranslate">_Username_</span> and <span class="notranslate">_Password_</span> with your CloudLinux API access (API secret key) details and select desired license type from <span class="notranslate">_License Type_</span> drop-down. Click <span class="notranslate">_Save Changes_</span> to confirm.
+![Imunify360 license addon during VPS checkout](/images/cln/whmcs_plugin/imunify-addon-checkout.webp)
 
-![WHMCS Product Add-on Module Settings: CloudLinuxLicenses, Imunify360, Use key checked, Max Users, Key Limit 1, auto-setup on order](/images/cln/whmcs_plugin/fig6configurationofproductaddon_zoom50.webp)
+### How deferred addon provisioning works
 
-_Fig 7: Configuration of product add-on with Provisioning Modules._
+1. WHMCS accepts and provisions the parent service.
+2. If the parent has no custom IP or Dedicated IP, the license addon stays `Pending`. The parent service is not blocked.
+3. The missing-IP attempt is recorded in the WHMCS Module Queue.
+4. When the order is `Active` and the parent receives a Dedicated IP or custom IP, save the parent service. The module retries the addon.
+5. After CLN creates the license, the addon becomes `Active` and its **License IP** field stores the registered address.
 
-### CloudLinux OS Key Licenses
+If the parent IP later changes, the module removes the old registration, creates the license for the new IP, and updates **License IP**. Hard deletion of the parent service also cleans up its module-backed license addons.
 
-1. To set CloudLinux OS Key license while adding service in Module Settings do the following:
+## Scenario 3: configurable option
 
-* choose **_CloudLinux_** in _License Type_ drop-down;
-* mark _Use Key_ (instead of IP address) checkbox;
-* enter IP registration token (API secret key) from Profile page in CLN;
-* in _Key Limit_ field enter the number of servers and click _Save Changes;_
-* the _License Key Custom Field_ will be automatically added.
+Use a configurable option when the customer must select a license product or tier from a dropdown on the parent product.
 
-### KernelCare Key Licenses
+### Create hidden license products
 
-1. To set KernelCare Key license while adding service in Module Settings do the following:
+Create one CloudLinux license product for every selectable value:
 
-* choose **_KernelCare_** in _License Type_ drop-down;
-* mark _Use Key_ (instead of IP address) checkbox;
-* enter IP registration token (API secret key) from Profile page in CLN;
-* in _Key Limit_ field enter the number of servers and click _Save Changes;_
-  
-| |
-:-------------------------: 
-|![WHMCS product Module Settings: KernelCare, Use Key checked, Key Limit 1, masked token, “Do not automatically setup this product” selected](/images/cln/whmcs_plugin/fig7setupkernelcarelicense_zoom70.webp)|
-|Fig 8.2: Setup KernelCare License.|
+1. Create a product with **Product Type** set to **Other**.
+2. Mark the product **Hidden** so it cannot be ordered separately.
+3. Select `CloudLinuxLicenses` in **Module Settings**.
+4. Configure the CLN credentials, product, license tier when applicable, IP field, and Order IP policy.
+5. Repeat for the other license choices.
 
-* the _License Key Custom Field_ will be automatically added.
+Pricing for this workflow is normally configured on the configurable option values, not on the hidden license products.
 
-| |
-:-------------------------: 
-|![WHMCS product Custom Fields tab: yellow “Changes Saved” banner, License Key text field with Admin Only checked, Delete Field button](/images/cln/whmcs_plugin/fig8licensekeycustomfield_zoom70.webp)|
-|Fig 9.2: License Key Custom Field is displayed while editing service.|
+### Create the dropdown
 
-### Imunify360 Key Licenses
+1. Open **System Settings → Products/Services → Configurable Options**.
+2. Create a group and assign it to the parent VPS product.
+3. Add a configurable option with **Option Type** set to **Dropdown**.
+4. Add one value for no license, followed by the license choices. WHMCS supports an internal value and a customer-facing label separated with `|`, for example:
 
-1. To set Imunify360 Key license while adding service in <span class="notranslate">Module Settings</span>, do the following:
+```text
+none|No Imunify360 license
+imunify_single|Imunify360 Single User
+imunify_30|Imunify360 up to 30 Users
+```
 
-   * choose <span class="notranslate">**_Imunify360_**</span> in <span class="notranslate">_License Type_</span> drop-down
-   * mark <span class="notranslate">_Use Key_</span> (instead of IP address) checkbox
-   * enter IP registration token (API secret key) from <span class="notranslate">_Profile_</span> page in CLN
-   * in <span class="notranslate">_Max Users_</span> field enter the number of users per server
-   * in <span class="notranslate">_Key Limit_</span> field enter the number of servers and click <span class="notranslate">_Save Changes_</span>
+![Imunify360 configurable option group assigned to a VPS](/images/cln/whmcs_plugin/imunify-config-group.webp)
 
-![WHMCS product Module Settings: yellow Changes Saved banner, Imunify360 key license, Use Key and Debug checked, setup on first payment](/images/cln/whmcs_plugin/fig7imunify360productsettings_zoom50.webp)
+Configure the price and sort order for every value:
 
-_Fig 8.3: Imunify360 Product settings._
+![Imunify360 configurable option values and pricing](/images/cln/whmcs_plugin/imunify-config-options.webp)
 
-   * the <span class="notranslate">_License Key Custom Field_</span> will be automatically added
-   * the <span class="notranslate">_License Key Custom Field_</span> is displayed while editing service
+### Map the values to license products
 
-#### Updating a service
+1. Open **Addons → CloudLinux Licenses Addon**.
+2. Select **Configurable Options Relations**.
+3. Click **Add Relation**.
+4. Select the hidden license product, configurable option group, and configurable option value.
+5. Add one relation for every value that must create a license. Do not map the **No license** value.
 
-  * when <span class="notranslate">_Service Created Successfully_</span> message appears, you can edit <span class="notranslate">_Service_</span>
-  * enter information and settings and click <span class="notranslate">_Save Changes_</span>
+The relation tab shows the license product associated with every selectable value:
 
-![WHMCS admin client Products/Services: green “Service Created Successfully”, Imunify360 Key Active, Create/Suspend/Terminate, license details table](/images/cln/whmcs_plugin/fig8imunify360servicesettings_zoom50.webp)
+![Imunify360 Configurable Options Relations](/images/cln/whmcs_plugin/configurable-relations.webp)
 
-_Fig 9.3: Imunify360 Service settings._
+The customer sees a single license dropdown on the parent product:
 
+![Imunify360 tier selection as a configurable option](/images/cln/whmcs_plugin/imunify-option-checkout.webp)
 
-### Order
+### How deferred configurable-option provisioning works
 
+The parent service can become `Active` even when it has no IP. The license selection waits until the order is `Active` and the parent receives its custom IP or Dedicated IP. Saving the parent service or completing its module provisioning reconciles the selection and creates the missing license.
 
-All the services registered in the account are displayed in <span class="notranslate">_My Products & Services_</span> area. When you choose a particular Product/Service and click <span class="notranslate">_View Details_</span>, you can view Product information, change license key, view Add-ons or make changes in <span class="notranslate">Management Actions</span> section.
+Changing the selected option terminates the old related license and provisions the new one. Removing the selection terminates the related license. Changing the parent IP moves all related IP-based licenses to the new address.
 
-![WHMCS client area My Products & Services: sidebar status counts, table with Imunify360 license and Hosting rows, Active badges, dev-license banner](/images/cln/whmcs_plugin/fig9clientproductslist_zoom50.webp)
-
-_Fig 10.1: Client’s products list._
-
-![WHMCS client Manage Product for Imunify360 Key: overview card, ACTIVE, License Details table with Change beside key, server limit 1 / 2](/images/cln/whmcs_plugin/fig10licensesdetails_zoom50.webp)
-
-_Fig 11: Licenses details._
-
-To order and purchase a new service do the following:
-* choose <span class="notranslate">_Category → Imunify360 Group_</span> and click <span class="notranslate">_Order Now_</span> on a particular service
-
-![WHMCS client store Imunify360 group category: left categories menu, Hosting card at $0.00 USD with green Order Now, dev-license warning](/images/cln/whmcs_plugin/fig11orderproductsgroup_zoom50.webp)
-
-_Fig 12: Order - Products group._
-
-* choose <span class="notranslate">_Billing Cycle_</span> if possible
-* enter information in <span class="notranslate">_Configure Server_</span> area
-* choose <span class="notranslate">_Available Add-ons_</span> and click <span class="notranslate">_Continue Shopping_</span> to proceed or <span class="notranslate">_Checkout_</span> to view service details
-
-![WHMCS configure Hosting: Available Add-ons with Imunify360 license added to cart, right sidebar order summary $100.00 USD, Continue button](/images/cln/whmcs_plugin/fig12orderconfigureproduct_zoom50.webp)
-
-_Fig 13: Order - Configure product._
-
-* enter <span class="notranslate">_Promotional Code_</span> in a specific field if you have one
-* choose <span class="notranslate">_Payment Method_</span> and click <span class="notranslate">_Continue Shopping_</span>
-
-![WHMCS client Review & Checkout: cart lines Hosting and Imunify360 add-on, Promo Code field, Validate Code, sidebar total $100, green Checkout](/images/cln/whmcs_plugin/fig13orderreviewandcheckout_zoom50.webp)
-
-_Fig 14: Order - review and checkout._
-
-
-### Admin Area
-
-
-From the admin area it is possible to command such actions as create, terminate, suspend/unsuspend and change IP address. Nonetheless, these actions can be ordered only on the server provisioning module and will be automatically reproduced for the license provisioning product.
-
-Only change IP address functionality have to be ordered manually.
-
-You can also view the details of created license.
-
-![WHMCS Client Profile Products/Services: green Changes Saved banner, Imunify360 Key Active, Dedicated IP, Module Commands, License and Server Details](/images/cln/whmcs_plugin/fig14imunify360licensesforwhmcsadminarea_zoom50.webp)
-
-_Fig 15: Imunify360 Licenses For WHMCS admin area._
-
-
-### Client Area
-
-
-The clients are also able to view their servers license details. And as well as you, they are able to change IP address of their licenses.
-
-![WHMCS client Manage Product: Imunify360 Key ACTIVE card, billing summary, License Details with Change beside key, max users, 1 / 2 server limit](/images/cln/whmcs_plugin/fig15imunify360licensesforwhmcsclientarea_zoom50.webp)
-
-_Fig 16: Imunify360 Licenses For WHMCS Client Area._
-
-To change IP address, click <span class="notranslate">_Change_</span> as shown on the screen above. Then specify IP address and click <span class="notranslate">_Save_</span>.
-![WHMCS Manage tab: License Details with key in text field, blue Save button, Cancel link; Server Details table ServerId, IP, Created](/images/cln/whmcs_plugin/fig16changinglicenseipaddress_zoom70.webp)
-
-_Fig 17: Changing License IP Address._
-
-
-### Licenses List
-
-
-You can view the list of all licenses owned by your client at our add-on → <span class="notranslate">_Licenses List_</span>.
-You can filter the list of licenses by client name, server provisioning products, license provisioning products and license IP address/Key.
-
-![CloudLinux Licenses Addon Licenses List: five filters, table (ID, Client, products, IP/key, type), three cPanel rows, pagination](/images/cln/whmcs_plugin/fig18licenseslist_zoom70.webp)
-
-_Fig 18: Licenses List._
-
-
-###  Add-on Licenses List
-
-_[for WHMCS 7.2.x and newer]_
-
-You can view list of all product add-on with <span class="notranslate">Provisioning Modules</span> licenses owned by your client at our addon → <span class="notranslate">Licenses List</span>.
-
-![CloudLinux Licenses Addon Addon Licenses List tab: three filters, table with Client Name, three addon rows, IP/key column, red license types](/images/cln/whmcs_plugin/fig19addonlicenseslist_zoom70.webp)
-
-_Fig 19: Add-on Licenses List._
-
-## Common Problems
-
-
-After activating the server provisioning product, license provisioning product bounded to it is still pending.
-
-**Reason**: License IP address may be already taken.
-**Solution**: Change server IP address.
-
-:::tip Note
-Currently, only key-based licenses are available for Imunify360. Support of IP-based licenses will be added soon.
+::: tip Configurable option limitations
+Do not use the **Quantity** option type. Do not map multiple products of the same license type to one selected value.
 :::
 
+## Configure a Bundle license
 
+Bundle licenses use the same standalone product, product addon, and configurable-option workflows described above. Use this product type only when bundles have been enabled for the reseller account in CLN.
+
+1. Open the relevant product or addon **Module Settings**.
+2. Select `CloudLinuxLicenses` as the module.
+3. Select `Bundle Licenses` in **Product**.
+4. Select one of the bundles returned for the reseller account.
+5. Configure the IP field and Order IP policy as for any other IP-based license.
+6. Save the product or addon.
+
+![Bundle license product Module Settings](/images/cln/whmcs_plugin/bundle-product-settings.webp)
+
+If the **Bundle** list is empty or CLN rejects bundle provisioning, verify that the saved credentials belong to the expected reseller and ask CloudLinux to confirm that the bundle is assigned to that account.
+
+## Provisioning behavior reference
+
+| Event | Standalone product | Module-backed addon or configurable option | Product Relation or Addon Relation |
+| --- | --- | --- | --- |
+| Real IP is available | The license is created during Module Create | The license is created when the option or addon is activated | A child license service is created; verify that it contains the correct server IP before running **Create** |
+| Real IP is missing and Order IP is disabled | Module Create fails clearly; service stays `Pending` | Parent service is not blocked; license waits for the parent IP | No automatic relation-specific retry; provide the IP on the child license service and run **Create** |
+| IP becomes available later | Enter the IP and run **Create** again | Save or finish provisioning the active parent service; the module reconciles automatically | Update the child license service and run **Create** manually |
+| Registered IP changes | The old registration is removed and the new one is created | IP-based licenses follow the parent IP and their stored License IP is updated | Update the related license service separately; parent-IP changes are not reconciled automatically |
+| IP-based service is suspended or unsuspended | The corresponding CLN action is executed | The corresponding module action is executed for the license service | Product Relation actions follow the parent module action; Addon Relations do not add a separate suspend/unsuspend workflow |
+| License service is terminated | The registered IP or key is removed from CLN | The related license is removed when its addon service or configurable selection is terminated | Run **Terminate** on the recorded child through the parent/addon workflow and verify the result in CLN |
+| Parent service is hard-deleted | Not applicable | Tracked addon and configurable-option licenses are cleaned up | The recorded child connection is cleaned up; verify the CLN license after destructive order operations |
+
+Key-based licenses do not use the IP resolution or deferred-IP workflow.
+
+## Verify provisioned licenses
+
+Open **Addons → CloudLinux Licenses Addon** to access:
+
+* **Licenses List** for standalone and related product licenses
+* **Addon Licenses List** for module-backed product addons
+* relation editors for addons, products, and configurable options
+
+The lists can be filtered by client, product or addon, IP address, and license key.
+
+![CloudLinux Licenses list and filters](/images/cln/whmcs_plugin/licenses-list.webp)
+
+Module-backed product addons are shown separately under **Addon Licenses List**:
+
+![CloudLinux addon licenses list](/images/cln/whmcs_plugin/addon-licenses-list.webp)
+
+After provisioning, verify all three locations:
+
+1. The WHMCS service or addon is `Active` and displays the expected **License IP** or key.
+2. The license appears in the appropriate CloudLinux Licenses list.
+3. CLN contains the same IP or key and the correct license product.
+
+## Troubleshooting
+
+::: warning Delete services before product or addon definitions
+Terminate or delete all associated WHMCS services before deleting their product
+or product-addon definition. The plugin needs the saved module settings and CLN
+credentials from that definition to identify and revoke the license safely.
+
+If the definition has already been deleted, the WHMCS service record can still
+be hard-deleted, but the plugin cannot automatically clean up the corresponding
+CLN license. It records the pending cleanup in the WHMCS Module Queue and
+Activity Log. Reconcile the license manually in CLN before considering the
+service fully removed.
+:::
+
+| Symptom | What to check |
+| --- | --- |
+| `Server IP required` | Set the custom IP field or Dedicated IP. Alternatively, intentionally enable the legacy Order IP fallback. |
+| Standalone service is still `Pending` after adding the IP | Save the service and run the module **Create** command again. |
+| License addon remains `Pending` after adding the parent IP | Confirm that the order is `Active`, addon automatic setup is enabled, the parent IP was saved, and the Module Queue contains the retryable missing-IP Create entry. |
+| Parent service is `Active`, but configurable license is absent | Confirm that the selected value has a Configurable Options Relation and that the active parent has a valid custom IP or Dedicated IP. |
+| `You are not authorized to do this request` | Re-enter the CLN username and API secret, click **Test credentials**, and confirm that the reseller account has the required product or bundle entitlement. |
+| `License already exists for IP Address` | The IP is already registered in CLN. Verify ownership before removing or reassigning the existing license. |
+| Bundle dropdown is empty | Save valid CLN credentials, click **Test credentials**, and confirm that bundles are assigned to the reseller account. |
+| Wrong address is used for a license | Enable **Never use Order IP** globally or **Do not use Order IP** for the product, then provide the real server address through a required custom field or Dedicated IP. |
+| Custom IP is ignored | The custom field name must exactly match **Name of the custom IP field**. The field belongs to the standalone service or to the parent service for addon/configurable workflows. |
+
+Enable **Debug Mode** only while diagnosing a problem, then review **Utilities → Logs → Module Log** and the WHMCS Module Queue. Avoid leaving credential-bearing debug logs enabled longer than necessary.
