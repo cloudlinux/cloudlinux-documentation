@@ -87,7 +87,7 @@ export default {
       iframeUrl: "https://chatbot.cloudlinux.com/docs/cloudlinux",
       windowWidth: 0, // Changed from window.innerWidth to avoid SSR error
       tooltipDismissedTime: null,
-      tooltipDismissDuration: 2 * 60 * 60 * 1000, // 2 hours in milliseconds
+      tooltipDismissDuration: 3 * 24 * 60 * 60 * 1000, // 3 days in milliseconds
     };
   },
   computed: {
