@@ -70,7 +70,7 @@ options.
 
 ### Limitations
 
-* Website must use PHP version 7.3 or higher.
+* Website must use PHP version 7.4 or higher.
 * WordPress version must be 5.8 and higher.
 * Other WordPress Caching plugins must not be installed.
 * WordPress should not run in Multisite mode.
