@@ -274,6 +274,43 @@ If you receive any troubles during the conversion process,
 please feel free to search our [knowledge base](https://cloudlinux.zendesk.com/hc/en-us)
 or contact our support and attach the conversion log (/var/log/cldeploy.log).
 
+#### Server panics or reboots during conversion on Intel CPUs with IBT
+
+When converting **AlmaLinux 10 to CloudLinux 10** on a server that Intel CPU supports **IBT** (Indirect Branch Tracking), the server may panic and reboot during the LVE setup step of `cldeploy`, leaving a half-converted system that may not boot back up.
+
+The kernel message (visible on the console, in `/var/log/messages`, or in a kdump vmcore) looks like:
+
+```text
+Missing ENDBR: put_filesystem+0x0/0x20
+kernel BUG at arch/x86/kernel/cet.c:102!
+ ... mount_cgroup_root_fs+0x209/0x260 [kmodlve]
+```
+
+**Cause.** The CloudLinux LVE kernel module (`kmod-lve`) requires Intel CET/IBT to be disabled.
+The CloudLinux `tuned` profile turns it off via the `ibt=off` kernel boot parameter, but that takes effect only after a reboot.
+If the module is loaded while IBT is still active - before that reboot - the CPU raises a control-protection fault and the
+kernel panics.
+
+**Recovery for an affected server.** Boot once with IBT disabled:
+
+1. At the GRUB boot menu, highlight the default entry and press `e` to edit it.
+2. Find the line that starts with `linux` (the kernel command line) and append ` ibt=off` to its end.
+3. Press `Ctrl+X` (or `F10`) to boot with that parameter.
+
+Once the server is back up, verify that the conversion left the CloudLinux `tuned` profile active - it sets `ibt=off` permanently, so the parameter is applied automatically on every subsequent boot:
+
+```bash
+tuned-adm active                 # expect a "cloudlinux-*" profile
+grep -o 'ibt=off' /proc/cmdline  # after a normal reboot, expect: ibt=off
+```
+
+If the conversion did not finish, or `ibt=off` is not applied on a normal boot, attach
+`/var/log/cldeploy.log` and contact [CloudLinux support](https://cloudlinux.zendesk.com/hc/en-us).
+
+:::tip Note
+Up-to-date versions of `cldeploy` and the CloudLinux LVE packages avoid this by not loading the LVE module until after the post-conversion reboot, when `ibt=off` is already in effect.
+:::
+
 ### How to enable Secure Boot for CloudLinux 9+
 
 #### Overview
