@@ -119,11 +119,12 @@ Please refer to the [guide](#getting-a-license) to get an activation key.
 Currently supported operating systems for conversion:
 * CentOS 7
 * AlmaLinux OS 8-10
-* RockyLinux (installation only, no uninstall option)
+* Rocky Linux 8–9 — conversion is supported, but uninstalling CloudLinux OS and restoring Rocky Linux is not supported
 
 :::warning Unsupported operating systems for conversion
 * CentOS 8
 * CentOS Stream
+* Rocky Linux 10
 :::
 
 :::warning SELinux
