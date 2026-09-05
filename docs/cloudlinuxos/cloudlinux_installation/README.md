@@ -105,8 +105,8 @@ To detect whether CloudLinux OS is installed and functional on a system, use the
 
 ### Conversion Process
 
-It's easy to convert your existing installation through the `cldeploy` script.
-The process takes a few minutes and replaces just a handful of packages.
+Use the `cldeploy` script to convert a supported existing server to CloudLinux OS.
+Conversion changes packages, repositories, and control panel integration. Its duration depends on the installed software and download speed. Plan a maintenance window and a reboot.
 
 :::warning
 Unlike [new server installation](#installing-new-servers),
@@ -125,6 +125,10 @@ Currently supported operating systems for conversion:
 * CentOS 8
 * CentOS Stream
 * Rocky Linux 10
+:::
+
+:::warning OS version and edition
+Conversion keeps the same major OS version; it is not an upgrade from CentOS 7 to CloudLinux OS 8 or later. CloudLinux OS Solo is not available on CentOS 6 or 7. For Solo, prepare a server with a supported OS and migrate the hosted accounts using your control panel's migration procedure. Check the [Solo requirements](/introduction/solo/) before choosing the source OS and license.
 :::
 
 :::warning SELinux
@@ -162,13 +166,55 @@ If you would like to convert from CentOS 8 to CloudLinux OS 8, follow these step
 
 ### Downloading and running the conversion script
 
-#### Key-based activation
+#### Before you start
 
-If you want to use your activation key for activation, run the following commands:
+1. Confirm that the OS, architecture, virtualization environment, control panel, and intended CloudLinux edition meet the [requirements](#requirements). Also check the requirements of the features you plan to use, such as PHP Selector or AccelerateWP.
+2. Have a tested backup of hosted accounts, databases, and server configuration, and know how to restore it. Arrange access to the provider's console or rescue environment in case the server does not boot after conversion.
+3. Schedule a maintenance window. Complete any running package installation, OS upgrade, or control panel update first. Do not run two conversions or another package operation at the same time.
+4. Confirm that the activation key is valid for the intended edition, or that the server's public IP has the correct IP-based license. Keep the key private.
+5. Resolve existing package-manager, repository, and control panel errors before conversion. Repositories must be reachable using valid certificates and credentials. Do not bypass a failed compatibility or certificate check to start conversion.
+6. If an earlier conversion stopped, use [Troubleshooting](#troubleshooting) before running these commands. A partially converted server is not a clean starting point.
 
-```
+Run the following commands as `root` to download the script:
+
+```bash
 yum install wget -y
 wget https://repo.cloudlinux.com/cloudlinux/sources/cln/cldeploy
+```
+
+Use an empty working directory for a new conversion so that `wget` does not save a new download as `cldeploy.1` while you continue to run an older `cldeploy` file. Preserve the script used by an interrupted conversion when investigating that run.
+
+#### Check readiness
+
+Review the options supported by the downloaded script:
+
+```bash
+bash cldeploy --help
+```
+
+The `--precheck` option checks conversion prerequisites and writes `/var/log/cldeploy-precheck.log`.
+
+:::warning Precheck is not a full conversion test
+In `cldeploy` 1.132, `--precheck` is not guaranteed to leave the system unchanged. It can import a package signing key and can offer to remove an incompatible Plesk Cgroups Manager extension. Review prompts and do not use `--noninteractive` or automatically answer yes when assessing an existing server. Treat precheck as a potentially changing operation within the maintenance window, unless the release notes for your script explicitly guarantee otherwise.
+
+A successful precheck does not prove that registration, package transactions, control panel setup, or the next boot will succeed. Read the reported failures and mandatory changes; the exit code alone is not a readiness verdict.
+
+The basic `--precheck` command below also does not establish eligibility for your chosen edition or license. Check the edition and control panel requirements independently before conversion.
+:::
+
+After reviewing this limitation, run:
+
+```bash
+bash cldeploy --precheck
+```
+
+Resolve the reported prerequisites before starting conversion. Do not use `--skip-os-check`, `--skip-kmod-check`, or `--skip-boot-check` to turn an unsupported configuration into a supported one.
+
+#### Key-based activation
+
+To start a clean conversion with an activation key:
+
+```bash
 bash cldeploy -k ACTIVATION_KEY
 ```
 
@@ -190,13 +236,19 @@ sh cldeploy -i --to-admin-edition
 ```
 
 ### Next steps
+Wait for the conversion to finish successfully and review its final instructions. If it reports an error or stops unexpectedly, follow [Troubleshooting](#troubleshooting) before rebooting or rerunning it. An installed `cloudlinux-release` package or a changed OS name alone does not prove that conversion completed.
+
 After a successful conversion, reboot your system:
 
 ```
 reboot
 ```
 
-Once you reboot, your server should be running with CloudLinux OS LVE kernel.
+After rebooting, check the kernel as described below, sign in to the control panel, and verify the CloudLinux integration installed during conversion. Check a hosted website and its database connection before ending the maintenance window. CloudLinux OS 9 and later use an AlmaLinux kernel; they do not require `LVE` in the kernel name.
+
+Features such as PHP Selector, X-Ray, and AccelerateWP have their own installation, licensing, and control panel requirements. A completed OS conversion does not mean that every optional feature has been installed or is supported by the panel. Follow the setup guide for each feature you select: [PHP Selector](/cloudlinuxos/cloudlinux_os_components/#installation-and-update-4), [X-Ray](/cloudlinuxos/shared-pro/#x-ray), or [AccelerateWP](/cloudlinuxos/shared-pro/#getting-started). Verify each selected feature separately.
+
+If you intentionally used `--conversion-only`, control panel components were not installed. Once the OS conversion has completed successfully, follow the [component installation options](/cloudlinuxos/command-line_tools/#cldeploy). `--components-only` installs panel components on a converted system; it does not complete a failed OS conversion or repair registration and package transactions.
 
 #### Checking the booted kernel
 
@@ -270,9 +322,68 @@ To do so, you need to do the following:
 
 ### Troubleshooting
 
-If you receive any troubles during the conversion process,
-please feel free to search our [knowledge base](https://cloudlinux.zendesk.com/hc/en-us)
-or contact our support and attach the conversion log (/var/log/cldeploy.log).
+#### Clean conversion or recovery
+
+Choose the next step from the outcome of the previous run:
+
+| Server state | Next step |
+| --- | --- |
+| Conversion has never run, or it stopped at a prerequisite check before any conversion changes | Resolve the reported prerequisite, then follow [Before you start](#before-you-start) and the normal conversion instructions. |
+| Conversion stopped during registration, package installation, or panel setup, or you cannot establish where it stopped | Preserve the existing log and identify the failure below. Do not start another clean conversion against the partial installation. |
+| Conversion completed, but a panel feature is missing or reports an error | Check the selected edition, any use of `--conversion-only`, and the feature's panel requirements. Investigate that component instead of converting the OS again. |
+
+:::warning Interrupted conversion and resume
+The public `cldeploy` 1.132 script does not provide `--resume`. Do not add this option to that script. Any recovery instructions for a later release must match both the installed script and the state recorded by the original conversion; downloading a newer script does not create missing recovery state for an older failed run.
+
+Do not use `--skip-os-check` as a general recovery command. Do not delete `/etc/cl-convert-saved`, replace OS release packages, or force-remove conflicting packages to make a retry pass. These actions can destroy the information needed to recover safely.
+:::
+
+#### Identify the failure
+
+| Reported problem | What to check |
+| --- | --- |
+| Unsupported source OS, edition, kernel, or panel | Compare the complete combination against [Requirements](#requirements) and the panel's requirements. Use a supported migration path. A license change or a skipped check does not add compatibility. |
+| License or registration error | Check the intended edition, activation key validity or licensed public IP, and the server association in [CloudLinux Network](https://cln.cloudlinux.com/). If the error names a network or certificate failure, resolve that cause rather than repeatedly changing the key. |
+| Repository, dependency, or conflicting-package error | Read the first failed transaction in the conversion log. Check which repository and package versions it names. Restore access to the intended repositories; do not disable signature checks, remove packages with `rpm --nodeps`, or add `--force-packages-installation` as a general fix. |
+| Another package operation is running | Allow the existing update or installation to finish. Do not delete package-manager or conversion lock files to start a second operation. |
+| CloudLinux Manager, Python environment, or PHP Selector error | Check the conversion's component-installation result and the affected feature's prerequisites. An import error or an incorrect panel name needs investigation before reinstalling packages or changing integration files. |
+
+Correcting the reported cause does not by itself establish that a partial conversion can be restarted. Use recovery instructions for that exact failure and script version. If no supported recovery path applies, stop further conversion changes and use the escalation guidance below.
+
+#### Inspect the existing state and logs
+
+The following queries do not install or remove packages:
+
+```bash
+cat /etc/os-release
+uname -r
+rpm -q --qf '%{NAME} %{EPOCH}:%{VERSION}-%{RELEASE}.%{ARCH}\n' cloudlinux-release lve-utils cloudlinux-venv lvemanager cagefs
+```
+
+A missing package in this output is information for diagnosis, not an instruction to install it. On CloudLinux OS 10, `/etc/os-release` continues to identify the base OS; see [Subsystem Mode](#cloudlinux-os-10-subsystem-mode).
+
+If `/usr/bin/cldetect` is available, check its view of the edition and control panel:
+
+```bash
+/usr/bin/cldetect --detect-edition
+/usr/bin/cldetect --detect-cp
+```
+
+Compare the detected panel with the panel actually installed. If `cldetect` fails, retain its error rather than treating empty output as "no panel" or "not converted".
+
+Use the logs that the conversion already creates:
+
+* `/var/log/cldeploy.log` — conversion output, including registration, package transactions, and panel setup.
+* `/var/log/cldeploy-precheck.log` — readiness checks, if precheck was run.
+* The package-manager logs for the same time period, such as `/var/log/dnf.log` and `/var/log/dnf.rpm.log` on DNF-based systems, or `/var/log/yum.log` on CentOS 7.
+
+Preserve the failed run's logs before a retry. Review them locally and remove activation keys, passwords, tokens, and private customer information from any copy you share. Do not paste full logs or license keys into a public issue.
+
+#### When to stop and escalate
+
+If the recovery procedure is unclear, the server has conflicting release or core packages, or you cannot confirm a safe boot configuration, stop before further package changes or a reboot. Search the [knowledge base](https://cloudlinux.zendesk.com/hc/en-us) for the exact error. If no matching procedure applies, [contact support](https://cloudlinux.zendesk.com/hc/en-us/requests/new) through the private channel with the existing conversion log, the first failed step, the source OS and panel versions, and the command used with secrets removed. Include any changes made after the failure.
+
+This is an exception path for an unsafe or unknown state. For an eligible server that has not been partially converted, the normal conversion and validation steps above are the self-service path.
 
 #### Server panics or reboots during conversion on Intel CPUs with IBT
 

@@ -2679,6 +2679,7 @@ Usage:
 |<span class="notranslate">`--serverurl`</span>|Use non-default registration server (default is `https://xmlrpc.cln.cloudlinux.com/XMLRPC`)|
 |<span class="notranslate">`--components-only`</span>|Install control panel components only|
 |<span class="notranslate">`--conversion-only`</span>|Do not install control panel components after converting|
+|<span class="notranslate">`--precheck`</span>|Check conversion prerequisites and write `/var/log/cldeploy-precheck.log`. Read the [precheck limitations](/cloudlinuxos/cloudlinux_installation/#check-readiness) before running it.|
 |<span class="notranslate">`--hostinglimits`</span>|Install mod_hostinglimits rpm|
 |<span class="notranslate">`--skip-kmod-check`</span>|Skip check for unsupported kmods|
 |<span class="notranslate">`--skip-version-check`</span>|Do not check for script updates|
@@ -2691,7 +2692,9 @@ Usage:
 |<span class="notranslate">`--force-packages-installation `</span>|Automatically resolve dependencies and remove conflicting packages|
 |<span class="notranslate">`--allow-lower-version `</span>|Convert to lower minor version (Almalinux x.y to CL x.y-1) if current version (CL x.y) is not available|
 
-The script will perform the following actions:
+For first-time conversion, follow the [preparation and readiness guide](/cloudlinuxos/cloudlinux_installation/#before-you-start). For a failed or partial conversion, use the [recovery decision guide](/cloudlinuxos/cloudlinux_installation/#clean-conversion-or-recovery) before choosing options. `--components-only` is not a recovery mode for an incomplete OS conversion, and `--force-packages-installation` can remove conflicting packages.
+
+During a normal conversion, the script will perform the following actions:
 
 1. Register server with CLN.
 2. Install CloudLinux OS kernel, lve libraries, lve-utils, lve-stats and pam_lve packages.

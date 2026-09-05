@@ -170,7 +170,7 @@ Please feel free to ask your questions [here](https://cloudlinux.zendesk.com/hc/
 
 ### Can I convert to CloudLinux OS Solo from another OS?
 
-You can convert CentOS/AlmaLinux OS to CloudLinux OS Solo. Please refer to [this instruction](/solo/installation/#converting-existing-servers).
+You can convert a supported source OS to CloudLinux OS Solo. Check the [current OS and panel requirements](/cloudlinuxos/cloudlinux_installation/#requirements) and follow the [preparation and conversion instructions](/cloudlinuxos/cloudlinux_installation/#before-you-start).
 
 ### What is the Website Monitoring tool intended for?
 
@@ -208,7 +208,7 @@ No, you cannot.
 
 ### Can I convert CentOS 6,7 to CloudLinux OS Solo 8+ using the cldeploy script?
 
-No, you cannot. Only CentOS 8/AlmaLinux 8+ can be converted.
+No. `cldeploy` keeps the same major OS version; it does not upgrade CentOS 6 or 7 to CloudLinux OS 8 or later. CloudLinux OS Solo requires a supported OS version and control panel. Prepare a supported server and migrate the hosted accounts using your panel's migration procedure, then follow the [conversion requirements and preparation guide](/cloudlinuxos/cloudlinux_installation/#before-you-start). Check the current [supported source operating systems](/cloudlinuxos/cloudlinux_installation/#requirements); CentOS 8 is not a supported direct conversion source.
 
 ### Does CloudLinux OS Solo work with LiteSpeed?
 
