@@ -225,14 +225,14 @@ Your CloudLinux OS edition will be detected automatically based on the `ACTIVATI
 
 #### IP-based activation
 
-If your reseller provides you with an IP-based license, run the following commands:
+If your reseller provides you with an IP-based license, confirm that the server's public IP is licensed for the intended edition before conversion. An edition flag does not change or upgrade that license.
 
 To convert server into the CloudLinux OS edition:
 ```
 sh cldeploy -i
 ```
 
-To convert server into the CloudLinux OS Admin edition:
+To convert a server that meets the Admin edition's OS and panel requirements and has an Admin IP-based license:
 ```
 sh cldeploy -i --to-admin-edition
 ```

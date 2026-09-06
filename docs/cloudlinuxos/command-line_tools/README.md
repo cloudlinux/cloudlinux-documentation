@@ -2686,10 +2686,12 @@ Usage:
 |<span class="notranslate">`--skip-registration`</span>|Don't register on CLN if already have access to CL repository|
 |<span class="notranslate">`--force-hybridize`</span>|Option allows to convert CloudLinux OS 7 to CloudLinux OS 7 Hybrid which has a newer kernel (from v1.61)|
 |<span class="notranslate">`--no-force-hybridize `</span>|Don't hybridize machine from CloudLinux 7 to CloudLinux 7 Hybrid automatically, even though machine has a new hardware|
-|<span class="notranslate">`--to-solo-edition `</span>|Convert to CloudLinux Solo edition (only allowed with --skip-registration option)|
-|<span class="notranslate">`--to-admin-edition `</span>|Convert to CloudLinux Admin edition (only allowed with --skip-registration option)|
+|<span class="notranslate">`--to-solo-edition`</span>|Select CloudLinux OS Solo for a source OS and panel supported by that edition. The license must match the intended edition.|
+|<span class="notranslate">`--to-admin-edition`</span>|Select CloudLinux OS Admin for a source OS and panel supported by that edition. The license must match the intended edition.|
 |<span class="notranslate">`--to-container-environment `</span>|Convert to CloudLinux which supports working inside containers|
 |<span class="notranslate">`--force-packages-installation `</span>|Automatically resolve dependencies and remove conflicting packages|
+
+Edition flags select the requested setup; they do not grant or change a license. For key-based activation, use a key for the intended edition, which the script detects from that key. For IP-based activation, confirm that the server's public IP has the matching license before selecting an edition. `--skip-registration` is a separate mode for systems that already have repository access, not a requirement for using an edition flag.
 
 Minor-version step-down is selected automatically when applicable; it does not require `--allow-lower-version`, which is not accepted by the current script. See [Minor version step-down](/cloudlinuxos/cloudlinux_installation/#minor-version-step-down) for its compatibility limits.
 
@@ -2723,9 +2725,9 @@ Examples:
 <div class="notranslate">
 
 ```
-cldeploy --key xx-xxxxxx                            # convert RHEL/CentOS to CL by using activation key, install control panel components
-cldeploy --key xx-xxxxxx --force-hybridize           # convert RHEL/CentOS 7 to CL7h by using activation key, install control panel components (from v1.61)
-cldeploy --byip --conversion-only                   # convert RHEL/CentOS to CL by ip, don't install control panel components
+cldeploy --key xx-xxxxxx                            # convert a supported source OS using an activation key; install panel components
+cldeploy --key xx-xxxxxx --force-hybridize           # convert a supported CentOS 7 server to CL7 Hybrid; install panel components
+cldeploy --byip --conversion-only                   # convert a supported source OS using its IP-based license; skip panel component installation
 cldeploy --components-only                          # install control panel components on already converted system
 cldeploy --hostinglimits                            # update httpd and install mod_hostinglimits 
 ```
