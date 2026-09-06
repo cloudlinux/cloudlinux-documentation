@@ -2672,7 +2672,7 @@ Usage:
 
 | | |
 |--|--|
-|<span class="notranslate">`-h, --help`</span>|Print this message|
+|<span class="notranslate">`--help`</span>|Print the supported options|
 |<span class="notranslate">`-k, --key &lt;key&gt;`</span>|Update your system to CloudLinux OS with activation key|
 |<span class="notranslate">`-i, --byip`</span>|Update your system to CloudLinux OS and register by IP|
 |<span class="notranslate">`-c, --uninstall`</span>|Convert CloudLinux OS back to CentOS|
@@ -2690,14 +2690,15 @@ Usage:
 |<span class="notranslate">`--to-admin-edition `</span>|Convert to CloudLinux Admin edition (only allowed with --skip-registration option)|
 |<span class="notranslate">`--to-container-environment `</span>|Convert to CloudLinux which supports working inside containers|
 |<span class="notranslate">`--force-packages-installation `</span>|Automatically resolve dependencies and remove conflicting packages|
-|<span class="notranslate">`--allow-lower-version `</span>|Convert to lower minor version (Almalinux x.y to CL x.y-1) if current version (CL x.y) is not available|
+
+Minor-version step-down is selected automatically when applicable; it does not require `--allow-lower-version`, which is not accepted by the current script. See [Minor version step-down](/cloudlinuxos/cloudlinux_installation/#minor-version-step-down) for its compatibility limits.
 
 For first-time conversion, follow the [preparation and readiness guide](/cloudlinuxos/cloudlinux_installation/#before-you-start). For a failed or partial conversion, use the [recovery decision guide](/cloudlinuxos/cloudlinux_installation/#clean-conversion-or-recovery) before choosing options. `--components-only` is not a recovery mode for an incomplete OS conversion, and `--force-packages-installation` can remove conflicting packages.
 
 During a normal conversion, the script will perform the following actions:
 
 1. Register server with CLN.
-2. Install CloudLinux OS kernel, lve libraries, lve-utils, lve-stats and pam_lve packages.
+2. Install the packages required for the detected OS version and selected edition. Kernel and LVE-related packages depend on that combination; not every edition installs or uses every component.
 3. Attempt to detect control panel and do the following actions:
 *  _For cPanel_:
    * install mod_hostinglimits;

@@ -195,7 +195,9 @@ bash cldeploy --help
 The `--precheck` option checks conversion prerequisites and writes `/var/log/cldeploy-precheck.log`.
 
 :::warning Precheck is not a full conversion test
-In `cldeploy` 1.132, `--precheck` is not guaranteed to leave the system unchanged. It can import a package signing key and can offer to remove an incompatible Plesk Cgroups Manager extension. Review prompts and do not use `--noninteractive` or automatically answer yes when assessing an existing server. Treat precheck as a potentially changing operation within the maintenance window, unless the release notes for your script explicitly guarantee otherwise.
+In the public `cldeploy` 1.132 script, `--precheck` can change the system. It can import a package signing key, create or change permissions on `/var/lve`, write a readiness marker there, and automatically disable and remove an enabled Plesk Cgroups Manager extension. The Plesk removal does not require an interactive confirmation in precheck mode; omitting `--noninteractive` does not prevent it.
+
+Run this precheck only when those changes are acceptable within the planned maintenance window, or first assess its behavior on a disposable clone. A newer script version number alone does not establish that precheck is non-mutating; verify the release notes for the exact script you use.
 
 A successful precheck does not prove that registration, package transactions, control panel setup, or the next boot will succeed. Read the reported failures and mandatory changes; the exit code alone is not a readiness verdict.
 
@@ -238,7 +240,9 @@ sh cldeploy -i --to-admin-edition
 ### Next steps
 Wait for the conversion to finish successfully and review its final instructions. If it reports an error or stops unexpectedly, follow [Troubleshooting](#troubleshooting) before rebooting or rerunning it. An installed `cloudlinux-release` package or a changed OS name alone does not prove that conversion completed.
 
-After a successful conversion, reboot your system:
+Review boot warnings even if the script exits successfully. If it reports missing kernel or initramfs files, an unexpected boot entry, or a boot configuration that needs attention, resolve that warning before rebooting. A zero exit code alone does not establish that the next boot is safe.
+
+After a successful conversion with no unresolved boot warnings, reboot your system:
 
 ```
 reboot
@@ -248,13 +252,14 @@ After rebooting, check the kernel as described below, sign in to the control pan
 
 Features such as PHP Selector, X-Ray, and AccelerateWP have their own installation, licensing, and control panel requirements. A completed OS conversion does not mean that every optional feature has been installed or is supported by the panel. Follow the setup guide for each feature you select: [PHP Selector](/cloudlinuxos/cloudlinux_os_components/#installation-and-update-4), [X-Ray](/cloudlinuxos/shared-pro/#x-ray), or [AccelerateWP](/cloudlinuxos/shared-pro/#getting-started). Verify each selected feature separately.
 
-If you intentionally used `--conversion-only`, control panel components were not installed. Once the OS conversion has completed successfully, follow the [component installation options](/cloudlinuxos/command-line_tools/#cldeploy). `--components-only` installs panel components on a converted system; it does not complete a failed OS conversion or repair registration and package transactions.
+If you intentionally used `--conversion-only`, the script skipped control panel component installation. Once the OS conversion has completed successfully, follow the [component installation options](/cloudlinuxos/command-line_tools/#cldeploy). `--components-only` installs panel components on a converted system; it does not complete a failed OS conversion or repair registration and package transactions.
 
 #### Checking the booted kernel
 
 :::tip Note
-This information applies only to CloudLinux OS 8 and below.
-CloudLinux OS 9 and above use the non-modified AlmaLinux kernel.
+The `LVE` name check below applies to CloudLinux OS 8 and earlier installations that use the CloudLinux LVE kernel. CloudLinux OS 9 and later use an AlmaLinux kernel and do not require `LVE` in its name.
+
+Do not use the kernel name alone to judge a Solo conversion or a container environment; the expected kernel depends on the edition and virtualization environment. Where the hosting provider controls boot selection, verify the provider's boot settings as well as the guest configuration.
 :::
 
 You can check the booted kernel with the following command:
@@ -375,6 +380,7 @@ Use the logs that the conversion already creates:
 
 * `/var/log/cldeploy.log` — conversion output, including registration, package transactions, and panel setup.
 * `/var/log/cldeploy-precheck.log` — readiness checks, if precheck was run.
+* `/var/log/cldeploy-debug.log` — system information recorded before conversion, if the run reached that step.
 * The package-manager logs for the same time period, such as `/var/log/dnf.log` and `/var/log/dnf.rpm.log` on DNF-based systems, or `/var/log/yum.log` on CentOS 7.
 
 Preserve the failed run's logs before a retry. Review them locally and remove activation keys, passwords, tokens, and private customer information from any copy you share. Do not paste full logs or license keys into a public issue.
