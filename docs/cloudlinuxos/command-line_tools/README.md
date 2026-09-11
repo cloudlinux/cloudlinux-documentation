@@ -2675,7 +2675,7 @@ Usage:
 |<span class="notranslate">`--help`</span>|Print the supported options|
 |<span class="notranslate">`-k, --key &lt;key&gt;`</span>|Update your system to CloudLinux OS with activation key|
 |<span class="notranslate">`-i, --byip`</span>|Update your system to CloudLinux OS and register by IP|
-|<span class="notranslate">`-c, --uninstall`</span>|Convert CloudLinux OS back to CentOS|
+|<span class="notranslate">`-c, --uninstall`</span>|Remove CloudLinux components and attempt conversion to CentOS or AlmaLinux, depending on the system and saved conversion metadata. This is not a full rollback.|
 |<span class="notranslate">`--serverurl`</span>|Use non-default registration server (default is `https://xmlrpc.cln.cloudlinux.com/XMLRPC`)|
 |<span class="notranslate">`--components-only`</span>|Install control panel components only|
 |<span class="notranslate">`--conversion-only`</span>|Do not install control panel components after converting|
@@ -2686,7 +2686,7 @@ Usage:
 |<span class="notranslate">`--skip-registration`</span>|Don't register on CLN if already have access to CL repository|
 |<span class="notranslate">`--force-hybridize`</span>|Option allows to convert CloudLinux OS 7 to CloudLinux OS 7 Hybrid which has a newer kernel (from v1.61)|
 |<span class="notranslate">`--no-force-hybridize `</span>|Don't hybridize machine from CloudLinux 7 to CloudLinux 7 Hybrid automatically, even though machine has a new hardware|
-|<span class="notranslate">`--to-solo-edition`</span>|Select CloudLinux OS Solo for a source OS and panel supported by that edition. The license must match the intended edition.|
+|<span class="notranslate">`--to-solo-edition`</span>|Select CloudLinux OS Solo for a supported source OS and, if installed, a compatible control panel. The license must match the intended edition.|
 |<span class="notranslate">`--to-admin-edition`</span>|Select CloudLinux OS Admin for a source OS and panel supported by that edition. The license must match the intended edition.|
 |<span class="notranslate">`--to-container-environment `</span>|Convert to CloudLinux which supports working inside containers|
 |<span class="notranslate">`--force-packages-installation `</span>|Automatically resolve dependencies and remove conflicting packages|

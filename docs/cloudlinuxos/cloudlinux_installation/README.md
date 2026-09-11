@@ -128,7 +128,7 @@ Currently supported operating systems for conversion:
 :::
 
 :::warning OS version and edition
-Conversion keeps the same major OS version; it is not an upgrade from CentOS 7 to CloudLinux OS 8 or later. CloudLinux OS Solo is not available on CentOS 6 or 7. For Solo, prepare a server with a supported OS and migrate the hosted accounts using your control panel's migration procedure. Check the [Solo requirements](/introduction/solo/) before choosing the source OS and license.
+Conversion keeps the same major OS version; it is not an upgrade from CentOS 7 to CloudLinux OS 8 or later. CloudLinux OS Solo is not available on CentOS 6 or 7. For Solo, prepare a server with a supported OS and migrate the hosted accounts or services to it. If you use a control panel, follow its migration procedure. Check the [Solo requirements](/introduction/solo/) before choosing the source OS and license.
 :::
 
 :::warning SELinux
@@ -248,9 +248,9 @@ After a successful conversion with no unresolved boot warnings, reboot your syst
 reboot
 ```
 
-After rebooting, check the kernel as described below, sign in to the control panel, and verify the CloudLinux integration installed during conversion. Check a hosted website and its database connection before ending the maintenance window. CloudLinux OS 9 and later use an AlmaLinux kernel; they do not require `LVE` in the kernel name.
+After rebooting, check the kernel as described below. If a control panel is installed, sign in to it and verify the CloudLinux integration installed during conversion. Check any hosted websites and their database connections before ending the maintenance window. CloudLinux OS 9 and later use an AlmaLinux kernel; they do not require `LVE` in the kernel name.
 
-Features such as PHP Selector, X-Ray, and AccelerateWP have their own installation, licensing, and control panel requirements. A completed OS conversion does not mean that every optional feature has been installed or is supported by the panel. Follow the setup guide for each feature you select: [PHP Selector](/cloudlinuxos/cloudlinux_os_components/#installation-and-update-4), [X-Ray](/cloudlinuxos/shared-pro/#x-ray), or [AccelerateWP](/cloudlinuxos/shared-pro/#getting-started). Verify each selected feature separately.
+Features such as PHP Selector, X-Ray, and AccelerateWP have their own installation, licensing, and control panel requirements. A completed OS conversion does not mean that every optional feature has been installed or is supported by the panel. Follow the setup guide for each feature you select: [PHP Selector](/cloudlinuxos/cloudlinux_os_components/#installation-and-update-3), [X-Ray](/cloudlinuxos/shared-pro/#x-ray), or [AccelerateWP](/cloudlinuxos/shared-pro/#getting-started). Verify each selected feature separately.
 
 If you intentionally used `--conversion-only`, the script skipped control panel component installation. Once the OS conversion has completed successfully, follow the [component installation options](/cloudlinuxos/command-line_tools/#cldeploy). `--components-only` installs panel components on a converted system; it does not complete a failed OS conversion or repair registration and package transactions.
 
@@ -269,9 +269,7 @@ uname -r
 ```
 
 :::warning Note
-If after rebooting you don't see the CloudLinux kernel (the kernel has the abbreviation LVE in its name)
-then please consider checking our [knowledge base](https://cloudlinux.zendesk.com/hc/en-us/) or
-contact [support](https://cloudlinux.zendesk.com/hc/en-us/requests/new).
+On an installation that requires the CloudLinux LVE kernel, investigate an unexpected booted kernel before ending the maintenance window. Check the installed kernel and the bootloader or provider's boot selection; consult our [knowledge base](https://cloudlinux.zendesk.com/hc/en-us/) or [support](https://cloudlinux.zendesk.com/hc/en-us/requests/new) if the correct boot configuration is unclear. Absence of `LVE` in the name alone does not indicate a conversion failure on CloudLinux OS 9+, Solo, or a provider-managed container kernel.
 :::
 
 #### Automatic hybridization
@@ -341,6 +339,8 @@ Choose the next step from the outcome of the previous run:
 The public `cldeploy` 1.132 script does not provide `--resume`. Do not add this option to that script. Any recovery instructions for a later release must match both the installed script and the state recorded by the original conversion; downloading a newer script does not create missing recovery state for an older failed run.
 
 Do not use `--skip-os-check` as a general recovery command. Do not delete `/etc/cl-convert-saved`, replace OS release packages, or force-remove conflicting packages to make a retry pass. These actions can destroy the information needed to recover safely.
+
+Do not treat `--uninstall` as an automatic rollback of a failed or partial conversion. Returning to a saved pre-conversion state is a separate recovery procedure using a complete, tested backup or a consistent VM snapshot. Follow the applicable backup or hosting-provider restore procedure.
 :::
 
 #### Identify the failure
@@ -1377,7 +1377,7 @@ You can find CageFS documentation [here](/cloudlinuxos/cloudlinux_os_components/
 Useful links:
 
 * [General information and requirements](/cloudlinuxos/cloudlinux_os_components/#general-information-and-requirements-5)
-	* [Installation and update](/cloudlinuxos/cloudlinux_os_components/#installation-and-update-4)
+	* [Installation and update](/cloudlinuxos/cloudlinux_os_components/#installation-and-update-3)
 	* [Installation instructions for cPanel users](/cloudlinuxos/cloudlinux_os_components/#installation-instructions-for-cpanel-users)
 * [Uninstalling](/cloudlinuxos/cloudlinux_os_components/#uninstalling-3)
 	* [Configuration and using](/cloudlinuxos/cloudlinux_os_components/#configuration-and-using)
@@ -1639,8 +1639,9 @@ You can pass the `--migrate-silently` argument to skip the confirmation prompt.
 
 ## Uninstalling
 
-You can always uninstall CloudLinux OS.
-In this case, the system will be converted back to AlmaLinux or CentOS* (depending on the system the conversion was done from).
+Depending on the current system and saved conversion metadata, `cldeploy` can remove CloudLinux components and convert the system to AlmaLinux or CentOS*. This is not a complete restoration of the pre-conversion state. For an interrupted conversion, follow [Troubleshooting](#troubleshooting) before attempting further changes.
+
+The public `cldeploy` 1.132 script does not support automatic conversion back to Rocky Linux.
 
 :::warning
 CentOS Linux 8 reached End Of Life (EOL) on December 31st, 2021. You can still uninstall CloudLinux and return to CentOS 8, but we don't guarantee stable operation of the system and its repositories after this action.

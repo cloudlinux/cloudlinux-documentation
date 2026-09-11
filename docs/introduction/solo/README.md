@@ -208,7 +208,7 @@ No, you cannot.
 
 ### Can I convert CentOS 6,7 to CloudLinux OS Solo 8+ using the cldeploy script?
 
-No. `cldeploy` keeps the same major OS version; it does not upgrade CentOS 6 or 7 to CloudLinux OS 8 or later. CloudLinux OS Solo requires a supported OS version and control panel. Prepare a supported server and migrate the hosted accounts using your panel's migration procedure, then follow the [conversion requirements and preparation guide](/cloudlinuxos/cloudlinux_installation/#before-you-start). Check the current [supported source operating systems](/cloudlinuxos/cloudlinux_installation/#requirements); CentOS 8 is not a supported direct conversion source.
+No. `cldeploy` keeps the same major OS version; it does not upgrade CentOS 6 or 7 to CloudLinux OS 8 or later. CloudLinux OS Solo requires a supported OS version; a control panel is optional and provides the graphical interface. If you use a panel, also check its compatibility. Prepare a supported target server and migrate hosted accounts or services using the appropriate migration procedure, then follow the [conversion requirements and preparation guide](/cloudlinuxos/cloudlinux_installation/#before-you-start). Check the current [supported source operating systems](/cloudlinuxos/cloudlinux_installation/#requirements); CentOS 8 is not a supported direct conversion source.
 
 ### Does CloudLinux OS Solo work with LiteSpeed?
 
