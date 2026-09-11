@@ -2672,29 +2672,35 @@ Usage:
 
 | | |
 |--|--|
-|<span class="notranslate">`-h, --help`</span>|Print this message|
+|<span class="notranslate">`--help`</span>|Print the supported options|
 |<span class="notranslate">`-k, --key &lt;key&gt;`</span>|Update your system to CloudLinux OS with activation key|
 |<span class="notranslate">`-i, --byip`</span>|Update your system to CloudLinux OS and register by IP|
-|<span class="notranslate">`-c, --uninstall`</span>|Convert CloudLinux OS back to CentOS|
+|<span class="notranslate">`-c, --uninstall`</span>|Remove CloudLinux components and attempt conversion to CentOS or AlmaLinux, depending on the system and saved conversion metadata. This is not a full rollback.|
 |<span class="notranslate">`--serverurl`</span>|Use non-default registration server (default is `https://xmlrpc.cln.cloudlinux.com/XMLRPC`)|
 |<span class="notranslate">`--components-only`</span>|Install control panel components only|
 |<span class="notranslate">`--conversion-only`</span>|Do not install control panel components after converting|
+|<span class="notranslate">`--precheck`</span>|Check conversion prerequisites and write `/var/log/cldeploy-precheck.log`. Read the [precheck limitations](/cloudlinuxos/cloudlinux_installation/#check-readiness) before running it.|
 |<span class="notranslate">`--hostinglimits`</span>|Install mod_hostinglimits rpm|
 |<span class="notranslate">`--skip-kmod-check`</span>|Skip check for unsupported kmods|
 |<span class="notranslate">`--skip-version-check`</span>|Do not check for script updates|
 |<span class="notranslate">`--skip-registration`</span>|Don't register on CLN if already have access to CL repository|
 |<span class="notranslate">`--force-hybridize`</span>|Option allows to convert CloudLinux OS 7 to CloudLinux OS 7 Hybrid which has a newer kernel (from v1.61)|
 |<span class="notranslate">`--no-force-hybridize `</span>|Don't hybridize machine from CloudLinux 7 to CloudLinux 7 Hybrid automatically, even though machine has a new hardware|
-|<span class="notranslate">`--to-solo-edition `</span>|Convert to CloudLinux Solo edition (only allowed with --skip-registration option)|
-|<span class="notranslate">`--to-admin-edition `</span>|Convert to CloudLinux Admin edition (only allowed with --skip-registration option)|
+|<span class="notranslate">`--to-solo-edition`</span>|Select CloudLinux OS Solo for a supported source OS and, if installed, a compatible control panel. The license must match the intended edition.|
+|<span class="notranslate">`--to-admin-edition`</span>|Select CloudLinux OS Admin for a source OS and panel supported by that edition. The license must match the intended edition.|
 |<span class="notranslate">`--to-container-environment `</span>|Convert to CloudLinux which supports working inside containers|
 |<span class="notranslate">`--force-packages-installation `</span>|Automatically resolve dependencies and remove conflicting packages|
-|<span class="notranslate">`--allow-lower-version `</span>|Convert to lower minor version (Almalinux x.y to CL x.y-1) if current version (CL x.y) is not available|
 
-The script will perform the following actions:
+Edition flags select the requested setup; they do not grant or change a license. For key-based activation, use a key for the intended edition, which the script detects from that key. For IP-based activation, confirm that the server's public IP has the matching license before selecting an edition. `--skip-registration` is a separate mode for systems that already have repository access, not a requirement for using an edition flag.
+
+Minor-version step-down is selected automatically when applicable; it does not require `--allow-lower-version`, which is not accepted by the current script. See [Minor version step-down](/cloudlinuxos/cloudlinux_installation/#minor-version-step-down) for its compatibility limits.
+
+For first-time conversion, follow the [preparation and readiness guide](/cloudlinuxos/cloudlinux_installation/#before-you-start). For a failed or partial conversion, use the [recovery decision guide](/cloudlinuxos/cloudlinux_installation/#clean-conversion-or-recovery) before choosing options. `--components-only` is not a recovery mode for an incomplete OS conversion, and `--force-packages-installation` can remove conflicting packages.
+
+During a normal conversion, the script will perform the following actions:
 
 1. Register server with CLN.
-2. Install CloudLinux OS kernel, lve libraries, lve-utils, lve-stats and pam_lve packages.
+2. Install the packages required for the detected OS version and selected edition. Kernel and LVE-related packages depend on that combination; not every edition installs or uses every component.
 3. Attempt to detect control panel and do the following actions:
 *  _For cPanel_:
    * install mod_hostinglimits;
@@ -2719,9 +2725,9 @@ Examples:
 <div class="notranslate">
 
 ```
-cldeploy --key xx-xxxxxx                            # convert RHEL/CentOS to CL by using activation key, install control panel components
-cldeploy --key xx-xxxxxx --force-hybridize           # convert RHEL/CentOS 7 to CL7h by using activation key, install control panel components (from v1.61)
-cldeploy --byip --conversion-only                   # convert RHEL/CentOS to CL by ip, don't install control panel components
+cldeploy --key xx-xxxxxx                            # convert a supported source OS using an activation key; install panel components
+cldeploy --key xx-xxxxxx --force-hybridize           # convert a supported CentOS 7 server to CL7 Hybrid; install panel components
+cldeploy --byip --conversion-only                   # convert a supported source OS using its IP-based license; skip panel component installation
 cldeploy --components-only                          # install control panel components on already converted system
 cldeploy --hostinglimits                            # update httpd and install mod_hostinglimits 
 ```
