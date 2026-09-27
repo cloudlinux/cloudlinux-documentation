@@ -323,47 +323,38 @@ A process joins its account's IPC namespace when it enters <span class="notransl
 
 IPC objects are tied to the account's <span class="notranslate"> LVE </span>: when the <span class="notranslate"> LVE </span> is removed (for example with <span class="notranslate">`lvectl destroy`</span>), its IPC objects are released together with it.
 
-#### **kernel.lve_ipc_isolation**
+#### How to enable it
 
-To give each account its own System V IPC namespace, enable:
-
-```
-kernel.lve_ipc_isolation=1
-```
-
-Default:
+The feature is controlled by the <span class="notranslate">`lve-ipc-isolation`</span> server flag. To switch it on, create the flag file:
 
 ```
-kernel.lve_ipc_isolation = 0
+touch /opt/cloudlinux/flags/enabled-flags.d/lve-ipc-isolation.flag
 ```
 
-| | |
-|-|-|
-|<span class="notranslate"> _kernel.lve_ipc_isolation = 0_ </span> | disabled (default)|
-|<span class="notranslate"> _kernel.lve_ipc_isolation = 1_ </span> | each account gets its own private System V IPC namespace|
-
-The setting applies to accounts whose <span class="notranslate"> LVE </span> is created after it is enabled, so a brief pause in account activity (or a reboot) applies it to every account.
-
-To enable it persistently, edit the file _/etc/sysctl.conf_ , add the line:
+To switch it off again, remove the file:
 
 ```
-kernel.lve_ipc_isolation = 1
+rm -f /opt/cloudlinux/flags/enabled-flags.d/lve-ipc-isolation.flag
 ```
 
-And execute:
+The change is picked up within a few seconds and persists across reboots: the kernel parameter <span class="notranslate">`kernel.lve_ipc_isolation`</span> follows the flag (1 = on, 0 = off), so there is no sysctl to edit by hand. It applies to accounts whose <span class="notranslate"> LVE </span> is created after the switch, so a brief pause in account activity (or a reboot) applies it to every account.
+
+To pin the feature off on a server, so that neither the flag nor a package update switches it on, create the opt-out marker:
 
 ```
-sysctl -p
+touch /opt/cloudlinux/flags/opt-out.d/lve-ipc-isolation.flag
 ```
 
-To see the IPC namespaces that exist on the server, run:
+#### Checking the state
 
 ```
-lsns -t ipc
+cloudlinux-server-flags list      # whether the lve-ipc-isolation flag is on
+sysctl kernel.lve_ipc_isolation   # 1 = on, 0 = off
+lsns -t ipc                       # the IPC namespaces that exist on the server
 ```
 
 ::: tip Note
-Requires <span class="notranslate"> kmod-lve </span> 2.1-79 or later, with the matching <span class="notranslate"> liblve </span> and <span class="notranslate"> lve-utils </span> packages. On fresh installs <span class="notranslate"> lve-utils </span> registers the parameter (disabled) so that it persists across reboots.
+Requires <span class="notranslate"> kmod-lve </span> 2.1-79 or later and <span class="notranslate"> lve-utils </span> 6.6.43 or later (with <span class="notranslate"> alt-python27-cllib </span> 3.4.44 or later).
 :::
 
 ## File change API
