@@ -7,6 +7,7 @@ More information about the actual kernel changes and releases can be obtained fr
 * [LTS kernel](./#lts-kernel)
 * [Hybrid Kernels](./#hybrid-kernels)
 * [SecureLinks and Link Traversal Protection](./#securelinks-and-link-traversal-protection)
+* [Per-account System V IPC isolation](./#per-account-system-v-ipc-isolation)
 * [File change API](./#file-change-api)
 * [Tuned-profiles-cloudlinux](./#tuned-profiles-cloudlinux)
 * [Kernel config variables](./#kernel-config-variables)
@@ -303,6 +304,58 @@ Setting this parameter will deny any process in LVE to resolve symlinks that is 
 
 Default is true.
 
+
+## Per-account System V IPC isolation
+
+::: tip Note
+Per-account System V IPC isolation is disabled by default for the CloudLinux OS.
+:::
+
+CloudLinux OS can give each hosting account its own private System V IPC namespace, covering shared memory segments, semaphore arrays, and message queues. This extends the per-account isolation that CloudLinux OS already provides for the file system (<span class="notranslate"> CageFS </span>) and for processes (<span class="notranslate"> LVE </span>) to System V IPC: with the feature enabled, the IPC objects created by an account's applications live in that account's own namespace.
+
+What you get with the feature enabled:
+
+* **No key or identifier clashes between accounts.** Applications of different accounts can use the same System V IPC keys and identifiers without interfering with each other, for example when several accounts run the same application with a fixed `ftok` key.
+* **A clean IPC view per account.** Inside an account, `ipcs` lists only that account's own objects, which keeps troubleshooting simple and predictable.
+* **No application changes.** Programs keep using `shmget`, `semget`, and `msgget` exactly as before.
+
+A process joins its account's IPC namespace when it enters <span class="notranslate"> CageFS </span>, so the behaviour is the same whether the process starts from SSH, cron, or a web request. The isolation applies to accounts that run inside <span class="notranslate"> CageFS </span>. Server-wide services such as the database server, MySQL Governor, the web server, and control-panel daemons are not affected by the setting.
+
+IPC objects are tied to the account's <span class="notranslate"> LVE </span>: when the <span class="notranslate"> LVE </span> is removed (for example with <span class="notranslate">`lvectl destroy`</span>), its IPC objects are released together with it.
+
+#### How to enable it
+
+The feature is controlled by the <span class="notranslate">`lve-ipc-isolation`</span> server flag. To switch it on, create the flag file:
+
+```
+touch /opt/cloudlinux/flags/enabled-flags.d/lve-ipc-isolation.flag
+```
+
+To switch it off again, remove the file:
+
+```
+rm -f /opt/cloudlinux/flags/enabled-flags.d/lve-ipc-isolation.flag
+```
+
+The change is picked up within a few seconds and persists across reboots: the kernel parameter <span class="notranslate">`kernel.lve_ipc_isolation`</span> follows the flag (1 = on, 0 = off), so there is no sysctl to edit by hand. It applies to accounts whose <span class="notranslate"> LVE </span> is created after the switch, so a brief pause in account activity (or a reboot) applies it to every account.
+
+To pin the feature off on a server, so that neither the flag nor a package update switches it on, create the opt-out marker:
+
+```
+touch /opt/cloudlinux/flags/opt-out.d/lve-ipc-isolation.flag
+```
+
+#### Checking the state
+
+```
+cloudlinux-server-flags list      # whether the lve-ipc-isolation flag is on
+sysctl kernel.lve_ipc_isolation   # 1 = on, 0 = off
+lsns -t ipc                       # the IPC namespaces that exist on the server
+```
+
+::: tip Note
+Requires <span class="notranslate"> kmod-lve </span> 2.1-79 or later and <span class="notranslate"> lve-utils </span> 6.6.44 or later (with <span class="notranslate"> alt-python27-cllib </span> 3.4.44 or later).
+:::
 
 ## File change API
 
