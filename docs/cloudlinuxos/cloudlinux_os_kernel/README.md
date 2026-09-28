@@ -354,7 +354,7 @@ lsns -t ipc                       # the IPC namespaces that exist on the server
 ```
 
 ::: tip Note
-Requires <span class="notranslate"> kmod-lve </span> 2.1-79 or later and <span class="notranslate"> lve-utils </span> 6.6.43 or later (with <span class="notranslate"> alt-python27-cllib </span> 3.4.44 or later).
+Requires <span class="notranslate"> kmod-lve </span> 2.1-79 or later and <span class="notranslate"> lve-utils </span> 6.6.44 or later (with <span class="notranslate"> alt-python27-cllib </span> 3.4.44 or later).
 :::
 
 ## File change API
