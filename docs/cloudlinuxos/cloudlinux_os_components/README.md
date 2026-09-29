@@ -1745,7 +1745,7 @@ If you place the skeleton in the <span class="notranslate">`/home`</span> direct
 Set the value to blank (not the default <span class="notranslate"> Home </span>). Without this change, cPanel will create new accounts in incorrect locations.
 :::
 
-CageFS 7.6.48-1 has built-in setup for:
+CageFS has built-in setup for:
 * cPanel
 * Plesk 10+
 * DirectAdmin
@@ -1753,7 +1753,7 @@ CageFS 7.6.48-1 has built-in setup for:
 * PostgreSQL
 * LiteSpeed
 
-CageFS 7.6.48-1 does not install panel-specific ISPmanager or Interworx integrations. A web interface for managing CageFS on cPanel, Plesk 10+, or DirectAdmin requires a compatible integration. For ISPmanager, Interworx, and other panels, use the [CageFS command-line tool](/cloudlinuxos/command-line_tools/#cagefs).
+CageFS does not install panel-specific ISPmanager or Interworx integrations. A web interface for managing CageFS on cPanel, Plesk 10+, or DirectAdmin requires a compatible integration. For ISPmanager, Interworx, and other panels, use the [CageFS command-line tool](/cloudlinuxos/command-line_tools/#cagefs).
 
 Once the template is initialized, you can start enabling users. By default, CageFS is disabled for all users.
 
@@ -3326,7 +3326,7 @@ To update CageFS skeleton, go to <span class="notranslate"> Cloudlinux Manager >
 
 #### ISPManager
 
-CageFS 7.6.48-1 does not install an ISPmanager CageFS web plugin. Manage users and global CageFS settings with [CageFS CLI tools](/cloudlinuxos/command-line_tools/#cagefs).
+CageFS does not install an ISPmanager CageFS web plugin. Manage users and global CageFS settings with [CageFS CLI tools](/cloudlinuxos/command-line_tools/#cagefs).
 
 ## MySQL Governor
 
@@ -5116,7 +5116,7 @@ cagefsctl --setup-cl-selector
 ```
 </div>
 
-In CageFS 7.6.48-1, the built-in setup creates this file if missing for cPanel, Plesk 10+, and DirectAdmin. CageFS does not create it automatically for ISPmanager, Interworx, or other panels in this version.
+The built-in CageFS setup creates this file if missing for cPanel, Plesk 10+, and DirectAdmin. CageFS does not create it automatically for ISPmanager, Interworx, or other panels.
 
 That is why, if the file is not created automatically, then it must be created manually and correct paths must be written to its directives.
 
