@@ -6264,7 +6264,7 @@ Available since <span class="notranslate">LVE Manager 7.11.49-1</span>, the feat
 #### **Store requirements**
 
 * <span class="notranslate">LVE Manager 7.11.49-1</span> or later, with <span class="notranslate">`cl-bun`</span> 1.4.x (first release: `1.4.0-1`). The `enable` command installs `cl-bun` if needed from the server's enabled repositories.
-* CloudLinux OS 7–10 or Ubuntu 22.04; **x86_64 only**.
+* CloudLinux OS 7–10; **x86_64 only**.
 * CloudLinux <span class="notranslate">Node.js Selector</span>, on a supported panel or a custom panel that uses its API.
 * `fs.protected_hardlinks = 1`.
 * A storage directory on the same filesystem as each account home that will use the Store: hardlinks cannot cross filesystems. The default store is <span class="notranslate">`/var/lib/cl-node-modules-storage`</span>.
