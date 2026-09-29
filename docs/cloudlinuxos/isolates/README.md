@@ -153,6 +153,8 @@ alt-php53, alt-php54, and alt-php55 are supported on CL7/CL8/CL9 only. CL10 supp
 
 Follow these steps to enable CloudLinux Isolates for a domain:
 
+On CloudLinux OS 10 Beta with `cagefs-7.6.48-1.el10.cloudlinux`, use `--isolates-allow-all`, `--isolates-enable`, `--isolates-list`, and `--isolates-disable` in place of the `--site-isolation-*` flags below. The older names still work but print deprecation warnings.
+
 **1. Allow the feature server-wide (administrator only, one-time setup):**
 
 ```
@@ -363,11 +365,14 @@ CloudLinux Isolates was enabled for domain(s),
 site1.com,site2.com
 ```
 
+On CloudLinux OS 10 Beta with `cagefs-7.6.48-1.el10.cloudlinux`, `cagefsctl --isolates-enable` lists only domains actually isolated on standard output. Skipped domains and their reasons are reported on standard error. The command exits non-zero if any requested domain was not isolated, even when others succeeded. Check the messages and `cagefsctl --isolates-list` before treating a multi-domain request as complete.
+
 **Requirements:**
 
 * CloudLinux Isolates must be allowed server-wide first
 * CloudLinux Isolates must be allowed for the domain's user
 * The domain must exist and be associated with a valid user account
+* On CloudLinux OS 10 Beta with CageFS 7.6.48, the document root must be a valid absolute path within the account home. Symlinked path components below that home are rejected, even if they point within the home
 * Must be run with root privileges
 
 **What happens when isolation is enabled:**

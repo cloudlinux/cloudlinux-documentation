@@ -1757,6 +1757,10 @@ CageFS automatically detects and configures all necessary files for:
 
 A web interface for managing CageFS is available for cPanel, Plesk 10+, DirectAdmin, ISPmanager, and Interworx. For other control panels, use the command-line tool.
 
+:::tip CloudLinux OS 10 Beta
+With `cagefs-7.6.48-1.el10.cloudlinux`, built-in panel-specific CageFS setup covers cPanel, Plesk 10+, and DirectAdmin only; it does not set up ISPmanager or Interworx integrations. Check for a separately supported panel integration before relying on a web UI for either panel on CL10.
+:::
+
 Once the template is initialized, you can start enabling users. By default, CageFS is disabled for all users.
 
 Starting from **cagefs-6.1-27**, the <span class="notranslate">`fs.proc_can_see_other_uid`</span> setting is migrated (one time) from _/etc/sysctl.conf_ to _/etc/sysctl.d/90-cloudlinux.conf_. If this variable is not set in either file, it defaults to 0.
