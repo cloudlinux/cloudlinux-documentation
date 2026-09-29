@@ -153,30 +153,30 @@ alt-php53, alt-php54, and alt-php55 are supported on CL7/CL8/CL9 only. CL10 supp
 
 Follow these steps to enable CloudLinux Isolates for a domain:
 
-On CloudLinux OS 10 Beta with `cagefs-7.6.48-1.el10.cloudlinux`, use `--isolates-allow-all`, `--isolates-enable`, `--isolates-list`, and `--isolates-disable` in place of the `--site-isolation-*` flags below. The older names still work but print deprecation warnings.
+With CageFS 7.6.48-1 (Beta), where CloudLinux Isolates is available, use `--isolates-` instead of `--site-isolation-` for all nine documented `cagefsctl` Isolates options, including the command-reference and troubleshooting examples below. The older flags still work but print deprecation warnings. For earlier releases, use the `--site-isolation-` forms of the steps below. This substitution does not apply to the `isolatectl site-isolation` subcommands.
 
 **1. Allow the feature server-wide (administrator only, one-time setup):**
 
 ```
-cagefsctl --site-isolation-allow-all
+cagefsctl --isolates-allow-all
 ```
 
 **2. Enable isolation for a specific domain:**
 
 ```
-cagefsctl --site-isolation-enable <example.com>
+cagefsctl --isolates-enable <example.com>
 ```
 
 **3. Verify isolation is active:**
 
 ```
-cagefsctl --site-isolation-list
+cagefsctl --isolates-list
 ```
 
 To disable isolation for a domain:
 
 ```
-cagefsctl --site-isolation-disable <example.com>
+cagefsctl --isolates-disable <example.com>
 ```
 
 ***
@@ -365,14 +365,14 @@ CloudLinux Isolates was enabled for domain(s),
 site1.com,site2.com
 ```
 
-On CloudLinux OS 10 Beta with `cagefs-7.6.48-1.el10.cloudlinux`, `cagefsctl --isolates-enable` lists only domains actually isolated on standard output. Skipped domains and their reasons are reported on standard error. The command exits non-zero if any requested domain was not isolated, even when others succeeded. Check the messages and `cagefsctl --isolates-list` before treating a multi-domain request as complete.
+With CageFS 7.6.48-1 (Beta), `cagefsctl --isolates-enable` lists the domains it actually isolated on standard output and reports skipped domains and their reasons on standard error. It exits non-zero if any requested domain was skipped, even when others succeeded. Check the messages and `cagefsctl --isolates-list` before treating a multi-domain request as complete.
 
 **Requirements:**
 
 * CloudLinux Isolates must be allowed server-wide first
 * CloudLinux Isolates must be allowed for the domain's user
 * The domain must exist and be associated with a valid user account
-* On CloudLinux OS 10 Beta with CageFS 7.6.48, the document root must be a valid absolute path within the account home. Symlinked path components below that home are rejected, even if they point within the home
+* With CageFS 7.6.48-1 (Beta), the panel-provided document root must be an absolute path inside the account home (or the home itself). It may contain only ASCII letters, digits, `_`, `-`, `.`, and `/`—no whitespace. `..` path segments, `//`, and symlinked components below the home are rejected, even if a symlink points within the home
 * Must be run with root privileges
 
 **What happens when isolation is enabled:**
@@ -543,6 +543,7 @@ $ isolatectl site-isolation enable --domain site1.com,site2.com
 
 * The user can only manage domains they own
 * CloudLinux Isolates must be allowed for the user by the server administrator
+* With CageFS 7.6.48-1 (Beta), an invalid document root can be skipped without undoing other domains enabled in the same request. After a multi-domain request, use `isolatectl site-isolation list` to check each domain rather than assuming the operation was all-or-nothing
 
 ***
 
@@ -869,12 +870,14 @@ cagefsctl --site-isolation-allow-all
 
 ### Integration with Control Panels
 
-CloudLinux Isolates integrates automatically with supported control panels. When domains are:
+CloudLinux Isolates integrates with supported control panels through domain hooks. When domains are:
 
 * **Created**: No automatic action (isolation must be explicitly enabled)
 * **Renamed**: Isolation configuration is automatically updated
-* **Deleted**: Isolation configuration is automatically cleaned up
+* **Deleted**: When the panel dispatches the deletion hook, CageFS attempts to remove the isolation entry and, with CageFS 7.6.48-1 (Beta), stale per-website settings
 * **Document root changed**: Configuration is regenerated via hooks
+
+After deleting an isolated domain, [list isolated domains](#list-isolated-domains) to confirm it no longer appears. Report a cleanup failure if it remains.
 
 ***
 

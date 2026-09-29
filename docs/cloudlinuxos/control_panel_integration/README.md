@@ -1113,16 +1113,16 @@ After renaming a domain (or any equivalent domain removal operation with transfe
 |<span class="notranslate">--new-domain</span>|Yes | - |A new domain name |
 |<span class="notranslate">--include-subdomains</span>|No |False |If set, all subdomains are renamed as well, i.e. when renaming domain.com → domain.eu the corresponding subdomain will be renamed as well test.domain.com → test.domain.eu.|
 
-On CloudLinux OS 10 Beta with `alt-python27-cllib-3.4.43-1.el10.cloudlinux` and `cagefs-7.6.48-1.el10.cloudlinux`, a custom panel that does not already dispatch a domain-deletion hook should call it as root after deleting a domain—not renaming it—while its UNIX user still exists and the panel reports its remaining domains:
+**Domain deletion (CageFS 7.6.48-1 and alt-python27-cllib 3.4.43-1, Beta):** A custom panel that does not already dispatch the deletion hook should call it as root after deleting the domain, while its UNIX user still exists. First update the panel's [`domains` CPAPI response](#domains) to list that user's remaining domains and document roots:
 
 <div class="notranslate">
 
 ```
-/usr/share/cloudlinux/hooks/post_modify_domain.py delete --username user --domain old_domain
+/usr/share/cloudlinux/hooks/post_modify_domain.py delete --username user --domain example.com
 ```
 </div>
 
-This lets CageFS remove the deleted domain's isolation record and attempt to clean stale per-website settings. If the panel cannot list the account's remaining domains, per-website cleanup is skipped. Do not duplicate a hook already installed by the panel.
+Replace `user` and `example.com` with the account name and deleted domain name. The hook asks CageFS to remove the domain's isolation record and attempt stale per-website cleanup. Per-website cleanup is skipped if the panel cannot list the remaining domains or returns none. The hook's exit status alone does not confirm listener cleanup succeeded; do not dispatch it twice if the panel already calls it.
 
 ### Managing packages (hosting plans)
 
