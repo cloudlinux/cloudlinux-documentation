@@ -543,7 +543,7 @@ $ isolatectl site-isolation enable --domain site1.com,site2.com
 
 * The user can only manage domains they own
 * CloudLinux Isolates must be allowed for the user by the server administrator
-* With CageFS 7.6.48-1 (Beta), an invalid document root can be skipped without undoing other domains enabled in the same request. After a multi-domain request, use `isolatectl site-isolation list` to check each domain rather than assuming the operation was all-or-nothing
+* With CageFS 7.6.48-1 (Beta), an invalid document root can be skipped without undoing other domains enabled in the same request. In that case, `isolatectl` exits non-zero and returns JSON with the skipped domain and reason in `message` and the account's currently isolated domains in `enabled_sites`. Check the response or use `isolatectl site-isolation list` after a multi-domain request rather than assuming every domain succeeded
 
 ***
 

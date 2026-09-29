@@ -5126,7 +5126,7 @@ cagefsctl --setup-cl-selector
 ```
 </div>
 
-CageFS creates this file if missing for cPanel, Plesk 10+, and DirectAdmin. On versions with ISPmanager or Interworx integrations, it may also be created for those panels; CageFS 7.6.48-1 (Beta) does not configure either integration. On other servers the file is not created automatically.
+In CageFS 7.6.48-1 (Beta), the built-in setup creates this file if missing for cPanel, Plesk 10+, and DirectAdmin. CageFS does not create it automatically for ISPmanager, Interworx, or other panels in this version.
 
 That is why, if the file is not created automatically, then it must be created manually and correct paths must be written to its directives.
 
