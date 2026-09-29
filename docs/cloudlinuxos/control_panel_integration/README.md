@@ -777,7 +777,7 @@ All logic of running the script with or without this parameter is handled on the
 |Key|Nullable|Description|
 |Dictionary (named array) key|False|Domain name (subdomains are acceptable)|
 |<span class="notranslate">owner</span>|False|UNIX user who is a domain owner|
-|<span class="notranslate">document_root</span>|False|Absolute path to the site root directory|
+|<span class="notranslate">document_root</span>|False|Absolute path to the site root directory. For CloudLinux Isolates (Beta, CageFS 7.6.48-1), see the [additional document-root requirements](/cloudlinuxos/isolates/#enable-isolation-for-a-domain).|
 |<span class="notranslate">is_main</span>|False|Is the domain the main domain for a user|
 |<span class="notranslate">Nested dictionary (named array) php</span>|True (False if X-Ray support is enabled)|PHP configuration for a domain, required by X-Ray, see details [here](./#how-to-integrate-x-ray-with-a-control-panel) (available since API v1.2, see [versioning](./#versioning))|
 

@@ -85,7 +85,7 @@ Options:
 | | |
 |-|-|
 | <span class="notranslate"> --setup-cl-selector </span> | setup <span class="notranslate"> PHP Selector </span> or register new alt-php versions|
-| <span class="notranslate"> --remove-cl-selector </span> (CageFS 7.6.48-1 Beta) |unregister alt-php versions, switch users to default php version when needed|
+| <span class="notranslate"> --remove-cl-selector </span> |unregister alt-php versions, switch users to default php version when needed|
 | <span class="notranslate"> --rebuild-alt-php-ini </span> |rebuild _alt_php.ini_ file for specified users (or all users if none specified)|
 | <span class="notranslate"> --validate-alt-php-ini </span> |same as <span class="notranslate"> `--rebuild-alt-php-ini` </span> but also validates _alt_php.ini_ options|
 | <span class="notranslate"> --cl-selector-reset-versions </span> |reset php version for specifed users to default (or all users if none specified)|
