@@ -21,7 +21,7 @@ The list of the commands (CLI) you can use to manage CloudLinux OS components.
 
 `cagefsctl` is used to manage CageFS. It allows initializing and updating CageFS, as well as enabling/disabling CageFS for individual users.
 
-For CloudLinux Isolates (Beta) options, see the [command reference](/cloudlinuxos/isolates/#command-reference).
+For CloudLinux Isolates options with CageFS 7.6.48-1, where the feature is available, see the [command reference](/cloudlinuxos/isolates/#command-reference).
 
 Use the following syntax to manage CageFS:
 <span class="notranslate">`/usr/sbin/cagefsctl [OPTIONS]`</span>

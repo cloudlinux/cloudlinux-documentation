@@ -1,4 +1,4 @@
-# CloudLinux Isolates (BETA)
+# CloudLinux Isolates
 
 CloudLinux Isolates isolates the individual websites of a single hosting account from one another. It has two layers, which are described in turn below:
 
@@ -23,9 +23,9 @@ When CloudLinux Isolates is enabled for a domain:
 
 #### Minimum Package Versions
 
-These tables give feature minimums, not the requirements for installing every CageFS release. The inspected CageFS 7.6.48-1 (Beta) RPM requires `liblve` 2.2-9 or later, including for LiteSpeed; the Debian packaging source specifies the same minimum. Check your platform's package dependencies before upgrading.
+These earlier-version figures do not establish availability for CageFS 7.6.48-1. Follow your platform's package dependencies and [check Isolates availability](#common-issues). A 7.6.48-1 RPM variant requires `liblve` 2.2-9 or later.
 
-| Package            | Minimum Version |
+| Package            | Earlier guidance |
 | ------------------ | --------------- |
 | cagefs             | 7.6.29-1        |
 | lve-utils          | 6.6.31-1        |
@@ -45,9 +45,9 @@ These tables give feature minimums, not the requirements for installing every Ca
 
 CloudLinux Isolates is supported under **standalone LiteSpeed Web Server**, and for now **on cPanel servers only**.
 
-In addition to the [minimum package versions](#minimum-package-versions) listed above, LiteSpeed servers require:
+Earlier guidance listed these additional LiteSpeed thresholds alongside the [package versions above](#minimum-package-versions). For CageFS 7.6.48-1, follow your package's dependencies and confirm Isolates availability:
 
-| Package                       | Minimum Version |
+| Package                       | Earlier guidance |
 | ----------------------------- | --------------- |
 | cagefs                        | 7.6.47-1        |
 | lve-wrappers                  | 0.7.16-1        |
@@ -146,7 +146,7 @@ CloudLinux Isolates provides partial FPM handler support for both ea-php (cPanel
 | alt-php85-php-fpm    | 8.5.3-3           |
 
 :::tip Note
-alt-php53, alt-php54, and alt-php55 are supported on CL7/CL8/CL9 only. CL10 support starts from alt-php56.
+Available Alt-PHP versions differ by OS. These PHP-handler rows do not establish CloudLinux Isolates availability; [check the Isolates feature](#common-issues) separately.
 :::
 
 ***
@@ -155,7 +155,7 @@ alt-php53, alt-php54, and alt-php55 are supported on CL7/CL8/CL9 only. CL10 supp
 
 Follow these steps to enable CloudLinux Isolates for a domain:
 
-With CageFS 7.6.48-1 (Beta), where CloudLinux Isolates is available, use `--isolates-` instead of `--site-isolation-` for all nine documented `cagefsctl` Isolates options, including the command-reference and troubleshooting examples below. The older flags still work but print deprecation warnings. For earlier releases, use the `--site-isolation-` forms of the steps below. This substitution does not apply to the `isolatectl site-isolation` subcommands.
+With CageFS 7.6.48-1, where CloudLinux Isolates is available, use `--isolates-` for the nine documented `cagefsctl` Isolates options. For earlier releases, use the `--site-isolation-` forms. This substitution does not apply to the `isolatectl site-isolation` subcommands.
 
 **1. Allow the feature server-wide (administrator only, one-time setup):**
 
@@ -185,7 +185,7 @@ cagefsctl --isolates-disable <example.com>
 
 ### Command Reference
 
-For CageFS 7.6.48-1 (Beta), the preferred spelling for the `cagefsctl` options in this reference is `--isolates-*`. The `--site-isolation-*` examples remain for earlier releases; in 7.6.48-1 those aliases work but print deprecation warnings.
+The examples retain `--site-isolation-*` for earlier releases. With CageFS 7.6.48-1, use `--isolates-*` instead; the older aliases still work but print deprecation warnings.
 
 #### Server-Wide Management
 
@@ -369,14 +369,14 @@ CloudLinux Isolates was enabled for domain(s),
 site1.com,site2.com
 ```
 
-With CageFS 7.6.48-1 (Beta), `cagefsctl --isolates-enable` lists the domains it actually isolated on standard output and reports skipped domains and their reasons on standard error. It exits non-zero if any requested domain was skipped, even when others succeeded. Check the messages and `cagefsctl --isolates-list` before treating a multi-domain request as complete.
+With CageFS 7.6.48-1, `cagefsctl --isolates-enable` lists the domains it actually isolated on standard output and reports skipped domains and their reasons on standard error. It exits non-zero if any requested domain was skipped, even when others succeeded. Check the messages and `cagefsctl --isolates-list` before treating a multi-domain request as complete.
 
 **Requirements:**
 
 * CloudLinux Isolates must be allowed server-wide first
 * CloudLinux Isolates must be allowed for the domain's user
 * The domain must exist and be associated with a valid user account
-* With CageFS 7.6.48-1 (Beta), the panel-provided document root must be an absolute path inside the account home (or the home itself). It may contain only ASCII letters, digits, `_`, `-`, `.`, and `/`—no whitespace. `..` path segments, `//`, and symlinked components below the home are rejected, even if a symlink points within the home. Paths longer than 4096 characters are also rejected
+* With CageFS 7.6.48-1, the panel-provided document root must be an absolute path inside the account home (or the home itself). It may contain only ASCII letters, digits, `_`, `-`, `.`, and `/`—no whitespace. `..` path segments, `//`, and symlinked components below the home are rejected, even if a symlink points within the home. Paths longer than 4096 characters are also rejected
 * Must be run with root privileges
 
 **What happens when isolation is enabled:**
@@ -481,7 +481,7 @@ No users with enabled CloudLinux Isolates
 cagefsctl --site-isolation-regenerate <username> [<username2> ...]
 ```
 
-Regenerates the CloudLinux Isolates configuration for specified users. With CageFS 7.6.48-1 (Beta), you can also run `cagefsctl --isolates-regenerate` without usernames to regenerate every account that currently has isolated domains. Use this command after manual configuration changes or when troubleshooting isolation issues.
+Regenerates the CloudLinux Isolates configuration for specified users. With CageFS 7.6.48-1, you can also run `cagefsctl --isolates-regenerate` without usernames to regenerate every account that currently has isolated domains. Use this command after manual configuration changes or when troubleshooting isolation issues.
 
 **Parameters:**
 
@@ -547,7 +547,7 @@ $ isolatectl site-isolation enable --domain site1.com,site2.com
 
 * The user can only manage domains they own
 * CloudLinux Isolates must be allowed for the user by the server administrator
-* With CageFS 7.6.48-1 (Beta), an invalid document root can be skipped without undoing other domains enabled in the same request. In that case, `isolatectl` exits non-zero and returns JSON with the skipped domain and reason in `message` and the account's currently isolated domains in `enabled_sites`. Check the response or use `isolatectl site-isolation list` after a multi-domain request rather than assuming every domain succeeded
+* With CageFS 7.6.48-1, an invalid document root can be skipped without undoing other domains enabled in the same request. In that case, `isolatectl` exits non-zero and returns JSON with the skipped domain and reason in `message` and the account's currently isolated domains in `enabled_sites`. Check the response or use `isolatectl site-isolation list` after a multi-domain request rather than assuming every domain succeeded
 
 ***
 
@@ -878,7 +878,7 @@ CloudLinux Isolates integrates with supported control panels through domain hook
 
 * **Created**: No automatic action (isolation must be explicitly enabled)
 * **Renamed**: Isolation configuration is automatically updated
-* **Deleted**: When the panel dispatches the deletion hook, CageFS attempts to remove the isolation entry and, with CageFS 7.6.48-1 (Beta), stale per-website settings
+* **Deleted**: When the panel dispatches the deletion hook, CageFS attempts to remove the isolation entry and, with CageFS 7.6.48-1, stale per-website settings
 * **Document root changed**: Configuration is regenerated via hooks
 
 After deleting an isolated domain, [list isolated domains](#list-isolated-domains) to confirm it no longer appears. Report a cleanup failure if it remains.
@@ -889,8 +889,8 @@ After deleting an isolated domain, [list isolated domains](#list-isolated-domain
 
 CloudLinux Isolates also allows resource limits — CPU, memory, I/O, processes and entry processes — to be applied to an *individual website* rather than to the hosting account as a whole. A single busy or misbehaving site is then throttled on its own, without consuming the resources its sibling sites on the same account depend on.
 
-:::warning BETA
-Per-domain LVE limits are a BETA feature and require the additional [per-domain prerequisites](#per-domain-prerequisites). Installing CageFS does not by itself enable them.
+:::warning Prerequisites
+Per-domain LVE limits require the additional [per-domain prerequisites](#per-domain-prerequisites). Installing CageFS does not by itself enable them.
 :::
 
 ### How it relates to CageFS per domain
@@ -906,16 +906,16 @@ Where both layers are available, you do not enable them separately. The [CageFS 
 
 ### Per-Domain Prerequisites
 
-Automatic per-domain LVE setup requires CageFS's control-panel LVE feature check to pass, the running kernel to report domain-LVE capability, and the installed lve-stats3 to provide its per-domain availability marker. CageFS checks these conditions before automatically enabling domain LVEs. The package versions below alone do not establish support on a particular OS.
+Automatic per-domain LVE setup requires CageFS's control-panel LVE feature check to pass, the running kernel to report domain-LVE capability, and the installed lve-stats3 to provide its per-domain availability marker. CageFS checks these conditions before automatically enabling domain LVEs. Package presence alone does not establish support on a particular OS.
 
-In addition to the [CloudLinux Isolates prerequisites](#prerequisites), per-domain LVE limits require:
+In addition to the [CloudLinux Isolates prerequisites](#prerequisites), automatic domain-LVE setup depends on these package capabilities; a version number alone cannot confirm them:
 
-| Package | Minimum Version |
-| ---------- | --------------- |
-| lve-stats3 | 5.1.0-1         |
-| lve-utils  | 6.6.40-1        |
+| Package | Required capability |
+| ---------- | ------------------- |
+| lve-stats3 | Provides the per-domain availability marker |
+| lve-utils | Provides the `lvectl` domain-limit commands used by CageFS |
 
-To check the installed versions:
+On an RPM-based system, check package presence with the command below. Check the lve-stats3 marker with `test -f /opt/cloudlinux/flags/available-flags.d/lvestats-supports-domain-lve-limits.flag` (exit status 0 means present). Neither check confirms kernel or panel support:
 
 ```
 rpm -q lve-stats3 lve-utils
@@ -1031,17 +1031,17 @@ This kernel does not report the required per-domain LVE capability. [CageFS per-
 
 **Isolation was enabled, but no domain LVEs were created**
 
-Where CloudLinux Isolates is available and enabled, [its CageFS commands](#command-reference) apply filesystem isolation; automatic domain LVE registration also requires the [per-domain prerequisites](#per-domain-prerequisites). Check the installed versions:
+Where CloudLinux Isolates is available and enabled, [its CageFS commands](#command-reference) apply filesystem isolation; automatic domain LVE registration also requires the [per-domain prerequisites](#per-domain-prerequisites). On an RPM-based system, check that the packages are installed:
 
 ```
 rpm -q lve-stats3 lve-utils
 ```
 
-If either is below the minimum, update it. For CageFS 7.6.48-1 (Beta), also confirm the control-panel, kernel and lve-stats3 availability requirements above before re-running <span class="notranslate">`cagefsctl --isolates-enable <domain>`</span>. Removing isolation does not depend on the lve-stats3 availability marker.
+If a required package is missing, install it and check the [lve-stats3 availability marker](#per-domain-prerequisites). If the marker is present but domain LVEs are still absent, contact CloudLinux Support to check kernel capability and the control-panel LVE feature; package versions cannot establish either. With CageFS 7.6.48-1, re-run <span class="notranslate">`cagefsctl --isolates-enable <domain>`</span> after these prerequisites are confirmed. Removing isolation does not depend on the lve-stats3 availability marker.
 
 **"No domain limits configured for UID *N*"**
 
-The account exists but has no isolated domains. Where CloudLinux Isolates is available, enable isolation for a domain first — <span class="notranslate">`cagefsctl --isolates-enable <domain>`</span> with CageFS 7.6.48-1 (Beta). A genuinely unknown account reports <span class="notranslate">`UID N does not exist`</span> instead.
+The account exists but has no isolated domains. Where CloudLinux Isolates is available, enable isolation for a domain first — <span class="notranslate">`cagefsctl --isolates-enable <domain>`</span> with CageFS 7.6.48-1. A genuinely unknown account reports <span class="notranslate">`UID N does not exist`</span> instead.
 
 **A domain's statistics stopped after a rename or a document root change**
 

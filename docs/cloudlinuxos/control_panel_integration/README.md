@@ -777,7 +777,7 @@ All logic of running the script with or without this parameter is handled on the
 |Key|Nullable|Description|
 |Dictionary (named array) key|False|Domain name (subdomains are acceptable)|
 |<span class="notranslate">owner</span>|False|UNIX user who is a domain owner|
-|<span class="notranslate">document_root</span>|False|Absolute path to the site root directory. For CloudLinux Isolates (Beta, CageFS 7.6.48-1), see the [additional document-root requirements](/cloudlinuxos/isolates/#enable-isolation-for-a-domain).|
+|<span class="notranslate">document_root</span>|False|Absolute path to the site root directory. For CloudLinux Isolates with CageFS 7.6.48-1, see the [additional document-root requirements](/cloudlinuxos/isolates/#enable-isolation-for-a-domain).|
 |<span class="notranslate">is_main</span>|False|Is the domain the main domain for a user|
 |<span class="notranslate">Nested dictionary (named array) php</span>|True (False if X-Ray support is enabled)|PHP configuration for a domain, required by X-Ray, see details [here](./#how-to-integrate-x-ray-with-a-control-panel) (available since API v1.2, see [versioning](./#versioning))|
 
@@ -1113,7 +1113,7 @@ After renaming a domain (or any equivalent domain removal operation with transfe
 |<span class="notranslate">--new-domain</span>|Yes | - |A new domain name |
 |<span class="notranslate">--include-subdomains</span>|No |False |If set, all subdomains are renamed as well, i.e. when renaming domain.com → domain.eu the corresponding subdomain will be renamed as well test.domain.com → test.domain.eu.|
 
-**Domain deletion (CageFS 7.6.48-1 and alt-python27-cllib 3.4.43-1, Beta):** A custom panel that does not already dispatch the deletion hook should call it as root after deleting the domain, while its UNIX user still exists. First ensure that the panel's [`domains` CPAPI response](#domains) includes **all** of that user's remaining domains with their correct document roots; omitting a live domain can cause its per-website settings to be removed during cleanup:
+**Domain deletion (CageFS 7.6.48-1 and alt-python27-cllib 3.4.43-1):** A custom panel that does not already dispatch the deletion hook should call it as root after deleting the domain, while its UNIX user still exists. First ensure that the panel's [`domains` CPAPI response](#domains) includes **all** of that user's remaining domains with their correct document roots; omitting a live domain can cause its per-website settings to be removed during cleanup:
 
 <div class="notranslate">
 
