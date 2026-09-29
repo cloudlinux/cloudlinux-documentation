@@ -1745,17 +1745,15 @@ If you place the skeleton in the <span class="notranslate">`/home`</span> direct
 Set the value to blank (not the default <span class="notranslate"> Home </span>). Without this change, cPanel will create new accounts in incorrect locations.
 :::
 
-CageFS automatically detects and configures all necessary files for the following, except that ISPmanager and Interworx are not configured by CageFS 7.6.48-1 (Beta):
+CageFS 7.6.48-1 (Beta) has built-in setup for:
 * cPanel
-* Plesk
+* Plesk 10+
 * DirectAdmin
-* ISPmanager
-* Interworx
 * MySQL
 * PostgreSQL
 * LiteSpeed
 
-A web interface for managing CageFS is available for cPanel, Plesk 10+, DirectAdmin, ISPmanager, and Interworx when a compatible integration is installed. CageFS 7.6.48-1 (Beta) has built-in panel-specific setup for cPanel, Plesk 10+, and DirectAdmin, but not for ISPmanager or Interworx. Check for a separately supported integration before relying on the web UI for either of those panels. For other control panels, use the command-line tool.
+CageFS 7.6.48-1 (Beta) does not install panel-specific ISPmanager or Interworx integrations. A web interface for managing CageFS on cPanel, Plesk 10+, or DirectAdmin requires a compatible integration. For ISPmanager, Interworx, and other panels, use the [CageFS command-line tool](/cloudlinuxos/command-line_tools/#cagefs).
 
 Once the template is initialized, you can start enabling users. By default, CageFS is disabled for all users.
 
@@ -3328,15 +3326,7 @@ To update CageFS skeleton, go to <span class="notranslate"> Cloudlinux Manager >
 
 #### ISPManager
 
-Where a supported ISPmanager integration is installed, its CageFS plugin can enable/disable CageFS per user. CageFS 7.6.48-1 (Beta) does not set up that integration; check for a separately supported integration before following these UI steps. In edit user section chose <span class="notranslate"> Permission </span> tab. Mark <span class="notranslate"> CageFS User Mode </span> checkbox and click <span class="notranslate"> OK </span> to apply.
-
-![ISPmanager Edit user Permissions tab with CageFS User Mode checked; users table shows CageFS status](/images/cloudlinuxos/cloudlinux_os_components/ispmanager_cagefs_user_zoom98.webp)
-
-Or you can manage global CageFS settings via CageFS menu
-![ISPmanager CageFS Information page: user lists; Init, Toggle Mode, Enable All toolbar controls](/images/cloudlinuxos/cloudlinux_os_components/img3.webp)
-
-
-See also [CageFS CLI tools](/cloudlinuxos/command-line_tools/#cagefs).
+CageFS 7.6.48-1 (Beta) does not install an ISPmanager CageFS web plugin. Manage users and global CageFS settings with [CageFS CLI tools](/cloudlinuxos/command-line_tools/#cagefs).
 
 ## MySQL Governor
 
