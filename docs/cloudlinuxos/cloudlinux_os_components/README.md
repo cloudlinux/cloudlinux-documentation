@@ -4351,10 +4351,10 @@ The main requirements:
 
 * CageFS is installed
 * Alt-PHP packages are installed
-* Mod_suexec is installed. You can find installation instruction [here](./#apache-suexec-module)
+* Use a compatible PHP handler. On cPanel, CGI/FCGI requires suEXEC; suPHP and LiteSpeed do not require `mod_suexec` just to use PHP Selector. For suEXEC installation instructions, see [here](./#apache-suexec-module).
 * CageFS is initialized without errors
 * CageFS is enabled for a domain user-owner
-* An appropriate PHP handler is selected for PHP version which is system version. <span class="notranslate"> PHP Selector </span> is **compatible** with the following technologies: <span class="notranslate">_suPHP, mod_fcgid, CGI (suexec), LiteSpeed_</span>. See also [Compatibility Matrix](/cloudlinuxos/limits/#compatibility-matrix).
+* An appropriate PHP handler is selected for PHP version which is system version. <span class="notranslate"> PHP Selector </span> is **compatible** with the following technologies: <span class="notranslate">_suPHP, mod_fcgid (with suEXEC on cPanel), CGI (suexec on cPanel), mod_lsapi (cPanel with suEXEC or suPHP), LiteSpeed_</span>. See also [Compatibility Matrix](/cloudlinuxos/limits/#compatibility-matrix).
 * PHP version in the CloudLinux OS PHP selector does not equal to the Native PHP version
 
 ::: tip Note
@@ -4402,6 +4402,10 @@ The mark `x` stands for a supported version.
 * [Update](./#update)
 
 The installation of <span class="notranslate"> PHP Selector </span> presumes that you already have  [CageFS](./#cagefs) & <span class="notranslate">[LVE Manager](/lve_manager/) installed.</span>
+
+:::tip Note
+The `yum` commands in this installation and update guide are for RPM-based CloudLinux OS, not Ubuntu 22.04 extension. On Ubuntu 22.04 extension, the PHP installation wizard requests version-specific `alt-phpXX-meta` packages through APT (`XX` is the selected version without its dot).
+:::
 
 Use [compatibility matrix](/cloudlinuxos/limits/#compatibility-matrix) to check if your Web Server/PHP mode is supporting <span class="notranslate"> PHP Selector. </span> If not, you need a change to one of the supported models.
 
@@ -4491,7 +4495,7 @@ yum groupinstall alt-php
 ```
 </div>
 
-3. Install `mod_suexec` package as root. See installation instructions [here](./#installation-5).
+3. For CGI/FCGI handlers, install `mod_suexec` as root. See installation instructions [here](./#installation-5). For other handlers, check the [compatibility matrix](/cloudlinuxos/limits/#compatibility-matrix).
 4. Verify that CageFS is initialized successfully.
 
   * via SSH by running the following command:
@@ -4805,7 +4809,7 @@ cagefsctl --list-enabled | grep -v enabled | grep -v '^$' | while read -r line; 
 done
 ```
 
-This command will reset the extensions for all users on PHP version 8.4 to the default list. You can specify a different PHP version by modifying the `--version` argument in the command above.
+This command resets the PHP 8.4 extensions to the default list for every CageFS-enabled user, even if they currently use a different PHP version. You can specify a different PHP version by modifying the `--version` argument in the command above.
 
 To reset the extensions for a specific user, you can use the following command:
 ```
@@ -5099,7 +5103,7 @@ Enable <span class="notranslate"> PHP-FFmpeg </span> extension via <span class="
 <div class="notranslate">
 
 ```
-selectorctl --enable-extensions=ffmpeg --user USERNAME --version X.Y
+selectorctl --enable-user-extensions=ffmpeg --user USERNAME --version X.Y
 ```
 </div>
 
@@ -5863,7 +5867,7 @@ Here is an example of how you can generate <span class="notranslate"> _OPTIONS_ 
 <div class="notranslate">
 
 ```
-OPTIONS=`echo disable_functions:exec,syslog|base64 -w 0`,`echo display_errors:off|base64 -w 0`,`echo post_max_size:128M|base64 -w 0`
+OPTIONS=`printf %s 'include_path:.:/dir/with,comma'|base64 -w 0`,`printf %s 'display_errors:off'|base64 -w 0`,`printf %s 'post_max_size:128M'|base64 -w 0`
 echo $OPTIONS
 ```
 </div>
