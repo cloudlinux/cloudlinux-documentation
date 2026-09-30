@@ -1,6 +1,6 @@
-# CloudLinux Isolates (BETA)
+# CloudLinux Isolates
 
-CloudLinux Isolates isolates the individual websites of a single hosting account from one another. It has two layers, which are described in turn below:
+CloudLinux Isolates can isolate websites within one hosting account when its [CageFS prerequisites](#prerequisites) are met. Per-domain LVE resource limits have [additional prerequisites](#per-domain-prerequisites). The two layers are described in turn below:
 
 * **[CageFS per domain](#cagefs-per-domain)** — *filesystem* isolation, so that a compromised website cannot reach another site's files.
 * **[LVE per domain](#lve-per-domain)** — *resource* isolation, so that one website's CPU, memory and I/O usage is limited and accounted for on its own.
@@ -877,8 +877,8 @@ CloudLinux Isolates integrates automatically with supported control panels. When
 
 CloudLinux Isolates also allows resource limits — CPU, memory, I/O, processes and entry processes — to be applied to an *individual website* rather than to the hosting account as a whole. A single busy or misbehaving site is then throttled on its own, without consuming the resources its sibling sites on the same account depend on.
 
-:::warning BETA
-Per-domain LVE limits are a BETA feature, supported on CloudLinux OS 8 and 9.
+:::warning
+Per-domain LVE limits have [additional prerequisites](#per-domain-prerequisites) on CloudLinux OS 8 and 9, including a compatible running kernel, an LVE-capable panel and a statistics backend that supports per-domain reporting. Enabling filesystem isolation alone does not establish per-domain resource limits.
 :::
 
 ### How it relates to CageFS per domain
@@ -887,14 +887,14 @@ The two halves of CloudLinux Isolates are separate layers and can be reasoned ab
 
 | | |
 |-|-|
-|[CageFS per domain](#cagefs-per-domain) | *Filesystem* isolation — a compromised website cannot read another site's files. Always available where CageFS is.|
-|LVE per domain | *Resource* isolation — a website has its own CPU, memory, I/O and process limits. Requires CloudLinux OS 8 or 9 and the package versions listed under [Per-Domain Prerequisites](#per-domain-prerequisites).|
+|[CageFS per domain](#cagefs-per-domain) | *Filesystem* isolation — a compromised website cannot read another site's files when the [CageFS prerequisites](#prerequisites), including a compatible web server, PHP handler and panel, are met.|
+|LVE per domain | *Resource* isolation — a website can have its own CPU, memory, I/O and process limits where the [per-domain prerequisites](#per-domain-prerequisites) are met. These instructions cover CloudLinux OS 8 and 9; confirm the kernel and panel capabilities before relying on this layer.|
 
-In practice you do not enable them separately. The <span class="notranslate">`cagefsctl --site-isolation-*`</span> commands documented above drive both: each one invokes the matching <span class="notranslate">`lvectl`</span> per-domain command for you when the prerequisites are met, and silently skips that step when they are not. So on a server that does not support per-domain LVEs, website isolation still works — you get the filesystem separation without the resource limits, rather than an error.
+The <span class="notranslate">`cagefsctl --site-isolation-*`</span> management commands handle the CageFS layer. On a panel that supports LVE, allow/enable operations also call <span class="notranslate">`lvectl`</span> when the running kernel supports per-domain limits and the statistics backend has the required capability. If these conditions are not met, a successful filesystem-isolation command does not establish that a domain LVE was created. Deny/disable operations attempt LVE cleanup when the panel and kernel permit it; check for remaining domain LVEs rather than assuming cleanup succeeded.
 
 ### Per-Domain Prerequisites
 
-Per-domain LVE limits are supported on CloudLinux OS 8 and 9. CloudLinux OS 7 predates the required kernel interface; on it, commands that need per-domain support fail with exit code `38` and the message <span class="notranslate">`Domain limits are not supported by this kernel`</span>.
+For per-domain LVE limits on CloudLinux OS 8 or 9, a running kernel with per-domain LVP support is required. On CloudLinux OS 7, the CageFS filesystem layer is separate and remains subject to its own [prerequisites](#prerequisites); do not assume per-domain LVE support. On an initialized LVE system lacking the per-domain interface, the <span class="notranslate">`lvectl`</span> commands that require it report <span class="notranslate">`Domain limits are not supported by this kernel (requires lve_lvp_create2)`</span> with exit code `38`; see [lvectl](/cloudlinuxos/command-line_tools/#lvectl).
 
 In addition to the [CloudLinux Isolates prerequisites](#prerequisites), per-domain LVE limits require:
 
@@ -935,9 +935,9 @@ Because the websites are siblings of the account's own container rather than nes
 
 ### Enabling per-domain limits
 
-Under a control panel, use the [`cagefsctl --site-isolation-*` commands](#command-reference) — they enable both isolation layers together and are the supported administrator path.
+Under a supported control panel, use the [`cagefsctl --site-isolation-*` commands](#command-reference) as the administrator path for filesystem isolation. They attempt to manage per-domain LVEs only when the [additional prerequisites](#per-domain-prerequisites) and the panel's LVE capability are present; verify that the domain LVE exists before setting its limits.
 
-The underlying <span class="notranslate">`lvectl`</span> commands are available for integration scripts, and for inspecting or repairing state:
+The underlying <span class="notranslate">`lvectl`</span> commands are available for integration scripts and for inspecting or repairing state when the running kernel supports per-domain LVPs. Before using them to enable domain limits, also check the statistics prerequisite:
 
 | | |
 |-|-|
@@ -951,7 +951,7 @@ The underlying <span class="notranslate">`lvectl`</span> commands are available 
 See [lvectl](/cloudlinuxos/command-line_tools/#lvectl) for the full syntax.
 
 :::tip Note
-<span class="notranslate">`lvectl list-domains`</span> lists the members of an account's LVP. For a *reseller*, that LVP holds the reseller's member accounts rather than domains, so the command's output alone does not tell you whether an account is isolated. A member account resolves in <span class="notranslate">`/etc/passwd`</span>; a domain LVE id never does.
+<span class="notranslate">`lvectl list-domains`</span> lists the members of an account's LVP. For a *reseller*, that LVP holds the reseller's member accounts rather than domains, so the command's output alone does not tell you whether an account is isolated. Do not use a <span class="notranslate">`/etc/passwd`</span> lookup alone to decide whether a numeric ID represents an account or a domain. If an ID appears to identify both, stop and contact support before changing its limits.
 :::
 
 The domain renaming, document root changes and account renames performed through a supported control panel are handled by the panel hooks, which call <span class="notranslate">`lvectl regenerate-domains`</span> automatically. Run it by hand only after changing these outside the panel.
@@ -1007,7 +1007,7 @@ account  =  the account's own work  +  site1.com  +  site2.com  + ...
 
 ### Fault notifications
 
-When a website hits one of its own limits, the notification sent to the account owner names the website that faulted, alongside the limit it hit. Notifications continue to be addressed per account, and the thresholds and period that govern the account-level notification govern the per-domain section too — so enabling per-domain limits does not, by itself, change who is emailed or how often.
+When fault notifications to account owners are enabled and a website hits one of its own limits, the notification names the website that faulted, alongside the limit it hit. Notifications continue to be addressed per account and follow the configured thresholds and period; enabling per-domain limits does not itself enable notifications or change who receives them.
 
 Administrators customising the email templates should see the <span class="notranslate">`domain_faults`</span> variable in [Customize LVE-stats2 notifications](/cloudlinuxos/cloudlinux_os_components/#customize-lve-stats2-notifications).
 
@@ -1015,17 +1015,17 @@ Administrators customising the email templates should see the <span class="notra
 
 **"Domain limits are not supported by this kernel (requires lve_lvp_create2)"**
 
-The kernel predates per-domain LVE support. Per-domain limits require CloudLinux OS 8 or 9; on CloudLinux OS 7 the [CageFS half](#cagefs-per-domain) of CloudLinux Isolates is still available.
+The running LVE library or kernel does not provide the per-domain interface required by these commands. On CloudLinux OS 8 or 9, check the [per-domain prerequisites](#per-domain-prerequisites); on CloudLinux OS 7 the [CageFS half](#cagefs-per-domain) is separate and still requires its own prerequisites.
 
 **Isolation was enabled, but no domain LVEs were created**
 
-The <span class="notranslate">`cagefsctl --site-isolation-*`</span> commands always apply the filesystem layer, and add the per-domain LVE only when the [prerequisites](#per-domain-prerequisites) are met. Check the installed versions:
+<span class="notranslate">`cagefsctl --site-isolation-enable`</span> can configure filesystem isolation without creating a domain LVE. Automatic LVE enablement also requires an LVE-capable panel, a compatible running kernel and [per-domain prerequisites](#per-domain-prerequisites). Check the installed packages:
 
 ```
 rpm -q lve-stats3 lve-utils
 ```
 
-If either is below the minimum, update it and then re-run <span class="notranslate">`cagefsctl --site-isolation-enable <domain>`</span>. Removing isolation is never gated this way, so any containers created by an earlier version can always be torn down.
+If either package is below the required minimum and a compatible update is available for your OS and panel, update it and re-run <span class="notranslate">`cagefsctl --site-isolation-enable <domain>`</span>. Disabling filesystem isolation does not guarantee cleanup of an existing domain LVE if the panel or running kernel lacks the required capability. If a domain LVE remains, stop and contact support rather than assuming it was removed.
 
 **"No domain limits configured for UID *N*"**
 

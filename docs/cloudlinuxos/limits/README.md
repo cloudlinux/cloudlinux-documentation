@@ -94,18 +94,19 @@ To use LVE, the `kmodlve` kernel module must be loaded. The name shown by `uname
 <div class="notranslate">
 
 ```
-rpm -q lve kmod-lve
+rpm -q lve
+rpm -q --whatprovides kmod-lve
 lsmod | grep '^kmodlve '
 ```
 </div>
 
-If the module is absent, check that `LVE_ENABLE=yes` in `/etc/sysconfig/lve` and inspect the `lve.service` logs. A successful service start can also mean that loading was deferred on a kernel that enforces Intel IBT; see [conversion troubleshooting](/cloudlinuxos/cloudlinux_installation/#server-panics-or-reboots-during-conversion-on-intel-cpus-with-ibt).
+If the module is absent, inspect the `lve.service` logs and check `LVE_ENABLE=yes` in the file the loader uses: `/etc/sysconfig/lve` on RPM-based CloudLinux systems, or `/etc/default/lve` if the first file is absent. A successful service start can also mean that loading was deferred on a kernel that enforces Intel IBT; see [conversion troubleshooting](/cloudlinuxos/cloudlinux_installation/#server-panics-or-reboots-during-conversion-on-intel-cpus-with-ibt).
 
 Starting from kernels lve1.4.x iolimits module is a part of kmod-lve and could not be used separately.
 
-* You can toggle LVE on/off by editing <span class="notranslate">`/etc/sysconfig/lve`</span> and setting <span class="notranslate">`LVE_ENABLE`</span> variable to <span class="notranslate">`yes`</span> or <span class="notranslate">`no`</span>.
+* On RPM-based CloudLinux systems, you can control whether the LVE service attempts to load the module by setting <span class="notranslate">`LVE_ENABLE`</span> in <span class="notranslate">`/etc/sysconfig/lve`</span> to <span class="notranslate">`yes`</span> or <span class="notranslate">`no`</span>. If that file is absent, the loader checks `/etc/default/lve` instead.
 
-    Setting it to <span class="notranslate">`yes`</span> will enable LVE, setting it to <span class="notranslate">`no`</span> will disable LVE.
+    <span class="notranslate">`yes`</span> permits a load when other prerequisites are met; <span class="notranslate">`no`</span> skips the load at service start. After reboot, check that the module is loaded rather than assuming that the setting makes LVE active.
 
 * You can toggle IO limits by editing <span class="notranslate">`/etc/sysconfig/iolimits`</span> and setting <span class="notranslate">`IO_LIMITS_ENABLED`</span> variable to <span class="notranslate">`yes`</span> or <span class="notranslate">`no`</span>.
 

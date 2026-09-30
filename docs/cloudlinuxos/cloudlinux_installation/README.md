@@ -405,20 +405,20 @@ kernel BUG at arch/x86/kernel/cet.c:102!
 
 **Cause.** The LVE kernel module (`kmodlve`) cannot be loaded safely while the running kernel enforces Intel IBT. The `ibt=off` kernel boot parameter takes effect only after a reboot; loading the module before that can raise a control-protection fault and panic the kernel.
 
-**Recovery for an affected server.** Boot once with IBT disabled:
+**Recovery for an affected server.** Add `ibt=off` at the GRUB menu for a single boot:
 
 1. At the GRUB boot menu, highlight the default entry and press `e` to edit it.
 2. Find the line that starts with `linux` (the kernel command line) and append ` ibt=off` to its end.
 3. Press `Ctrl+X` (or `F10`) to boot with that parameter.
 
-Once the server is back up, check the active `tuned` profile and whether `ibt=off` is applied after a normal reboot:
+The GRUB edit above affects one boot only. After a normal reboot, check the active `tuned` profile and whether `ibt=off` is present as a separate argument on the running kernel's command line:
 
 ```bash
 tuned-adm active                 # check for a "cloudlinux-*" profile
-grep -o 'ibt=off' /proc/cmdline  # confirm the parameter is active
+grep -qE '(^| )ibt=off( |$)' /proc/cmdline && echo 'ibt=off is on the kernel command line'
 ```
 
-If the conversion did not finish, or `ibt=off` is not applied on a normal boot, attach
+If the conversion did not finish, or `ibt=off` is absent from the kernel command line after a normal reboot, attach
 `/var/log/cldeploy.log` and contact [CloudLinux support](https://cloudlinux.zendesk.com/hc/en-us).
 
 :::tip Note
