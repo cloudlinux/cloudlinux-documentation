@@ -221,7 +221,7 @@ In case if at least one of the checks resulted neither <span class="notranslate"
   * [Errors handling](./#errors-handling-2)
   * [Examples](./#examples-2)
 
-For the per-domain options below, confirm that the <span class="notranslate">`lvestats`</span> alternative selects the optimized <span class="notranslate">`lve-stats3`</span> backend and that the [per-domain prerequisites](/cloudlinuxos/isolates/#per-domain-prerequisites) are met.
+The <span class="notranslate">`lvestats`</span> alternative selects the daemon and CLI tools together. The optimized backend has higher priority only in automatic mode; an existing manual selection persists. For the per-domain options below, confirm that it selects <span class="notranslate">`lve-stats3`</span> and that the [per-domain prerequisites](/cloudlinuxos/isolates/#per-domain-prerequisites) are met. The optimized package also requires <span class="notranslate">`lve-stats-common >= 5.0.5`</span> to install.
 
 | | |
 |-|-|
@@ -528,7 +528,7 @@ Reads LVE system state snapshots for <span class="notranslate">LVE/user</span>. 
 One of <span class="notranslate">`-u --user`</span> or <span class="notranslate">`-i --id`</span> should be specified.
 
 :::tip Per-domain snapshots
-With [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain) and the optimized <span class="notranslate">`lve-stats3`</span> backend (5.1.1-1 or later) selected, <span class="notranslate">`--with-domains`</span> adds domain attribution to account snapshots without filtering their processes. <span class="notranslate">`--domain DOMAIN`</span> implies it and selects a domain by name, document root or numeric domain LVE id. List snapshots with attribution, then view one site's processes:
+With [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain) and the optimized <span class="notranslate">`lve-stats3`</span> backend (5.1.1-1 or later) selected, use these per-domain snapshot command forms; <span class="notranslate">`--id UID`</span> can replace <span class="notranslate">`--user USER`</span>. <span class="notranslate">`--with-domains`</span> adds attribution without filtering processes; <span class="notranslate">`--domain DOMAIN`</span> implies it and selects a domain by name, document root or numeric domain LVE id. List snapshots with attribution, then view one site's processes:
 
 <div class="notranslate">
 
@@ -838,7 +838,7 @@ cloudlinux-statistics [-h] [-j] [-v] [--by-usage BY_USAGE]
   |<span class="notranslate">`vmem_faults`</span>|total number of out of virtual memory faults|
 
 * <span class="notranslate"> `-r FOR_RESELLER`, `--for-reseller FOR_RESELLER` </span> – show statistics only for given reseller and his users
-* <span class="notranslate"> `--with-domains` </span> – include a per-domain breakdown for accounts that have [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain) enabled, as a <span class="notranslate">`domains`</span> array nested inside the account object whose usage it decomposes. Accounts with no isolated domains produce byte-identical output to before
+* <span class="notranslate"> `--with-domains` </span> – include a per-domain breakdown for accounts that have [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain) enabled, as a <span class="notranslate">`domains`</span> array nested inside the account object whose usage it decomposes. Accounts without recorded domains have no domain breakdown; a range exceeding per-domain retention can still add a top-level <span class="notranslate">`warning`</span>
 * <span class="notranslate"> `--domain DOMAIN` </span> – restrict the per-domain breakdown to one domain, selected by domain name, document root, or numeric domain <span class="notranslate">LVE</span> id. Implies <span class="notranslate">`--with-domains`</span>
 
 A <span class="notranslate">`domains[]`</span> entry has the same metric shape as the account object that encloses it, so <span class="notranslate">`usage.cpu.lve`</span> means the same thing at either level:

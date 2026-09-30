@@ -151,7 +151,7 @@ alt-php53, alt-php54, and alt-php55 are supported on CL7/CL8/CL9 only. CL10 supp
 
 ### Quick Start
 
-Follow these steps to enable CloudLinux Isolates for a domain:
+Follow these steps to enable CloudLinux Isolates for a domain. Replace <span class="notranslate">`example.com`</span> below with an existing domain belonging to a valid user account:
 
 **1. Allow the feature server-wide (administrator only, one-time setup):**
 
@@ -162,7 +162,7 @@ cagefsctl --site-isolation-allow-all
 **2. Enable isolation for a specific domain:**
 
 ```
-cagefsctl --site-isolation-enable <example.com>
+cagefsctl --site-isolation-enable example.com
 ```
 
 **3. Verify isolation is active:**
@@ -174,7 +174,7 @@ cagefsctl --site-isolation-list
 To disable isolation for a domain:
 
 ```
-cagefsctl --site-isolation-disable <example.com>
+cagefsctl --site-isolation-disable example.com
 ```
 
 ***
@@ -747,7 +747,7 @@ $ isolatectl stats --domain example.com --period 1d
 <span class="notranslate">`usage`</span> is the average over the window, <span class="notranslate">`peak`</span> the highest sample in it, and <span class="notranslate">`limits`</span> the caps in force.
 
 :::warning An idle website is absent, not zero
-Only domains that were active during the period are recorded at all, so a quiet website does not appear in <span class="notranslate">`domains`</span> rather than appearing with zeroes. An empty <span class="notranslate">`domains`</span> list is an ordinary answer, not an error — the <span class="notranslate">`scope`</span> object is always returned so that "quiet" can be told apart from "no such account".
+Only domains with recorded activity during the period appear, so an idle website can be absent rather than shown with zeroes. A successful response can have an empty <span class="notranslate">`domains`</span> list and a <span class="notranslate">`scope`</span> object identifying the account, but this does not prove the site was idle. If traffic was expected over at least an hour, check the [per-domain prerequisites and backend](#troubleshooting-per-domain-limits) before treating the absence as normal.
 :::
 
 ***
@@ -878,7 +878,7 @@ CloudLinux Isolates integrates automatically with supported control panels. When
 CloudLinux Isolates also allows resource limits — CPU, memory, I/O, processes and entry processes — to be applied to an *individual website* rather than to the hosting account as a whole. A single busy or misbehaving site is then throttled on its own, without consuming the resources its sibling sites on the same account depend on.
 
 :::warning
-Per-domain LVE limits require the [kernel, panel and package prerequisites](#per-domain-prerequisites). Without them, CloudLinux Isolates still provides filesystem isolation.
+Per-domain LVE limits require the [kernel, LVE-enabled edition and environment, panel and package prerequisites](#per-domain-prerequisites). Where CageFS site isolation is available and its separate [prerequisites](#prerequisites) are met, website isolation can still provide filesystem separation without per-domain resource limits.
 :::
 
 ### How it relates to CageFS per domain
@@ -888,13 +888,13 @@ The two halves of CloudLinux Isolates are separate layers and can be reasoned ab
 | | |
 |-|-|
 |[CageFS per domain](#cagefs-per-domain) | *Filesystem* isolation — a compromised website cannot read another site's files. Always available where CageFS is.|
-|LVE per domain | *Resource* isolation — a website has its own CPU, memory, I/O and process limits. Requires CloudLinux OS 8, 9 or 10 with a compatible kernel and LVE-capable panel or integration, and the package versions listed under [Per-Domain Prerequisites](#per-domain-prerequisites).|
+|LVE per domain | *Resource* isolation — a website has its own CPU, memory, I/O and process limits. Requires CloudLinux OS 8, 9 or 10 with a compatible kernel, an LVE-enabled edition and environment, an LVE-capable panel or integration, and the package versions listed under [Per-Domain Prerequisites](#per-domain-prerequisites).|
 
-In practice you do not enable them separately. The <span class="notranslate">`cagefsctl --site-isolation-*`</span> commands documented above drive both: each one invokes the matching <span class="notranslate">`lvectl`</span> per-domain command for you when the prerequisites are met, and silently skips that step when they are not. So on a server that does not support per-domain LVEs, website isolation still works — you get the filesystem separation without the resource limits, rather than an error.
+In practice you do not enable them separately. The <span class="notranslate">`cagefsctl --site-isolation-*`</span> commands documented above drive both: each one invokes the matching <span class="notranslate">`lvectl`</span> per-domain command for you when the prerequisites are met, and silently skips that step when they are not. Where the [CageFS prerequisites](#prerequisites) are met, website isolation can still provide filesystem separation when per-domain LVEs are unavailable; the resource-limit step is skipped without a domain-LVE error.
 
 ### Per-Domain Prerequisites
 
-On CloudLinux OS 8, 9 or 10, per-domain LVE limits require a kernel with <span class="notranslate">`lve_lvp_create2`</span>, an LVE-capable control panel or integration, and the packages below. CloudLinux OS 7 predates the required kernel interface; on it, commands that need per-domain support fail with exit code `38` and the message <span class="notranslate">`Domain limits are not supported by this kernel`</span>.
+On CloudLinux OS 8, 9 or 10, per-domain LVE limits require a kernel with <span class="notranslate">`lve_lvp_create2`</span>, an LVE-capable control panel or integration, an edition and environment where LVE is enabled, and the packages below. The Solo edition and CloudLinux containers disable LVE. CloudLinux OS 7 does not receive the per-domain statistics capability flag from <span class="notranslate">`lve-stats3`</span>, so it cannot enable this resource-limiting feature.
 
 In addition to the [CloudLinux Isolates prerequisites](#prerequisites), per-domain LVE limits require:
 
@@ -903,12 +903,14 @@ In addition to the [CloudLinux Isolates prerequisites](#prerequisites), per-doma
 | lve-stats3 | 5.1.0-1         |
 | lve-utils  | 6.6.40-1        |
 
+The optimized backend's per-domain notification templates need <span class="notranslate">`lve-stats-common >= 5.0.5`</span>; the <span class="notranslate">`lve-stats3`</span> package declares this installation dependency. This does not change the per-domain limit minimums in the table.
+
 The installed <span class="notranslate">`lve-stats3`</span> package must provide <span class="notranslate">`/opt/cloudlinux/flags/available-flags.d/lvestats-supports-domain-lve-limits.flag`</span>, and the <span class="notranslate">`lvestats`</span> alternative must select the optimized backend to collect and report per-domain usage. See [Switching between backends](/cloudlinuxos/cloudlinux_os_components/#switching-between-backends).
 
-To check the installed versions:
+To check the installed versions and the optimized backend's common-package dependency:
 
 ```
-rpm -q lve-stats3 lve-utils
+rpm -q lve-stats3 lve-utils lve-stats-common
 ```
 
 ### How the containers are arranged
@@ -982,10 +984,10 @@ Per-domain statistics are collected by default once the feature is active and th
 |<span class="notranslate">`lvechart --domain <domain>`</span> | A usage chart for one domain instead of the account.|
 |<span class="notranslate">`lve-read-snapshot --with-domains`</span>, <span class="notranslate">`--domain <domain>`</span> | Per-domain process attribution in account snapshots, with <span class="notranslate">`lve-stats3`</span> 5.1.1-1 or later; see [lve-read-snapshot](/cloudlinuxos/command-line_tools/#lve-read-snapshot).|
 
-Each <span class="notranslate">`--domain`</span> selector accepts a domain name, a document root, or a numeric domain LVE id. See [Command Line Tools](/cloudlinuxos/command-line_tools/#lveinfo) for full syntax.
+The <span class="notranslate">`--domain`</span> selectors on <span class="notranslate">`lveinfo`</span>, <span class="notranslate">`lvechart`</span>, <span class="notranslate">`cloudlinux-statistics`</span> and <span class="notranslate">`lve-read-snapshot`</span> accept a domain name, document root or numeric domain LVE id. <span class="notranslate">`isolatectl stats --domain`</span> instead matches a domain name owned by the calling account; a document root or numeric id is not an equivalent selector. The <span class="notranslate">`cloudlinux-top -d`</span>/<span class="notranslate">`--domain`</span> option filters primary domains, not isolated domains. See [Command Line Tools](/cloudlinuxos/command-line_tools/#lveinfo) for full syntax.
 
 :::tip Note
-When an account has no recorded domain history in the requested period, <span class="notranslate">`isolatectl stats`</span> returns an empty <span class="notranslate">`domains`</span> list, <span class="notranslate">`lveinfo --with-domains`</span> returns no domain rows, and <span class="notranslate">`cloudlinux-statistics --with-domains`</span> leaves the account row unchanged. Separately, <span class="notranslate">`cloudlinux-top --domains`</span> omits the <span class="notranslate">`domains`</span> field if the account has no current domain data. A <span class="notranslate">`--domain`</span> selector on <span class="notranslate">`lveinfo`</span>, <span class="notranslate">`lvechart`</span> or <span class="notranslate">`cloudlinux-statistics`</span> reports an error if no domain matches.
+An empty <span class="notranslate">`isolatectl stats`</span> domain list may mean no domain activity was recorded; it does not establish why. When no domain history is recorded in the requested period, <span class="notranslate">`lveinfo --with-domains`</span> returns no domain rows, while <span class="notranslate">`cloudlinux-statistics --with-domains`</span> leaves the account row without a domain breakdown. Its response can still acquire a top-level <span class="notranslate">`warning`</span> if the requested range exceeds per-domain retention. Separately, <span class="notranslate">`cloudlinux-top --domains`</span> omits the <span class="notranslate">`domains`</span> field if the account has no current domain data. A <span class="notranslate">`--domain`</span> selector on <span class="notranslate">`lveinfo`</span>, <span class="notranslate">`lvechart`</span> or <span class="notranslate">`cloudlinux-statistics`</span> reports an error if no domain matches.
 :::
 
 ### Reading per-domain figures
@@ -1004,7 +1006,7 @@ account  =  the account's own work  +  site1.com  +  site2.com  + ...
 ```
 </div>
 
-**Faults are counted per container, then rolled up.** The kernel records a fault only against the container whose limit refused the request. <span class="notranslate">lve-stats</span> then rolls a website's faults into its account's total, so an account read *without* a per-domain option already includes its websites' faults; passing <span class="notranslate">`--with-domains`</span> splits them apart again. The [user notification email](/cloudlinuxos/cloudlinux_os_components/#customize-lve-stats2-notifications) is the one place that subtracts them instead, so that the same refusal is not reported twice in a message that already lists the site.
+**Faults are counted per container, then rolled up.** The kernel records a fault only against the container whose limit refused the request. <span class="notranslate">lve-stats</span> then rolls a website's faults into its account's total, so an account read *without* a per-domain option already includes its websites' faults; passing <span class="notranslate">`--with-domains`</span> splits them apart again. The optimized notifier subtracts website faults from the account section of the [user notification email](/cloudlinuxos/cloudlinux_os_components/#customize-lve-stats2-notifications) even if the active template omits <span class="notranslate">`domain_faults`</span>. If that template renders the domain section, this avoids repeating the same refusal; otherwise website fault details may be absent from the email.
 
 **Per-domain history is kept for fewer days than per-account history** — 7 days against 30, by default. A report covering a longer range returns correspondingly less per-domain data than account data, without the rows themselves indicating why. Both windows are administrator-configurable; see <span class="notranslate">`keep_history_days_domain`</span> in [LVE-Stats 2 configuration](/cloudlinuxos/cloudlinux_os_components/#configuration) (<span class="notranslate">`/etc/sysconfig/lvestats2`</span>).
 
@@ -1012,23 +1014,23 @@ account  =  the account's own work  +  site1.com  +  site2.com  + ...
 
 If fault notifications are enabled and the active user notification template renders <span class="notranslate">`domain_faults`</span>, a website fault can be identified by its name and the limit it hit in the email to the account owner. Notifications remain addressed per account, and the account-level thresholds and period also govern the per-domain section; enabling per-domain limits alone does not change who is emailed or how often.
 
-For domain-specific notification templates, use <span class="notranslate">`lve-stats-common`</span> 5.0.5 or later. Custom <span class="notranslate">`user_notify`</span> templates must render the <span class="notranslate">`domain_faults`</span> variable described in [Customize LVE-stats2 notifications](/cloudlinuxos/cloudlinux_os_components/#customize-lve-stats2-notifications); otherwise the email cannot identify which website faulted.
+For domain-specific notification templates, use <span class="notranslate">`lve-stats-common`</span> 5.0.5 or later. Custom <span class="notranslate">`user_notify`</span> text and HTML templates must render the <span class="notranslate">`domain_faults`</span> variable described in [Customize LVE-stats2 notifications](/cloudlinuxos/cloudlinux_os_components/#customize-lve-stats2-notifications); otherwise the email cannot identify which website faulted. The example on that page shows only account-level faults and does not render a per-domain section. The optimized notifier uses Tera for these templates; the linked Jinja2 guidance describes the original backend.
 
 ### Troubleshooting per-domain limits
 
 **"Domain limits are not supported by this kernel (requires lve_lvp_create2)"**
 
-The running kernel lacks per-domain LVE support. Per-domain limits require CloudLinux OS 8, 9 or 10 with a kernel that supports <span class="notranslate">`lve_lvp_create2`</span>; on CloudLinux OS 7 the [CageFS half](#cagefs-per-domain) of CloudLinux Isolates is still available.
+The running kernel lacks the per-domain LVE interface. On systems with <span class="notranslate">`lvectl`</span> commands that check for <span class="notranslate">`lve_lvp_create2`</span>, this error has exit code `38`. Per-domain limits require CloudLinux OS 8, 9 or 10 with that interface and the [other prerequisites](#per-domain-prerequisites). CloudLinux OS 7 does not receive the per-domain statistics capability flag; the [CageFS filesystem layer](#cagefs-per-domain) has separate prerequisites and can operate without domain LVEs where supported.
 
 **Isolation was enabled, but no domain LVEs were created**
 
-The <span class="notranslate">`cagefsctl --site-isolation-*`</span> commands always apply the filesystem layer, and add the per-domain LVE only when the [prerequisites](#per-domain-prerequisites) are met. Check the installed versions:
+The <span class="notranslate">`cagefsctl --site-isolation-*`</span> commands always apply the filesystem layer, and add the per-domain LVE only when the [prerequisites](#per-domain-prerequisites) are met. Check the installed versions, including the optimized backend's common-package dependency:
 
 ```
-rpm -q lve-stats3 lve-utils
+rpm -q lve-stats3 lve-utils lve-stats-common
 ```
 
-If either is below the minimum, update it and then re-run <span class="notranslate">`cagefsctl --site-isolation-enable <domain>`</span>. Removing isolation is never gated this way, so any containers created by an earlier version can always be torn down.
+If <span class="notranslate">`lve-stats3`</span> or <span class="notranslate">`lve-utils`</span> is below its minimum, update it and then re-run <span class="notranslate">`cagefsctl --site-isolation-enable <domain>`</span>. If versions meet the requirements but no domain LVEs are created, check the capability flag, LVE-enabled edition and environment, kernel support and panel integration before concluding that isolation is fully enabled. Removing isolation is not gated on the statistics capability flag, so containers created earlier can still be torn down when the kernel supports domain LVEs.
 
 **"No domain limits configured for UID *N*"**
 
