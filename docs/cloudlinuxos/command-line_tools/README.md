@@ -221,6 +221,8 @@ In case if at least one of the checks resulted neither <span class="notranslate"
   * [Errors handling](./#errors-handling-2)
   * [Examples](./#examples-2)
 
+For the per-domain options below, confirm that the <span class="notranslate">`lvestats`</span> alternative selects the optimized <span class="notranslate">`lve-stats3`</span> backend and that the [per-domain prerequisites](/cloudlinuxos/isolates/#per-domain-prerequisites) are met.
+
 | | |
 |-|-|
 |<span class="notranslate"> `/usr/sbin/lveinfo` </span> |utility to display historical information about LVE usage.|
@@ -384,8 +386,8 @@ The three per-domain identity columns are never part of a default column set. Th
 * <span class="notranslate"> `--time-unit TIME_UNIT` </span> – time step for grouping statistic in minutes; 1 min., by default; can use <span class="notranslate">`m\|h\|d`</span> suffixes; for example: `1h or 1h30m or 1d12h`
 * <span class="notranslate"> `-m {v1,v2}`, `--compat {v1,v2}` </span> – `v1` - return old output mode; `v2` - new mode; default `v1`; you can change default in config
 * <span class="notranslate"> `--blank-value [BLANK_VALUE]` </span> – Use to fill unsupported limits; default `-`
-* <span class="notranslate"> `--with-domains` </span> – report per-domain usage instead of per-account for accounts that have [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain) enabled, adding the <span class="notranslate">`domain_id`</span>, <span class="notranslate">`domain`</span> and <span class="notranslate">`parent_uid`</span> columns. Without the flag nothing about the output changes; accounts with no isolated domains are unaffected by it
-* <span class="notranslate"> `--domain DOMAIN` </span> – report a single domain, selected by domain name, document root, or numeric domain <span class="notranslate">LVE</span> id. Implies <span class="notranslate">`--with-domains`</span>
+* <span class="notranslate"> `--with-domains` </span> – report per-domain usage instead of per-account for accounts that have [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain) enabled, adding the <span class="notranslate">`domain_id`</span>, <span class="notranslate">`domain`</span> and <span class="notranslate">`parent_uid`</span> columns. Without the flag nothing about the output changes; accounts without recorded per-domain history in the requested range have no rows in this report
+* <span class="notranslate"> `--domain DOMAIN` </span> – report a single domain, selected by domain name, document root, or numeric domain <span class="notranslate">LVE</span> id. Implies <span class="notranslate">`--with-domains`</span>. If a numeric id matches domains under multiple accounts, narrow the selection with <span class="notranslate">`--id <uid>`</span> or <span class="notranslate">`--user <name>`</span>
 * <span class="notranslate"> `-f YYYY-MM-DD[ HH:MM]`,  `--from YYYY-MM-DD[ HH:MM]`</span> – run report from date and time in <span class="notranslate">`[YY]YY-MM-DD[ HH:MM]`</span> format; if not present last 10 minutes are assumed
 * <span class="notranslate"> `-t YYYY-MM-DD[ HH:MM]`,  `--to YYYY-MM-DD[ HH:MM]`</span> – run report up to date and time in <span class="notranslate">`[YY]YY-MM-DD[ HH:MM]`</span> format; if not present, reports results up to now
 * <span class="notranslate"> `--period PERIOD` </span> – time period; specify minutes with <span class="notranslate"> `m`, `h`</span> - hours, days with <span class="notranslate"> `d`</span>, and values: <span class="notranslate"> `today`, `yesterday`; `5m`</span> - last 5 minutes, `4h` - last four hours, `2d` - last 2 days, as well as <span class="notranslate"> `today`</span>
@@ -450,7 +452,7 @@ Per-domain rows are retained for <span class="notranslate">`keep_history_days_do
 |<span class="notranslate"> `--domain=` </span> |Chart one isolated domain instead of the account. Takes the same selector as <span class="notranslate">`lveinfo --domain`</span> and <span class="notranslate">`cloudlinux-statistics --domain`</span>: a domain name, a document root, or a numeric domain <span class="notranslate">LVE</span> id. Requires [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain)|
 
 :::tip Note
-<span class="notranslate">`--domain`</span> identifies the account by itself, so it does not need to be combined with <span class="notranslate">`--id`</span> or <span class="notranslate">`--user`</span>. A non-root caller can only chart a domain owned by an account within their own scope; a domain outside it reports as not found.
+<span class="notranslate">`--domain`</span> normally identifies the account by itself. If a numeric domain LVE id matches more than one account, add <span class="notranslate">`--id <uid>`</span> or <span class="notranslate">`--user <name>`</span> to disambiguate it. A non-root caller can only chart a domain owned by an account within their own scope; a domain outside it reports as not found.
 :::
 
 <div class="notranslate">
@@ -505,7 +507,7 @@ lve-read-snapshot [-h] [--version] [-f FROM [FROM ...]] [-t TO [TO ...]
 ```
 </div>
 
-Reads LVE system state snapshots for <span class="notranslate">LVE/user</span>.
+Reads LVE system state snapshots for <span class="notranslate">LVE/user</span>. The synopsis above describes the original backend; the optimized backend's per-domain options are described separately after the option list.
 
 **Optional arguments**
 
@@ -524,6 +526,20 @@ Reads LVE system state snapshots for <span class="notranslate">LVE/user</span>.
 * <span class="notranslate">`--unit unit`</span> – group stats by time unit. Example values `3h`, `24h`, `1d`, `1w`. Other possible value is <span class="notranslate">`auto`</span> for grouping by each incident (default: <span class="notranslate">`1d`</span>)
   
 One of <span class="notranslate">`-u --user`</span> or <span class="notranslate">`-i --id`</span> should be specified.
+
+:::tip Per-domain snapshots
+With [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain) and the optimized <span class="notranslate">`lve-stats3`</span> backend (5.1.1-1 or later) selected, <span class="notranslate">`--with-domains`</span> adds domain attribution to account snapshots without filtering their processes. <span class="notranslate">`--domain DOMAIN`</span> implies it and selects a domain by name, document root or numeric domain LVE id. List snapshots with attribution, then view one site's processes:
+
+<div class="notranslate">
+
+```
+lve-read-snapshot --user USER --period 1d --list --with-domains
+lve-read-snapshot --user USER --period 1d --domain example.com --json
+```
+</div>
+
+A selected domain's processes and, when the domain name is known, HTTP requests are filtered; SQL queries and fault counters remain account-level. Older snapshots without per-domain attribution report no domains. A domain with no processes in a snapshot produces no result for that snapshot; an unknown domain in the selected period reports an error. If a numeric id is ambiguous across accounts, provide <span class="notranslate">`--id`</span> or <span class="notranslate">`--user`</span>.
+:::
 
 <div class="notranslate">
 
@@ -579,7 +595,7 @@ cloudlinux-top [-h] [-v] [-j] [--hide-mysql]
 * <span class="notranslate"> `-d DOMAIN`, `--domain DOMAIN` </span> – show data only for a specific domain. Can be used to filter the output; returns users with domain <span class="notranslate">`%DOMAIN%`</span>
 * <span class="notranslate"> `-m MAX`, `--max MAX` </span> – show up to <span class="notranslate">`N`</span> records. If <span class="notranslate">`--max`</span> key is omitted. By default will show top 25 users
 * <span class="notranslate"> `-o ORDER_BY`, `--order-by ORDER_BY` </span> – sort output by resource usage; available options: <span class="notranslate">`cpu`, `mysql_cpu`, `io`, `mysql_io`, `iops`, `ep`, `nproc`, `pmem`</span>
-* <span class="notranslate"> `--domains` </span> – populate the <span class="notranslate">`domains`</span> array on each user with the current usage and limits of that account's isolated domains. Requires [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain). Without the flag the array is emitted empty, so existing consumers see unchanged output
+* <span class="notranslate"> `--domains` </span> – populate the <span class="notranslate">`domains`</span> array on each user with the current usage and limits of that account's isolated domains. Requires [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain). Without the flag, or when the account has no domain data, the <span class="notranslate">`domains`</span> key is omitted
 
 :::warning The --domains and --domain options are different
 <span class="notranslate">`-d`/`--domain`</span> is a *filter*: it restricts the output to users whose primary domain matches the given pattern, and has nothing to do with CloudLinux Isolates. <span class="notranslate">`--domains`</span> (plural, no short form) is the one that adds the per-domain breakdown.
@@ -615,8 +631,8 @@ cloudlinux-top [-h] [-v] [-j] [--hide-mysql]
           "usage": <lve_section>,     # usage for last 5 seconds
           "username": "user",         # username from /etc/passwd file or “N/A” if user
                                       # with such id does not exist
-          "domains": [                # isolated domains of this account; populated
-                                      # only with --domains, otherwise an empty list
+          "domains": [                # isolated domains of this account; present
+                                      # only with --domains and recorded domain data
               {
                   "id": 60057,        # domain LVE id (not a uid)
                   "name": "site.com", # domain name; absent if the panel cannot name it
