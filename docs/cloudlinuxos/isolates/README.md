@@ -165,11 +165,13 @@ cagefsctl --site-isolation-allow-all
 cagefsctl --site-isolation-enable example.com
 ```
 
-**3. Verify isolation is active:**
+**3. Verify website isolation is active:**
 
 ```
 cagefsctl --site-isolation-list
 ```
+
+This lists CageFS-isolated websites, not their resource-limit containers. If you enabled the [per-domain LVE layer](#lve-per-domain), check it separately with <span class="notranslate">`lvectl list-domains <uid>`</span>, using the account's numeric UID.
 
 To disable isolation for a domain:
 
@@ -887,14 +889,14 @@ The two halves of CloudLinux Isolates are separate layers and can be reasoned ab
 
 | | |
 |-|-|
-|[CageFS per domain](#cagefs-per-domain) | *Filesystem* isolation — a compromised website cannot read another site's files. Always available where CageFS is.|
+|[CageFS per domain](#cagefs-per-domain) | *Filesystem* isolation — a compromised website cannot read another site's files. Requires an available and enabled CageFS site-isolation feature and its [prerequisites](#prerequisites).|
 |LVE per domain | *Resource* isolation — a website has its own CPU, memory, I/O and process limits. Requires CloudLinux OS 8, 9 or 10 with a compatible kernel, an LVE-enabled edition and environment, an LVE-capable panel or integration, and the package versions listed under [Per-Domain Prerequisites](#per-domain-prerequisites).|
 
-In practice you do not enable them separately. The <span class="notranslate">`cagefsctl --site-isolation-*`</span> commands documented above drive both: each one invokes the matching <span class="notranslate">`lvectl`</span> per-domain command for you when the prerequisites are met, and silently skips that step when they are not. Where the [CageFS prerequisites](#prerequisites) are met, website isolation can still provide filesystem separation when per-domain LVEs are unavailable; the resource-limit step is skipped without a domain-LVE error.
+Under a supported panel, the <span class="notranslate">`cagefsctl --site-isolation-allow-all`</span> and <span class="notranslate">`--site-isolation-allow`</span> paths can prepare account-level domain limits; <span class="notranslate">`--site-isolation-enable`</span> configures a website and can register its domain LVE. The LVE allow/enable steps run only when the LVE feature, kernel and statistics capability checks pass. Deny/disable operations are not gated on the statistics flag, but their LVE teardown steps still need LVE and kernel support; list and toggle commands do not create domain LVEs. A missing LVE prerequisite skips its step, whereas an attempted <span class="notranslate">`lvectl`</span> call can fail or be logged without completing. When the separate [CageFS prerequisites](#prerequisites) and site-isolation feature gate pass, website isolation can still provide filesystem separation without per-domain resource limits.
 
 ### Per-Domain Prerequisites
 
-On CloudLinux OS 8, 9 or 10, per-domain LVE limits require a kernel with <span class="notranslate">`lve_lvp_create2`</span>, an LVE-capable control panel or integration, an edition and environment where LVE is enabled, and the packages below. The Solo edition and CloudLinux containers disable LVE. CloudLinux OS 7 does not receive the per-domain statistics capability flag from <span class="notranslate">`lve-stats3`</span>, so it cannot enable this resource-limiting feature.
+On CloudLinux OS 8, 9 or 10, per-domain LVE limits require a kernel with <span class="notranslate">`lve_lvp_create2`</span>, an LVE-capable control panel or integration, an edition and environment where LVE is enabled, and the packages below. On CloudLinux OS 9 and 10, the Solo edition and CloudLinux containers disable LVE. CloudLinux OS 7 does not receive the per-domain statistics capability flag from <span class="notranslate">`lve-stats3`</span>, so it cannot enable this resource-limiting feature.
 
 In addition to the [CloudLinux Isolates prerequisites](#prerequisites), per-domain LVE limits require:
 
@@ -939,7 +941,7 @@ Because the websites are siblings of the account's own container rather than nes
 
 ### Enabling per-domain limits
 
-Under a control panel, use the [`cagefsctl --site-isolation-*` commands](#command-reference) — they enable both isolation layers together and are the supported administrator path.
+Under a supported control panel, use the [CageFS allow and enable commands](#command-reference) to permit website isolation for an account, then enable its domain. If the [per-domain prerequisites](#per-domain-prerequisites) pass, these paths also attempt the LVE layer; <span class="notranslate">`--site-isolation-list`</span> lists websites, not domain LVEs.
 
 The underlying <span class="notranslate">`lvectl`</span> commands are available for integration scripts, and for inspecting or repairing state:
 
@@ -1024,13 +1026,13 @@ The running kernel lacks the per-domain LVE interface. On systems with <span cla
 
 **Isolation was enabled, but no domain LVEs were created**
 
-The <span class="notranslate">`cagefsctl --site-isolation-*`</span> commands always apply the filesystem layer, and add the per-domain LVE only when the [prerequisites](#per-domain-prerequisites) are met. Check the installed versions, including the optimized backend's common-package dependency:
+When the CageFS site-isolation feature is available, allow it server-wide or for the account, then enable an existing domain whose document root passes validation. The associated LVE step also needs the [per-domain prerequisites](#per-domain-prerequisites); <span class="notranslate">`--site-isolation-list`</span> checks only website isolation. An attempted <span class="notranslate">`lvectl`</span> call can fail or be logged without creating a domain LVE. Check the installed versions, including the optimized backend's common-package dependency:
 
 ```
 rpm -q lve-stats3 lve-utils lve-stats-common
 ```
 
-If <span class="notranslate">`lve-stats3`</span> or <span class="notranslate">`lve-utils`</span> is below its minimum, update it and then re-run <span class="notranslate">`cagefsctl --site-isolation-enable <domain>`</span>. If versions meet the requirements but no domain LVEs are created, check the capability flag, LVE-enabled edition and environment, kernel support and panel integration before concluding that isolation is fully enabled. Removing isolation is not gated on the statistics capability flag, so containers created earlier can still be torn down when the kernel supports domain LVEs.
+If <span class="notranslate">`lve-stats3`</span> or <span class="notranslate">`lve-utils`</span> is below its minimum, update it and then re-run <span class="notranslate">`cagefsctl --site-isolation-enable <domain>`</span>. The optimized backend that requires <span class="notranslate">`lve-stats-common >= 5.0.5`</span> cannot be installed normally with an older common package; satisfy this dependency before expecting its domain-aware notifications. If versions meet the requirements but no domain LVEs are created, check the capability flag, LVE-enabled edition and environment, kernel support and panel integration. Deny/disable is not gated on the statistics flag, but removing a domain LVE still requires LVE feature and kernel support and a panel-resolvable owner and document root. A failed unregister can leave a domain LVE after website isolation is removed; inspect <span class="notranslate">`lvectl list-domains <uid>`</span> for the account rather than assuming teardown succeeded.
 
 **"No domain limits configured for UID *N*"**
 
