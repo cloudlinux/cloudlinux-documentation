@@ -2904,7 +2904,7 @@ cldeploy --hostinglimits                            # update httpd and install m
 
 **Per-domain commands**
 
-These manage [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain) — resource limits for an individual website rather than for the whole account. They require a kernel with per-domain LVE support; on a kernel without it every one of them exits with code `38` and the message <span class="notranslate">`Domain limits are not supported by this kernel`</span>.
+These manage [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain) — resource limits for an individual website rather than for the whole account. They require a compatible LVE library and running kernel. On an initialized LVE system without the per-domain interface, <span class="notranslate">`list-domains`</span>, <span class="notranslate">`allow-domain-limits`</span>, <span class="notranslate">`deny-domain-limits`</span>, <span class="notranslate">`enable-domain-limits`</span> and <span class="notranslate">`disable-domain-limits`</span> exit with code `38` and report <span class="notranslate">`Domain limits are not supported by this kernel (requires lve_lvp_create2)`</span>. <span class="notranslate">`regenerate-domains`</span> can return without updating anything when that interface is unavailable; its exit status does not verify that a domain LVE exists.
 
 |  |  |
 |--|--|
@@ -2916,7 +2916,7 @@ These manage [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain) — r
 | <span class="notranslate"> `regenerate-domains --username <user> [--domain <name>] [--old-domain <name>] [--old-docroot <path>]` </span> |update the domain configuration and id mapping after a domain rename, a document root change, or a user rename. <span class="notranslate">`--username`</span> is required|
 
 :::tip Note
-Under a control panel you normally do not call these directly — <span class="notranslate">`cagefsctl --site-isolation-allow`</span>, <span class="notranslate">`--site-isolation-deny`</span>, <span class="notranslate">`--site-isolation-enable`</span> and <span class="notranslate">`--site-isolation-disable`</span> invoke the matching <span class="notranslate">`lvectl`</span> command for you, and the panel hooks call <span class="notranslate">`regenerate-domains`</span> on rename and document-root changes. Use <span class="notranslate">`lvectl`</span> directly for integration scripts and for inspecting or repairing state. See [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain).
+Under a supported control panel you normally do not call these directly — <span class="notranslate">`cagefsctl --site-isolation-allow`</span>, <span class="notranslate">`--site-isolation-deny`</span>, <span class="notranslate">`--site-isolation-enable`</span> and <span class="notranslate">`--site-isolation-disable`</span> manage filesystem isolation and conditionally call the matching <span class="notranslate">`lvectl`</span> command when the panel and running kernel permit it; automatic enablement also requires a statistics backend with per-domain support. Panel hooks call <span class="notranslate">`regenerate-domains`</span> on rename and document-root changes when applicable. Use <span class="notranslate">`lvectl`</span> directly for integration scripts and for inspecting or repairing state where the kernel supports per-domain LVPs; verify the statistics prerequisite before enabling domain limits. See [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain).
 :::
 
 **Options**

@@ -393,7 +393,7 @@ This is an exception path for an unsafe or unknown state. For an eligible server
 
 #### Server panics or reboots during conversion on Intel CPUs with IBT
 
-When converting **AlmaLinux 10 to CloudLinux 10** on a server that Intel CPU supports **IBT** (Indirect Branch Tracking), the server may panic and reboot during the LVE setup step of `cldeploy`, leaving a half-converted system that may not boot back up.
+During **AlmaLinux 10 to CloudLinux 10** conversion, loading the LVE module while the running kernel enforces **IBT** (Indirect Branch Tracking) can cause a kernel panic and leave the server partially converted. An Intel CPU's IBT flag alone does not mean that the running kernel enforces IBT.
 
 The kernel message (visible on the console, in `/var/log/messages`, or in a kdump vmcore) looks like:
 
@@ -403,29 +403,26 @@ kernel BUG at arch/x86/kernel/cet.c:102!
  ... mount_cgroup_root_fs+0x209/0x260 [kmodlve]
 ```
 
-**Cause.** The CloudLinux LVE kernel module (`kmod-lve`) requires Intel CET/IBT to be disabled.
-The CloudLinux `tuned` profile turns it off via the `ibt=off` kernel boot parameter, but that takes effect only after a reboot.
-If the module is loaded while IBT is still active - before that reboot - the CPU raises a control-protection fault and the
-kernel panics.
+**Cause.** The LVE kernel module (`kmodlve`) cannot be loaded safely while the running kernel enforces Intel IBT. The `ibt=off` kernel boot parameter takes effect only after a reboot; loading the module before that can raise a control-protection fault and panic the kernel.
 
-**Recovery for an affected server.** Boot once with IBT disabled:
+**Recovery for an affected server.** Add `ibt=off` at the GRUB menu for a single boot:
 
 1. At the GRUB boot menu, highlight the default entry and press `e` to edit it.
 2. Find the line that starts with `linux` (the kernel command line) and append ` ibt=off` to its end.
 3. Press `Ctrl+X` (or `F10`) to boot with that parameter.
 
-Once the server is back up, verify that the conversion left the CloudLinux `tuned` profile active - it sets `ibt=off` permanently, so the parameter is applied automatically on every subsequent boot:
+The GRUB edit above affects one boot only. After a normal reboot, check the active `tuned` profile and whether `ibt=off` is present as a separate argument on the running kernel's command line:
 
 ```bash
-tuned-adm active                 # expect a "cloudlinux-*" profile
-grep -o 'ibt=off' /proc/cmdline  # after a normal reboot, expect: ibt=off
+tuned-adm active                 # check for a "cloudlinux-*" profile
+grep -qE '(^| )ibt=off( |$)' /proc/cmdline && echo 'ibt=off is on the kernel command line'
 ```
 
-If the conversion did not finish, or `ibt=off` is not applied on a normal boot, attach
+If the conversion did not finish, or `ibt=off` is absent from the kernel command line after a normal reboot, attach
 `/var/log/cldeploy.log` and contact [CloudLinux support](https://cloudlinux.zendesk.com/hc/en-us).
 
 :::tip Note
-Up-to-date versions of `cldeploy` and the CloudLinux LVE packages avoid this by not loading the LVE module until after the post-conversion reboot, when `ibt=off` is already in effect.
+When the LVE service detects kernel IBT enforcement and `ibt=off` is absent, it reports a deferred module load and exits successfully. A successful `lve.service` start does not by itself mean `kmodlve` is loaded. After reboot, check with `lsmod | grep '^kmodlve '`; if the module is absent, review the LVE service logs and contact support instead of manually loading it while IBT is enforced.
 :::
 
 ### How to enable Secure Boot for CloudLinux 9+

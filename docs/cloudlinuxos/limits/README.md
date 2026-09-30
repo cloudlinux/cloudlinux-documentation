@@ -89,31 +89,24 @@ Each LVE limits amount of entry processes (Apache processes entering into LVE) t
 
 ### Checking if LVE is installed
 
-To use LVE you should have CloudLinux OS kernel installed, and LVE module loaded. You can check the kernel by running the following command:
+To use LVE, the `kmodlve` kernel module must be loaded. The name shown by `uname -r` does not verify whether the LVE module is loaded; check the module directly. On RPM-based systems, check the installed packages and the loaded module:
 
 <div class="notranslate">
 
 ```
-uname -r
+rpm -q lve
+rpm -q --whatprovides kmod-lve
+lsmod | grep '^kmodlve '
 ```
 </div>
 
-You should see something like 2.6.32-896.16.1.lve1.4.53.el6.x86_64. The kernel should have lve in its name. To see if lve kernel module is loaded run:
-
-<div class="notranslate">
-
-```
-lsmod|grep lve
-
-lve                    46496  0
-```
-</div>
+If the module is absent, inspect the `lve.service` logs and check `LVE_ENABLE=yes` in the file the loader uses: `/etc/sysconfig/lve` on RPM-based CloudLinux systems, or `/etc/default/lve` if the first file is absent. A successful service start can also mean that loading was deferred on a kernel that enforces Intel IBT; see [conversion troubleshooting](/cloudlinuxos/cloudlinux_installation/#server-panics-or-reboots-during-conversion-on-intel-cpus-with-ibt).
 
 Starting from kernels lve1.4.x iolimits module is a part of kmod-lve and could not be used separately.
 
-* You can toggle LVE on/off by editing <span class="notranslate">`/etc/sysconfig/lve`</span> and setting <span class="notranslate">`LVE_ENABLE`</span> variable to <span class="notranslate">`yes`</span> or <span class="notranslate">`no`</span>.
+* On RPM-based CloudLinux systems, you can control whether the LVE service attempts to load the module by setting <span class="notranslate">`LVE_ENABLE`</span> in <span class="notranslate">`/etc/sysconfig/lve`</span> to <span class="notranslate">`yes`</span> or <span class="notranslate">`no`</span>. If that file is absent, the loader checks `/etc/default/lve` instead.
 
-    Setting it to <span class="notranslate">`yes`</span> will enable LVE, setting it to <span class="notranslate">`no`</span> will disable LVE.
+    <span class="notranslate">`yes`</span> permits a load when other prerequisites are met; <span class="notranslate">`no`</span> skips the load at service start. After reboot, check that the module is loaded rather than assuming that the setting makes LVE active.
 
 * You can toggle IO limits by editing <span class="notranslate">`/etc/sysconfig/iolimits`</span> and setting <span class="notranslate">`IO_LIMITS_ENABLED`</span> variable to <span class="notranslate">`yes`</span> or <span class="notranslate">`no`</span>.
 
