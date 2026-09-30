@@ -23,7 +23,7 @@ When CloudLinux Isolates is enabled for a domain:
 
 #### Minimum Package Versions
 
-Install the prerequisite packages together with the dependencies required by your platform's package manager. The feature minimums below do not by themselves confirm [Isolates availability](#common-issues).
+CloudLinux Isolates requires CloudLinux OS 8 or later and the following minimum package versions:
 
 | Package            | Minimum Version |
 | ------------------ | --------------- |
@@ -147,8 +147,6 @@ CloudLinux Isolates provides partial FPM handler support for both ea-php (cPanel
 
 :::tip Note
 alt-php53, alt-php54, and alt-php55 are supported on CL7/CL8/CL9 only. CL10 support starts from alt-php56.
-
-These PHP package requirements do not establish CloudLinux Isolates availability; [check the Isolates feature](#common-issues) separately.
 :::
 
 ***
@@ -856,7 +854,7 @@ cagefsctl --isolates-allow-all
 
 **"CloudLinux Isolates feature is not available on this platform"**
 
-CageFS checks for its Isolates availability marker at `/opt/cloudlinux/flags/available-flags.d/website-isolation.flag`. The [minimum package versions](#minimum-package-versions) alone do not guarantee that the feature is provided for your platform. Check availability for your OS and release; do not create the marker manually on an unsupported platform.
+CloudLinux Isolates is available on CloudLinux OS 8 and later. On CloudLinux OS 7 this error is expected. On CloudLinux OS 8+, make sure all [prerequisite packages](#minimum-package-versions) are installed and up to date. Do not create `/opt/cloudlinux/flags/available-flags.d/website-isolation.flag` manually.
 
 **"CloudLinux Isolates is not allowed for user \<username\>"**
 
@@ -902,13 +900,22 @@ The two halves of CloudLinux Isolates are separate layers and can be reasoned ab
 | | |
 |-|-|
 |[CageFS per domain](#cagefs-per-domain) | *Filesystem* isolation — a compromised website cannot read another site's files. Available only where CloudLinux Isolates is provided and enabled.|
-|LVE per domain | *Resource* isolation — a website has its own CPU, memory, I/O and process limits. Requires [per-domain prerequisites](#per-domain-prerequisites) in addition to filesystem isolation.|
+|LVE per domain | *Resource* isolation — a website has its own CPU, memory, I/O and process limits. Requires CloudLinux OS 8 or 9 and the [per-domain prerequisites](#per-domain-prerequisites) in addition to filesystem isolation.|
 
 Where both layers are available, you do not enable them separately. The [CageFS Isolates commands](#command-reference) configure filesystem isolation and automatically register domain LVEs when the [per-domain prerequisites](#per-domain-prerequisites) are met. If those prerequisites are not met but CloudLinux Isolates itself is available, filesystem isolation can still work without per-domain resource limits.
 
 ### Per-Domain Prerequisites
 
-In addition to the [CloudLinux Isolates prerequisites](#prerequisites), automatic per-domain LVE setup requires:
+Per-domain LVE limits are supported on CloudLinux OS 8 and 9. CloudLinux OS 7 predates the required kernel interface; on it, commands that need per-domain support fail with exit code `38` and the message <span class="notranslate">`Domain limits are not supported by this kernel`</span>.
+
+In addition to the [CloudLinux Isolates prerequisites](#prerequisites), per-domain LVE limits require:
+
+| Package | Minimum Version |
+| ---------- | --------------- |
+| lve-stats3 | 5.1.0-1         |
+| lve-utils  | 6.6.40-1        |
+
+Automatic per-domain LVE setup also requires:
 
 * A control-panel integration with LVE support.
 * A running kernel with per-domain LVE support.
@@ -921,7 +928,7 @@ On an RPM-based system, check that the required packages are installed:
 rpm -q lve-stats3 lve-utils
 ```
 
-Package presence alone does not confirm these capabilities. As root, inspect the installed command's help and confirm that all four domain-limit commands above are listed:
+To ensure compatibility, check that the installed packages meet the minimum versions above. As root, inspect the installed command's help and confirm that all four domain-limit commands above are listed:
 
 ```
 /usr/sbin/lvectl --help
@@ -1044,7 +1051,7 @@ Administrators customising the email templates should see the <span class="notra
 
 **"Domain limits are not supported by this kernel (requires lve_lvp_create2)"**
 
-This kernel does not report the required per-domain LVE capability. [CageFS per-domain isolation](#cagefs-per-domain) is a separate layer, but it remains usable only where CloudLinux Isolates itself is available and enabled.
+This kernel does not report the required per-domain LVE capability. Per-domain limits require CloudLinux OS 8 or 9 and a kernel with per-domain LVE support. CloudLinux Isolates is not supported on CloudLinux OS 7.
 
 **Isolation was enabled, but no domain LVEs were created**
 
