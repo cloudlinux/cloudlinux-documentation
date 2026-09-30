@@ -89,25 +89,17 @@ Each LVE limits amount of entry processes (Apache processes entering into LVE) t
 
 ### Checking if LVE is installed
 
-To use LVE you should have CloudLinux OS kernel installed, and LVE module loaded. You can check the kernel by running the following command:
+To use LVE, the `kmodlve` kernel module must be loaded. The name shown by `uname -r` does not verify whether the LVE module is loaded; check the module directly. On RPM-based systems, check the installed packages and the loaded module:
 
 <div class="notranslate">
 
 ```
-uname -r
+rpm -q lve kmod-lve
+lsmod | grep '^kmodlve '
 ```
 </div>
 
-You should see something like 2.6.32-896.16.1.lve1.4.53.el6.x86_64. The kernel should have lve in its name. To see if lve kernel module is loaded run:
-
-<div class="notranslate">
-
-```
-lsmod|grep lve
-
-lve                    46496  0
-```
-</div>
+If the module is absent, check that `LVE_ENABLE=yes` in `/etc/sysconfig/lve` and inspect the `lve.service` logs. A successful service start can also mean that loading was deferred on a kernel that enforces Intel IBT; see [conversion troubleshooting](/cloudlinuxos/cloudlinux_installation/#server-panics-or-reboots-during-conversion-on-intel-cpus-with-ibt).
 
 Starting from kernels lve1.4.x iolimits module is a part of kmod-lve and could not be used separately.
 
