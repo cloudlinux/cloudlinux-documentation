@@ -2132,7 +2132,7 @@ yum install governor-mysql
 
 6. Configure user mapping to the database. The mapping format is described in the following [section](/cloudlinuxos/cloudlinux_os_components/#mapping-a-user-to-a-database). The control panel should automatically generate such mapping and write it to <span class="notranslate">`/etc/container/dbuser-map`</span>. Usually, it is enough to write a hook when adding, deleting or renaming a database for a user. The control panel should implement such a mechanism for MySQL Governor to operate properly. MySQL Governor automatically applies changes from the dbuser-map file every five minutes.
 
-7. MySQL Governor configuration can be found in the following [section](/cloudlinuxos/cloudlinux_os_components/#configuration-3).
+7. MySQL Governor configuration can be found in the following [section](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
 
 8. MySQL Governor CLI tools description can be found in the following [section](/cloudlinuxos/command-line_tools/#mysql-governor)
 

@@ -51,6 +51,8 @@ also falls back to ID 3. A restricted database user's concurrent connections can
 previous limit is higher or unlimited; the `<restrict>` element's `user_max_connections` attribute in
 `/etc/container/mysql-governor.xml` controls this cap.
 
+To adjust CPU resources for restricted queries, change the mapped account's LVE SPEED limit in `abusers` mode; in `single` mode or for an unmapped user, change shared LVE ID 3's SPEED limit.
+
 ### Installation
 
 :::warning Attention!
@@ -84,7 +86,7 @@ In case of installing on cPanel + Ubuntu server, set the following parameter:
 ![Terminal output: dpkg prompt for usr.sbin.mysqld config with Y to install the package maintainer's version](/images/ubuntu/features/Param.webp)
 
 5. After installation, check that the database server is working properly. If you have any problems,
-   use [Support Portal]().
+   contact [support](https://helpdesk.cloudlinux.com/).
 6. Configure user mapping to the database. The mapping format is described in
    the [following section](/cloudlinuxos/cloudlinux_os_components/#mapping-a-user-to-a-database).
 
@@ -104,7 +106,7 @@ such a mechanism for MySQL Governor to operate properly. MySQL Governor automati
 dbuser-map file every five minutes.
 
 7. MySQL Governor configuration can be found in the
-   following [section](/cloudlinuxos/cloudlinux_os_components/#configuration-3).
+   following [section](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
 8. MySQL Governor CLI tools description can be found in the
    following [section](/cloudlinuxos/command-line_tools/#mysql-governor).
 9. Having configured the mapping use `dbtop` to see the current user load on the database (you'd need to make some

@@ -1218,7 +1218,7 @@ Changing the <span class="notranslate"> "unlimit" </span> can be done only via t
 
 | | |
 |-|-|
-| `--slow=N` | limit time (in seconds) for long running <span class="notranslate"> SELECT </span> queries|
+| `--slow=N` | limit time (in seconds) for long running <span class="notranslate"> SELECT </span> queries; takes effect only when `<slow_queries run="on"/>` is set in `/etc/container/mysql-governor.xml` (restart `db_governor` after editing the file)|
 
 Options for parameter <span class="notranslate">`list`</span>:
 
@@ -1337,7 +1337,7 @@ lveinfo [OPTIONS]
 |<span class="notranslate">`-o ALIAS`</span>, <span class="notranslate">`--order-by ALIAS`</span>|orders results by one of the following:<br><span class="notranslate">`ALIAS`</span> – DESCRIPTION<br><span class="notranslate">`con`</span> – average connections (deprecated)<br><span class="notranslate">`cpu`</span> – average CPU usage<br><span class="notranslate">`read`</span> – average READ usage<br><span class="notranslate">`write`</span> – average WRITE usage<br><span class="notranslate">`io`</span> – average READ+WRITE usage|
 |<span class="notranslate">`-b ALIAS [ALIAS ...]`</span>, <span class="notranslate">`--format ALIAS [ALIAS ...]`</span>|show only specific fields into output:<br>COLUMN_NAME – <span class="notranslate">`ALIAS`</span> – DESCRIPTION<br><span class="notranslate">`ts`</span> – <span class="notranslate">`TS`</span> – timestamp records<br><span class="notranslate">`username`</span> – <span class="notranslate">`USER`</span> – user name<br><span class="notranslate">`id`</span> – <span class="notranslate">`ID`</span>user id<br><span class="notranslate">`cpu`</span> – <span class="notranslate">`CPU`</span> – average CPU usage<br><span class="notranslate">`read`</span> – <span class="notranslate">`READ`</span> – average READ usage<br><span class="notranslate">`write`</span> – <span class="notranslate">`WRITE`</span> – average WRITE usage<br><span class="notranslate">`con`</span> – <span class="notranslate">`CON`</span> – average connections (deprecated)<br><span class="notranslate">`lcpu`</span> – <span class="notranslate">`lCPU`</span> – CPU limit<br><span class="notranslate">`lread`</span> – <span class="notranslate">`lREAD`</span> – READ limit<br><span class="notranslate">`lwrite`</span> – <span class="notranslate">`lWRITE`</span> – WRITE limit<br><span class="notranslate">`-`</span> – <span class="notranslate">`RESTRICT`</span> – <span class="notranslate">`C`</span> - CPU restrict, <span class="notranslate">`R`</span> - read restrict, <span class="notranslate">`W`</span> - write restrict |
 |<span class="notranslate">`--show-all`</span>|full output (show all limits); brief output is default|
-|<span class="notranslate">`--server_id SERVER_ID`</span>, <span class="notranslate">`--server-id SERVER_ID`</span>|used with central database for multiple servers, default is <span class="notranslate">`2d823047-a`</span>|
+|<span class="notranslate">`--server_id SERVER_ID`</span>, <span class="notranslate">`--server-id SERVER_ID`</span>|used with a central database for multiple servers; defaults to the configured `server_id`, or `localhost` if unset|
 |<span class="notranslate">`--time-unit TIME_UNIT`</span>|time step for grouping statistic in minutes; 1 min. by default; can use <span class="notranslate">`m`,`h`,`d`</span> suffixes or can use <span class="notranslate">`dyn[amic]`</span> for using in the <span class="notranslate">`v1`</span> mode; for example: <span class="notranslate">`1h`</span> or <span class="notranslate">`1h30m`</span> or <span class="notranslate">`1d12h`</span>|
 |<span class="notranslate">`-c [PATH]`</span>, <span class="notranslate">`--csv [PATH]`</span>|save statistics in CSV format; <span class="notranslate">`-`</span> by default (output to screen)|
 |<span class="notranslate">`-j`</span>, <span class="notranslate">`--json`</span>|display output in JSON format|
@@ -1351,7 +1351,7 @@ lveinfo [OPTIONS]
 
 <span class="notranslate"> dbgovchart </span> is analog of <span class="notranslate"> lvechart </span> tool to create charts representing customer's to MySQL usage
 
-Usage: <span class="notranslate"> `/usr/sbin/dbgovchart [OPTIONS]` </span>
+Usage: <span class="notranslate"> `/usr/sbin/dbgovchart --user=ACCOUNT [OPTIONS]` </span>
 
 Acceptable options are:
 <div class="notranslate">
@@ -1368,7 +1368,7 @@ Acceptable options are:
             today, yesterday
             5m - last 5 minutes, 4h - last four hours, 2d - last 2 days,
             as well as today
---user=     mysql username
+--user=     hosting/system account name associated with the Governor UID (required; not necessarily the database login)
 --output=   Filename to save chart as, if not present, output will be sent to STDOUT
 --show-all  Show all graphs (by default shows graphs for which limits are set)
 ```
