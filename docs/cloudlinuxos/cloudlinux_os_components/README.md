@@ -3362,9 +3362,9 @@ More details of the governor operation modes are described in the [Modes of oper
 |<span class="notranslate"> READ </span> | bytes | bytes read. Cached reads are not counted, only those that were actually read from disk will be counted|
 |<span class="notranslate"> WRITE </span> | bytes | bytes written. Cached writes are not counted, only once data is written to disk, it is counted|
 
-You can set different limits for different periods: current, short, med, long. By default those periods are defined as 1 second, 5 seconds, 1 minute and 5 minutes. They can be re-defined using [configuration file](./#configuration-and-operation). The idea is to use larger acceptable values for shorter periods. Like you could allow a customer to use two cores (200%) for one second, but only 1 core (on average) for 1 minute, and only 70% within 5 minutes. That would make sure that customer can burst for short periods of time.
+You can set different limits for different periods: current, short, med, long. The packaged configuration sets these periods to 1 second, 15 seconds, 1 minute and 5 minutes. They can be re-defined using [configuration file](./#configuration-and-operation). The idea is to use larger acceptable values for shorter periods. Like you could allow a customer to use two cores (200%) for one second, but only 1 core (on average) for 1 minute, and only 70% within 5 minutes. That would make sure that customer can burst for short periods of time.
 
-Customers will also be limited to a finite number of concurrent connections, this number is 30 by default and can be changed. This is done so they wouldn't use up all the MySQL connections to the server. <span class="notranslate"> MySQL Governor </span> can also kill off slow <span class="notranslate"> SELECT </span> queries.
+When a database user is restricted, <span class="notranslate"> MySQL Governor </span> caps that user's concurrent connections at 30 by default if the existing limit is higher or unlimited. Set the `<restrict>` element's `user_max_connections` attribute in `/etc/container/mysql-governor.xml` to change this cap. MySQL Governor can also kill off slow <span class="notranslate"> SELECT </span> queries.
 
 ### MySQL Governor limits interaction with LVE limits
 
@@ -3433,7 +3433,7 @@ Note the following cPanel-specific restrictions when using MySQL Governor:
 Make a full database backup (including system tables) before you upgrade MySQL or switch to MariaDB. This action will prevent data loss in case if something goes wrong.
 :::
 
-**_MySQL Governor is compatible with MySQL 5.6–5.7, 8.0–8.4, MariaDB 10.2–10.6, 10.11, 11.4, and Percona Server 5.6._**
+**_MySQL Governor is compatible with MySQL 5.6, 5.7, 8.0, 8.4, MariaDB 10.2–10.6, 10.11, 11.4, and Percona Server 5.6._**
 
 To install <span class="notranslate"> MySQL Governor </span> on your server install <span class="notranslate"> governor-mysql </span> package at first:
 
@@ -3555,7 +3555,7 @@ For example:
 Please note that restore of previous packages in case of failed installation would also be confirmed with <span class="notranslate">`--yes`</span> flag.
 
 ::: danger IMPORTANT
-Use <span class="notranslate"> --yes </span> flag on your own risk, because it confirms installation in any case - even in case if there are troubles during installation (for example, network problems causing incomplete download of packages), everything would be confirmed.
+`--yes` skips confirmation prompts, including the backup confirmation. The installer also enables this behavior when standard input is not a TTY. Back up and verify your databases before unattended runs; failed downloads or database startup may still require recovery.
 :::
 
 :::tip Note
@@ -4075,6 +4075,8 @@ The following script could be used before installing MySQL-governor and MySQL/Ma
 ```
 </div>
 
+Before changing the database server, verify that the backup contains the required databases and system tables. The script's completion message alone does not verify the dumps.
+
 :::tip
 The script `mysql_backup.sh` is provided starting from the Governor version 1.2-115.
 :::
@@ -4095,23 +4097,19 @@ See also [MySQL Governor CLI tools](/cloudlinuxos/command-line_tools/#mysql-gove
 
 ### MySQL Governor improvements  for  CPU calculation
 
-In MySQL Governor version 1.2-81, we provide improvements in the algorithm of calculation user CPU usage. New behavior helps to increase precision of resource distribution between server users. By default the new type of CPU usage calculation is tuned on.
+MySQL Governor 1.2-81+ includes improved per-user CPU usage calculation. In the packaged implementation, this calculation is always enabled.
 
-Server administrator can turn on/off the new type of CPU usage calculation by using the following command:
-
-```
-dbctl --lve-improved-accuracy off
-```
+The `dbctl --lve-improved-accuracy` option is retained for compatibility but no longer changes CPU usage calculation.
 
 #### What is the impact of improvements?
 
-The calculation of CPU usage has become more accurate, so the `dbtop` utility provides more correct information to the MySQL Governor and it places user’s requests to the LVE in a proper moment. And as a result, such improvements reduce the possibility of absorbing whole server resources by one user.
+The improved calculation is reflected in `dbtop` usage figures and in MySQL Governor's decisions about when to place a user's requests into an LVE. This can reduce the risk of one user consuming excessive server resources.
 
 One mpre possible outcome of calculation improvements is that some server users will become in need of MySQL Governor limits reconfiguration.
 
 #### How to view the impact of improvements?
 
-Let’s check the CPU usage charts from CloudLinux statistics (lve-stats).
+The following CloudLinux statistics (lve-stats) charts illustrate usage with and without the improved calculation. They do not show a selectable mode in the packaged implementation.
 
 **The new type of  CPU usage calculation is turned off**.
 
@@ -4226,9 +4224,7 @@ When you change root or administrator credentials in <span class="notranslate"> 
 ```
 </div>
 
-The command updates credentials in MySQL <span class="notranslate">Governor</span> configuration file and restarts <span class="notranslate">`db_governor`</span> service afterwards.
-
-After applying the command MySQL <span class="notranslate">Governor</span> successfully connects to MySQL.
+When Plesk or DirectAdmin credentials can be read, the command updates the MySQL <span class="notranslate">Governor</span> configuration and restarts <span class="notranslate">`db_governor`</span>. If it still cannot connect, check the panel's database credentials and `/var/log/dbgovernor-error.log`.
 
 
 **Handling Missing Libraries in cl-MariaDB-libs for MySQL Governor (libgovernor_stubs.so)**

@@ -41,19 +41,20 @@ MySQL Governor allows restricting customers that use too many resources. It supp
 | READ  | bytes | bytes read. Cached reads are not counted, only those that were actually read from disk will be counted |
 | WRITE | bytes | bytes written. Cached writes are not counted, only once data is written to disk, it is counted         |
 
-You can set different limits for different periods: current, short, mid, long. By default those periods are defined as 1 second, 5 seconds, 1 minute and 5 minutes. They can be re-defined using the [configuration file](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
+You can set different limits for different periods: current, short, mid, long. With `short="15" mid="60" long="300"` in the configuration, these periods are 1 second, 15 seconds, 1 minute and 5 minutes. They can be re-defined using the [configuration file](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
 The idea is to use larger acceptable values for shorter periods. Like you could allow a customer to use two cores (200%) for one second, but only 1 core (on average) for 1 minute, and only 70% within 5 minutes.
 That would make sure that customer can burst for short periods of time.
 
-When a customer is restricted, the customer will be placed into special LVE with ID 3. All restricted customers will be
-placed into that LVE, and you can control the amount of resources available to restricted customers. Restricted
-customers will also be limited to only 30 concurrent connections. This is done so they wouldn't use up all the MySQL
-connections to the server.
+With the default `abusers` mode and a valid `/etc/container/dbuser-map` entry, a restricted customer's queries run
+in that customer's LVE. In `single` mode, restricted customers share LVE ID 3; without a valid mapping, `abusers`
+also falls back to ID 3. A restricted database user's concurrent connections can be capped at 30 by default if the
+previous limit is higher or unlimited; the `<restrict>` element's `user_max_connections` attribute in
+`/etc/container/mysql-governor.xml` controls this cap.
 
 ### Installation
 
 :::warning Attention!
-MySQL Governor on Ubuntu supports the following only:
+The installation steps below cover these Ubuntu configurations:
 
 * cl-MySQL80 on non-panel systems
 * cl-MySQL80 on cPanel

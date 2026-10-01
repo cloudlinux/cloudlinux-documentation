@@ -1105,6 +1105,8 @@ cloudlinux-statistics --json --show=cpu,io
 * <span class="notranslate">`lveinfo --dbgov`</span> provides historical information about usage and customer restrictions. 
 * <span class="notranslate">`dbgovchart`</span> generates charts for MySQL usage.
 
+The `lveinfo --dbgov` and `dbgovchart` tools require the `lve-stats` package.
+
 
 #### dbtop
 
@@ -1144,9 +1146,9 @@ Possible stages:
 | | |
 |-|-|
 | <span class="notranslate"> c - current </span> |(current value of parameter)|
-| <span class="notranslate"> s - short </span> |(average value of 5 last values of parameter)|
-| <span class="notranslate"> m - middle </span> |(average value of 15 last values of parameter)|
-| <span class="notranslate"> l - long </span> |(average value of 30 last values of parameter)|
+| <span class="notranslate"> s - short </span> |(average over the configured short interval)|
+| <span class="notranslate"> m - middle </span> |(average over the configured mid interval)|
+| <span class="notranslate"> l - long </span> |(average over the configured long interval)|
 | |and parameter which is cause of restriction|
 | <span class="notranslate"> 1/s:busy_time/12 </span> | first level restricted account with short average restriction <span class="notranslate"> by busy_time </span> with 12 seconds left before re-enabled.|
 
@@ -1174,9 +1176,10 @@ usage: <span class="notranslate"> dbctl command [parameter] [options] </span>
 |-|-|
 | <span class="notranslate"> set </span> |set parameters for a <span class="notranslate"> db_governor </span> |
 | <span class="notranslate"> list </span> |list users & their limits. It will list all users who had been active since <span class="notranslate"> Governor </span> restart,  as well as those for who explicit limits were set|
+| <span class="notranslate"> list-marked </span> |list users and their limits with CPU/IO marks (`+` if at least one limit in that group has an individual override of package limits; `-` otherwise)|
 | <span class="notranslate"> list-restricted </span> |list restricted customers, with their limits, restriction reason, and time period they will still be restricted|
 | <span class="notranslate"> ignore </span> |ignore particular user|
-| <span class="notranslate"> watch </span> |start observing particular user again|
+| <span class="notranslate"> monitor </span> |resume normal monitoring and restriction of an ignored user|
 | <span class="notranslate"> delete </span> |remove limits for user/use defaults|
 | <span class="notranslate"> restrict </span> |restrict user using lowest level (or if <span class="notranslate"> --level </span> specified, using the specified level)|
 | <span class="notranslate"> unrestrict </span> |unrestrict username (configuration file remains unchanged)|
@@ -1233,7 +1236,7 @@ dbctl set test2 --cpu=150,100,70,50 --read=2048,1500,1000,800
 ```
 </div>
 
-sets individual limits for <span class="notranslate"> cpu (current, short, middle </span> period) and <span class="notranslate"> read (current, short, middle, long </span> periods) for user <span class="notranslate"> test2 </span>
+sets individual limits for <span class="notranslate"> cpu (current, short, middle, long </span> periods) and <span class="notranslate"> read (current, short, middle, long </span> periods) for user <span class="notranslate"> test2 </span>
 <div class="notranslate">
 
 ```
