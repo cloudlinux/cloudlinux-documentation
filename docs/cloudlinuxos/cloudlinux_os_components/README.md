@@ -3378,7 +3378,7 @@ This is how common server resources can be managed.
 
 #### Why the СPU/IO charts are different for database and LVE usage?
 
-SQL requests are not limited inside LVE, so there are not any calculations for IO usage there. It can be clearly viewed via the lve-stats charts:
+Restricted SQL queries can be placed in an LVE for CPU limiting. Governor-measured database I/O and LVE I/O tracked by lve-stats are different measurements, as the charts show:
 
 ![Input/Output Usage line chart: blue database line, red limit, green average in legend](/images/cloudlinuxos/cloudlinux_os_components/Chart1.webp)
 
@@ -3388,7 +3388,7 @@ This is the user’s real IO Database usage which was calculated by MySQL Govern
 
 **Green chart (LVE)**:
 
-This is the user’s IO Database usage which was calculated by lve-stats.
+This is the account's LVE I/O usage tracked by lve-stats, not Governor-measured database I/O.
 
 Also, for different types of database load (for example in case, there is a huge amount of short requests), CPU usage charts for LVE and database can be different.
 
@@ -3480,10 +3480,10 @@ Please make sure to specify your current <span class="notranslate"> MariaDB </sp
 
 * 102 — MariaDB v10.2
 * 103 — MariaDB v10.3 [requires <span class="notranslate"> MySQL Governor 1.2-36+; for cPanel - MySQL Governor 1.2-41+] </span>
-* 104 – MariaDB v10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+]
+* 104 – MariaDB v10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+; not supported on cPanel]
 * 105 - MariaDB v10.5 [requires <span class="notranslate">MySQL Governor</span> 1.2-62+]
 * 106 - MariaDB v10.6 [requires <span class="notranslate">MySQL Governor</span> 1.2-76+]
-* 1011 - MariaDB v10.11 [requires <span class="notranslate">MySQL Governor</span>  1.2-103+]
+* 1011 - MariaDB v10.11 [requires <span class="notranslate">MySQL Governor</span>  1.2-103+; not supported on CloudLinux OS 7 with cPanel]
 * 1104 - MariaDB v11.4 [requires <span class="notranslate">MySQL Governor</span>  1.2-122+] (not supported on CloudLinux OS 7)
 
 :::warning Deprecated versions
@@ -3523,10 +3523,10 @@ If you are installing <span class="notranslate"> MySQL Governor </span> on a ser
 |mysql84 |MySQL v8.4 (requires MySQL Governor 1.2-129+)|
 |mariadb102 |MariaDB v 10.2 |
 |mariadb103 |MariaDB v 10.3 [requires <span class="notranslate"> MySQL Governor 1.2-36+; for cPanel - MySQL Governor 1.2-41+] </span> |
-|mariadb104 |MariaDB v 10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+]|
+|mariadb104 |MariaDB v 10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+; not supported on cPanel]|
 |mariadb105 |MariaDB v 10.5 [requires <span class="notranslate">MySQL Governor</span> 1.2-62+]|
 |mariadb106 |MariaDB v 10.6 [requires <span class="notranslate">MySQL Governor</span> 1.2-76+]|
-|mariadb1011 |MariaDB v 10.11 [requires <span class="notranslate">MySQL Governor</span> 1.2-103+]|
+|mariadb1011 |MariaDB v 10.11 [requires <span class="notranslate">MySQL Governor</span> 1.2-103+; not supported on CloudLinux OS 7 with cPanel]|
 |mariadb1104 |MariaDB v 11.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-122+] (not supported on CloudLinux OS 7)|
 |percona56 | <span class="notranslate"> Percona Server v 5.6 </span> |
 
@@ -3640,11 +3640,11 @@ Schematic configuration reference (not a file to paste unchanged): choose one va
 <governor>
 
 <!--  'off' - do not throttle anything, monitoring only -->
-<!--  'abusers' - when user reaches the limit, put user's queries into LVE for that user -->
+<!-- 'abusers' - restricted mapped database users use their account's LVE; without a valid dbuser-map entry, use shared LVE 3 -->
 <!--  'all' - user's queries always run inside LVE for that user -->
 <!--  'single' - single LVE=3 for all abusers. -->
 <!-- 'on' - deprecated (old restriction type) -->
-<!-- In 'single' mode or for an unmapped database user, adjust shared LVE 3's CPU SPEED limit with lvectl; mapped 'abusers' use their account LVE's CPU SPEED limit. -->
+<!-- For shared LVE 3's CPU SPEED limit, see the lvectl example below; mapped 'abusers' use their account's LVE. -->
 <lve use="on|single|off|abusers|all"/>
 
 <!-- connection information -->
@@ -3663,10 +3663,10 @@ Schematic configuration reference (not a file to paste unchanged): choose one va
 <!-- s -- seconds, m -- minutes, h -- hours, d -- days -->
 <!-- on restart, restrict will disappear -->
 <!-- log file will contain information about all restrictions that were take -->
-<!-- timeout - penalty period when user not restricted, but if he hit his limit during this period he will be restricted with higher level of restrict (for more long time) -->
-<!-- level1, level2, level3, level4 - period of restriction user for different level of restriction. During this period all user's requests will be placed into LVE container -->
+<!-- period mode only: timeout is the penalty period after unrestriction; a new limit hit then selects a longer restriction level -->
+<!-- period mode only: level1, level2, level3, level4 are restriction durations; the default limit mode has no levels -->
 
-<!-- if user hits any of the limits during period of time specified in timeout, higher level of restrict will be used to restrict user. If user was already on level4, level4 will be applied again -->
+<!-- period mode only: a limit hit during timeout escalates the restriction level; repeated hits at level4 keep level4 -->
 <!-- attribute format set an restrict log format:
 SHORT -  restrict info only
 MEDIUM - restrict info, _all_tracked_values_
@@ -3724,6 +3724,13 @@ user_max_connections="30"/>
 
 These values can also be set using [cloudlinux-config](/cloudlinuxos/command-line_tools/#cloudlinux-config) CLI utility
 
+On CloudLinux OS with LVE enabled and `lve-utils` installed, use `lvectl` to adjust the CPU SPEED limit for shared LVE ID 3 in `single` mode or for unmapped `abusers`. As root, for example, set SPEED to one core (`100%`); choose a percentage appropriate for your server:
+
+```
+/usr/sbin/lvectl set 3 --speed=100% --save-all-parameters
+```
+
+Mapped `abusers` use their account's LVE instead; adjust that account's SPEED, not shared LVE 3. `lvectl --io=N` sets an LVE I/O limit in KB/s, not a direct SQL disk-I/O limit. Use the Governor's `read` and `write` limits to trigger restrictions on database I/O.
 
 #### Modes of operation
 
@@ -3993,7 +4000,7 @@ To install beta version of MySQL:
 ```
 </div>
 
-The available <span class="notranslate"> MYSQL_VERSION </span> selectors depend on the CloudLinux OS release and control panel. The versions below are subject to the installation prerequisites above; `/usr/share/lve/dbgovernor/mysqlgovernor.py --mysql-version-list` shows the selectors accepted on this server.
+The available <span class="notranslate"> MYSQL_VERSION </span> selectors depend on the CloudLinux OS release and control panel. The versions below are subject to the installation prerequisites above; as root, `/usr/share/lve/dbgovernor/mysqlgovernor.py --mysql-version-list` shows the selectors accepted by the installed script for its detected OS and panel. It does not verify that matching database packages are published or that Governor integration works for every listed selector.
 
 | | |
 |-|-|
@@ -4015,7 +4022,7 @@ The available <span class="notranslate"> MYSQL_VERSION </span> selectors depend 
 
 
 :::tip Note
-cPanel does not officially support MariaDB 10.4, that is why we don’t recommend to use it on cPanel servers. Use on your own risk for Plesk servers, because downgrade can corrupt your databases.
+MariaDB 10.4 is not supported on cPanel servers. Use on your own risk for Plesk servers, because downgrade can corrupt your databases.
 :::
 
 :::tip Note
@@ -4132,7 +4139,7 @@ This is how common server resources can be managed.
 
 #### Why the СPU/IO charts are different for database and LVE usage?
 
-SQL requests are not limited inside LVE, so there are not any calculations for IO usage there. It can be clearly viewed via the lve-stats charts:
+Restricted SQL queries can be placed in an LVE for CPU limiting. Governor-measured database I/O and LVE I/O tracked by lve-stats are different measurements, as the charts show:
 
 ![Input/Output Usage line chart: blue database line, red limit, green average in legend](/images/cloudlinuxos/cloudlinux_os_components/Chart1.webp)
 
@@ -4142,7 +4149,7 @@ This is the user’s real IO Database usage which was calculated by MySQL Govern
 
 **Green chart (LVE)**:
 
-This is the user’s IO Database usage which was calculated by lve-stats.
+This is the account's LVE I/O usage tracked by lve-stats, not Governor-measured database I/O.
 
 Also for different types of database load (for example in case, there is a huge amount of shot requests), CPU usage charts for LVE and database can be different.
 

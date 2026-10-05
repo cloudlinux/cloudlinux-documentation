@@ -569,7 +569,7 @@ Allows to unlimit users automatically if they don't hit the limits during the sp
 
 <span class="notranslate">**Restricted time periods**</span>
 
-User restriction time period for different levels of restriction and the timeout to apply a higher restriction level.
+In deprecated Period restriction mode, set the level 1–4 restriction durations and the penalty timeout for escalating repeated limit hits. The default Limit mode has no restriction levels or penalty timeout.
 
 * <span class="notranslate">Level1</span>
 * <span class="notranslate">Level2</span>

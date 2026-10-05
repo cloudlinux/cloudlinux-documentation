@@ -1188,8 +1188,8 @@ usage: <span class="notranslate"> dbctl command [parameter] [options] </span>
 | <span class="notranslate"> --version </span> |version number|
 | <span class="notranslate"> --lve-mode </span> |set <span class="notranslate"> DB Governor </span> mode of operation. Available values: <span class="notranslate"> off/abusers/all/single/on </span> |
 | | <span class="notranslate"> off </span> - monitor only, don't throttle|
-| | <span class="notranslate"> abusers </span> - when user reaches the limit, put user's queries into LVE for that user (experimental)|
-| | <span class="notranslate"> all </span> - user's queries always run inside LVE for that user (experimental)|
+| | <span class="notranslate"> abusers </span> - when user reaches the limit, mapped database users' queries use their account LVE; unmapped users use shared LVE 3 (default)|
+| | <span class="notranslate"> all </span> - user's queries always run inside LVE for that user (deprecated)|
 | | <span class="notranslate"> single </span> - single LVE for all abusers.|
 | | <span class="notranslate"> on </span> - same as <span class="notranslate"> single </span> (deprecated)|
 
@@ -1272,7 +1272,7 @@ dbctl restrict dbgov
 ```
 </div>
 
-To restrict user to level 2 restriction:
+In deprecated `period` restriction mode, to restrict a user to level 2:
 <div class="notranslate">
 
 ```

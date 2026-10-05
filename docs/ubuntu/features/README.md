@@ -51,7 +51,7 @@ also falls back to ID 3. A restricted database user's concurrent connections can
 previous limit is higher or unlimited; the `<restrict>` element's `user_max_connections` attribute in
 `/etc/container/mysql-governor.xml` controls this cap.
 
-To adjust CPU resources for restricted queries, change the mapped account's LVE SPEED limit in `abusers` mode; in `single` mode or for an unmapped user, change shared LVE ID 3's SPEED limit.
+To adjust CPU resources for restricted queries, change the mapped account's LVE SPEED limit in `abusers` mode; in `single` mode or for an unmapped user, change shared LVE ID 3's SPEED limit. For CloudLinux OS, see the [shared LVE 3 lvectl example](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
 
 ### Installation
 
@@ -86,7 +86,7 @@ In case of installing on cPanel + Ubuntu server, set the following parameter:
 ![Terminal output: dpkg prompt for usr.sbin.mysqld config with Y to install the package maintainer's version](/images/ubuntu/features/Param.webp)
 
 5. After installation, check that the database server is working properly. If you have any problems,
-   contact [support](https://helpdesk.cloudlinux.com/).
+   contact CloudLinux support.
 6. Configure user mapping to the database. The mapping format is described in
    the [following section](/cloudlinuxos/cloudlinux_os_components/#mapping-a-user-to-a-database).
 
