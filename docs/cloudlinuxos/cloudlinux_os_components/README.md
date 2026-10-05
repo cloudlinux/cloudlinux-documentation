@@ -3592,6 +3592,8 @@ Make and verify a full database backup (including system tables) before switchin
 
 ### Uninstalling
 
+Before using `--delete`, make and verify a full database backup, including system tables.
+
 To remove <span class="notranslate">MySQL Governor</span>:
 
 <div class="notranslate">
@@ -3601,7 +3603,7 @@ To remove <span class="notranslate">MySQL Governor</span>:
 ```
 </div>
 
-Before using `--delete`, make and verify a full database backup, including system tables. The script attempts to remove <span class="notranslate">MySQL Governor</span> and install a replacement database server; it might not restore the original version or complete successfully. Afterward, verify that the database service starts and your data is available. If removal or restoration fails, contact CloudLinux support.
+The script attempts to remove <span class="notranslate">MySQL Governor</span> and install a replacement database server; it might not restore the original version or complete successfully. Afterward, verify that the database service starts and your data is available. If removal or restoration fails, contact CloudLinux support.
 
 ### Configuration and operation
 
@@ -3803,7 +3805,7 @@ MySQL Governor limits should be calculated based on the corresponding LVE limits
 
 | Limit level | Formula | Description |
 |---|---|---|
-| `current` | `LVE_CPUSPEED × 1` | Slightly above the LVE CPU limit to avoid bottlenecks |
+| `current` | `LVE_CPUSPEED × 1` | Equal to the LVE CPU SPEED reference value |
 | `short` | `LVE_CPUSPEED × 0.95` | Short-term burst allowance |
 | `middle` | `LVE_CPUSPEED × 0.87` | Medium-term average |
 | `long` | `LVE_CPUSPEED × 0.75` | Long-term sustained maximum |
@@ -3812,7 +3814,7 @@ MySQL Governor limits should be calculated based on the corresponding LVE limits
 
 | Limit level | Formula | Description |
 |---|---|---|
-| `current` | `LVE_IO × 1` | Slightly above the LVE IO limit |
+| `current` | `LVE_IO × 1` | Equal to the LVE I/O reference value for each READ or WRITE limit |
 | `short` | `LVE_IO × 0.83` | Short-term burst allowance |
 | `middle` | `LVE_IO × 0.76` | Medium-term average |
 | `long` | `LVE_IO × 0.59` | Long-term sustained maximum |

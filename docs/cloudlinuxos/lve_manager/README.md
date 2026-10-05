@@ -556,7 +556,7 @@ Allows to manage MySQL Governor settings.
 * <span class="notranslate">**Off**</span> - monitor Only – not throttle customer's queries, only monitor MySQL usage.
 * <span class="notranslate">**Single**</span> - single restricted LVE for all restricted customers – all queries for all restricted customers  well be sharing the same LVE.
 * <span class="notranslate">**Abusers**</span> - use an account's LVE to restrict queries (default mode) – when the database user has a valid `/etc/container/dbuser-map` entry, restricted queries use the mapped account's LVE; otherwise they use shared LVE ID 3.
-* <span class="notranslate">**All**</span> - always run queries inside user's LVE – limits are applied to both PHP & MySQL queries at the same time.
+* <span class="notranslate">**All**</span> (deprecated) - always run queries inside user's LVE – limits are applied to both PHP & MySQL queries at the same time.
 
 <span class="notranslate">**MySQL Governor restrict type mode**</span>
 

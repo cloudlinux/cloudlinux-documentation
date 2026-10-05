@@ -1151,7 +1151,7 @@ Possible stages:
 | <span class="notranslate"> m - middle </span> |(average over the configured mid interval)|
 | <span class="notranslate"> l - long </span> |(average over the configured long interval)|
 | |and parameter which is cause of restriction|
-| <span class="notranslate"> 1/s:busy_time/12 </span> | in deprecated `period` mode, a level-1 restriction triggered <span class="notranslate"> by busy_time </span> over the short interval, with 12 seconds left before the restriction ends.|
+| <span class="notranslate"> 1/s:cpu/12 </span> | illustrative `period`-mode level-1 restriction triggered by exceeding the short-interval CPU limit, with 12 seconds remaining before the restriction ends.|
 
 **Display fields:**
 
@@ -1208,7 +1208,7 @@ usage: <span class="notranslate"> dbctl command [parameter] [options] </span>
 | <span class="notranslate"> --cpu=N </span> |limit <span class="notranslate"> CPU </span> (pct) usage|
 | <span class="notranslate"> --read=N </span> |limit <span class="notranslate"> READ </span> (MB/s) usage|
 | <span class="notranslate"> --write=N </span> |limit <span class="notranslate"> WRITE </span> (MB/s) usage|
-| <span class="notranslate"> --level=N </span> |level (1,2,3 or 4) specified (deprecated) - this option is available only for period mode <br> <restrict_mode use="period"/> (see [Configuration](/cloudlinuxos/cloudlinux_os_components/#configuration-2))|
+| <span class="notranslate"> --level=N </span> |select level 1–4 only in deprecated period mode; in default limit mode the argument is accepted but its level is inapplicable (the user is still restricted) <br> <restrict_mode use="period"/> (see [Configuration](/cloudlinuxos/cloudlinux_os_components/#configuration-2))|
 
 
 
