@@ -565,7 +565,7 @@ Allows to manage MySQL Governor settings.
 
 <span class="notranslate">**Unlimit users automatically in**</span>
 
-Allows to unlimit users automatically if they don't hit the limits during the specified number of seconds/minutes/hours/days.
+In the default Limit restriction mode, automatically unrestrict users after they remain below their limits for the configured number of seconds, minutes, hours or days. Deprecated Period mode uses the level durations and penalty timeout below instead.
 
 <span class="notranslate">**Restricted time periods**</span>
 

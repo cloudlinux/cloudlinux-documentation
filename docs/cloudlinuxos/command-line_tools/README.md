@@ -1137,11 +1137,12 @@ Sorted field will be highlighted by *.
 <span class="notranslate"> CAUSE </span> field shows current stage, reason for restriction and number of seconds before restriction will be lifted:
 Values of column ' <span class="notranslate"> CAUSE </span> ' - cause of restriction or freezing:
 Possible stages:
-* `-` <span class="notranslate"> OK </span>
-* `1` - Restriction 1
-* `2` - Restriction 2
-* `3` - Restriction 3
-* `4` - Restriction level 4
+* `-` <span class="notranslate"> OK </span> (not currently restricted; in `period` mode, may be in a penalty period)
+* `R` - restricted in the default `limit` mode
+* `1` - restriction level 1 in deprecated `period` mode
+* `2` - restriction level 2 in deprecated `period` mode
+* `3` - restriction level 3 in deprecated `period` mode
+* `4` - restriction level 4 in deprecated `period` mode
 
 | | |
 |-|-|
@@ -1150,7 +1151,7 @@ Possible stages:
 | <span class="notranslate"> m - middle </span> |(average over the configured mid interval)|
 | <span class="notranslate"> l - long </span> |(average over the configured long interval)|
 | |and parameter which is cause of restriction|
-| <span class="notranslate"> 1/s:busy_time/12 </span> | first level restricted account with short average restriction <span class="notranslate"> by busy_time </span> with 12 seconds left before re-enabled.|
+| <span class="notranslate"> 1/s:busy_time/12 </span> | in deprecated `period` mode, a level-1 restriction triggered <span class="notranslate"> by busy_time </span> over the short interval, with 12 seconds left before the restriction ends.|
 
 **Display fields:**
 
@@ -1160,7 +1161,7 @@ Possible stages:
 
 
 Accounts highlighted in _red_ color means that the account is restricted.  
-Accounts highlighted in _blue_ color are in cool down period
+Accounts highlighted in _blue_ color are in the penalty period of deprecated `period` mode.
 
 Command line parameters of <span class="notranslate"> dbtop </span> utility:  
 <span class="notranslate"> -r - dbtop </span> refresh period in seconds ( <span class="notranslate"> dbtop -r12 </span> )
@@ -1181,7 +1182,7 @@ usage: <span class="notranslate"> dbctl command [parameter] [options] </span>
 | <span class="notranslate"> ignore </span> |ignore particular user|
 | <span class="notranslate"> monitor </span> |resume normal monitoring and restriction of an ignored user|
 | <span class="notranslate"> delete </span> |remove limits for user/use defaults|
-| <span class="notranslate"> restrict </span> |restrict user using lowest level (or if <span class="notranslate"> --level </span> specified, using the specified level)|
+| <span class="notranslate"> restrict </span> |manually restrict a user; <span class="notranslate"> --level </span> selects a level only in deprecated `period` mode|
 | <span class="notranslate"> unrestrict </span> |unrestrict username (configuration file remains unchanged)|
 | <span class="notranslate"> unrestrict-all </span> |unrestrict all restricted users (configuration file remains unchanged)|
 | <span class="notranslate"> --help </span> |show this message|

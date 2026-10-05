@@ -84,7 +84,7 @@ apt  install governor-mysql
     ```
     /usr/share/lve/dbgovernor/mysqlgovernor.py --mysql-version=mysql80
     ```
-3. Backup your databases.
+3. Make a full database backup (including system tables) and verify it can be restored before running `--install --yes`. The `--yes` flag skips the installer's backup confirmation.
 4. Run the cl-MySQL/cl-MariaDB installation.
 
 ```
@@ -140,7 +140,7 @@ To remove MySQL Governor, run the following command:
 /usr/share/lve/dbgovernor/mysqlgovernor.py --delete
 ```
 
-The script will install the original MySQL server, and remove MySQL Governor.
+Before using `--delete`, make and verify a full database backup, including system tables. The script attempts to remove MySQL Governor and install a replacement database server; it might not restore the original version or complete successfully. Afterward, verify that the database service starts and your data is available. If removal or restoration fails, contact CloudLinux support.
 
 ### Configuration and operation
 

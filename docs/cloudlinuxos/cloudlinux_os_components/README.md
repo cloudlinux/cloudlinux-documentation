@@ -3601,7 +3601,7 @@ To remove <span class="notranslate">MySQL Governor</span>:
 ```
 </div>
 
-The script will install original MySQL server, and remove <span class="notranslate">MySQL Governor</span>.
+Before using `--delete`, make and verify a full database backup, including system tables. The script attempts to remove <span class="notranslate">MySQL Governor</span> and install a replacement database server; it might not restore the original version or complete successfully. Afterward, verify that the database service starts and your data is available. If removal or restoration fails, contact CloudLinux support.
 
 ### Configuration and operation
 
@@ -3643,7 +3643,7 @@ Schematic configuration reference (not a file to paste unchanged): choose one va
 <!-- 'abusers' - restricted mapped database users use their account's LVE; without a valid dbuser-map entry, use shared LVE 3 -->
 <!--  'all' - user's queries always run inside LVE for that user -->
 <!--  'single' - single LVE=3 for all abusers. -->
-<!-- 'on' - deprecated (old restriction type) -->
+<!-- 'on' - deprecated alias for 'single' (shared LVE 3) -->
 <!-- For shared LVE 3's CPU SPEED limit, see the lvectl example below; mapped 'abusers' use their account's LVE. -->
 <lve use="on|single|off|abusers|all"/>
 
