@@ -351,7 +351,7 @@ Do not treat `--uninstall` as an automatic rollback of a failed or partial conve
 | License or registration error | Check the intended edition, activation key validity or licensed public IP, and the server association in [CloudLinux Network](https://cln.cloudlinux.com/). If the error names a network or certificate failure, resolve that cause rather than repeatedly changing the key. |
 | Repository, dependency, or conflicting-package error | Read the first failed transaction in the conversion log. Check which repository and package versions it names. Restore access to the intended repositories; do not disable signature checks, remove packages with `rpm --nodeps`, or add `--force-packages-installation` as a general fix. |
 | Another package operation is running | Allow the existing update or installation to finish. Do not delete package-manager or conversion lock files to start a second operation. |
-| CloudLinux Manager, Python environment, or PHP Selector error | Check the conversion's component-installation result and the affected feature's prerequisites. An import error or an incorrect panel name needs investigation before reinstalling packages or changing integration files. |
+| CloudLinux Manager, Python environment, or PHP Selector error | Check the conversion's component-installation result and the affected feature's prerequisites. For a Manager error page, see [CloudLinux Manager fails after conversion](#cloudlinux-manager-fails-after-conversion). An import error or an incorrect panel name needs investigation before reinstalling packages or changing integration files. |
 
 Correcting the reported cause does not by itself establish that a partial conversion can be restarted. Use recovery instructions for that exact failure and script version. If no supported recovery path applies, stop further conversion changes and use the escalation guidance below.
 
@@ -384,6 +384,50 @@ Use the logs that the conversion already creates:
 * The package-manager logs for the same time period, such as `/var/log/dnf.log` and `/var/log/dnf.rpm.log` on DNF-based systems, or `/var/log/yum.log` on CentOS 7.
 
 Preserve the failed run's logs before a retry. Review them locally and remove activation keys, passwords, tokens, and private customer information from any copy you share. Do not paste full logs or license keys into a public issue.
+
+#### CloudLinux Manager fails after conversion
+
+On CloudLinux 9 with cPanel, an error page in CloudLinux Manager can remain even when the conversion log looks successful and `cldiag --all` reports no errors. That result covers the checks that ran; it does not establish that every Manager package file or panel integration is healthy.
+
+Versions of `lve-utils` that include the [Manager package checker](/cloudlinuxos/command-line_tools/#check-manager-packages) also run it automatically at the end of `cloudlinux-customizer reconfigure`, after the configuration steps finish. You do not need to run a separate diagnostic command to see these findings. Duplicate packages, missing required packages and file differences produce a `WARNING: CloudLinux Manager may not work correctly` message with installed versions and next steps. An incomplete check produces a separate warning. These messages appear in the configuration output and `/var/log/cloudlinux/clcustomizer.log`.
+
+The warning does not start another package transaction. Follow the recommendation for the reported condition: duplicate entries require investigation, while damaged files may be repaired by reinstalling the affected packages. A missing Manager package is a warning for Shared, Shared Pro and Admin configuration; Solo does not require it. The check does not run during `preconfigure` or when configuration fails before reaching the final check.
+
+Preserve the [existing state and logs](#inspect-the-existing-state-and-logs), including the actual error shown by the panel. Wait for any package installation or update to finish. If `cldiag --help` lists `--check-manager-packages`, run:
+
+```bash
+cldiag --check-manager-packages
+```
+
+This [checker](/cloudlinuxos/command-line_tools/#check-manager-packages) reports installed versions, duplicate entries and file differences, or explains why the check could not finish. On older versions, or to inspect its findings manually, query the installed packages:
+
+```bash
+timeout 30s rpm -q --qf '%{NAME} %{EPOCHNUM}:%{VERSION}-%{RELEASE}.%{ARCH}\n' lvemanager lve-utils
+```
+
+Keep every returned row. More than one installed version of the same package and architecture needs investigation. A missing `lvemanager` package is a different case: check whether component installation was intentionally skipped with `--conversion-only`. Reinstalling an absent package will not install it.
+
+If both packages are installed, inspect their installed files:
+
+```bash
+timeout 60s rpm -V --noscripts --nodeps --noconfig --noghost --nomtime --nogroup lvemanager lve-utils
+```
+
+This command compares installed files with RPM metadata without running package verification scripts or checking dependencies. It excludes configuration and ghost files, modification times and group ownership; LinkSafe can legitimately change the group of packaged files. No output and exit status `0` mean that this file verification found no differences in the checked attributes; they do not prove that Manager works. A nonzero result needs interpretation:
+
+* Missing files or content differences in packaged runtime files can explain a broken installation.
+* The excluded files and attributes need separate investigation if the panel error points to them. Do not overwrite customized configuration solely to match the original package.
+* A database error or timeout is an incomplete check, not evidence of damaged package files. Do not remove RPM database files, rebuild the database, or force-remove packages as part of this procedure.
+
+If the evidence points to damaged files, there are no unresolved duplicate-package or dependency conflicts, and the installed package versions are available from the intended repositories, reinstalling the affected packages can restore their files:
+
+```bash
+dnf reinstall lvemanager lve-utils
+```
+
+Perform this change during a maintenance window with a current configuration backup. Review the proposed transaction before confirming it. If the installed versions cannot be found or the package manager reports conflicts, stop and resolve that specific repository or transaction problem. Do not substitute forced package removal or another OS conversion.
+
+After a successful reinstall, repeat the package queries and file verification, then reopen Manager in cPanel and retry the operation that failed. The recovery is complete only when that operation works. If it still fails, retain the new error and use the escalation guidance below; do not keep repeating the reinstall.
 
 #### When to stop and escalate
 

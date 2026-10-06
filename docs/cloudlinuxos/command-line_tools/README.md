@@ -3182,6 +3182,27 @@ The utility includes several built-in checkers, and can also import and run chec
 
 Currently implemented checkers:
 
+#### check-manager-packages
+
+Checks the installed `lve-utils` and `lvemanager` RPM packages for duplicate entries and file differences. Before using this checker, confirm that `cldiag --help` lists `--check-manager-packages`. If your installed version does not include it, use the [manual package checks](/cloudlinuxos/cloudlinux_installation/#cloudlinux-manager-fails-after-conversion).
+
+```bash
+cldiag --check-manager-packages
+cldiag --check-manager-packages --json
+```
+
+The checker also runs with `cldiag --all`. It is not scheduled by the automatic cron check. On Ubuntu, it returns `SKIPPED`.
+
+`cloudlinux-customizer reconfigure` uses the same check automatically after configuration. It prints findings as warnings in the configuration output and log; customers do not need to invoke `cldiag` separately for this check. During Shared, Shared Pro and Admin configuration, `lvemanager` is required and its absence produces a warning. See [automatic configuration checks and recovery](/cloudlinuxos/cloudlinux_installation/#cloudlinux-manager-fails-after-conversion).
+
+It reports the installed package names, epochs, versions, releases and architectures. More than one RPM entry for the same package and architecture is a failure, including repeated entries with the same version. Different architectures are checked separately. When invoked directly through `cldiag`, an absent `lvemanager` is reported explicitly and does not fail the check by itself; `lve-utils` is still checked. A missing `lve-utils` fails the check.
+
+When there are no duplicates, the checker uses read-only RPM file verification. It excludes configuration and ghost files, modification times and group ownership. These can change during normal configuration; LinkSafe, for example, assigns the `linksafe` group to packaged files. Package verification scripts and dependency checks are disabled. Missing files, content differences and other reported file differences produce `FAILED` with the affected paths and recovery guidance.
+
+Each package query has a 30-second timeout; file verification has a 60-second timeout. An RPM error, unreadable package metadata, unrecognized output or timeout produces `INTERNAL_TEST_ERROR`, not `OK`. Both failure statuses contribute to the nonzero `cldiag` exit code. Long lists of installed entries or file differences are limited to the first 20, with the total count shown.
+
+The checker does not change packages or repair the RPM database. `OK` only means that these package checks passed; it does not validate configuration files, dependencies, panel integration or the original Manager operation. Follow the [Manager recovery procedure](/cloudlinuxos/cloudlinux_installation/#cloudlinux-manager-fails-after-conversion) to interpret findings and verify recovery.
+
 #### diag-cp
 
 Checks control panel and its configuration (for DirectAdmin only).
