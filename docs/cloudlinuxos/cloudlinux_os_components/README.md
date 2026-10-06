@@ -3931,7 +3931,7 @@ pupkin3a_12 pupkin3a 506
 This would specify that db users: <span class="notranslate"> pupkinas_u2, pupkinas_u1, pupkinas_u3 </span> belong to user <span class="notranslate"> pupkinas </span> with uid (lve id) 502
 db user <span class="notranslate"> pupkin2a_uuu1 </span> belongs to user <span class="notranslate"> pupkin2a </span> with uid 505, etc...
 
-`db_governor` service checks this file for modifications every 5 minutes.
+When running, `db_governor` checks this file's modification time about once a minute and rereads the mapping if it changes.
 
 If you need to force reload the mapping file, run:
 <div class="notranslate">

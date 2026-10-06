@@ -111,8 +111,7 @@ The format is as follows:
 
 The control panel should automatically generate such mapping and write it to the `/etc/container/dbuser-map`. Usually,
 it is enough to write a hook when adding, deleting or renaming a database for a user. The control panel should implement
-such a mechanism for MySQL Governor to operate properly. MySQL Governor automatically applies changes from the
-dbuser-map file every five minutes.
+such a mechanism for MySQL Governor to operate properly. When running, `db_governor` checks for changes to the `dbuser-map` file's modification time and rereads the mapping if it changes.
 
 7. MySQL Governor configuration can be found in the
    following [section](https://docs.cloudlinux.com/cloudlinux_os_components/#configuration-and-operation).
