@@ -2117,7 +2117,7 @@ yum install governor-mysql
 ```
 </div>
 
-3. Backup your databases.
+3. Make a full database backup (including system tables) and verify you can restore it before installing the database packages.
 
 4. Run the cl-MySQL/cl-MariaDB installation.
 
@@ -2130,9 +2130,9 @@ yum install governor-mysql
 
 5. After installation, check that the database server is working properly. If you have any problems, contact [support](https://helpdesk.cloudlinux.com/)
 
-6. Configure user mapping to the database. The mapping format is described in the following [section](/cloudlinuxos/cloudlinux_os_components/#mapping-a-user-to-a-database). The control panel should automatically generate such mapping and write it to <span class="notranslate">`/etc/container/dbuser-map`</span>. Usually, it is enough to write a hook when adding, deleting or renaming a database for a user. The control panel should implement such a mechanism for MySQL Governor to operate properly. MySQL Governor automatically applies changes from the dbuser-map file every five minutes.
+6. Configure user mapping to the database. The mapping format is described in the following [section](/cloudlinuxos/cloudlinux_os_components/#mapping-a-user-to-a-database). The control panel should automatically generate such mapping and write it to <span class="notranslate">`/etc/container/dbuser-map`</span>. Usually, it is enough to write a hook when adding, deleting or renaming a database for a user. The control panel should implement such a mechanism for MySQL Governor to operate properly. When running, `db_governor` checks the `dbuser-map` file's modification time about once a minute and rereads the mapping if it changes.
 
-7. MySQL Governor configuration can be found in the following [section](/cloudlinuxos/cloudlinux_os_components/#configuration-3).
+7. MySQL Governor configuration can be found in the following [section](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
 
 8. MySQL Governor CLI tools description can be found in the following [section](/cloudlinuxos/command-line_tools/#mysql-governor)
 

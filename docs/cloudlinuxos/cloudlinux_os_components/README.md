@@ -3343,14 +3343,14 @@ See also [CageFS CLI tools](/cloudlinuxos/command-line_tools/#cagefs).
 ### General information and requirements
 
 :::warning Warning
-The "All" mode will be deprecated starting from September 1, 2021. You can read more [here.](https://blog.cloudlinux.com/mysql-governor-moving-from-all-to-abusers)
+The `all` mode is deprecated. You can read more [here.](https://blog.cloudlinux.com/mysql-governor-moving-from-all-to-abusers)
 :::
 
 <span class="notranslate"> MySQL Governor </span> is software to monitor and restrict MySQL usage in shared hosting environment. The monitoring is done via resource usage statistics per each MySQL thread.
 
 <span class="notranslate"> MySQL Governor </span> has two active modes of operations:
 * **off** - In this mode MySQL Governor will not throttle customer's queries, instead it will let you monitor the MySQL usage.
-* **abusers** - In this mode, once user goes over the limits specified in the MySQL Governor, all customer's queries will execute inside that user's LVE.
+* **abusers** - Once a user exceeds the MySQL Governor limits, the database user's queries run inside the account's LVE if `/etc/container/dbuser-map` contains a valid mapping. Without one, they run in shared LVE ID 3.
 
 More details of the governor operation modes are described in the [Modes of operation](./#modes-of-operation) section
 
@@ -3362,9 +3362,9 @@ More details of the governor operation modes are described in the [Modes of oper
 |<span class="notranslate"> READ </span> | bytes | bytes read. Cached reads are not counted, only those that were actually read from disk will be counted|
 |<span class="notranslate"> WRITE </span> | bytes | bytes written. Cached writes are not counted, only once data is written to disk, it is counted|
 
-You can set different limits for different periods: current, short, med, long. By default those periods are defined as 1 second, 5 seconds, 1 minute and 5 minutes. They can be re-defined using [configuration file](./#configuration-and-operation). The idea is to use larger acceptable values for shorter periods. Like you could allow a customer to use two cores (200%) for one second, but only 1 core (on average) for 1 minute, and only 70% within 5 minutes. That would make sure that customer can burst for short periods of time.
+You can set different limits for different periods: current, short, med, long. The packaged configuration sets these periods to 1 second, 15 seconds, 1 minute and 5 minutes. They can be re-defined using [configuration file](./#configuration-and-operation). The idea is to use larger acceptable values for shorter periods. Like you could allow a customer to use two cores (200%) for one second, but only 1 core (on average) for 1 minute, and only 70% within 5 minutes. That would make sure that customer can burst for short periods of time.
 
-Customers will also be limited to a finite number of concurrent connections, this number is 30 by default and can be changed. This is done so they wouldn't use up all the MySQL connections to the server. <span class="notranslate"> MySQL Governor </span> can also kill off slow <span class="notranslate"> SELECT </span> queries.
+When a database user is restricted, <span class="notranslate"> MySQL Governor </span> caps that user's concurrent connections at 30 by default if the existing limit is higher or unlimited. Set the `<restrict>` element's `user_max_connections` attribute in `/etc/container/mysql-governor.xml` to change this cap. MySQL Governor can also kill off slow <span class="notranslate"> SELECT </span> queries.
 
 ### MySQL Governor limits interaction with LVE limits
 
@@ -3378,7 +3378,7 @@ This is how common server resources can be managed.
 
 #### Why the СPU/IO charts are different for database and LVE usage?
 
-SQL requests are not limited inside LVE, so there are not any calculations for IO usage there. It can be clearly viewed via the lve-stats charts:
+Restricted SQL queries can be placed in an LVE for CPU limiting. Governor-measured database I/O and LVE I/O tracked by lve-stats are different measurements, as the charts show:
 
 ![Input/Output Usage line chart: blue database line, red limit, green average in legend](/images/cloudlinuxos/cloudlinux_os_components/Chart1.webp)
 
@@ -3388,7 +3388,7 @@ This is the user’s real IO Database usage which was calculated by MySQL Govern
 
 **Green chart (LVE)**:
 
-This is the user’s IO Database usage which was calculated by lve-stats.
+This is the account's LVE I/O usage tracked by lve-stats, not Governor-measured database I/O.
 
 Also, for different types of database load (for example in case, there is a huge amount of short requests), CPU usage charts for LVE and database can be different.
 
@@ -3430,10 +3430,10 @@ Note the following cPanel-specific restrictions when using MySQL Governor:
 :::
 
 ::: danger IMPORTANT
-Make a full database backup (including system tables) before you upgrade MySQL or switch to MariaDB. This action will prevent data loss in case if something goes wrong.
+Make a full database backup (including system tables) and verify the dumps can be restored before upgrading MySQL or switching to MariaDB. A backup does not guarantee against data loss.
 :::
 
-**_MySQL Governor is compatible with MySQL 5.6–5.7, 8.0–8.4, MariaDB 10.2–10.6, 10.11, 11.4, and Percona Server 5.6._**
+**_MySQL Governor is compatible with MySQL 5.6, 5.7, 8.0, 8.4, MariaDB 10.2–10.6, 10.11, 11.4, and Percona Server 5.6._**
 
 To install <span class="notranslate"> MySQL Governor </span> on your server install <span class="notranslate"> governor-mysql </span> package at first:
 
@@ -3480,10 +3480,10 @@ Please make sure to specify your current <span class="notranslate"> MariaDB </sp
 
 * 102 — MariaDB v10.2
 * 103 — MariaDB v10.3 [requires <span class="notranslate"> MySQL Governor 1.2-36+; for cPanel - MySQL Governor 1.2-41+] </span>
-* 104 – MariaDB v10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+]
+* 104 – MariaDB v10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+; not supported on cPanel]
 * 105 - MariaDB v10.5 [requires <span class="notranslate">MySQL Governor</span> 1.2-62+]
 * 106 - MariaDB v10.6 [requires <span class="notranslate">MySQL Governor</span> 1.2-76+]
-* 1011 - MariaDB v10.11 [requires <span class="notranslate">MySQL Governor</span>  1.2-103+]
+* 1011 - MariaDB v10.11 [requires <span class="notranslate">MySQL Governor</span>  1.2-103+; not supported on CloudLinux OS 7 with cPanel]
 * 1104 - MariaDB v11.4 [requires <span class="notranslate">MySQL Governor</span>  1.2-122+] (not supported on CloudLinux OS 7)
 
 :::warning Deprecated versions
@@ -3523,10 +3523,10 @@ If you are installing <span class="notranslate"> MySQL Governor </span> on a ser
 |mysql84 |MySQL v8.4 (requires MySQL Governor 1.2-129+)|
 |mariadb102 |MariaDB v 10.2 |
 |mariadb103 |MariaDB v 10.3 [requires <span class="notranslate"> MySQL Governor 1.2-36+; for cPanel - MySQL Governor 1.2-41+] </span> |
-|mariadb104 |MariaDB v 10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+]|
+|mariadb104 |MariaDB v 10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+; not supported on cPanel]|
 |mariadb105 |MariaDB v 10.5 [requires <span class="notranslate">MySQL Governor</span> 1.2-62+]|
 |mariadb106 |MariaDB v 10.6 [requires <span class="notranslate">MySQL Governor</span> 1.2-76+]|
-|mariadb1011 |MariaDB v 10.11 [requires <span class="notranslate">MySQL Governor</span> 1.2-103+]|
+|mariadb1011 |MariaDB v 10.11 [requires <span class="notranslate">MySQL Governor</span> 1.2-103+; not supported on CloudLinux OS 7 with cPanel]|
 |mariadb1104 |MariaDB v 11.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-122+] (not supported on CloudLinux OS 7)|
 |percona56 | <span class="notranslate"> Percona Server v 5.6 </span> |
 
@@ -3552,11 +3552,13 @@ For example:
 </div>
 
 
-Please note that restore of previous packages in case of failed installation would also be confirmed with <span class="notranslate">`--yes`</span> flag.
+If the database server fails to start after installation and a rollback is offered, <span class="notranslate">`--yes`</span> confirms the rollback attempt. Restoration requires the previous packages to have been downloaded and can still fail.
 
 ::: danger IMPORTANT
-Use <span class="notranslate"> --yes </span> flag on your own risk, because it confirms installation in any case - even in case if there are troubles during installation (for example, network problems causing incomplete download of packages), everything would be confirmed.
+`--yes` skips confirmation prompts, including the backup confirmation. The installer also enables this behavior when standard input is not a TTY. Back up and verify your databases before unattended runs; failed downloads or database startup may still require recovery.
 :::
+
+On CloudLinux OS, `--no-mysqlclient1x2x` can accompany `--install` or `--install-beta` to skip compatibility client packages the installer would otherwise select. The separate `--remove-mysqlclient1x2x` action targets installed `mysqlclient15`, `mysqlclient16` and `mysqlclient21` by default; `--remove-mysqlclient1x2x=all` also targets `mysqlclient18` and `mysqlclient18-compat`. Check applications' client-library requirements first: skipping or removing a needed package can break them. Neither option is offered by the Ubuntu installer.
 
 :::tip Note
 See also [MySQL Governor CLI](/cloudlinuxos/command-line_tools/#mysql-governor)
@@ -3585,10 +3587,12 @@ In order to change MySQL version you should run the following commands:
 where `MYSQL_VERSION` is the target database server version that should be replaced with the value from the table above.
 
 ::: danger IMPORTANT
-Make sure you have full database backup (including system tables) before you switch. This action will prevent data loss in case if something goes wrong.
+Make and verify a full database backup (including system tables) before switching so you can restore your data if the operation fails. A backup does not guarantee against data loss.
 :::
 
 ### Uninstalling
+
+Before using `--delete`, make and verify a full database backup, including system tables.
 
 To remove <span class="notranslate">MySQL Governor</span>:
 
@@ -3599,7 +3603,7 @@ To remove <span class="notranslate">MySQL Governor</span>:
 ```
 </div>
 
-The script will install original MySQL server, and remove <span class="notranslate">MySQL Governor</span>.
+The script attempts to remove <span class="notranslate">MySQL Governor</span> and install a replacement database server; it might not restore the original version or complete successfully. Afterward, verify that the database service starts and your data is available. If removal or restoration fails, contact CloudLinux support.
 
 ### Configuration and operation
 
@@ -3616,7 +3620,7 @@ The script will install original MySQL server, and remove <span class="notransla
 
 
 :::warning Warning
-The "All" mode will be deprecated starting from September 1, 2021. You can read more [here.](https://blog.cloudlinux.com/mysql-governor-moving-from-all-to-abusers)
+The `all` mode is deprecated. You can read more [here.](https://blog.cloudlinux.com/mysql-governor-moving-from-all-to-abusers)
 :::
 
 <span class="notranslate"> MySQL Governor </span> configuration is located in <span class="notranslate"> /etc/container/mysql-governor.xml </span>
@@ -3631,18 +3635,18 @@ Once configuration file is updated, please, restart the <span class="notranslate
 service db_governor restart
 ```
 </div>
-Example configuration:
+Schematic configuration reference (not a file to paste unchanged): choose one value where alternatives are separated by `|`, replace placeholders, and use either `name` or `mysql_name` for each user. Start with the installed `/etc/container/mysql-governor.xml`; the packaged short interval is 15 seconds.
 <div class="notranslate">
 
 ```
 <governor>
 
 <!--  'off' - do not throttle anything, monitoring only -->
-<!--  'abusers' - when user reaches the limit, put user's queries into LVE for that user -->
+<!-- 'abusers' - restricted mapped database users use their account's LVE; without a valid dbuser-map entry, use shared LVE 3 -->
 <!--  'all' - user's queries always run inside LVE for that user -->
 <!--  'single' - single LVE=3 for all abusers. -->
-<!-- 'on' - deprecated (old restriction type) -->
-<!-- To change resource usage of restricted user in LVE mode use command /usr/sbin/lvectl set 3 --cpu=<new value> --ncpu=<new value> --io=<new value> --save-all-parameters -->
+<!-- 'on' - deprecated alias for 'single' (shared LVE 3) -->
+<!-- For shared LVE 3's CPU SPEED limit, see the lvectl example below; mapped 'abusers' use their account's LVE. -->
 <lve use="on|single|off|abusers|all"/>
 
 <!-- connection information -->
@@ -3653,18 +3657,18 @@ Example configuration:
 <connector host="..." login="..." password=".." prefix_separator="_"/>
 
 <!-- Intervals define historical intervals for burstable limits. In seconds -->
-<intervals short="5" mid="60" long="300"/>
+<intervals short="15" mid="60" long="300"/>
 
 <!-- log all errors/debug info into this log -->
-<log file=”/var/log/dbgovernor-error.log” mode=”DEBUG|ERROR”/>
+<log file="/var/log/dbgovernor-error.log" mode="DEBUG|ERROR"/>
 
 <!-- s -- seconds, m -- minutes, h -- hours, d -- days -->
 <!-- on restart, restrict will disappear -->
 <!-- log file will contain information about all restrictions that were take -->
-<!-- timeout - penalty period when user not restricted, but if he hit his limit during this period he will be restricted with higher level of restrict (for more long time) -->
-<!- level1, level2, level3, level4 - period of restriction user for different level of restriction. During this period all user's requests will be placed into LVE container -->
+<!-- period mode only: timeout is the penalty period after unrestriction; a new limit hit then selects a longer restriction level -->
+<!-- period mode only: level1, level2, level3, level4 are restriction durations; the default limit mode has no levels -->
 
-<!-- if user hits any of the limits during period of time specified in timeout, higher level of restrict will be used to restrict user. If user was already on level4, level4 will be applied again -->
+<!-- period mode only: a limit hit during timeout escalates the restriction level; repeated hits at level4 keep level4 -->
 <!-- attribute format set an restrict log format:
 SHORT -  restrict info only
 MEDIUM - restrict info, _all_tracked_values_
@@ -3709,7 +3713,7 @@ user_max_connections="30"/>
 <!-- mode restrict -- default mode, enforcing restrictions -->
 <!-- mode norestrict -- track usage, but don’t restrict user -->
 <!-- mode ignore -- don’t track and don’t restrict user -->
-<user name=”xxx” mysql_name=”xxx” mode=”restrict|norestrict|ignore”>
+<user name="xxx" mode="restrict">
 <limit...>
 </user>
 
@@ -3722,12 +3726,19 @@ user_max_connections="30"/>
 
 These values can also be set using [cloudlinux-config](/cloudlinuxos/command-line_tools/#cloudlinux-config) CLI utility
 
+On CloudLinux OS with LVE enabled and `lve-utils` installed, use `lvectl` to adjust the CPU SPEED limit for shared LVE ID 3 in `single` mode or for unmapped `abusers`. As root, for example, set SPEED to one core (`100%`); choose a percentage appropriate for your server:
+
+```
+/usr/sbin/lvectl set 3 --speed=100% --save-all-parameters
+```
+
+Mapped `abusers` use their account's LVE instead; adjust that account's SPEED, not shared LVE 3. `lvectl --io=N` sets an LVE I/O limit in KB/s, not a direct SQL disk-I/O limit. Use the Governor's `read` and `write` limits to trigger restrictions on database I/O.
 
 #### Modes of operation
 
 
 :::warning Warning
-The "All" mode will be deprecated starting from September 1, 2021. You can read more [here.](https://blog.cloudlinux.com/mysql-governor-moving-from-all-to-abusers)
+The `all` mode is deprecated. You can read more [here.](https://blog.cloudlinux.com/mysql-governor-moving-from-all-to-abusers)
 :::
 
 :::tip Note
@@ -3736,19 +3747,19 @@ The "All" mode will be deprecated starting from September 1, 2021. You can read 
 
 **Active modes**
 
-* **abusers - Use LVE for a user to restrict queries (default mode)**: In that mode, once user goes over the limits specified in the MySQL Governor , all customer's queries will execute inside that user's LVE. We believe this mode will help with the condition when the site is still fast, but MySQL is slow (restricted) for that user. If someone abuses MySQL, it will cause queries to share LVE with PHP processes, and PHP processes will also be throttled, causing fewer new queries being sent to MySQL. _Requires [`dbuser-map` file](./#mapping-a-user-to-a-database)_.
+* **abusers - Use LVE for a user to restrict queries (default mode)**: Once an account exceeds the Governor limits, mapped database users' queries run inside that account's LVE. Without a valid mapping, those queries use shared LVE ID 3 instead. With a mapping, queries share the account's LVE limits with PHP processes, which can also be throttled. _Requires a valid [`dbuser-map` entry](./#mapping-a-user-to-a-database) for a user-specific LVE_.
 * **off - Monitor Only**: In that mode MySQL Governor will not throttle customer's queries, instead it will let you monitor the MySQL usage to see the abusers at any given moment in time (and historically). This mode is good when you are just starting and want to see what is going on.
 
 ---
 
 **Deprecated modes**
 
-* **all - Always run queries inside user's LVE (will be deprecated on September 1, 2021)**: This way there is no need for separate limits for MySQL. Depending on overhead we see in the future, we might decide to use it as a primary way of operating MySQL Governor . The benefit of this approach is that limits are applied to both PHP & MySQL at the same time, all the time, preventing any spikes whatsoever. _Requires [`dbuser-map` file](./#mapping-a-user-to-a-database)_.
+* **all - Always run queries inside user's LVE (deprecated)**: This way there is no need for separate limits for MySQL. The benefit of this approach is that limits are applied to both PHP & MySQL at the same time, all the time, preventing any spikes whatsoever. _Requires [`dbuser-map` file](./#mapping-a-user-to-a-database)_.
 * **single - Single restricted's LVE for all restricted customers (deprecated)**: In that mode once customer reaches the limits specified in the MySQL Governor , all customer's queries will be running inside LVE with id 3. This means that when you have 5 customers restricted at the same time, all queries for all those 5 customers will be sharing the same LVE. The larger the number of restricted customers - the less resources per restricted customer will be available.
 * **on** - Synonym for **single** mode
 
 :::warning Note
-After the `all` mode will be deprecated on September 1, 2021:
+The `all` mode is deprecated. The documented policy states:
 * the users, having it, will continue to work with this mode;
 * all new installation will not have the `all` mode;
 * moving to the `all` mode will be forbidden.
@@ -3756,9 +3767,9 @@ After the `all` mode will be deprecated on September 1, 2021:
 
 If the `dbuser-map` file is absent on the server, the `abusers` mode emulates the `single`.
 
-With the `single` and `abusers` mode, once user is restricted, the queries for that user will be limited as long as user is using more than limits specified. After a minute that user is using less, we will unrestricted that user.
+In the default `limit` restriction mode, a user in `single` or `abusers` mode is unrestricted after remaining below the Governor limits for the configured `unlimit` interval (one minute if unset). In deprecated `period` restriction mode, configured restriction levels and durations apply instead.
 
-You can specify modes of operation using [dbctl](/cloudlinuxos/command-line_tools/#dbctl) or by changing [configuration file](./#configuration-3).
+You can specify modes of operation using [dbctl](/cloudlinuxos/command-line_tools/#dbctl) or by changing [configuration file](./#configuration-and-operation).
 
 #### MySQL Governor limits
 
@@ -3794,7 +3805,7 @@ MySQL Governor limits should be calculated based on the corresponding LVE limits
 
 | Limit level | Formula | Description |
 |---|---|---|
-| `current` | `LVE_CPUSPEED × 1` | Slightly above the LVE CPU limit to avoid bottlenecks |
+| `current` | `LVE_CPUSPEED × 1` | Equal to the LVE CPU SPEED reference value |
 | `short` | `LVE_CPUSPEED × 0.95` | Short-term burst allowance |
 | `middle` | `LVE_CPUSPEED × 0.87` | Medium-term average |
 | `long` | `LVE_CPUSPEED × 0.75` | Long-term sustained maximum |
@@ -3803,7 +3814,7 @@ MySQL Governor limits should be calculated based on the corresponding LVE limits
 
 | Limit level | Formula | Description |
 |---|---|---|
-| `current` | `LVE_IO × 1` | Slightly above the LVE IO limit |
+| `current` | `LVE_IO × 1` | Equal to the LVE I/O reference value for each READ or WRITE limit |
 | `short` | `LVE_IO × 0.83` | Short-term burst allowance |
 | `middle` | `LVE_IO × 0.76` | Medium-term average |
 | `long` | `LVE_IO × 0.59` | Long-term sustained maximum |
@@ -3920,7 +3931,7 @@ pupkin3a_12 pupkin3a 506
 This would specify that db users: <span class="notranslate"> pupkinas_u2, pupkinas_u1, pupkinas_u3 </span> belong to user <span class="notranslate"> pupkinas </span> with uid (lve id) 502
 db user <span class="notranslate"> pupkin2a_uuu1 </span> belongs to user <span class="notranslate"> pupkin2a </span> with uid 505, etc...
 
-`db_governor` service checks this file for modifications every 5 minutes.
+When running, `db_governor` checks this file's modification time about once a minute and rereads the mapping if it changes.
 
 If you need to force reload the mapping file, run:
 <div class="notranslate">
@@ -3970,7 +3981,7 @@ For experienced users only. Changing MySQL version is a quite complicated proced
 :::
 
 ::: danger IMPORTANT
-Please make full database backup (including system tables) before you will do upgrade of MySQL or switch to MariaDB. This action will prevent data losing in case if something goes wrong.
+Make a full database backup (including system tables) and verify the dumps can be restored before upgrading MySQL or switching to MariaDB. A backup does not guarantee against data loss.
 :::
 
 <div class="notranslate">
@@ -3991,34 +4002,29 @@ To install beta version of MySQL:
 ```
 </div>
 
-<span class="notranslate"> MYSQL_VERSION </span> can be one of the following:
+The available <span class="notranslate"> MYSQL_VERSION </span> selectors depend on the CloudLinux OS release and control panel. The versions below are subject to the installation prerequisites above; as root, `/usr/share/lve/dbgovernor/mysqlgovernor.py --mysql-version-list` shows the selectors accepted by the installed script for its detected OS and panel. It does not verify that matching database packages are published or that Governor integration works for every listed selector.
 
 | | |
 |-|-|
 |<span class="notranslate"> auto </span> | default version of MySQL for given OS release (or cPanel settings)|
-|mysql51 | MySQL v5.1|
-|mysql55 | MySQL v5.5|
-|mysql56 | MySQL v5.6|
+|mysql56 | MySQL v5.6 (CloudLinux OS 7 and 8 only; not supported on CloudLinux OS 9+)|
 |mysql57 | MySQL v5.7|
 |mysql80 | MySQL v8.0 (requires MySQL Governor 1.2-37+)|
 |mysql84 | MySQL v8.4 (requires MySQL Governor 1.2-129+)|
-|mariadb55 | MariaDB v5.5|
-|mariadb100 | MariaDB v10.0|
-|mariadb101 | MariaDB v10.1|
 |mariadb102 | MariaDB v 10.2|
 |mariadb103 | MariaDB v 10.3 [requires <span class="notranslate"> MySQL Governor 1.2-36+; for cPanel - MySQL Governor 1.2-41+ </span> ]|
-|mariadb104 | MariaDB v 10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+]||
+|mariadb104 | MariaDB v 10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+; not supported on cPanel]|
 |mariadb105 | MariaDB v 10.5 [requires <span class="notranslate">MySQL Governor</span> 1.2-62+]|
 |mariadb106 | MariaDB v 10.6 [requires <span class="notranslate">MySQL Governor</span> 1.2-76+]|
-|mariadb1011 | MariaDB v 10.11 [requires <span class="notranslate">MySQL Governor</span> 1.2-103+]|
-|mariadb1104 | MariaDB v 11.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-122+]|
+|mariadb1011 | MariaDB v 10.11 [requires <span class="notranslate">MySQL Governor</span> 1.2-103+; not supported on CloudLinux OS 7 with cPanel]|
+|mariadb1104 | MariaDB v 11.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-122+; not supported on CloudLinux OS 7]|
 |percona56 | Percona v 5.6|
 
 * We don't recommend to downgrade from MySQL v5.6, MariaDB 10.x
 
 
 :::tip Note
-cPanel does not officially support MariaDB 10.4, that is why we don’t recommend to use it on cPanel servers. Use on your own risk for Plesk servers, because downgrade can corrupt your databases.
+MariaDB 10.4 is not supported on cPanel servers. Use on your own risk for Plesk servers, because downgrade can corrupt your databases.
 :::
 
 :::tip Note
@@ -4075,6 +4081,8 @@ The following script could be used before installing MySQL-governor and MySQL/Ma
 ```
 </div>
 
+Before changing the database server, verify that the backup contains the required databases and system tables. The script's completion message alone does not verify the dumps.
+
 :::tip
 The script `mysql_backup.sh` is provided starting from the Governor version 1.2-115.
 :::
@@ -4095,31 +4103,27 @@ See also [MySQL Governor CLI tools](/cloudlinuxos/command-line_tools/#mysql-gove
 
 ### MySQL Governor improvements  for  CPU calculation
 
-In MySQL Governor version 1.2-81, we provide improvements in the algorithm of calculation user CPU usage. New behavior helps to increase precision of resource distribution between server users. By default the new type of CPU usage calculation is tuned on.
+MySQL Governor 1.2-81+ includes improved per-user CPU usage calculation. In the packaged implementation, this calculation is always enabled.
 
-Server administrator can turn on/off the new type of CPU usage calculation by using the following command:
-
-```
-dbctl --lve-improved-accuracy off
-```
+The `dbctl --lve-improved-accuracy` option is retained for compatibility but no longer changes CPU usage calculation.
 
 #### What is the impact of improvements?
 
-The calculation of CPU usage has become more accurate, so the `dbtop` utility provides more correct information to the MySQL Governor and it places user’s requests to the LVE in a proper moment. And as a result, such improvements reduce the possibility of absorbing whole server resources by one user.
+The improved calculation is reflected in `dbtop` usage figures and in MySQL Governor's decisions about when to place a user's requests into an LVE. This can reduce the risk of one user consuming excessive server resources.
 
 One mpre possible outcome of calculation improvements is that some server users will become in need of MySQL Governor limits reconfiguration.
 
 #### How to view the impact of improvements?
 
-Let’s check the CPU usage charts from CloudLinux statistics (lve-stats).
+The following CloudLinux statistics (lve-stats) charts illustrate usage with and without the improved calculation. They do not show a selectable mode in the packaged implementation.
 
-**The new type of  CPU usage calculation is turned off**.
+**Historical example: earlier CPU usage calculation**.
 
 In this case, CPU usage by database could be less than LVE average CPU usage (blue chart is lower than green chart):
 
 ![CPU Usage chart Last 30 min: blue database peaks below green average under 200% red limit](/images/cloudlinuxos/cloudlinux_os_components/NewTurnedOff.webp)
 
-**The new type of  CPU usage calculation is turned on**.
+**Historical example: improved CPU usage calculation**.
 
 In this case, CPU usage by database become more similar to LVE average CPU usage (blue chart and green chart on the sceen):
 
@@ -4137,7 +4141,7 @@ This is how common server resources can be managed.
 
 #### Why the СPU/IO charts are different for database and LVE usage?
 
-SQL requests are not limited inside LVE, so there are not any calculations for IO usage there. It can be clearly viewed via the lve-stats charts:
+Restricted SQL queries can be placed in an LVE for CPU limiting. Governor-measured database I/O and LVE I/O tracked by lve-stats are different measurements, as the charts show:
 
 ![Input/Output Usage line chart: blue database line, red limit, green average in legend](/images/cloudlinuxos/cloudlinux_os_components/Chart1.webp)
 
@@ -4147,7 +4151,7 @@ This is the user’s real IO Database usage which was calculated by MySQL Govern
 
 **Green chart (LVE)**:
 
-This is the user’s IO Database usage which was calculated by lve-stats.
+This is the account's LVE I/O usage tracked by lve-stats, not Governor-measured database I/O.
 
 Also for different types of database load (for example in case, there is a huge amount of shot requests), CPU usage charts for LVE and database can be different.
 
@@ -4226,9 +4230,7 @@ When you change root or administrator credentials in <span class="notranslate"> 
 ```
 </div>
 
-The command updates credentials in MySQL <span class="notranslate">Governor</span> configuration file and restarts <span class="notranslate">`db_governor`</span> service afterwards.
-
-After applying the command MySQL <span class="notranslate">Governor</span> successfully connects to MySQL.
+When Plesk or DirectAdmin credentials can be read, the command updates the MySQL <span class="notranslate">Governor</span> configuration and restarts <span class="notranslate">`db_governor`</span>. If it still cannot connect, check the panel's database credentials and `/var/log/dbgovernor-error.log`.
 
 
 **Handling Missing Libraries in cl-MariaDB-libs for MySQL Governor (libgovernor_stubs.so)**
@@ -4279,7 +4281,7 @@ Always remember to back up your data and configurations before making any change
 
 #### I/O LVE limits don't work for user’s SQL queries
 
-In the MySQL Governor default mode, once users go over the limits, all their SQL queries will execute inside that user's LVE.
+In the default `abusers` mode, after an account exceeds the Governor limits, its mapped database users' SQL queries run inside that account's LVE. Without a valid `/etc/container/dbuser-map` entry, those queries use shared LVE ID 3.
 
 This technique was provided with the early 1.1.5 version of MySQL Governor.
 

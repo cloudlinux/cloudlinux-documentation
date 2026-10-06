@@ -555,8 +555,8 @@ Allows to manage MySQL Governor settings.
 
 * <span class="notranslate">**Off**</span> - monitor Only – not throttle customer's queries, only monitor MySQL usage.
 * <span class="notranslate">**Single**</span> - single restricted LVE for all restricted customers – all queries for all restricted customers  well be sharing the same LVE.
-* <span class="notranslate">**Abusers**</span> - use LVE for a user to restrict queries (default mode) –  if a user goes over the limits, all his queries will execute inside his LVE.
-* <span class="notranslate">**All**</span> - always run queries inside user's LVE – limits are applied to both PHP & MySQL queries at the same time.
+* <span class="notranslate">**Abusers**</span> - use an account's LVE to restrict queries (default mode) – when the database user has a valid `/etc/container/dbuser-map` entry, restricted queries use the mapped account's LVE; otherwise they use shared LVE ID 3.
+* <span class="notranslate">**All**</span> (deprecated) - always run queries inside user's LVE – limits are applied to both PHP & MySQL queries at the same time.
 
 <span class="notranslate">**MySQL Governor restrict type mode**</span>
 
@@ -565,11 +565,11 @@ Allows to manage MySQL Governor settings.
 
 <span class="notranslate">**Unlimit users automatically in**</span>
 
-Allows to unlimit users automatically if they don't hit the limits during the specified number of seconds/minutes/hours/days.
+In the default Limit restriction mode, automatically unrestrict users after they remain below their limits for the configured number of seconds, minutes, hours or days. Deprecated Period mode uses the level durations and penalty timeout below instead.
 
 <span class="notranslate">**Restricted time periods**</span>
 
-User restriction time period for different levels of restriction and the timeout to apply a higher restriction level.
+In deprecated Period restriction mode, set the level 1–4 restriction durations and the penalty timeout for escalating repeated limit hits. The default Limit mode has no restriction levels or penalty timeout.
 
 * <span class="notranslate">Level1</span>
 * <span class="notranslate">Level2</span>

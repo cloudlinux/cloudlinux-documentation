@@ -41,19 +41,22 @@ MySQL Governor allows restricting customers that use too many resources. It supp
 | READ  | bytes | bytes read. Cached reads are not counted, only those that were actually read from disk will be counted |
 | WRITE | bytes | bytes written. Cached writes are not counted, only once data is written to disk, it is counted         |
 
-You can set different limits for different periods: current, short, mid, long. By default those periods are defined as 1 second, 5 seconds, 1 minute and 5 minutes. They can be re-defined using the [configuration file](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
+You can set different limits for different periods: current, short, mid, long. With `short="15" mid="60" long="300"` in the configuration, these periods are 1 second, 15 seconds, 1 minute and 5 minutes. They can be re-defined using the [configuration file](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
 The idea is to use larger acceptable values for shorter periods. Like you could allow a customer to use two cores (200%) for one second, but only 1 core (on average) for 1 minute, and only 70% within 5 minutes.
 That would make sure that customer can burst for short periods of time.
 
-When a customer is restricted, the customer will be placed into special LVE with ID 3. All restricted customers will be
-placed into that LVE, and you can control the amount of resources available to restricted customers. Restricted
-customers will also be limited to only 30 concurrent connections. This is done so they wouldn't use up all the MySQL
-connections to the server.
+With the default `abusers` mode and a valid `/etc/container/dbuser-map` entry, a restricted customer's queries run
+in that customer's LVE. In `single` mode, restricted customers share LVE ID 3; without a valid mapping, `abusers`
+also falls back to ID 3. A restricted database user's concurrent connections can be capped at 30 by default if the
+previous limit is higher or unlimited; the `<restrict>` element's `user_max_connections` attribute in
+`/etc/container/mysql-governor.xml` controls this cap.
+
+To adjust CPU resources for restricted queries, change the mapped account's LVE SPEED limit in `abusers` mode; in `single` mode or for an unmapped user, change shared LVE ID 3's SPEED limit. For CloudLinux OS, see the [shared LVE 3 lvectl example](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
 
 ### Installation
 
 :::warning Attention!
-MySQL Governor on Ubuntu supports the following only:
+The installation steps below cover these Ubuntu configurations:
 
 * cl-MySQL80 on non-panel systems
 * cl-MySQL80 on cPanel
@@ -71,7 +74,7 @@ apt  install governor-mysql
     ```
     /usr/share/lve/dbgovernor/mysqlgovernor.py --mysql-version=mysql80
     ```
-3. Backup your databases.
+3. Make a full database backup (including system tables) and verify it can be restored before running `--install --yes`. The `--yes` flag skips the installer's backup confirmation.
 4. Run the cl-MySQL/cl-MariaDB installation.
 
 ```
@@ -83,7 +86,7 @@ In case of installing on cPanel + Ubuntu server, set the following parameter:
 ![Terminal output: dpkg prompt for usr.sbin.mysqld config with Y to install the package maintainer's version](/images/ubuntu/features/Param.webp)
 
 5. After installation, check that the database server is working properly. If you have any problems,
-   use [Support Portal]().
+   contact CloudLinux support.
 6. Configure user mapping to the database. The mapping format is described in
    the [following section](/cloudlinuxos/cloudlinux_os_components/#mapping-a-user-to-a-database).
 
@@ -99,11 +102,10 @@ The format is as follows:
 
 The control panel should automatically generate this mapping and write it to the `/etc/container/dbuser-map` file. Usually,
 it is enough to write a hook when adding, deleting or renaming a database for a user. The control panel should implement
-such a mechanism for MySQL Governor to operate properly. MySQL Governor automatically applies changes from the
-dbuser-map file every five minutes.
+such a mechanism for MySQL Governor to operate properly. When running, `db_governor` checks for changes to the `dbuser-map` file's modification time and rereads the mapping if it changes.
 
 7. MySQL Governor configuration can be found in the
-   following [section](/cloudlinuxos/cloudlinux_os_components/#configuration-3).
+   following [section](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
 8. MySQL Governor CLI tools description can be found in the
    following [section](/cloudlinuxos/command-line_tools/#mysql-governor).
 9. Having configured the mapping use `dbtop` to see the current user load on the database (you'd need to make some
@@ -122,13 +124,15 @@ in [this documentation](/cloudlinuxos/cloudlinux_os_components/#upgrading-databa
 
 ### Uninstalling
 
+Before using `--delete`, make and verify a full database backup, including system tables.
+
 To remove MySQL Governor, run the following command:
 
 ```
 /usr/share/lve/dbgovernor/mysqlgovernor.py --delete
 ```
 
-The script will install the original MySQL server, and remove MySQL Governor.
+The script attempts to remove MySQL Governor and install a replacement database server; it might not restore the original version or complete successfully. Afterward, verify that the database service starts and your data is available. If removal or restoration fails, contact CloudLinux support.
 
 ### Configuration and operation
 
