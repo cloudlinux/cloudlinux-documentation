@@ -416,6 +416,7 @@ timeout 60s rpm -V --noscripts --nodeps --noconfig --noghost --nomtime --nogroup
 This command compares installed files with RPM metadata without running package verification scripts or checking dependencies. It excludes configuration and ghost files, modification times and group ownership; LinkSafe can legitimately change the group of packaged files. No output and exit status `0` mean that this file verification found no differences in the checked attributes; they do not prove that Manager works. A nonzero result needs interpretation:
 
 * Missing files or content differences in packaged runtime files can explain a broken installation.
+* This raw RPM command may also report regenerated Python cache files. A changed `.pyc` file under `__pycache__` with its corresponding `.py` source present is not, by itself, evidence that reinstallation is needed. The automatic checker filters those cache differences while retaining source-file findings.
 * The excluded files and attributes need separate investigation if the panel error points to them. Do not overwrite customized configuration solely to match the original package.
 * A database error or timeout is an incomplete check, not evidence of damaged package files. Do not remove RPM database files, rebuild the database, or force-remove packages as part of this procedure.
 
