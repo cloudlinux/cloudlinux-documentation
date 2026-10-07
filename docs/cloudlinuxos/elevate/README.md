@@ -27,7 +27,7 @@ The [Leapp utility](https://leapp.readthedocs.io/) is the main tool used to perf
 
 The [ELevate Scenario - CloudLinux with cPanel](#elevate-scenario-cloudlinux-with-cpanel) uses the [cPanel ELevate](https://github.com/cpanel/elevate) project as an additional layer of the upgrade process.
 
-The [ELevate Scenario - CloudLinux with Plesk](#elevate-scenario-cloudlinux-with-plesk) also uses an additional layer - the [cloudlinux7to8](https://github.com/plesk/cloudlinux7to8) project.
+The [ELevate Scenario - CloudLinux with Plesk](#elevate-scenario-cloudlinux-with-plesk) also uses an additional layer - the Plesk conversion tools, [cloudlinux7to8](https://github.com/plesk/cloudlinux7to8) and [cloudlinux8to9](https://github.com/plesk/cloudlinux8to9).
 
 ELevate is a project aimed to provide the ability to migrate between major versions of RHEL-based distributions. It combines Red Hat's Leapp framework with a community created library and service for the migration metadata set required for it.
 
@@ -114,7 +114,8 @@ At the moment, ELevate migration from CloudLinux 7 to CloudLinux 8 is supported 
 For CloudLinux 8 to CloudLinux 9 migrations, migration is supported on:
 
 * *no panel/custom panel* systems;
-* *cPanel* systems.
+* *cPanel* systems;
+* *Plesk* systems.
 
 Support for CloudLinux 9 to CloudLinux 10 migrations is not yet available.
 
@@ -126,7 +127,7 @@ Depending on the web panel you have installed on your system, the upgrade proces
 
 In such case, you can upgrade through the Leapp tool directly.
 
-Please refer to the [CloudLinux with no panel/custom panel ELevate Scenario](#elevate-scenario-cloudlinux-with-no-panel-or-a-custom-panel) for step-by-step instructions.
+Please refer to the [CloudLinux with no panel/custom panel ELevate Scenario](#elevate-scenario-cloudlinux-with-no-panel-or-a-custom-panel-incl-directadmin) for step-by-step instructions.
 
 #### I have a system with cPanel installed, how do I upgrade?
 
@@ -138,11 +139,11 @@ Please refer to the [ELevate Scenario - CloudLinux with cPanel](#elevate-scenari
 
 The DirectAdmin panel does not require any additional actions or tools compared to the no-panel upgrade scenario.
 
-You can make use of the [CloudLinux with no panel/custom panel ELevate Scenario](#elevate-scenario-cloudlinux-with-no-panel-or-a-custom-panel) to upgrade systems with the DirectAdmin panel much like you would for systems with no panel.
+You can make use of the [CloudLinux with no panel/custom panel ELevate Scenario](#elevate-scenario-cloudlinux-with-no-panel-or-a-custom-panel-incl-directadmin) to upgrade systems with the DirectAdmin panel much like you would for systems with no panel.
 
 #### I have a system with Plesk installed, how do I upgrade?
 
-Like cPanel, the Plesk panel requires you to make use of an additional tool to perform the upgrade on a system. In this case, you need to use the `cloudlinux7to8` tool [provided by the Plesk team](https://github.com/plesk/cloudlinux7to8).
+Like cPanel, the Plesk panel requires you to make use of an additional tool to perform the upgrade on a system. In this case, you need to use the conversion tool provided by the Plesk team for your upgrade path: [cloudlinux7to8](https://github.com/plesk/cloudlinux7to8) for CloudLinux 7 to CloudLinux 8, or [cloudlinux8to9](https://github.com/plesk/cloudlinux8to9) for CloudLinux 8 to CloudLinux 9.
 
 Please refer to the [ELevate Scenario - CloudLinux with Plesk](#elevate-scenario-cloudlinux-with-plesk) for step-by-step instructions.
 
@@ -182,6 +183,8 @@ First, try to narrow down the most probable source of the issue you've encounter
 
 For cPanel-specific issues, [cPanel ELevate issue tracker](https://github.com/cpanel/elevate/issues) is the most appropriate place to report them.
 
+For Plesk-specific issues, report them in the issue tracker of the Plesk conversion tool you used: [cloudlinux7to8](https://github.com/plesk/cloudlinux7to8/issues) or [cloudlinux8to9](https://github.com/plesk/cloudlinux8to9/issues).
+
 For CloudLinux-specific issues, report them in the [CloudLinux ELevate issue tracker](https://github.com/cloudlinux/elevate/issues) or contact CloudLinux Support with a description of the encountered problem.
 
 For issues with the underlying Leapp framework, report them in the [AlmaLinux Leapp repository issue tracker](https://github.com/AlmaLinux/leapp-repository/issues).
@@ -192,6 +195,7 @@ When filing an issue, include:
 - `/var/lib/leapp/leapp.db`
 - journalctl
 - If using the CloudLinux with cPanel scenario, `/var/log/elevate-cpanel.log`
+- If using the CloudLinux with Plesk scenario, `/var/log/plesk/cloudlinux7to8.log` or `/var/log/plesk/cloudlinux8to9.log`
 - If you want, you can also send anything else would you like to provide (e.g. storage info)
 
 **For your convenience you can pack all logs with this command:**
@@ -487,12 +491,59 @@ If you encounter problems in this scenario:
 * Continue with the upgrade process.
 
 
+### ELevate Plesk Scenario issues
+
+These issues can occur during the upgrade on CloudLinux + Plesk systems.
+
+#### CageFS users don't enter CageFS through su after the upgrade
+
+After the upgrade, the `pam_lve.so` line may be missing from `/etc/pam.d/su`. As a result, users with CageFS enabled are not placed into CageFS when you switch to them with `su`.
+
+`cldiag --all` reports the problem as follows:
+
+```
+Check cagefs users can enter cagefs: FAILED: pam_lve configuration is not found in /etc/pam.d/su config file
+```
+
+You can also check the file directly. If the following command produces no output, the system is affected:
+
+```
+grep pam_lve /etc/pam.d/su
+```
+
+To restore the `pam_lve.so` line, run:
+
+```
+cagefsctl --hook-install
+```
+
+The issue is fixed in cagefs 7.6.48-1 and alt-python27-cllib 3.4.43-1.
+
+
 ## Known issues
 
 ### Web servers
 The Litespeed web server installation scheme is currently incompatible with the no-panel Elevate configuration.
 
 It can be updated *after* the upgrade is complete, but won't be automatically upgraded with the rest of the system during the ELevate process.
+
+### MySQL Governor with MariaDB 10.3 on Plesk
+On CloudLinux 8 systems with Plesk where MySQL Governor manages MariaDB 10.3 (the `cl-MariaDB103` packages), the MariaDB server crashes after the upgrade to CloudLinux 9.
+
+To check whether your system is affected, run:
+
+```
+rpm -qa 'cl-MariaDB103*'
+```
+
+If the command lists any packages, switch MySQL Governor to MariaDB 10.6 before starting the upgrade:
+
+```
+/usr/share/lve/dbgovernor/mysqlgovernor.py --mysql-version=mariadb106
+/usr/share/lve/dbgovernor/mysqlgovernor.py --install
+```
+
+Back up all databases before switching, as described in [Change MySQL version](/cloudlinuxos/cloudlinux_os_components/#change-mysql-version).
 
 ## Contribution
 
@@ -532,7 +583,7 @@ Note that Elevate only uses the provided information about new repositories duri
 If mapping package repositories from old to new (CL7 repositories -> CL8 repositories), as well as mapping the package changes, is not sufficient for a successful upgrade of your system, consider adding [custom Python scripts](https://github.com/CloudLinux/leapp-repository/tree/cloudlinux#adding-complex-changes-custom-actors-for-migration) (called Leapp actors) that handle your upgrade scenario, e.g. configuration migrations, system modifications, etc.
 
 To summarize:
-* [Install CloudLinux Elevate](/cloudlinuxos/elevate/#elevate-scenario-cloudlinux-with-no-panel-or-a-custom-panel) and run `leapp preupgrade`.
+* [Install CloudLinux Elevate](/cloudlinuxos/elevate/#elevate-scenario-cloudlinux-with-no-panel-or-a-custom-panel-incl-directadmin) and run `leapp preupgrade`.
 * Check the pre-upgrade report (`/var/log/leapp/leapp-report.txt`) for packages that will not be upgraded.
 * For those packages that you want to see upgraded, [extend the Elevate configuration files](https://github.com/CloudLinux/leapp-repository/tree/cloudlinux#third-party-integration) with package repository mappings and package migration events.
 * If required, [add additional custom scripts](https://github.com/CloudLinux/leapp-repository/tree/cloudlinux#adding-complex-changes-custom-actors-for-migration) (Leapp actors) to handle any extra arbitrary actions during the upgrade.
@@ -834,9 +885,16 @@ Check the leapp logs for `.rpmnew` configuration files that may have been create
 
 This scenario contains steps on how to upgrade CloudLinux systems with Plesk present.
 
-The process is performed through a tool provifed and maintained by the Plesk team, [cloudlinux7to8](https://github.com/plesk/cloudlinux7to8), with CL Leapp as a component of the process.
+The process is performed through a tool provided and maintained by the Plesk team, with CL Leapp as a component of the process. Use the tool that matches your upgrade path:
 
-See the official Plesk cloudlinux7to8 documentation with additional details at [the project page for cloudlinux7to8](https://github.com/plesk/cloudlinux7to8?tab=readme-ov-file#)
+| Upgrade path | Tool |
+|-|-|
+| CloudLinux 7 to CloudLinux 8 | [cloudlinux7to8](https://github.com/plesk/cloudlinux7to8) |
+| CloudLinux 8 to CloudLinux 9 | [cloudlinux8to9](https://github.com/plesk/cloudlinux8to9) |
+
+Both tools are used the same way. The commands below use `cloudlinux8to9`; on a CloudLinux 7 system, replace it with `cloudlinux7to8`.
+
+See the official Plesk documentation with additional details on the project page of your tool: [cloudlinux7to8](https://github.com/plesk/cloudlinux7to8?tab=readme-ov-file#) or [cloudlinux8to9](https://github.com/plesk/cloudlinux8to9?tab=readme-ov-file#).
 
 ### Preparation
 
@@ -844,14 +902,16 @@ As always, make sure to have a backup of your system prepared before starting th
 
 Ensure that your system is fully updated before starting the upgrade process.
 
-To prepare for the upgrade, download the latest version of the cloudlinux7to8 tool from the [releases page](https://github.com/plesk/cloudlinux7to8/releases/latest):
+Review the requirements and known issues listed on the project page of your tool.
+
+When upgrading from CloudLinux 8, check whether your system is affected by the [MySQL Governor with MariaDB 10.3](#mysql-governor-with-mariadb-10-3-on-plesk) known issue.
+
+To prepare for the upgrade, download the latest version of the tool from its releases page ([cloudlinux7to8](https://github.com/plesk/cloudlinux7to8/releases/latest), [cloudlinux8to9](https://github.com/plesk/cloudlinux8to9/releases/latest)), or run:
 
 ```
-
-> wget https://github.com/plesk/cloudlinux7to8/releases/download/v1.1.3/cloudlinux7to8-1.1.3.zip
-> unzip cloudlinux7to8-1.1.3.zip
-> chmod 755 cloudlinux7to8
-
+curl -sL -o cloudlinux8to9.zip "$(curl -s https://api.github.com/repos/plesk/cloudlinux8to9/releases/latest | grep -o 'https://[^"]*\.zip')"
+unzip cloudlinux8to9.zip
+chmod 755 cloudlinux8to9
 ```
 
 ### Running
@@ -859,27 +919,27 @@ To prepare for the upgrade, download the latest version of the cloudlinux7to8 to
 To monitor the conversion process, it is recommended to use the `screen` utility to run the conversion process in a separate session.
 
 ```
-> screen -S cloudlinux7to8
-> ./cloudlinux7to8
+screen -S cloudlinux8to9
+./cloudlinux8to9
 ```
 
 If the connection is lost, you can reattach to the session with the following command:
 
 ```
-> screen -r cloudlinux7to8
+screen -r cloudlinux8to9
 ```
 
 The process can also be run in the background:
 
 ```
-> nohup ./cloudlinux7to8 &
+nohup ./cloudlinux8to9 &
 ```
 
 This will start the conversion process.
 
 During the process, Plesk services will stop, and hosted websites will not be accessible.
 
-During the upgrade process, the system will reboot several times. The primary upgrade transaction, where the Leapp component updates the system to CL8, will be performed in a custom OS environment. The system will be inaccessible via SSH during this time.
+During the upgrade process, the system will reboot several times. The primary upgrade transaction, where the Leapp component updates the system to the new CloudLinux version, will be performed in a custom OS environment. The system will be inaccessible via SSH during this time.
 
 ### Monitoring and troubleshooting
 
@@ -888,30 +948,35 @@ The conversion process will take some time to complete.
 To check the status of the conversion process, use the `--status` flag.
 
 ```
-> ./cloudlinux7to8 --status
+./cloudlinux8to9 --status
 ```
 
 To monitor the progress of the conversion process in real time, use the `--monitor` flag.
 
 ```
-> ./cloudlinux7to8 --monitor
+./cloudlinux8to9 --monitor
+```
+
+The output looks like this:
+
+```
 ( stage 3 / action re-installing plesk components  ) 02:26 / 06:18
 ```
 
-Aside from the main Leapp logs contained in `/var/log/leapp`, the cloudlinux7to8 tool will create a log file in `/var/log/plesk/cloudlinux7to8.log` that contains additional information about the conversion process.
+Aside from the main Leapp logs contained in `/var/log/leapp`, the tool will create a log file in `/var/log/plesk/` (`cloudlinux7to8.log` or `cloudlinux8to9.log`) that contains additional information about the conversion process.
 
 ### Reverting
 
-If the process fails during the initial stages, you can attempt to revert the system to its original state by running the cloudlinux7to8 tool with the `--revert` flag.
+If the process fails during the initial stages, you can attempt to revert the system to its original state by running the tool with the `--revert` flag.
 
 ```
-> ./cloudlinux7to8 --revert
+./cloudlinux8to9 --revert
 ```
 
-The cloudlinux7to8 will undo some of the changes it made and restart Plesk services.
+The tool will undo some of the changes it made and restart Plesk services.
 
 Note that the revert process may not be able to fully restore the system to its original state, and you may need to restore from a backup if the system is left in an unusable state.
 
-You cannot use revert to undo the changes after the first reboot triggered by cloudlinux7to8.
+You cannot use revert to undo the changes after the first reboot triggered by the tool.
 
 Also, the revert does not remove Leapp or packages installed by Leapp. Neither does it free persistent storage disk space reserved by Leapp.
