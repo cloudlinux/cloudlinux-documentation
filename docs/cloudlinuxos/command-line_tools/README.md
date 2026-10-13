@@ -21,6 +21,8 @@ The list of the commands (CLI) you can use to manage CloudLinux OS components.
 
 `cagefsctl` is used to manage CageFS. It allows initializing and updating CageFS, as well as enabling/disabling CageFS for individual users.
 
+For CloudLinux Isolates options and prerequisites, see the [command reference](/cloudlinuxos/isolates/#command-reference).
+
 Use the following syntax to manage CageFS:
 <span class="notranslate">`/usr/sbin/cagefsctl [OPTIONS]`</span>
 
@@ -83,7 +85,7 @@ Options:
 | | |
 |-|-|
 | <span class="notranslate"> --setup-cl-selector </span> | setup <span class="notranslate"> PHP Selector </span> or register new alt-php versions|
-| <span class="notranslate"> --remove-cls-selector </span> |unregister alt-php versions, switch users to default php version when needed|
+| <span class="notranslate"> --remove-cl-selector </span> |unregister alt-php versions, switch users to default php version when needed|
 | <span class="notranslate"> --rebuild-alt-php-ini </span> |rebuild _alt_php.ini_ file for specified users (or all users if none specified)|
 | <span class="notranslate"> --validate-alt-php-ini </span> |same as <span class="notranslate"> `--rebuild-alt-php-ini` </span> but also validates _alt_php.ini_ options|
 | <span class="notranslate"> --cl-selector-reset-versions </span> |reset php version for specifed users to default (or all users if none specified)|
@@ -2916,7 +2918,7 @@ These manage [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain) — r
 | <span class="notranslate"> `regenerate-domains --username <user> [--domain <name>] [--old-domain <name>] [--old-docroot <path>]` </span> |update the domain configuration and id mapping after a domain rename, a document root change, or a user rename. <span class="notranslate">`--username`</span> is required|
 
 :::tip Note
-Under a control panel you normally do not call these directly — <span class="notranslate">`cagefsctl --site-isolation-allow`</span>, <span class="notranslate">`--site-isolation-deny`</span>, <span class="notranslate">`--site-isolation-enable`</span> and <span class="notranslate">`--site-isolation-disable`</span> invoke the matching <span class="notranslate">`lvectl`</span> command for you, and the panel hooks call <span class="notranslate">`regenerate-domains`</span> on rename and document-root changes. Use <span class="notranslate">`lvectl`</span> directly for integration scripts and for inspecting or repairing state. See [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain).
+Under a control panel, use the [CageFS Isolates commands](/cloudlinuxos/isolates/#command-reference). They invoke the corresponding per-domain <span class="notranslate">`lvectl`</span> commands when the [prerequisites](/cloudlinuxos/isolates/#per-domain-prerequisites) are met. Domain hooks keep the mapping in sync when the panel dispatches them; after changes outside the panel, use <span class="notranslate">`regenerate-domains`</span> to refresh it. Use <span class="notranslate">`lvectl`</span> directly for integration scripts and for inspecting or repairing state. See [CloudLinux Isolates](/cloudlinuxos/isolates/#lve-per-domain).
 :::
 
 **Options**
