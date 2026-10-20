@@ -143,6 +143,7 @@ Supported control panels:
 * CyberPanel ([Documentation](https://community.cyberpanel.net/t/1-convert-cyberpanel-to-cloudlinux-os-and-install-cagefs/174))
 * InterWorx ([Documentation](https://appendix.interworx.com/current/nodeworx/plugins/install-use-cloudlinux-plugin-interworx.html))
 * Webuzo ([Documentation](https://webuzo.com/docs/installing-webuzo/install-cloudlinux-os/))
+* AdminBolt ([Documentation](https://docs.adminbolt.com/user-guide/integrations/cloudlinux))
 
 :::warning Other control panels
 Control panels not mentioned in the list of supported panels have native integration or integration done by the developer of the panel.
