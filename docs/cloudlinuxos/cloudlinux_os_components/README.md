@@ -4403,6 +4403,8 @@ yum groupinstall alt-php
 ```
 </div>
 
+To install one version, use its group, for example <span class="notranslate">`yum groupinstall alt-php82`</span>. Extensions are separate packages for each version, for example <span class="notranslate">`alt-php82-pecl-redis`</span> or <span class="notranslate">`alt-php82-ioncube-loader`</span>; to see the packages of a version, run <span class="notranslate">`yum list 'alt-php82*'`</span>. <span class="notranslate">PHP Selector</span> lists only the extensions installed for a version, and users can choose only the versions enabled in [Supported versions](/cloudlinuxos/lve_manager/#selector-tab). If an installed version is not listed, run <span class="notranslate">`cagefsctl --setup-cl-selector`</span>. On CloudLinux OS 10, installation requires the [ALT-ELS repositories](./#alt-els-repositories-cloudlinux-10).
+
 Update CageFS & <span class="notranslate"> LVE Manager with support for PHP Alternatives: </span>
 <div class="notranslate">
 
@@ -4480,6 +4482,8 @@ yum install cagefs
 yum groupinstall alt-php
 ```
 </div>
+
+  `alt-php` is not installed through <span class="notranslate">WHM EasyApache 4</span>, which manages cPanel `ea-php` packages. Install it as shown above (or with the [CloudLinux OS Installation Wizard](/cloudlinuxos/lve_manager/#installation-wizard)) and manage `alt-php` versions and extensions in <span class="notranslate">PHP Selector</span>.
 
 3. Install `mod_suexec` package as root. See installation instructions [here](./#installation-5).
 4. Verify that CageFS is initialized successfully.
@@ -5439,6 +5443,19 @@ ERROR:User USERNAME not in CageFS
 ```
 </div>
 
+:::tip PHP in SSH and cron jobs
+SSH sessions and cron jobs of a user run inside CageFS (users in the `wheel` group are not placed in CageFS by default), so the `php` command there runs the version selected for the account in <span class="notranslate">PHP Selector</span> (marked **s** above), with its selected extensions and options. On cPanel, this applies when `php` runs the system default `ea-php` version set in <span class="notranslate">MultiPHP Manager</span>. PHP options set only for a website (`php_value` in `.htaccess`, `.user.ini`) do not apply there. To run a specific version, call it by full path, for example <span class="notranslate">`/opt/alt/php82/usr/bin/php`</span>; a version that is not selected for the account loads the default set of extensions (see [PHP extensions](./#php-extensions)).
+
+`root` is not in CageFS and runs the native PHP, so check the version as the user:
+
+<div class="notranslate">
+
+```
+su -s /bin/bash - USERNAME -c 'php -v'
+```
+</div>
+:::
+
 #### PHP Selector without CageFS
 
 
@@ -5542,12 +5559,19 @@ CageFS 6.0-33 or higher, <span class="notranslate">LVE Manager</span> 2.0-11.2 o
 There is <span class="notranslate">`/etc/cl.selector/global_php.ini`</span> file, where you can specify values of PHP options that should be applied for all <span class="notranslate"> Alt-PHP </span> versions that are installed on a server. These settings will also be automatically applied to the new <span class="notranslate"> Alt-PHP </span> versions that will be installed later.
 
 Example:
-<span class="notranslate"> _# cat /etc/cl.selector/global_php.ini_ </span>
-<span class="notranslate"> _[Global PHP Settings]_ </span>
-<span class="notranslate"> _date.timezone = Europe/Warsaw_ </span>
-<span class="notranslate"> _error_log = error_log_ </span>
-<span class="notranslate"> _memory_limit = 192M_ </span>
-Sections are ignored. Only name of an option and a value have meaning.
+
+<div class="notranslate">
+
+```
+# cat /etc/cl.selector/global_php.ini
+[Global PHP Settings]
+date.timezone = Europe/Warsaw
+error_log = error_log
+memory_limit = 192M
+```
+</div>
+
+Put options below a section line such as <span class="notranslate">`[Global PHP Settings]`</span>; the section name does not matter. If an option comes before the section line, or a line other than a comment is not <span class="notranslate">`option = value`</span>, the whole file is ignored without an error. To change a setting of one extension, such as <span class="notranslate">`opcache.memory_consumption`</span>, see [Individual PHP.ini files](./#individual-php-ini-files).
 
 When an option is absent in <span class="notranslate"> _/etc/cl.selector/global_php.ini_ </span> file, than it is not changed (applied) to php.ini for <span class="notranslate"> Alt-PHP </span> versions.
 
