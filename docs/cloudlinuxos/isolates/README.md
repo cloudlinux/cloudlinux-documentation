@@ -595,7 +595,7 @@ $ isolatectl site-isolation list
 
 Per-domain resource limits allow end users to set and apply individual CPU, memory, I/O, and process limits for each isolated domain. Domain limits require site isolation to be enabled first.
 
-With lve-utils 6.6.43-1 or later, a failed `isolatectl limits` or `isolatectl stats` command exits with a non-zero status and returns JSON with `"result": "error"`, a `code` and a human-readable `message`. Check `code` rather than the message text. The codes are `not_allowed` (for example, per-domain limits are not enabled for the account), `domain_not_owned`, `not_isolated` (the domain has no registered domain LVE id yet), `invalid_value`, `config_unreadable` (`~/.lve/domains.json` cannot be read; details are in `~/.lve/isolatectl.log`), `kernel_error`, `backend_unavailable` and `internal_error`.
+With lve-utils 6.6.43-1 or later, a failed `isolatectl limits` or [`isolatectl stats`](#per-domain-statistics) command exits with a non-zero status and returns JSON with `"result": "error"`, a `code` and a human-readable `message`. Check `code` rather than the message text. The codes are `not_allowed` (for example, per-domain limits are not enabled for the account), `domain_not_owned`, `not_isolated` (the domain has no registered domain LVE id yet), `invalid_value`, `config_unreadable` (`~/.lve/domains.json` cannot be read; details are in `~/.lve/isolatectl.log`), `kernel_error`, `backend_unavailable` and `internal_error`.
 
 ##### List Domain Limits
 
@@ -990,6 +990,7 @@ The underlying <span class="notranslate">`lvectl`</span> commands are available 
 |<span class="notranslate">`lvectl enable-domain-limits <domain>`</span> | Register a domain LVE. The owner and document root are resolved from the control panel.|
 |<span class="notranslate">`lvectl disable-domain-limits <domain>`</span> | Unregister the domain LVE and remove its registry entry.|
 |<span class="notranslate">`lvectl list-domains <uid>`</span> | List the domain LVEs of the account with the given numeric UID.|
+|<span class="notranslate">`lvectl list-domain-limits <user>`</span> | Show the per-domain limits in force, read from the registry and the kernel (lve-utils 6.6.43-1 or later).|
 |<span class="notranslate">`lvectl regenerate-domains --username <user> ...`</span> | Refresh the domain configuration and id mapping after a rename or document root change.|
 
 See [lvectl](/cloudlinuxos/command-line_tools/#lvectl) for the full syntax.
@@ -1089,6 +1090,6 @@ After a document root change, give the previous document root instead, and add <
 lvectl regenerate-domains --username <user> --domain <domain> --old-docroot <old_docroot>
 ```
 
-A document root change gives the domain a new domain LVE id.
+<span class="notranslate">`<old_docroot>`</span> must match the previously registered document root exactly, as the control panel reported it; otherwise the registry is not updated and no error is reported. With lve-utils 6.6.43-1 or later, <span class="notranslate">`lvectl list-domain-limits <user>`</span> shows that document root as the <span class="notranslate">`docroot`</span> of a row whose <span class="notranslate">`domain`</span> is <span class="notranslate">`null`</span>. A document root change gives the domain a new domain LVE id.
 
 ***

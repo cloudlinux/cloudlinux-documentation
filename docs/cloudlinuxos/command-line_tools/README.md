@@ -2926,8 +2926,8 @@ Under a control panel, use the [CageFS Isolates commands](/cloudlinuxos/isolates
 
 |  |  |
 |--|--|
-| <span class="notranslate"> `--enter-count`   </span> |enable limit for enters count (by default disabled), use only with command "limit". Supported in lve-utils-6.1.2-1 or later. |
-| <span class="notranslate"> `--io-and-memory`   </span> |enable limit for IO and memory (by default disabled), use only with command "limit". Supported in lve-utils-6.1.2-1 or later. |
+| <span class="notranslate"> `--enters-count`   </span> |enable limit for enters count (by default disabled), use only with command "limit", before the PID: <span class="notranslate">`lvectl limit --enters-count <PID> <LVE_ID>`</span>. Supported in lve-utils-6.1.2-1 or later. |
+| <span class="notranslate"> `--io-and-memory`   </span> |enable limit for IO and memory (by default disabled), use only with command "limit", before the PID. Supported in lve-utils-6.1.2-1 or later. |
 | <span class="notranslate"> `--cpu=N`   </span> |limit <span class="notranslate">`CPU`</span> usage; (deprecated. Use <span class="notranslate">`--speed`</span>)|
 | <span class="notranslate"> `--speed=N%` </span> |limit <span class="notranslate">`CPU`</span> usage in percentage; 100% is one core|
 | <span class="notranslate"> `--speed=Nmhz\ghz` </span> |limit <span class="notranslate">`CPU`</span> usage in mhz\ghz|
@@ -3003,7 +3003,7 @@ lveps [-p] [-n] [-L] [-o <fmt1:width1,...>] [-d] [-c <time>] [-s <style>] [-t] [
 |`-p`| to print per-process/per-thread statistics|
 |`-n`| to print LVE ID instead of username|
 |`-L`| to add the <span class="notranslate">LVP</span> column (the ID of the parent container, `0` if none). Ignored when `-o` is given; add `lvp` to the `-o` format instead. Supported in lve-utils 6.6.40-1 or later|
-|`-o`| to use formatted output (fmt=id,ep,pid,tid,cpu,mem,io)|
+|`-o`| to use formatted output (fmt=id,lvp,ep,pid,tid,cpu,mem,io; `lvp` requires lve-utils 6.6.40-1 or later)|
 |`-d`| to show dynamic cpu usage instead of total cpu usage|
 |`-c`| to calculate average cpu usage for &lt;time&gt; seconds (used with `-d`)|
 |`-r`| to run under realtime priority for more accuracy (needs privileges)|
@@ -3020,7 +3020,7 @@ Command like <span class="notranslate">`lveps -p`</span> will display processes 
 |<span class="notranslate">MEM</span>| The number of megabytes of resident memory in use by LVE/process/thread (shared memory is not included).|
 |<span class="notranslate">IO</span> | The number of kilobytes read and written in sum by LVE, or kb/sec if used with `-d`.|
 |<span class="notranslate">ID</span> | LVE ID or username.|
-|<span class="notranslate">LVP</span> | The numeric ID of the container (LVP) that the LVE is listed under, such as a reseller's LVP or, when per-domain limits are used, the hosting account's LVP; `0` if the LVE is not inside an LVP. Shown with `-L`.|
+|<span class="notranslate">LVP</span> | The numeric ID of the container (LVP) that the LVE is listed under, such as a reseller's LVP or, when per-domain limits are used, the hosting account's LVP; `0` if the LVE is not inside an LVP. Shown with `-L`, or when `lvp` is included in the `-o` format.|
 |<span class="notranslate">EP</span> | The number of entry processes inside  LVE.|
 |<span class="notranslate">COM</span> | Command name for this process.|
 |<span class="notranslate">PID</span> | <span class="notranslate">PID</span> of the process.|
