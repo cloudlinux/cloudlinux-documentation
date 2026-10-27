@@ -1394,7 +1394,8 @@ add_header X-CL-Served $maxcache_status always;
 Then request a cached page:
 
 ```
-curl -sSI https://example.com/ | grep -i x-cl-served
+curl -sS -o /dev/null https://example.com/
+curl -sS -o /dev/null -D - https://example.com/ | grep -i x-cl-served
 ```
 
 On Apache the header is present only on a response the module served itself. On NGINX it carries `hit` when the module served the file, `miss` when it looked and found nothing, and `skip` when the request was not eligible; the header is absent when the module never looked at the request.
@@ -1442,6 +1443,8 @@ If the extension activates but pages are not served from cache, check in this or
 | `{WEBP_SUFFIX}` | WebP suffix | `-webp` or empty |
 | `{DYNAMIC_COOKIE_SUFFIX}` | Dynamic cookies suffix | `-usd-en` or empty |
 | `{GZIP_SUFFIX}` | Gzip suffix | `_gzip` or empty |
+| `{SLASH_SUFFIX}` | Suffix emitted when the request URI ends in `/`. The literal it emits is set by `MaxCacheSuffixLiterals slash=` (no built-in default) | per `slash=` or empty |
+| `{ENC_SUFFIX}` | Compression-encoding suffix covering both gzip and brotli. The literals are set by `MaxCacheSuffixLiterals enc-gzip=` / `enc-br=`. Supersedes `{GZIP_SUFFIX}`, which is gzip-only | `_gzip` / `_br` or empty |
 * **Example** (standard cache layout): 
 ```
 MaxCachePath /wp-content/cache/{HTTP_HOST}{USER_SUFFIX}{REQUEST_URI}{QS_SUFFIX}/index{MOBILE_SUFFIX}{SSL_SUFFIX}{WEBP_SUFFIX}{DYNAMIC_COOKIE_SUFFIX}.html{GZIP_SUFFIX}
@@ -1450,10 +1453,30 @@ This produces cache file paths like:
 * `/wp-content/cache/example.com/article/index-https-webp.html_gzip`
 * `/wp-content/cache/example.com-admin-secret/index-mobile-https.html` 
 
+#### MaxCacheSuffixLiterals
+
+* **Syntax**: `MaxCacheSuffixLiterals slash=<literal> ssl=<literal> enc-gzip=<literal> enc-br=<literal>`
+* **Default**: `ssl=-https`; the other literals unset
+* **Context**: server config, virtual host, directory, .htaccess
+* **Description**: Sets the exact bytes the `{SLASH_SUFFIX}`, `{SSL_SUFFIX}` and `{ENC_SUFFIX}` placeholders emit, so the module can reproduce a plugin's own cache-filename scheme byte for byte (for example, W3 Total Cache's layout differs from AccelerateWP's). Only the keys you pass take effect; a key you leave out keeps its built-in behavior. The directive is **all-or-nothing per line**: one unknown token, or `slash=` with an empty value, rejects the whole line, so the same `.htaccess` behaves identically on Apache and NGINX.
+* **Keys**: 
+
+| Key | Placeholder | Notes |
+|---|---|---|
+| `slash` | `{SLASH_SUFFIX}` | Emitted when the request URI ends in `/`. No built-in default, so it is required if `{SLASH_SUFFIX}` is used. |
+| `ssl` | `{SSL_SUFFIX}` | Omitted = built-in `-https`. |
+| `enc-gzip` | `{ENC_SUFFIX}` (gzip) | Literal for a gzip-encoded variant. |
+| `enc-br` | `{ENC_SUFFIX}` (brotli) | Literal for a brotli-encoded variant. |
+
+* **Example**:
+```
+MaxCacheSuffixLiterals ssl=_ssl enc-gzip=_gzip enc-br=_brotli
+```
+
 #### MaxCacheOptions
 
-* **Syntax**: `MaxCacheOptions [+-]TabletAsMobile [+-]SkipCacheOnMobile [+-]ExportVars`
-* **Default**: `-TabletAsMobile -SkipCacheOnMobile -ExportVars`
+* **Syntax**: `MaxCacheOptions [+-]TabletAsMobile [+-]SkipCacheOnMobile [+-]ExportVars [+-]FoldQSIgnoredCase`
+* **Default**: `-TabletAsMobile -SkipCacheOnMobile -ExportVars -FoldQSIgnoredCase`
 * **Context**: server config, virtual host, directory, .htaccess
 * **Options**: 
 
@@ -1462,8 +1485,9 @@ This produces cache file paths like:
 | `TabletAsMobile` | Treat tablets as mobile devices for both the `-mobile` filename suffix (when `{MOBILE_SUFFIX}` is used) and the `SkipCacheOnMobile` gate. Without `SkipCacheOnMobile`, this option still matters: it changes whether tablets use the `-mobile` cache variant. |
 | `SkipCacheOnMobile` | Never serve cached content to mobile devices (and tablets, if `TabletAsMobile` is also enabled). |
 | `ExportVars` | Export `CL_DEVICE_TYPE` and `CL_SUPPORTS_WEBP` to subprocess_env| 
+| `FoldQSIgnoredCase` | Match the names in `MaxCacheQSIgnoredParams` case-insensitively. Enable it when the plugin screens the query string with a case-insensitive expression (so `FBCLID` folds onto `fbclid`); leave it off to match byte for byte, as a PHP plugin comparing `$_GET` keys does. |
 
-* **Description**: Fine-tunes mobile/tablet behavior. The `ExportVars` option provides environment variables for use in `RewriteRule`: `%{ENV:CL_DEVICE_TYPE}` and `%{ENV:CL_SUPPORTS_WEBP}`. We recommend to simply use `MaxCachePath` instead.
+* **Description**: Fine-tunes mobile/tablet and query-string behavior. The `ExportVars` option provides environment variables for use in `RewriteRule`: `%{ENV:CL_DEVICE_TYPE}` and `%{ENV:CL_SUPPORTS_WEBP}`. We recommend to simply use `MaxCachePath` instead.
 * **Example**: 
 ```
 # Treat tablets as mobile
@@ -1604,6 +1628,28 @@ MaxCacheIgnoreHeaders "X-Requested-With: XMLHttpRequest"
 ```
 MaxCacheLoggedHash "your-secret-key"
 ``` 
+
+#### MaxCacheTrustXForwardedProto
+
+* **Syntax**: `MaxCacheTrustXForwardedProto On|Off`
+* **Default**: Off
+* **Context**: server config, virtual host, directory, .htaccess
+* **Description**: Honor the `X-Forwarded-Proto` request header when choosing the `-https` (`{SSL_SUFFIX}`) cache variant. Off by default: on a plain-HTTP listener the header is client-spoofable, so without a trusted upstream proxy that pins it, the module ignores it and uses the actual connection scheme. Enable it only behind a proxy you control that sets this header.
+* **Example**:
+```
+MaxCacheTrustXForwardedProto On
+```
+
+#### MaxCacheTrustCloudFront
+
+* **Syntax**: `MaxCacheTrustCloudFront On|Off`
+* **Default**: Off
+* **Context**: server config, virtual host, directory, .htaccess
+* **Description**: Honor the `CloudFront-Is-Mobile-Viewer` / `CloudFront-Is-Tablet-Viewer` / `CloudFront-Is-Desktop-Viewer` request headers for device classification. Off by default: without an upstream CloudFront tier pinning these headers they are client-spoofable and could poison the `-mobile` cache variant. Enable it only when CloudFront sits in front of the origin.
+* **Example**:
+```
+MaxCacheTrustCloudFront On
+```
 
 ### Integration Guide for Plugin Developers 
 
@@ -2297,18 +2343,27 @@ Supported template variables:
 | `{USER_SUFFIX}`           | Per-user cache suffix for logged-in users | `-admin-a1b2c3`     |
 | `{USER_SHARED_SUFFIX}`    | Shared logged-in cache suffix             | `-loggedin-a1b2c3`  |
 | `{DYNAMIC_COOKIE_SUFFIX}` | Dynamic cookie variant suffix             | `-fr-eur`           |
+| `{SLASH_SUFFIX}`          | Emitted when the request URI ends in `/`; literal set by `maxcache_suffix_literals slash=` | per `slash=` or empty |
+| `{ENC_SUFFIX}`            | Compression-encoding suffix (gzip and brotli); literals set by `maxcache_suffix_literals enc-gzip=` / `enc-br=`. Supersedes `{GZIP_SUFFIX}` | `_gzip` / `_br` or empty |
+
+#### maxcache\_suffix\_literals
+
+Sets the exact bytes the `{SLASH_SUFFIX}`, `{SSL_SUFFIX}` and `{ENC_SUFFIX}` placeholders emit, so the module reproduces a plugin's own cache-filename scheme byte for byte. Only the keys you pass take effect; the directive is all-or-nothing (one unknown token, or `slash=` with an empty value, rejects the whole line). Keys: `slash`, `ssl` (omitted = built-in `-https`), `enc-gzip`, `enc-br`.
+
+**Syntax:** `maxcache_suffix_literals slash=<lit> ssl=<lit> enc-gzip=<lit> enc-br=<lit>;` **Default:** `ssl=-https`, others unset **Context:** `http`, `server`, `location`
 
 #### maxcache\_options
 
-Behavior options for mobile handling.
+Behavior options for mobile and query-string handling.
 
-**Syntax:** `maxcache_options [+|-]skip_mobile [+|-]tablet_as_mobile [+|-]export_vars;` **Default:** all disabled **Context:** `http`, `server`, `location`
+**Syntax:** `maxcache_options [+|-]skip_mobile [+|-]tablet_as_mobile [+|-]export_vars [+|-]fold_qs_ignored_case;` **Default:** all disabled **Context:** `http`, `server`, `location`
 
-| Option             | Description                                                        |
-| ------------------ | ------------------------------------------------------------------ |
-| `skip_mobile`      | Mobile devices bypass cache and receive dynamic content.           |
-| `tablet_as_mobile` | Tablets are treated as mobile devices.                             |
-| `export_vars`      | Exports `$cl_device_type` and `$cl_supports_webp` NGINX variables. |
+| Option                 | Description                                                        |
+| ---------------------- | ------------------------------------------------------------------ |
+| `skip_mobile`          | Mobile devices bypass cache and receive dynamic content.           |
+| `tablet_as_mobile`     | Tablets are treated as mobile devices.                             |
+| `export_vars`          | Exports `$cl_device_type` and `$cl_supports_webp` NGINX variables. |
+| `fold_qs_ignored_case` | Match `maxcache_qs_ignored_params` names case-insensitively (e.g. `FBCLID` folds onto `fbclid`). Off = byte-for-byte match. |
 
 #### maxcache\_exclude\_uri
 
@@ -2334,7 +2389,7 @@ Cookies that must be present for the module to serve cached content.
 
 **Syntax:** `maxcache_mandatory_cookies <cookie1> [cookie2] ...;` **Default:** none **Context:** `http`, `server`, `location`
 
-##### maxcache\_dynamic\_cookies
+#### maxcache\_dynamic\_cookies
 
 Cookies that create dynamic cache variants (e.g., for multi-currency or multi-language).
 
@@ -2363,6 +2418,18 @@ Request header/value pairs that bypass the cache. Format: `"Header-Name: value"`
 Secret hash for logged-in user cache keys. Must match AccelerateWP's `secret_cache_key` setting.
 
 **Syntax:** `maxcache_logged_hash "<secret_key>";` **Default:** none **Context:** `http`, `server`, `location`
+
+#### maxcache\_trust\_x\_forwarded\_proto
+
+Honor the `X-Forwarded-Proto` request header when choosing the `-https` (`{SSL_SUFFIX}`) cache variant. Off by default: on a plain-HTTP listener the header is client-spoofable, so without a trusted upstream proxy that pins it, the module ignores it and falls back to the actual connection scheme. The NGINX counterpart of Apache's `MaxCacheTrustXForwardedProto`.
+
+**Syntax:** `maxcache_trust_x_forwarded_proto on | off;` **Default:** `off` **Context:** `http`, `server`, `location`
+
+#### maxcache\_trust\_cloudfront
+
+Honor the `CloudFront-Is-Mobile-Viewer` / `CloudFront-Is-Tablet-Viewer` / `CloudFront-Is-Desktop-Viewer` headers for device classification. Off by default: without an upstream CloudFront tier pinning these headers they are client-spoofable and could poison the `-mobile` cache variant. Enable it only when CloudFront sits in front of the origin.
+
+**Syntax:** `maxcache_trust_cloudfront on | off;` **Default:** `off` **Context:** `http`, `server`, `location`
 
 #### maxcache\_dynamic
 
