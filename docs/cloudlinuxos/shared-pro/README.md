@@ -1291,7 +1291,7 @@ yum reinstall ea-php80-php-mbstring
 
 This design eliminates per-request regex compilation in `.htaccess`, resulting in significantly faster cache delivery. The module is fully compatible with AccelerateWP's cache directory layout and can be used by any caching plugin that follows similar conventions.
 
-AccelerateWP uses this module to serve the correct static page without invoking PHP or writing complex RewriteRule-based configurations. This document summarizes the module's directives and describes how any page cache plugin can integrate with the same capabilities.
+AccelerateWP and W3 Total Cache both use this module to serve the correct static page without invoking PHP or writing complex RewriteRule-based configurations. This document summarizes the module's directives and describes how any page cache plugin can integrate with the same capabilities.
 
 The module includes two independent subsystems: **cache serving** (serves pre-generated static HTML files, bypassing PHP) and **full .htaccess caching** (caches parsed `.htaccess` files in shared memory, eliminating per-request disk I/O). Both are included in the same `ea-apache24-mod_maxcache` package and can be enabled independently.
 
@@ -1304,10 +1304,10 @@ MAx Cache is currently supported on cPanel control panels only.
 To install MAx Cache, run the following commands: 
 
 ```
-yum install accelerate-wp cloudlinux-site-optimization-module libmaxcache --enablerepo=cloudlinux-updates-testing 
+yum install accelerate-wp cloudlinux-site-optimization-module libmaxcache 
 ```
 ```
-yum install ea-apache24-mod_maxcache --enablerepo=cl-ea4-testing
+yum install ea-apache24-mod_maxcache
 ``` 
 
 | Package | Description |
@@ -1322,7 +1322,7 @@ After installation, the full .htaccess caching subsystem is enabled by default (
 Use the following commands to manage MAx Cache on your server via the cloudlinux-awp-admin tool. 
 
 :::tip Note on Prerequisites
-**Important:** For either command to work, the AccelerateWP plugin must be installed and up-to-date on the WordPress sites you are targeting. Old versions of the plugin do not support the current configuration.
+**Important:** For either command to work, a supported caching plugin must be installed and up-to-date on the WordPress sites you are targeting: AccelerateWP, or W3 Total Cache 2.11.0 or newer with Page Cache set to _Disk: Enhanced_. Old versions of either plugin do not support the current configuration.
 :::
 
 #### 1. Bulk Activation (Server-Wide) 
@@ -1335,7 +1335,7 @@ cloudlinux-awp-admin maxcache enable --all
 **What this does:**
 
 * **Mass Deployment:** Activates the MAx Cache feature directly on every compatible WordPress site hosted on the server.
-* **Prerequisite:** Ensure the **AccelerateWP plugin** is updated on the target sites before running this. The configuration requires the latest plugin version to apply successfully. 
+* **Prerequisite:** Ensure a supported caching plugin (**AccelerateWP** or **W3 Total Cache**) is updated on the target sites before running this. The configuration requires the latest plugin version to apply successfully. 
 
 #### 2. Single Site Activation 
 
@@ -1348,6 +1348,65 @@ cloudlinux-awp-admin maxcache --enable --user {USERNAME} --domain {USERDOMAIN}
 
 * `--user {USERNAME}`: Replace `{USERNAME}` with the system username of the account (e.g., `john`).
 * `--domain {USERDOMAIN}`: Replace `{USERDOMAIN}` with the specific domain name (e.g., `example.com`). 
+
+### Using MAx Cache with W3 Total Cache
+
+W3 Total Cache ships a MAx Cache extension. It is part of the plugin, so there is nothing extra to install on the WordPress side.
+
+:::tip Note
+W3 Total Cache support starts with MAx Cache **1.2.7**. Make sure the server has at least that version.
+:::
+
+#### Requirements and limits
+
+* **Page Cache must be set to Disk: Enhanced.** Disk: Basic serves through PHP and has no cache files a server module could send.
+* **cPanel only.** Other control panels are not supported yet.
+* **MAx Cache module 1.2.7 or newer** on the server. The extension checks the version and stays off against an older module rather than write directives it cannot serve.
+* **The site's server config must be writable** by the web server, or the directives never reach the module.
+* **Some sites will decline.** Named user-agent, referrer and cookie-group rules are outside what the module can reproduce today. Those sites keep working, served by PHP.
+* **Another plugin that moves W3 Total Cache's cache files or changes when a visitor may be served from cache** will also make the extension decline.
+
+#### Enabling it
+
+1. In WordPress, go to **Performance → General Settings** and set **Page Cache** method to **Disk: Enhanced**.
+2. Go to **Performance → Extensions**, find **MAx Cache**, and activate it.
+
+The extension writes the module's directives into the site's `.htaccess` inside its own marked block, and removes them when it is deactivated. It reports its status on the same **Extensions** screen: it either activates or names the reason it declined.
+
+#### Checking that it works
+
+The module sets no response header of its own. To tell from the outside whether it served a page, or whether PHP served the same file, switch a header on for the site.
+
+On Apache, add this to the site's `.htaccess`. Keep it outside any `<IfModule maxcache_module>` block: the extension declines to take over a MAx Cache block it did not write itself.
+
+```
+<IfModule mod_headers.c>
+    Header always set X-CL-Served "1" "expr=%{HANDLER} == 'maxcache-cached-file'"
+</IfModule>
+```
+
+On NGINX, add this to the server configuration instead:
+
+```
+add_header X-CL-Served $maxcache_status always;
+```
+
+Then request a cached page:
+
+```
+curl -sS -o /dev/null https://example.com/
+curl -sS -o /dev/null -D - https://example.com/ | grep -i x-cl-served
+```
+
+On Apache the header is present only on a response the module served itself. On NGINX it carries `hit` when the module served the file, `miss` when it looked and found nothing, and `skip` when the request was not eligible; the header is absent when the module never looked at the request.
+
+#### Troubleshooting
+
+If the extension activates but pages are not served from cache, check in this order:
+
+1. The `.htaccess` block exists. The extension writes it between `# BEGIN W3TC Page Cache MAx Cache` and the matching end marker. If the block is half-written the extension reports it and refuses to proceed; delete the lines and save the file.
+2. The cache files exist. W3 Total Cache writes them under `wp-content/cache/page_enhanced/<host>/`.
+3. The request is eligible. Logged-in visitors, POST requests and excluded URIs are served by PHP by design.
 
 ### Module Directives 
 
@@ -1384,6 +1443,8 @@ cloudlinux-awp-admin maxcache --enable --user {USERNAME} --domain {USERDOMAIN}
 | `{WEBP_SUFFIX}` | WebP suffix | `-webp` or empty |
 | `{DYNAMIC_COOKIE_SUFFIX}` | Dynamic cookies suffix | `-usd-en` or empty |
 | `{GZIP_SUFFIX}` | Gzip suffix | `_gzip` or empty |
+| `{SLASH_SUFFIX}` | Suffix emitted when the request URI ends in `/`. The literal it emits is set by `MaxCacheSuffixLiterals slash=` (no built-in default) | per `slash=` or empty |
+| `{ENC_SUFFIX}` | Compression-encoding suffix covering both gzip and brotli. The literals are set by `MaxCacheSuffixLiterals enc-gzip=` / `enc-br=`. Supersedes `{GZIP_SUFFIX}`, which is gzip-only | `_gzip` / `_br` or empty |
 * **Example** (standard cache layout): 
 ```
 MaxCachePath /wp-content/cache/{HTTP_HOST}{USER_SUFFIX}{REQUEST_URI}{QS_SUFFIX}/index{MOBILE_SUFFIX}{SSL_SUFFIX}{WEBP_SUFFIX}{DYNAMIC_COOKIE_SUFFIX}.html{GZIP_SUFFIX}
@@ -1392,10 +1453,30 @@ This produces cache file paths like:
 * `/wp-content/cache/example.com/article/index-https-webp.html_gzip`
 * `/wp-content/cache/example.com-admin-secret/index-mobile-https.html` 
 
+#### MaxCacheSuffixLiterals
+
+* **Syntax**: `MaxCacheSuffixLiterals slash=<literal> ssl=<literal> enc-gzip=<literal> enc-br=<literal>`
+* **Default**: `ssl=-https`; the other literals unset
+* **Context**: server config, virtual host, directory, .htaccess
+* **Description**: Sets the exact bytes the `{SLASH_SUFFIX}`, `{SSL_SUFFIX}` and `{ENC_SUFFIX}` placeholders emit, so the module can reproduce a plugin's own cache-filename scheme byte for byte (for example, W3 Total Cache's layout differs from AccelerateWP's). Only the keys you pass take effect; a key you leave out keeps its built-in behavior. The directive is **all-or-nothing per line**: one unknown token, or `slash=` with an empty value, rejects the whole line, so the same `.htaccess` behaves identically on Apache and NGINX.
+* **Keys**: 
+
+| Key | Placeholder | Notes |
+|---|---|---|
+| `slash` | `{SLASH_SUFFIX}` | Emitted when the request URI ends in `/`. No built-in default, so it is required if `{SLASH_SUFFIX}` is used. |
+| `ssl` | `{SSL_SUFFIX}` | Omitted = built-in `-https`. |
+| `enc-gzip` | `{ENC_SUFFIX}` (gzip) | Literal for a gzip-encoded variant. |
+| `enc-br` | `{ENC_SUFFIX}` (brotli) | Literal for a brotli-encoded variant. |
+
+* **Example**:
+```
+MaxCacheSuffixLiterals ssl=_ssl enc-gzip=_gzip enc-br=_brotli
+```
+
 #### MaxCacheOptions
 
-* **Syntax**: `MaxCacheOptions [+-]TabletAsMobile [+-]SkipCacheOnMobile [+-]ExportVars`
-* **Default**: `-TabletAsMobile -SkipCacheOnMobile -ExportVars`
+* **Syntax**: `MaxCacheOptions [+-]TabletAsMobile [+-]SkipCacheOnMobile [+-]ExportVars [+-]FoldQSIgnoredCase`
+* **Default**: `-TabletAsMobile -SkipCacheOnMobile -ExportVars -FoldQSIgnoredCase`
 * **Context**: server config, virtual host, directory, .htaccess
 * **Options**: 
 
@@ -1404,8 +1485,9 @@ This produces cache file paths like:
 | `TabletAsMobile` | Treat tablets as mobile devices for both the `-mobile` filename suffix (when `{MOBILE_SUFFIX}` is used) and the `SkipCacheOnMobile` gate. Without `SkipCacheOnMobile`, this option still matters: it changes whether tablets use the `-mobile` cache variant. |
 | `SkipCacheOnMobile` | Never serve cached content to mobile devices (and tablets, if `TabletAsMobile` is also enabled). |
 | `ExportVars` | Export `CL_DEVICE_TYPE` and `CL_SUPPORTS_WEBP` to subprocess_env| 
+| `FoldQSIgnoredCase` | Match the names in `MaxCacheQSIgnoredParams` case-insensitively. Enable it when the plugin screens the query string with a case-insensitive expression (so `FBCLID` folds onto `fbclid`); leave it off to match byte for byte, as a PHP plugin comparing `$_GET` keys does. |
 
-* **Description**: Fine-tunes mobile/tablet behavior. The `ExportVars` option provides environment variables for use in `RewriteRule`: `%{ENV:CL_DEVICE_TYPE}` and `%{ENV:CL_SUPPORTS_WEBP}`. We recommend to simply use `MaxCachePath` instead.
+* **Description**: Fine-tunes mobile/tablet and query-string behavior. The `ExportVars` option provides environment variables for use in `RewriteRule`: `%{ENV:CL_DEVICE_TYPE}` and `%{ENV:CL_SUPPORTS_WEBP}`. We recommend to simply use `MaxCachePath` instead.
 * **Example**: 
 ```
 # Treat tablets as mobile
@@ -1546,6 +1628,28 @@ MaxCacheIgnoreHeaders "X-Requested-With: XMLHttpRequest"
 ```
 MaxCacheLoggedHash "your-secret-key"
 ``` 
+
+#### MaxCacheTrustXForwardedProto
+
+* **Syntax**: `MaxCacheTrustXForwardedProto On|Off`
+* **Default**: Off
+* **Context**: server config, virtual host, directory, .htaccess
+* **Description**: Honor the `X-Forwarded-Proto` request header when choosing the `-https` (`{SSL_SUFFIX}`) cache variant. Off by default: on a plain-HTTP listener the header is client-spoofable, so without a trusted upstream proxy that pins it, the module ignores it and uses the actual connection scheme. Enable it only behind a proxy you control that sets this header.
+* **Example**:
+```
+MaxCacheTrustXForwardedProto On
+```
+
+#### MaxCacheTrustCloudFront
+
+* **Syntax**: `MaxCacheTrustCloudFront On|Off`
+* **Default**: Off
+* **Context**: server config, virtual host, directory, .htaccess
+* **Description**: Honor the `CloudFront-Is-Mobile-Viewer` / `CloudFront-Is-Tablet-Viewer` / `CloudFront-Is-Desktop-Viewer` request headers for device classification. Off by default: without an upstream CloudFront tier pinning these headers they are client-spoofable and could poison the `-mobile` cache variant. Enable it only when CloudFront sits in front of the origin.
+* **Example**:
+```
+MaxCacheTrustCloudFront On
+```
 
 ### Integration Guide for Plugin Developers 
 
@@ -2106,7 +2210,7 @@ If changes must take effect immediately, restart Apache: `systemctl restart http
 
 ### Overview
 
-MAx Cache for NGINX (`ea-nginx-maxcache`) is the NGINX counterpart of the [Apache MAx Cache module](/cloudlinuxos/shared-pro/#max-cache-documentation) . It serves pre-generated static HTML cache files produced by AccelerateWP directly from disk, bypassing PHP on cache hits. The module shares the same `libmaxcache` core library as the Apache module for device detection, WebP support, cookie handling, and query-string normalization.
+MAx Cache for NGINX (`ea-nginx-maxcache`) is the NGINX counterpart of the [Apache MAx Cache module](/cloudlinuxos/shared-pro/#max-cache-documentation) . It serves pre-generated static HTML cache files produced by AccelerateWP or W3 Total Cache directly from disk, bypassing PHP on cache hits. The module shares the same `libmaxcache` core library as the Apache module for device detection, WebP support, cookie handling, and query-string normalization.
 
 :::tip 
 MAx Cache for NGINX is currently supported on cPanel control panels only. 
@@ -2115,17 +2219,17 @@ MAx Cache for NGINX is currently supported on cPanel control panels only.
 ### Installation
 
 ```
-yum install accelerate-wp cloudlinux-site-optimization-module libmaxcache libmaxcache-configd --enablerepo=cloudlinux-updates-testing
-yum install ea-nginx-maxcache --enablerepo=cl-ea4-testing
+yum install accelerate-wp cloudlinux-site-optimization-module libmaxcache maxcache-nginx-configd
+yum install ea-nginx-maxcache
 ```
 
 This pulls in all required dependencies:
 
-| Package               | Description                                                     |
-| --------------------- | --------------------------------------------------------------- |
-| `ea-nginx-maxcache`   | NGINX dynamic module (`.so` file) and module loader config      |
-| `libmaxcache`         | Shared C library for device detection, WebP, cookie/QS handling |
-| `libmaxcache-configd` | Configuration daemon: parses `.htaccess`, writes shared memory  |
+| Package                  | Description                                                     |
+| ------------------------ | --------------------------------------------------------------- |
+| `ea-nginx-maxcache`      | NGINX dynamic module (`.so` file) and module loader config      |
+| `libmaxcache`            | Shared C library for device detection, WebP, cookie/QS handling |
+| `maxcache-nginx-configd` | Configuration daemon: parses `.htaccess`, writes shared memory  |
 
 Verify the module is loaded:
 
@@ -2134,18 +2238,18 @@ nginx -T 2>&1 | grep maxcache
 # Expected: load_module "/usr/lib64/nginx/modules/ngx_http_maxcache_module.so";
 ```
 
-The `maxcache-configd` daemon is enabled automatically on package install:
+The `maxcache-nginx-configd` daemon is enabled automatically on package install:
 
 ```
-systemctl status maxcache-configd
-journalctl -u maxcache-configd -f
+systemctl status maxcache-nginx-configd
+journalctl -u maxcache-nginx-configd -f
 ```
 
 ### Supported modes
 
-#### Default: automatic via maxcache-configd daemon
+#### Default: automatic via maxcache-nginx-configd daemon
 
-In the default mode, the `maxcache-configd` daemon reads AccelerateWP `.htaccess` directives and writes parsed per-domain configuration to shared memory (`/dev/shm/maxcache_config`). The NGINX module reads this shared memory on each request. No manual NGINX configuration is needed per domain.
+In the default mode, the `maxcache-nginx-configd` daemon reads AccelerateWP `.htaccess` directives and writes parsed per-domain configuration to shared memory (`/dev/shm/maxcache_config`). The NGINX module reads this shared memory on each request. No manual NGINX configuration is needed per domain.
 
 The `maxcache_dynamic` directive (enabled by default) and `maxcache_shm_path` are the only `http`-level directives required. The `ea-nginx-maxcache` package configures them automatically.
 
@@ -2174,7 +2278,7 @@ cloudlinux-awp-admin maxcache --enable --user {USERNAME} --domain {USERDOMAIN}
 ```
 
 :::tip
-The AccelerateWP plugin must be installed and up-to-date on the target WordPress sites. 
+A supported caching plugin must be installed and up-to-date on the target WordPress sites: AccelerateWP, or W3 Total Cache 2.11.0 or newer with Page Cache set to _Disk: Enhanced_. See [Using MAx Cache with W3 Total Cache](/cloudlinuxos/shared-pro/#using-max-cache-with-w3-total-cache).
 :::
 
 ### Known issues
@@ -2239,18 +2343,27 @@ Supported template variables:
 | `{USER_SUFFIX}`           | Per-user cache suffix for logged-in users | `-admin-a1b2c3`     |
 | `{USER_SHARED_SUFFIX}`    | Shared logged-in cache suffix             | `-loggedin-a1b2c3`  |
 | `{DYNAMIC_COOKIE_SUFFIX}` | Dynamic cookie variant suffix             | `-fr-eur`           |
+| `{SLASH_SUFFIX}`          | Emitted when the request URI ends in `/`; literal set by `maxcache_suffix_literals slash=` | per `slash=` or empty |
+| `{ENC_SUFFIX}`            | Compression-encoding suffix (gzip and brotli); literals set by `maxcache_suffix_literals enc-gzip=` / `enc-br=`. Supersedes `{GZIP_SUFFIX}` | `_gzip` / `_br` or empty |
+
+#### maxcache\_suffix\_literals
+
+Sets the exact bytes the `{SLASH_SUFFIX}`, `{SSL_SUFFIX}` and `{ENC_SUFFIX}` placeholders emit, so the module reproduces a plugin's own cache-filename scheme byte for byte. Only the keys you pass take effect; the directive is all-or-nothing (one unknown token, or `slash=` with an empty value, rejects the whole line). Keys: `slash`, `ssl` (omitted = built-in `-https`), `enc-gzip`, `enc-br`.
+
+**Syntax:** `maxcache_suffix_literals slash=<lit> ssl=<lit> enc-gzip=<lit> enc-br=<lit>;` **Default:** `ssl=-https`, others unset **Context:** `http`, `server`, `location`
 
 #### maxcache\_options
 
-Behavior options for mobile handling.
+Behavior options for mobile and query-string handling.
 
-**Syntax:** `maxcache_options [+|-]skip_mobile [+|-]tablet_as_mobile [+|-]export_vars;` **Default:** all disabled **Context:** `http`, `server`, `location`
+**Syntax:** `maxcache_options [+|-]skip_mobile [+|-]tablet_as_mobile [+|-]export_vars [+|-]fold_qs_ignored_case;` **Default:** all disabled **Context:** `http`, `server`, `location`
 
-| Option             | Description                                                        |
-| ------------------ | ------------------------------------------------------------------ |
-| `skip_mobile`      | Mobile devices bypass cache and receive dynamic content.           |
-| `tablet_as_mobile` | Tablets are treated as mobile devices.                             |
-| `export_vars`      | Exports `$cl_device_type` and `$cl_supports_webp` NGINX variables. |
+| Option                 | Description                                                        |
+| ---------------------- | ------------------------------------------------------------------ |
+| `skip_mobile`          | Mobile devices bypass cache and receive dynamic content.           |
+| `tablet_as_mobile`     | Tablets are treated as mobile devices.                             |
+| `export_vars`          | Exports `$cl_device_type` and `$cl_supports_webp` NGINX variables. |
+| `fold_qs_ignored_case` | Match `maxcache_qs_ignored_params` names case-insensitively (e.g. `FBCLID` folds onto `fbclid`). Off = byte-for-byte match. |
 
 #### maxcache\_exclude\_uri
 
@@ -2276,7 +2389,7 @@ Cookies that must be present for the module to serve cached content.
 
 **Syntax:** `maxcache_mandatory_cookies <cookie1> [cookie2] ...;` **Default:** none **Context:** `http`, `server`, `location`
 
-##### maxcache\_dynamic\_cookies
+#### maxcache\_dynamic\_cookies
 
 Cookies that create dynamic cache variants (e.g., for multi-currency or multi-language).
 
@@ -2306,9 +2419,21 @@ Secret hash for logged-in user cache keys. Must match AccelerateWP's `secret_cac
 
 **Syntax:** `maxcache_logged_hash "<secret_key>";` **Default:** none **Context:** `http`, `server`, `location`
 
+#### maxcache\_trust\_x\_forwarded\_proto
+
+Honor the `X-Forwarded-Proto` request header when choosing the `-https` (`{SSL_SUFFIX}`) cache variant. Off by default: on a plain-HTTP listener the header is client-spoofable, so without a trusted upstream proxy that pins it, the module ignores it and falls back to the actual connection scheme. The NGINX counterpart of Apache's `MaxCacheTrustXForwardedProto`.
+
+**Syntax:** `maxcache_trust_x_forwarded_proto on | off;` **Default:** `off` **Context:** `http`, `server`, `location`
+
+#### maxcache\_trust\_cloudfront
+
+Honor the `CloudFront-Is-Mobile-Viewer` / `CloudFront-Is-Tablet-Viewer` / `CloudFront-Is-Desktop-Viewer` headers for device classification. Off by default: without an upstream CloudFront tier pinning these headers they are client-spoofable and could poison the `-mobile` cache variant. Enable it only when CloudFront sits in front of the origin.
+
+**Syntax:** `maxcache_trust_cloudfront on | off;` **Default:** `off` **Context:** `http`, `server`, `location`
+
 #### maxcache\_dynamic
 
-Enables dynamic per-domain configuration from the `maxcache-configd` daemon via shared memory.
+Enables dynamic per-domain configuration from the `maxcache-nginx-configd` daemon via shared memory.
 
 **Syntax:** `maxcache_dynamic on | off;` **Default:** `on` **Context:** `http`
 
@@ -2338,15 +2463,15 @@ sudo -u nobody test -r /home/user/public_html/wp-content/cache/example.com/index
 **Daemon not running:**
 
 ```
-systemctl status maxcache-configd
-journalctl -u maxcache-configd --since "1 hour ago"
+systemctl status maxcache-nginx-configd
+journalctl -u maxcache-nginx-configd --since "1 hour ago"
 ls -la /dev/shm/maxcache_config
 ```
 
 **Force rescan after migrations:**
 
 ```
-systemctl reload maxcache-configd
+systemctl reload maxcache-nginx-configd
 ```
 
 **Check domain is registered in daemon:**
