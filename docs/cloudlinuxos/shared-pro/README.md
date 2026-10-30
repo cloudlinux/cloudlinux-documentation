@@ -1354,22 +1354,23 @@ cloudlinux-awp-admin maxcache --enable --user {USERNAME} --domain {USERDOMAIN}
 W3 Total Cache ships a MAx Cache extension. It is part of the plugin, so there is nothing extra to install on the WordPress side.
 
 :::tip Note
-W3 Total Cache support starts with MAx Cache **1.2.7**. Make sure the server has at least that version.
+W3 Total Cache support requires W3 Total Cache **2.11.0** or newer on the site and MAx Cache **1.2.7** or newer on the server.
 :::
 
 #### Requirements and limits
 
-* **Page Cache must be set to Disk: Enhanced.** Disk: Basic serves through PHP and has no cache files a server module could send.
+* **W3 Total Cache 2.11.0 or newer.** It is the first release that includes the MAx Cache extension.
+* **Page Cache must be set to Disk: Enhanced.** The module sends pages from Disk: Enhanced files only. A site that caches pages another way, such as Disk: Basic, Redis or Memcached, has to switch to use it.
 * **cPanel only.** Other control panels are not supported yet.
 * **MAx Cache module 1.2.7 or newer** on the server. The extension checks the version and stays off against an older module rather than write directives it cannot serve.
-* **The site's server config must be writable** by the web server, or the directives never reach the module.
+* **The site's `.htaccess` must be writable** by WordPress, or the directives never reach the module.
 * **Some sites will decline.** Named user-agent, referrer and cookie-group rules are outside what the module can reproduce today. Those sites keep working, served by PHP.
 * **Another plugin that moves W3 Total Cache's cache files or changes when a visitor may be served from cache** will also make the extension decline.
 
 #### Enabling it
 
 1. In WordPress, go to **Performance → General Settings** and set **Page Cache** method to **Disk: Enhanced**.
-2. Go to **Performance → Extensions**, find **MAx Cache**, and activate it.
+2. Go to **Performance → Extensions**, find **MAx Cache**, and activate it, or use the **Activate MAx Cache** button in the dashboard prompt. W3 Total Cache shows the prompt when the module is installed and the site's settings allow it.
 
 The extension writes the module's directives into the site's `.htaccess` inside its own marked block, and removes them when it is deactivated. It reports its status on the same **Extensions** screen: it either activates or names the reason it declined.
 
@@ -1405,10 +1406,11 @@ On Apache the header is present only on a response the module served itself. On 
 If the extension activates but pages are not served from cache, check in this order:
 
 1. The `.htaccess` block exists. The extension writes it between `# BEGIN W3TC Page Cache MAx Cache` and the matching end marker. If the block is half-written the extension reports it and refuses to proceed; delete the lines and save the file.
-2. The cache files exist. W3 Total Cache writes them under `wp-content/cache/page_enhanced/<host>/`.
-3. The request is eligible. Logged-in visitors, POST requests and excluded URIs are served by PHP by design.
+2. `WP_CACHE` is `true` in `wp-config.php`.
+3. The cache files exist. W3 Total Cache writes them under `wp-content/cache/page_enhanced/<host>/`.
+4. The request is eligible. Logged-in visitors, POST requests and excluded URIs are served by PHP by design.
 
-### Module Directives 
+### Module Directives
 
 #### MaxCache 
 
