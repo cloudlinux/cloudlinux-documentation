@@ -2216,6 +2216,8 @@ cloudlinux-selector set [--json] --interpreter nodejs ((--user <str> |  --domain
 ```
 </div>
 
+You can give a Node.js version in `--version`, `--new-version` and `--from-version` as a major version (`8`) or as a numeric `major.minor` or `major.minor.patch` (`8.17.0`). Only the major version is used. Any other value fails with `Node.js version must be a positive major or numeric major.minor[.patch]`.
+
 **Examples** :  
 This command changes version for the specific application:
 <div class="notranslate">
@@ -2298,6 +2300,61 @@ cloudlinux-selector migrate --json --interpreter nodejs --user <username> --app-
 </div>
 
 The dry run checks eligibility and application health without replacing dependencies. The real run keeps the previous `node_modules` until the rebuilt application passes its health check and records progress for recovery after an interruption. Check the result and migration log before retrying an interrupted conversion. `--skip-web-check` skips the HTTP health check for applications that do not serve web requests.
+
+**Moving cPanel AI App Hosting applications**
+
+This command moves the applications that cPanel AI App Hosting runs in Podman containers to the Node.js Selector. Only root can run it, and it prints JSON.
+
+<div class="notranslate">
+
+```
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --dry-run [--user <username>] [--summary-only] [--no-live]
+cloudlinux-selector migrate-webapp --json --interpreter nodejs (--user <username> [--app-name <name>] | --all)
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --user <username> --app-name <name> --rollback
+cloudlinux-selector migrate-webapp --json --interpreter nodejs [--user <username> [--app-name <name>]] (--status | --cleanup [--keep-days <days>])
+```
+</div>
+
+| Option | Description |
+|---|---|
+| `--dry-run` | read-only scan of the AI App Hosting applications of every account, or only of the account set by `--user`; nothing is changed |
+| `--summary-only` | with `--dry-run`, print only the per-server counts, without the list of applications |
+| `--no-live` | with `--dry-run`, skip the HTTP checks of each application |
+| `--user <username>` | only the applications of this account |
+| `--app-name <name>` | only this application (its name in AI App Hosting); requires `--user` |
+| `--all` | move the applications of every account; cannot be combined with `--user`, `--dry-run`, `--rollback`, `--status` or `--cleanup` |
+| `--rollback` | give the application's domain back to its container; requires `--user` and `--app-name` |
+| `--status` | show the state of the moves, for all accounts without `--user` |
+| `--cleanup` | remove the containers of applications moved at least `--keep-days` days ago |
+| `--keep-days <days>` | with `--cleanup`, keep the containers of applications moved fewer days ago (default: `7`) |
+
+Run the scan first. It gives each application a verdict:
+
+* `AUTO`: can be moved as is.
+* `AUTO+FIX`: can be moved, with changes to how the application starts or builds, or to its environment variables. Its files are never changed.
+* `HOLD`: cannot be moved yet, because it uses something the Node.js Selector does not support yet (for example, raw WebSocket).
+* `MANUAL`: needs changes by its owner first (for example, background work, child processes or a `prestart` script).
+* `BROKEN`: does not work in AI App Hosting now (for example, it does not answer).
+
+The report lists the reasons for each verdict. Only `AUTO` and `AUTO+FIX` applications are moved, and only when the server has everything they need. The scan lists anything missing, such as the Node.js version, Passenger or cPanel's AI App Hosting hook points, in `server_needs`. Other applications are skipped with their reasons.
+
+A move copies the application without its dependencies and creates a Node.js Selector application on the same domain under `~/apps/<name>`. It then deploys the copy, checks it, and switches the domain from the container to the Node.js Selector. If a check fails after the switch, the move is rolled back automatically. A run that stops part-way continues from where it stopped the next time it runs. A run with `--user` or `--all` does not move rolled-back applications again. To move one of them, name it with `--user <username> --app-name <name>`.
+
+`--rollback` is refused when the application has changed its files on the Node.js Selector since the move, because a rollback would lose those changes. After `--cleanup` removes an application's container, that application can no longer be rolled back.
+
+The state of the moves is kept in `/var/lib/cloudlinux-webapp-migration`, and the log is `/var/log/cloudlinux/webapp-migration.log`.
+
+**Examples**:
+
+<div class="notranslate">
+
+```
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --dry-run
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --user user1 --app-name myapp
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --status
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --cleanup --keep-days 14
+```
+</div>
 
 
 
@@ -2438,6 +2495,15 @@ Change properties for an application
 
 ```
 cloudlinux-selector set [--json] --interpreter nodejs  [(--user <str> | --domain <str>)] --app-root <str> [--app-mode <str>] [--new-app-root <str>] [--new-domain <str>] [--new-app-uri <str>] [--new-version <str>] [--startup-file <str>] [--env-vars <json string>]
+```
+</div>
+
+With `create` and `set`, `--env-vars -` reads the environment variables JSON from standard input instead of the command line, so the values do not show in the process list:
+
+<div class="notranslate">
+
+```
+echo '{ "var1" : "value1" }' | cloudlinux-selector set --json --interpreter nodejs --user user1 --app-root my_apps/app1 --env-vars -
 ```
 </div>
 

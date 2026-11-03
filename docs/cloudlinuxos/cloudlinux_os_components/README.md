@@ -6321,6 +6321,10 @@ npm install
 
 `npm i` also works. Use no extra arguments, and run it in the Selector environment. SSH installs do not restart or check the application.
 
+When you change an application's Node.js version, Selector also tries the Store first to prepare the dependencies for the new version. If the Store cannot do it, Selector uses regular npm.
+
+If a Store install ends without installing the dependencies, the original `package.json` and lockfile are restored. Regular npm then runs the command on a private copy and shows the reason. This applies, for example, when the delivery service is unreachable, an account limit is reached, resolution fails, or an install script fails. npm does not start in these cases: the result of the Store install is unknown, a recovery is pending, another operation is using the application, or `npm ci` runs on shared dependencies while the delivery service is unreachable. In these cases, retry later.
+
 To use regular npm for an account, the administrator can run:
 
 <div class="notranslate">
@@ -6356,7 +6360,7 @@ Use `cl-node-modules-storage` to change settings. Add it before each command bel
 | storage directories | `storage-list --add PATH` / `--remove PATH`, or `set --storage-path PATH` | `/var/lib/cl-node-modules-storage` | one storage directory per filesystem that holds account homes |
 | allowed registry | `set --allowed-registries URL` | `https://registry.npmjs.org/` | package source; changing it requires an empty store |
 | excluded accounts | `exclude-list --add USER` / `--remove USER` | none | accounts that always use plain npm |
-| deliveries per account per hour / day | `set --deliveries-per-hour N`, `set --deliveries-per-day N` | 60 / 200 | shared installs allowed per account; further requests fail with a rate-limit message |
+| deliveries per account per hour / day | `set --deliveries-per-hour N`, `set --deliveries-per-day N` | 60 / 200 | shared installs allowed per account; after the limit, installs use regular npm on a private copy |
 | concurrent deliveries | `set --concurrent-deliveries N` | 4 | simultaneous installs; at most one per account |
 | delivery queue timeout | `set --delivery-queue-timeout SECONDS` | 120 | maximum wait for a free install slot |
 | soft storage limit | `set --soft-storage-limit-gb GB` | 0 (off) | rejects new shared installs when recorded storage usage exceeds this size; installs already running may exceed it |
@@ -6400,16 +6404,79 @@ cl-node-modules-storage disable
 
 Future installs use regular npm. Applications keep running. The next command that changes dependencies, such as `npm install`, makes private copies of their shared files. The store and `cl-bun` package are kept; `prune` removes unused cached packages.
 
-Keep <span class="notranslate">`cl-bun-deliveryd.socket`</span> active: npm needs it to make private copies, even after disabling the Store. If `cl-bun` is removed while the Store is enabled, shared installs fail. Run `cl-node-modules-storage enable` to reinstall it, or `disable` to use regular npm.
+Keep <span class="notranslate">`cl-bun-deliveryd.socket`</span> active: npm needs it to make private copies, even after disabling the Store. If `cl-bun` is removed while the Store is enabled, installs use regular npm on a private copy. Run `cl-node-modules-storage enable` to reinstall it, or `disable` to use regular npm.
 
 #### **Store limitations**
 
 * **Supported commands:** `cloudlinux-selector install-modules` and `npm install`/`npm i` without extra arguments in the Selector environment. Other commands use regular npm, making shared files private if needed.
 * **Regular npm fallback:** applications with no dependencies, `npm-shrinkwrap.json`, a v1 `package-lock.json`, `workspaces`, `patchedDependencies`, or a symlinked manifest/lockfile. Updating a v1 lockfile requires newer npm; npm 6 keeps the old format.
-* **npm aliases:** supported for packages from the allowed registry. With npm 6 (Node.js 14 and older), a Store install fails for an alias that needs an install script. Select Node.js 16 or newer for the application, or ask the administrator to exclude the account.
-* **Package sources:** one registry per server (default: `https://registry.npmjs.org/`). Git dependencies, local paths, tarball URLs and other registries (including private registries and `.npmrc` overrides) are refused with a reason; there is no automatic fallback to npm. The administrator can run `cl-node-modules-storage exclude-list --add <username>` for accounts that need these sources. Changing the registry requires an empty store.
-* **Install scripts:** if a required install script fails, the Store stops the install and restores the previous dependencies. Some dependencies that npm treats as optional are required by the Store, so their script failures also stop the install. The administrator can exclude the account to use regular npm.
+* **npm aliases:** supported for packages from the allowed registry. With npm 6 (Node.js 14 and older), the Store does not serve an aliased package that needs an install script. The install continues with regular npm on a private copy. To keep using the Store for such an application, select Node.js 16 or newer.
+* **Package sources:** one registry per server (default: `https://registry.npmjs.org/`). Git dependencies, local paths, tarball URLs and other registries (including private registries and `.npmrc` overrides) are refused with a reason, and the install continues with regular npm on a private copy. The administrator can run `cl-node-modules-storage exclude-list --add <username>` for accounts that need these sources. Changing the registry requires an empty store.
+* **Install scripts:** if a required install script fails, the Store restores the previous dependencies, and the install continues with regular npm on a private copy. Some dependencies that npm treats as optional are required by the Store, so their script failures do the same. The administrator can exclude the account to use regular npm.
 * **Backups and transfers:** restored dependencies may be private copies and use more disk space and quota. A supported `npm install` can share them again if the destination has the Store enabled.
+
+### Moving cPanel AI App Hosting applications
+
+cPanel AI App Hosting runs each Node.js application in a rootless Podman container. These containers need `user.max_user_namespaces` greater than `0`, so they cannot run where it is `0`. As **root**, you can scan these applications and move them to <span class="notranslate">Node.js Selector</span> with `cloudlinux-selector migrate-webapp`.
+
+**Scanning.** First check what would happen to each application. The scan is read-only:
+
+<div class="notranslate">
+
+```
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --dry-run
+```
+</div>
+
+Add `--user <username>` to scan one account. Add `--no-live` to skip the HTTP checks of each application. Add `--summary-only` to print only per-server counts, without account names.
+
+Each application gets a verdict:
+
+| Verdict | Meaning |
+|---|---|
+| `AUTO` | Moves as is |
+| `AUTO+FIX` | Moves with a change in its start, build or environment; application files are not edited |
+| `HOLD` | Waits for a platform fix |
+| `MANUAL` | Needs manual work |
+| `BROKEN` | Does not work in AI App Hosting now |
+
+Only `AUTO` and `AUTO+FIX` applications are moved. For each application, the scan lists what the server is missing under `server_needs`, for example an `alt-nodejs` version, Passenger, or cPanel's hook points for the CloudLinux bridge. An application is not moved until everything in its `server_needs` is installed.
+
+**Moving.** Move the applications of one account, or one application with `--app-name`:
+
+<div class="notranslate">
+
+```
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --user <username> [--app-name <name>]
+```
+</div>
+
+Use `--all` instead of `--user` to move the applications of every account. For each application, the move:
+
+1. Copies it, without dependencies, to `~/apps/<name>`.
+2. Deploys it in <span class="notranslate">Node.js Selector</span> while the container still serves the domain.
+3. Switches the domain to <span class="notranslate">Node.js Selector</span> and checks it.
+
+If the check fails, the domain goes back to the container. After a successful move, the application is managed from the AI App Hosting page. If a run is interrupted, run the same command again: it continues from the last completed step. A run with `--user` or `--all` does not move rolled-back applications again. To move one of them, name it with `--user <username> --app-name <name>`.
+
+**Rolling back, status and cleanup.**
+
+* `--rollback --user <username> --app-name <name>` gives the application's domain back to its container. If the application has changed files since the move, the rollback refuses and names the files.
+* `--status` shows where the moves are. Add `--user` for one account.
+* `--cleanup` removes the containers of applications moved at least `--keep-days` days ago (default: 7). You can roll back until the container is removed. Containers are not removed automatically.
+
+The move log is <span class="notranslate">`/var/log/cloudlinux/webapp-migration.log`</span>. The state of each move is kept in <span class="notranslate">`/var/lib/cloudlinux-webapp-migration`</span>.
+
+**New applications.** When cPanel provides the hook points for the CloudLinux bridge, new AI App Hosting applications are created as <span class="notranslate">Node.js Selector</span> applications. To keep new applications on Podman where ea-podman is installed, enable the `disable-ai-app-hosting-selector` flag:
+
+<div class="notranslate">
+
+```
+touch /opt/cloudlinux/flags/enabled-flags.d/disable-ai-app-hosting-selector.flag
+```
+</div>
+
+Existing <span class="notranslate">Node.js Selector</span> applications keep working. Until cPanel provides the hook points, the flag has no effect, because new applications use Podman anyway.
 
 
 
