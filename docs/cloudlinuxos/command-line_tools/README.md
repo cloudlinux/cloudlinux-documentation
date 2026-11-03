@@ -2299,6 +2299,35 @@ cloudlinux-selector migrate --json --interpreter nodejs --user <username> --app-
 
 The dry run checks eligibility and application health without replacing dependencies. The real run keeps the previous `node_modules` until the rebuilt application passes its health check and records progress for recovery after an interruption. Check the result and migration log before retrying an interrupted conversion. `--skip-web-check` skips the HTTP health check for applications that do not serve web requests.
 
+**cPanel AI App Hosting applications**
+
+Available since <span class="notranslate">LVE Manager 7.11.54-1</span>. Move the applications of cPanel AI App Hosting, which runs each of them in a Podman container, to the Node.js Selector. The command runs as root only and prints JSON.
+
+<div class="notranslate">
+
+```
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --dry-run [--summary-only] [--no-live] [--user <username>]
+cloudlinux-selector migrate-webapp --json --interpreter nodejs (--user <username> [--app-name <name>] | --all)
+cloudlinux-selector migrate-webapp --json --interpreter nodejs (--rollback | --status | --cleanup) [--user <username>] [--app-name <name>] [--keep-days <days>]
+```
+</div>
+
+| Option | Description |
+|---|---|
+| `--dry-run` | scan the applications without changing them and give each of them a verdict: `AUTO` (moves as is), `AUTO+FIX` (moves with a changed start command, build or environment; the application files are not edited), `HOLD` (waits for a fix in the Node.js Selector), `MANUAL` (needs manual work) or `BROKEN` (does not work in AI App Hosting now). For each application, the report lists the `reasons` for its verdict and its `server_needs`: what the server must provide before the move |
+| `--summary-only` | with `--dry-run`, print only the server state and the counts, without the list of applications |
+| `--no-live` | with `--dry-run`, skip the HTTP checks of the applications |
+| `--user` | only the applications of this account |
+| `--app-name` | with `--user`, only this application (its name in AI App Hosting) |
+| `--all` | move the applications of every account |
+| `--rollback` | give the domain of the application back to its container; requires `--user` and `--app-name`. Refused when the application has changed files since the move, as a rollback would lose them |
+| `--status` | show the state of the moves; of every account without `--user` |
+| `--cleanup` | remove the containers of applications moved at least `--keep-days` days ago (7 by default); after that, a rollback is not possible |
+
+Only `AUTO` and `AUTO+FIX` applications are moved, one at a time: the application is deployed to the Node.js Selector while its container still serves the domain, then the domain is switched to the Selector, the container is stopped and the domain is checked to answer as the container did. A failure during or right after the switch rolls the move back at once. An application is skipped while its `server_needs` is not empty, for example `alt-nodejs20` or `passenger` until it is installed, or `cpanel-webapp-bridge` while AI App Hosting on the server cannot manage Node.js Selector applications. The output gives the `state` of each application (such as `migrated`, `skipped`, `failed` or `rolled_back`) and, for an application that was not moved, the reason in `error`. Progress is saved in `/var/lib/cloudlinux-webapp-migration`, so running the command again continues an interrupted move; a rolled-back application is moved again only when named with `--app-name`. Events are logged to `/var/log/cloudlinux/webapp-migration.log`. The stopped container is kept until `--cleanup` removes it.
+
+The command exits with status 1 when a move fails or is rolled back, when an application named with `--app-name` is not moved (for example, it is skipped), or when a rollback or cleanup fails. Skipped applications in a run over an account or with `--all` do not change the exit status.
+
 
 
 #### **End user**
@@ -2392,7 +2421,7 @@ Create user application
 <div class="notranslate">
 
 ```
-cloudlinux-selector create [--json] --interpreter nodejs [(--user <str> | --domain <str>)] --app-root <str> --app-uri <str> [--version <str>] [--app-mode <str>] [--startup-file <str>] [--env-vars <json string>]
+cloudlinux-selector create [--json] --interpreter nodejs [(--user <str> | --domain <str>)] --app-root <str> --app-uri <str> [--version <str>] [--app-mode <str>] [--startup-file <str>] [--env-vars (<json string> | -)]
 ```
 </div>
 
@@ -2433,11 +2462,16 @@ This command starts <span class="notranslate"> user1 </span> 's application:
 cloudlinux-selector start --json --interpreter nodejs --user user1 --app-root my_apps/app1
 ```
 </div>
+
+::: tip Note
+Since <span class="notranslate">LVE Manager 7.11.54-1</span>, `start` and `restart` verify through Passenger that the application runs with its current settings, and exit with status 1 when the start or restart fails. For an application that is already started, `start` restarts it. On LiteSpeed, or when the restart cannot be verified (for example, when Passenger's API is not available or no request reaches Passenger), it is requested through the `tmp/restart.txt` file in the application root and takes effect on the next request. The JSON output then contains a `warning` that the activation is deferred and not verified; `set` and `install-modules` can return the same warning when they restart the application.
+:::
+
 Change properties for an application
 <div class="notranslate">
 
 ```
-cloudlinux-selector set [--json] --interpreter nodejs  [(--user <str> | --domain <str>)] --app-root <str> [--app-mode <str>] [--new-app-root <str>] [--new-domain <str>] [--new-app-uri <str>] [--new-version <str>] [--startup-file <str>] [--env-vars <json string>]
+cloudlinux-selector set [--json] --interpreter nodejs  [(--user <str> | --domain <str>)] --app-root <str> [--app-mode <str>] [--new-app-root <str>] [--new-domain <str>] [--new-app-uri <str>] [--new-version <str>] [--startup-file <str>] [--env-vars (<json string> | -)]
 ```
 </div>
 
@@ -2474,6 +2508,17 @@ cloudlinux-selector set --json --interpreter nodejs  --user user1 --app-root my_
 
 ```
 cloudlinux-selector set --json --interpreter nodejs  --domain xyz.com --app-root my_apps/app1 --mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars '{ "var1" : "value1", "var2" : "value2" }'
+```
+</div>
+
+Since <span class="notranslate">LVE Manager 7.11.54-1</span>, to keep the environment variables out of the process list, pass `-` as the value of `--env-vars` in `create` or `set`: the command then reads the JSON object from its standard input, up to 1 MiB. Empty or invalid input fails with `wrong json format for environment variable list`.
+
+**Example 3**:
+This command sets the environment variables of <span class="notranslate"> user1 </span>'s application from the `env.json` file:
+<div class="notranslate">
+
+```
+cloudlinux-selector set --json --interpreter nodejs --user user1 --app-root my_apps/app1 --env-vars - < env.json
 ```
 </div>
 

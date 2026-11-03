@@ -5877,6 +5877,7 @@ You can find this information in the corresponding section of the TuxCare docume
 * cPanel or DirectAdmin control panel. Plesk isn't supported.
 * Apache or LiteSpeed webserver. Apache + Nginx (as a reverse proxy) combination is also supported.
 * Python Selector uses <span class="notranslate">`mod_passenger`</span> to host Python. For more details about <span class="notranslate">`mod_passenger`</span>, please read [documentation](https://www.phusionpassenger.com/). The needed version will be installed along with Python Selector.
+* The web server must allow the `FileInfo` and `Options` overrides (including `SymLinksIfOwnerMatch`) in `.htaccess` files, for example with `AllowOverride All`. Otherwise, applications answer `500 Internal Server Error`. See [Node.js Selector limitations](./#limitations) for how the Passenger configuration that the Selector writes to the application's `.htaccess` affects parent rewrite rules, error pages and URL changes.
 
 :::tip Note!
 OpenLiteSpeed is not compatible with Python Selector due to lack of `.htaccess` support.
@@ -5982,6 +5983,8 @@ yum install lve-utils lvemanager alt-python-virtualenv alt-mod-passenger
 We have the ability to deploy <span class="notranslate">Ruby</span> applications via an application server. <span class="notranslate">Ruby Selector</span> uses <span class="notranslate">`mod_passenger`</span> to host <span class="notranslate"> Ruby</span> applications.
 
 Ruby Selector works only on cPanel/WHM servers.
+
+Ruby Selector writes the application's Passenger configuration to its `.htaccess` file. The web server must therefore allow the `FileInfo` and `Options` overrides (including `SymLinksIfOwnerMatch`) in `.htaccess` files, for example with `AllowOverride All`. Otherwise, applications answer `500 Internal Server Error`. See [Node.js Selector limitations](./#limitations) for how this configuration affects parent rewrite rules and error pages.
 
 ### Supported versions
 
@@ -6145,6 +6148,20 @@ cat app_wrapper.cjs
 (() => import('app.js'))();
 ```
 
+Node.js, Python and Ruby Selectors write the application's Passenger configuration at the top of its `.htaccess` file. Since <span class="notranslate">LVE Manager 7.11.54-1</span>, these lines also:
+
+* turn on `RewriteEngine` for the application. Rewrite rules in a parent directory's `.htaccess` (for example, WordPress rules, an HTTP-to-HTTPS redirect or hotlink protection) no longer apply to it. cPanel's **Force HTTPS Redirect** still works. Put any other rules the application needs in its own `.htaccess`, below the Selector's lines.
+* answer `403` when an application on a subdomain is requested through the main domain's address. For example, a subdomain whose document root is `public_html/sub` answers `403` at `http://example.com/sub/`.
+* set short texts for the error statuses 400, 401, 403, 405, 406, 410, 413, 416, 500 and 503. This lets password-protected applications (for example, with cPanel Directory Privacy) show the password prompt. Custom error pages for these statuses no longer show for the application. To show one, add an `ErrorDocument` line below the Selector's lines, for example `ErrorDocument 401 /401.shtml`.
+
+The web server must allow the `FileInfo` and `Options` overrides (including `SymLinksIfOwnerMatch`) in `.htaccess` files, for example with `AllowOverride All`. Otherwise, the application answers `500 Internal Server Error`. Existing applications get these lines at their next restart from the control panel or the command line.
+
+Two applications cannot share one `.htaccess` file. For example, an application at the `sub` URI of the main domain and one at the root of a subdomain whose document root is `public_html/sub` would share a file. Creating, starting or moving the second one fails with an error that names the file.
+
+Since <span class="notranslate">LVE Manager 7.11.54-1</span>, changing the URL or domain of a stopped Node.js or Python application (in the control panel, or with `--new-app-uri` or `--new-domain`) leaves the other directives of its old `.htaccess` in the old directory. Examples are Directory Privacy, redirects and rewrite rules. They do not apply at the new address, so set them up again there, for example by protecting the new address again in cPanel Directory Privacy. If the old `.htaccess` keeps such directives, a syslog warning names both files. For a started application, the directives move to the new `.htaccess`.
+
+On LiteSpeed, if an application runs at the root of a domain, another application at a sub-path of that domain can answer `403` when its address has no trailing slash, for example `/api` instead of `/api/`.
+
 ### Installation and update
 
 :::tip Note
@@ -6235,6 +6252,7 @@ yum install cagefs
 
 
 
+<!----><a name="shared-node-modules-store"></a>
 ### Shared node_modules Store
 
 * [Store requirements](./#store-requirements)
@@ -6356,7 +6374,7 @@ Use `cl-node-modules-storage` to change settings. Add it before each command bel
 | storage directories | `storage-list --add PATH` / `--remove PATH`, or `set --storage-path PATH` | `/var/lib/cl-node-modules-storage` | one storage directory per filesystem that holds account homes |
 | allowed registry | `set --allowed-registries URL` | `https://registry.npmjs.org/` | package source; changing it requires an empty store |
 | excluded accounts | `exclude-list --add USER` / `--remove USER` | none | accounts that always use plain npm |
-| deliveries per account per hour / day | `set --deliveries-per-hour N`, `set --deliveries-per-day N` | 60 / 200 | shared installs allowed per account; further requests fail with a rate-limit message |
+| deliveries per account per hour / day | `set --deliveries-per-hour N`, `set --deliveries-per-day N` | 60 / 200 | shared installs allowed per account; further installs continue with regular npm on a private copy |
 | concurrent deliveries | `set --concurrent-deliveries N` | 4 | simultaneous installs; at most one per account |
 | delivery queue timeout | `set --delivery-queue-timeout SECONDS` | 120 | maximum wait for a free install slot |
 | soft storage limit | `set --soft-storage-limit-gb GB` | 0 (off) | rejects new shared installs when recorded storage usage exceeds this size; installs already running may exceed it |
@@ -6400,18 +6418,89 @@ cl-node-modules-storage disable
 
 Future installs use regular npm. Applications keep running. The next command that changes dependencies, such as `npm install`, makes private copies of their shared files. The store and `cl-bun` package are kept; `prune` removes unused cached packages.
 
-Keep <span class="notranslate">`cl-bun-deliveryd.socket`</span> active: npm needs it to make private copies, even after disabling the Store. If `cl-bun` is removed while the Store is enabled, shared installs fail. Run `cl-node-modules-storage enable` to reinstall it, or `disable` to use regular npm.
+Keep <span class="notranslate">`cl-bun-deliveryd.socket`</span> active, even after disabling the Store. Before npm changes dependencies, it needs this service to make private copies and to recover interrupted Store installs. While the service cannot be reached, `npm ci` is refused for any application whose dependencies may still be shared. If `cl-bun` is removed while the Store is enabled, installs continue with regular npm on private copies, but `cloudlinux-selector migrate` fails. Run `cl-node-modules-storage enable` to reinstall it, or `disable` to use regular npm.
 
 #### **Store limitations**
 
-* **Supported commands:** `cloudlinux-selector install-modules` and `npm install`/`npm i` without extra arguments in the Selector environment. Other commands use regular npm, making shared files private if needed.
-* **Regular npm fallback:** applications with no dependencies, `npm-shrinkwrap.json`, a v1 `package-lock.json`, `workspaces`, `patchedDependencies`, or a symlinked manifest/lockfile. Updating a v1 lockfile requires newer npm; npm 6 keeps the old format.
-* **npm aliases:** supported for packages from the allowed registry. With npm 6 (Node.js 14 and older), a Store install fails for an alias that needs an install script. Select Node.js 16 or newer for the application, or ask the administrator to exclude the account.
-* **Package sources:** one registry per server (default: `https://registry.npmjs.org/`). Git dependencies, local paths, tarball URLs and other registries (including private registries and `.npmrc` overrides) are refused with a reason; there is no automatic fallback to npm. The administrator can run `cl-node-modules-storage exclude-list --add <username>` for accounts that need these sources. Changing the registry requires an empty store.
-* **Install scripts:** if a required install script fails, the Store stops the install and restores the previous dependencies. Some dependencies that npm treats as optional are required by the Store, so their script failures also stop the install. The administrator can exclude the account to use regular npm.
+* **Supported commands:** `cloudlinux-selector install-modules` and `npm install`/`npm i` without extra arguments in the Selector environment. A Node.js version change also tries the Store first to prepare the dependencies of the new version. Other commands use regular npm, making shared files private if needed.
+* **Regular npm fallback:** applications with no dependencies, `npm-shrinkwrap.json`, a v1 `package-lock.json`, `workspaces`, `patchedDependencies`, or a symlinked manifest/lockfile. Updating a v1 lockfile requires newer npm; npm 6 keeps the old format. An install also continues with regular npm on a private copy when the Store attempt fails for another reason, for example a delivery limit, a dependency resolution error or a missing `cl-bun`. In three cases the command stops without running npm: the result of a Store install is unknown, an interrupted Store install cannot be recovered yet, or another operation holds the application. Retry the command later.
+* **npm aliases:** supported for packages from the allowed registry. With npm 6 (Node.js 14 and older), an install with an alias that needs an install script continues with regular npm. To install it through the Store, select Node.js 16 or newer for the application.
+* **Package sources:** one registry per server (default: `https://registry.npmjs.org/`). Git dependencies, local paths, tarball URLs and other registries (including private registries and `.npmrc` overrides) are not served by the Store, so these installs continue with regular npm on a private copy. To skip the Store attempt for accounts that need these sources, the administrator can run `cl-node-modules-storage exclude-list --add <username>`. Changing the registry requires an empty store.
+* **Install scripts:** if a required install script fails, the Store restores the previous dependencies and the install continues with regular npm on a private copy. Some dependencies that npm treats as optional are required by the Store, so their script failures also end the Store attempt. To skip the Store attempt, the administrator can exclude the account so that it uses regular npm directly.
 * **Backups and transfers:** restored dependencies may be private copies and use more disk space and quota. A supported `npm install` can share them again if the destination has the Store enabled.
 
 
+
+### cPanel AI App Hosting
+
+Available since <span class="notranslate">LVE Manager 7.11.54-1</span>. cPanel AI App Hosting runs each Node.js application in a Podman container. On cPanel servers, administrators can check these applications and move them to <span class="notranslate">Node.js Selector</span>, where Passenger serves them. Run the commands below as **root**.
+
+**Checking applications.** The scan changes nothing:
+
+<div class="notranslate">
+
+```
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --dry-run
+```
+</div>
+
+Options:
+
+* `--user <username>` checks one account.
+* `--no-live` skips the HTTP requests to each application.
+* `--summary-only` prints only the server state and the counts, without the list of applications.
+
+The report gives each application the worst verdict among its `reasons`:
+
+| Verdict | Meaning |
+|---|---|
+| `AUTO` | Moves as is. |
+| `AUTO+FIX` | Moves with changed start, build or environment settings; the application's files are not edited. |
+| `HOLD` | Waits for a platform fix. |
+| `MANUAL` | Needs manual review or changes. |
+| `BROKEN` | Does not work in AI App Hosting now. |
+
+`server_needs` lists what the server must provide before the move. Examples are `passenger`, `alt-nodejs22`, `cpanel-webapp-bridge` (see **New applications** below) and binaries that the application's packages call, such as `ffmpeg`. On servers with CageFS, such a binary must also be available inside CageFS: add its package with `cagefsctl --addrpm <package>` and run `cagefsctl --update` (see [File system templates](./#file-system-templates)).
+
+**Moving applications.** Only `AUTO` and `AUTO+FIX` applications with an empty `server_needs` list are moved. To move all applications of one account, or one application by its AI App Hosting name, run:
+
+<div class="notranslate">
+
+```
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --user <username> [--app-name <name>]
+```
+</div>
+
+To move the applications of every account, use `--all` instead of `--user`.
+
+The move copies the application, deploys it in Node.js Selector and checks it. It then switches the domain to Node.js Selector and stops the container. If the check after the switch fails, the move is rolled back. To continue an interrupted move, run the command again. After the move, AI App Hosting manages the application through the bridge.
+
+Other options:
+
+* `--status` shows the state of the moves.
+* `--rollback --user <username> --app-name <name>` gives the domain back to the container. The rollback is refused if the application has changed files since the move.
+* `--cleanup` removes the containers of applications moved at least 7 days ago. To change the period, add `--keep-days N`. After cleanup, these applications can no longer be rolled back. Containers are never removed automatically.
+
+The command exits with status 1 when a move fails or is rolled back, when an application named with `--app-name` is not moved (for example, it is skipped), or when a rollback or cleanup fails. Skipped applications in a run over an account or with `--all` do not change the exit status. Moves are recorded in <span class="notranslate">`/var/lib/cloudlinux-webapp-migration`</span> and logged to <span class="notranslate">`/var/log/cloudlinux/webapp-migration.log`</span>.
+
+**New applications.** Where `cpanel-webapp-plugin` is installed, LVE Manager installs a bridge for cPanel AI App Hosting. It consists of <span class="notranslate">`/usr/local/cpanel/Cpanel/CloudLinux/WebAppBridge.pm`</span> and its deploy helper <span class="notranslate">`/var/cpanel/perl/Cpanel/Admin/Modules/CloudLinux/WebAppDeploy.pm`</span>.
+
+The bridge stays inactive until cPanel AI App Hosting calls it. Until then, new applications use Podman and `server_needs` lists `cpanel-webapp-bridge`. Once the bridge is active, new applications are created as Node.js Selector applications if all of these are true:
+
+* Passenger is active.
+* Node.js Selector is enabled.
+* At least one of Node.js 20, 22 or 24 is enabled.
+
+To keep new applications on Podman where `ea-podman` is installed, enable the `disable-ai-app-hosting-selector` flag:
+
+<div class="notranslate">
+
+```
+touch /opt/cloudlinux/flags/enabled-flags.d/disable-ai-app-hosting-selector.flag
+```
+</div>
+
+Existing Node.js Selector applications keep working. To create new applications in Node.js Selector again, remove this file.
 
 ### Node.js deployment
 
@@ -6563,6 +6652,10 @@ In this case, there is no useful information for debugging errors and this is su
    ```
    ulimit -S -v unlimited
    ```
+
+3. Node.js Selector checks through Passenger's API that a started application restarts with its current settings. Some Passenger builds keep a running application's previous settings after its `.htaccess` changes. With such a build, changing the Node.js version, the startup file or the Passenger log file fails with `Node.js version <N> is saved, but the application restart failed` or `The application settings are saved, but the application restart failed`. The new settings stay saved, but the application keeps running with the previous ones until Apache is restarted.
+
+   In some cases the restart is requested through the application's `tmp/restart.txt` file and is not verified: on LiteSpeed, when Passenger's API cannot be reached, or when no request reaches the application through Passenger. The response then contains a `warning` that activation is deferred.
 
 ## Apache mod_lsapi PRO
 

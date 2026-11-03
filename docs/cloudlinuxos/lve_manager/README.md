@@ -1083,7 +1083,9 @@ To change Node.js version for a particular application do the following:
 * To refresh state of applications in current version you can click <span class="notranslate"> _Refresh_ </span> link. 
 
 :::tip Note
-All packages of the application(s) will be re-installed.
+Before the switch, the packages installed for the application are prepared for the new Node.js version, at the same versions. If the [Shared node_modules Store](/cloudlinuxos/cloudlinux_os_components/#how-the-store-works) is enabled, it is tried first. If the Store is not used or cannot finish, regular npm installs the packages. If the new version's environment still has a complete private copy of the same packages, for example after switching back to a version used earlier, that copy is reused instead.
+
+If the installed packages cannot be listed, only the `dependencies` from the application's `package.json` are installed. A warning then asks you to run `npm install` to add devDependencies, optionalDependencies and lockfile versions. If the preparation fails, the application keeps its current Node.js version.
 :::
 
 :::tip Note
@@ -1957,6 +1959,8 @@ PHP Extensions page opens.
 ![PHP Selector Extensions: version 7.3; annotated arrows for changing version and toggling extensions.](/images/cloudlinuxos/lve_manager/php_selector_customer.webp)
 
 Here you can choose extensions for the particular PHP version, the current PHP version and reset to default.
+
+On cPanel, if some of your domains do not use the current PHP version, the page shows how many of your domains it applies to. It also lists the other domains with the reason, for example: PHP-FPM is enabled for the domain in cPanel MultiPHP Manager, a PHP version is set for it there, or the domain has its own PHP version in the <span class="notranslate">_Per Domain Settings_</span> tab.
 
 To manage PHP options, click <span class="notranslate">_Switch to PHP options_</span>.
 
