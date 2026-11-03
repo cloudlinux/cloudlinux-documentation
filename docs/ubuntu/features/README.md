@@ -53,10 +53,14 @@ connections to the server.
 ### Installation
 
 :::warning Attention!
-MySQL Governor on Ubuntu supports the following only:
+MySQL Governor on Ubuntu works only with the following database versions, both on non-panel systems and on cPanel:
 
-* cl-MySQL80 on non-panel systems
-* cl-MySQL80 on cPanel
+| Ubuntu | Supported versions |
+|--------|--------------------|
+| 22.04 | cl-MySQL 8.0 (`mysql80`), cl-MySQL 8.4 (`mysql84`) |
+| 20.04 | cl-MySQL 8.0 (`mysql80`), cl-MariaDB 10.3 (`mariadb103`) |
+
+Other MySQL and MariaDB versions, including MariaDB packages from other vendors, are not supported. Downgrading to an earlier version is not supported.
 :::
 
 1. Install MySQL Governor
@@ -65,9 +69,14 @@ MySQL Governor on Ubuntu supports the following only:
 apt  install governor-mysql
 ```
 
-2. To use MySQL Governor with
+2. Select the database version. To list the versions supported on your server, run:
 
-    * cl-MySQL80
+    ```
+    /usr/share/lve/dbgovernor/mysqlgovernor.py --mysql-version-list
+    ```
+
+    For example, to use cl-MySQL 8.0:
+
     ```
     /usr/share/lve/dbgovernor/mysqlgovernor.py --mysql-version=mysql80
     ```
