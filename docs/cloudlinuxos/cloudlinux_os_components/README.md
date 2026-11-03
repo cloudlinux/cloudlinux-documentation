@@ -6356,7 +6356,7 @@ Use `cl-node-modules-storage` to change settings. Add it before each command bel
 | storage directories | `storage-list --add PATH` / `--remove PATH`, or `set --storage-path PATH` | `/var/lib/cl-node-modules-storage` | one storage directory per filesystem that holds account homes |
 | allowed registry | `set --allowed-registries URL` | `https://registry.npmjs.org/` | package source; changing it requires an empty store |
 | excluded accounts | `exclude-list --add USER` / `--remove USER` | none | accounts that always use plain npm |
-| deliveries per account per hour / day | `set --deliveries-per-hour N`, `set --deliveries-per-day N` | 60 / 200 | shared installs allowed per account; further requests fail with a rate-limit message |
+| deliveries per account per hour / day | `set --deliveries-per-hour N`, `set --deliveries-per-day N` | 60 / 200 | shared installs allowed per account; further installs continue with regular npm |
 | concurrent deliveries | `set --concurrent-deliveries N` | 4 | simultaneous installs; at most one per account |
 | delivery queue timeout | `set --delivery-queue-timeout SECONDS` | 120 | maximum wait for a free install slot |
 | soft storage limit | `set --soft-storage-limit-gb GB` | 0 (off) | rejects new shared installs when recorded storage usage exceeds this size; installs already running may exceed it |
@@ -6400,16 +6400,38 @@ cl-node-modules-storage disable
 
 Future installs use regular npm. Applications keep running. The next command that changes dependencies, such as `npm install`, makes private copies of their shared files. The store and `cl-bun` package are kept; `prune` removes unused cached packages.
 
-Keep <span class="notranslate">`cl-bun-deliveryd.socket`</span> active: npm needs it to make private copies, even after disabling the Store. If `cl-bun` is removed while the Store is enabled, shared installs fail. Run `cl-node-modules-storage enable` to reinstall it, or `disable` to use regular npm.
+Keep <span class="notranslate">`cl-bun-deliveryd.socket`</span> active: npm needs it to make private copies, even after disabling the Store. If `cl-bun` is removed while the Store is enabled, installs report that the engine is missing and continue with regular npm. Run `cl-node-modules-storage enable` to reinstall it, or `disable` to use regular npm.
 
 #### **Store limitations**
 
-* **Supported commands:** `cloudlinux-selector install-modules` and `npm install`/`npm i` without extra arguments in the Selector environment. Other commands use regular npm, making shared files private if needed.
+* **Supported commands:** `cloudlinux-selector install-modules` and `npm install`/`npm i` without extra arguments in the Selector environment. Other commands use regular npm, making shared files private if needed. When the application's Node.js version is changed, the dependencies for the new version are installed through the Store first, and with regular npm if the Store cannot install them.
+* **Failed Store attempts:** since <span class="notranslate">LVE Manager 7.11.54-1</span>, a Store attempt that ends without installing does not stop the command. This covers an unreachable delivery service, a reached delivery limit, a refused package source, and a failed resolve, delivery or install script. The previous `package.json` and lockfile are restored and shared files are made private. The command then runs with regular npm, and the reason is shown. npm is not started if the outcome of a delivery is unknown, if recovery of an earlier delivery is still pending, or if another operation holds the application; retry when it finishes. `npm ci` is also not started while the delivery service cannot be reached and the application's `node_modules` may be shared.
 * **Regular npm fallback:** applications with no dependencies, `npm-shrinkwrap.json`, a v1 `package-lock.json`, `workspaces`, `patchedDependencies`, or a symlinked manifest/lockfile. Updating a v1 lockfile requires newer npm; npm 6 keeps the old format.
 * **npm aliases:** supported for packages from the allowed registry. With npm 6 (Node.js 14 and older), a Store install fails for an alias that needs an install script. Select Node.js 16 or newer for the application, or ask the administrator to exclude the account.
-* **Package sources:** one registry per server (default: `https://registry.npmjs.org/`). Git dependencies, local paths, tarball URLs and other registries (including private registries and `.npmrc` overrides) are refused with a reason; there is no automatic fallback to npm. The administrator can run `cl-node-modules-storage exclude-list --add <username>` for accounts that need these sources. Changing the registry requires an empty store.
-* **Install scripts:** if a required install script fails, the Store stops the install and restores the previous dependencies. Some dependencies that npm treats as optional are required by the Store, so their script failures also stop the install. The administrator can exclude the account to use regular npm.
+* **Package sources:** one registry per server (default: `https://registry.npmjs.org/`). The Store does not serve Git dependencies, local paths, tarball URLs or other registries (including private registries and `.npmrc` overrides). It names the reason, and the install continues with regular npm on a private copy. To skip the Store for accounts that need these sources, the administrator can run `cl-node-modules-storage exclude-list --add <username>`. Changing the registry requires an empty store.
+* **Install scripts:** if a required install script fails, the Store restores the previous dependencies. The install then continues with regular npm on a private copy. Some dependencies that npm treats as optional are required by the Store, so their script failures also end the Store attempt. The administrator can exclude the account to use regular npm.
 * **Backups and transfers:** restored dependencies may be private copies and use more disk space and quota. A supported `npm install` can share them again if the destination has the Store enabled.
+
+
+
+### cPanel AI App Hosting
+
+Starting with <span class="notranslate">LVE Manager 7.11.54-1</span>, LVE Manager installs a bridge module for cPanel's AI App Hosting page on cPanel servers. With the bridge, new AI App Hosting applications become Node.js Selector applications served by Passenger instead of Podman containers. This happens only where the Node.js Selector can serve the account: Passenger is active, Node.js Selector is enabled, and at least one of Node.js 20, 22 or 24 is enabled.
+
+The bridge does nothing until cPanel's AI App Hosting plugin provides the hook points that call it. Until then, new applications use Podman. LVE Manager installs only the module and does not change cPanel's own files. If LVE Manager is downgraded below 7.11.54, the module is removed.
+
+To keep new applications on Podman on servers where ea-podman is installed, enable the `disable-ai-app-hosting-selector` server flag:
+
+<div class="notranslate">
+
+```
+touch /opt/cloudlinux/flags/enabled-flags.d/disable-ai-app-hosting-selector.flag
+```
+</div>
+
+The flag applies only to new applications: existing Selector applications keep working. It has no effect on a server without ea-podman.
+
+To move existing AI App Hosting applications to the Node.js Selector, use `cloudlinux-selector migrate-webapp` as root. See [Node.js Selector CLI tools](/cloudlinuxos/command-line_tools/#node-js-selector).
 
 
 

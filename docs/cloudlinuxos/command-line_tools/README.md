@@ -2299,6 +2299,46 @@ cloudlinux-selector migrate --json --interpreter nodejs --user <username> --app-
 
 The dry run checks eligibility and application health without replacing dependencies. The real run keeps the previous `node_modules` until the rebuilt application passes its health check and records progress for recovery after an interruption. Check the result and migration log before retrying an interrupted conversion. `--skip-web-check` skips the HTTP health check for applications that do not serve web requests.
 
+**Moving cPanel AI App Hosting applications**
+
+Scan the Node.js applications of cPanel AI App Hosting (Podman containers) and move them to the Node.js Selector. The command runs as root only and prints JSON.
+
+<div class="notranslate">
+
+```
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --dry-run [--summary-only] [--no-live] [--user <str>]
+cloudlinux-selector migrate-webapp --json --interpreter nodejs (--user <str> [--app-name <str>] | --all)
+cloudlinux-selector migrate-webapp --json --interpreter nodejs (--rollback | --status | --cleanup) [--user <str>] [--app-name <str>] [--keep-days <int>]
+```
+</div>
+
+| Option | Description |
+|---|---|
+| `--dry-run` | scan the applications read-only and report a verdict for each of them; nothing is changed |
+| `--summary-only` | with `--dry-run`, print only the per-server counts, without account names |
+| `--no-live` | with `--dry-run`, skip the HTTP checks of each application |
+| `--user <str>` | the applications of one account |
+| `--app-name <str>` | one application, by its name in AI App Hosting; requires `--user` |
+| `--all` | move the applications of every account; cannot be combined with `--user`, `--rollback`, `--status` or `--cleanup` |
+| `--rollback` | give the application's domain back to its container; requires `--user` and `--app-name` |
+| `--status` | show the progress of the moves (all accounts without `--user`) |
+| `--cleanup` | remove the containers of applications moved at least `--keep-days` days ago; after that a rollback is no longer possible |
+| `--keep-days <int>` | with `--cleanup`, keep the containers of applications moved fewer days ago (default: 7) |
+
+A move must name its applications with `--user` or `--all`, so running the command without `--dry-run` by mistake moves nothing.
+
+The scan gives each application one of the following verdicts:
+
+| Verdict | Meaning |
+|---|---|
+| `AUTO` | moves as is |
+| `AUTO+FIX` | moves with a change in its start command, build or environment; application files are not edited |
+| `HOLD` | waits for a platform fix |
+| `MANUAL` | needs manual work |
+| `BROKEN` | does not work in AI App Hosting now |
+
+Only `AUTO` and `AUTO+FIX` applications are moved. The application is deployed to the Selector next to its container and checked before and after the domain is switched; a failed check rolls the move back. The container stays stopped until `--cleanup` removes it. The progress of each move is saved under `/var/lib/cloudlinux-webapp-migration/`, so running the command again continues an interrupted move. Events are logged to `/var/log/cloudlinux/webapp-migration.log`.
+
 
 
 #### **End user**
@@ -2476,6 +2516,17 @@ cloudlinux-selector set --json --interpreter nodejs  --user user1 --app-root my_
 cloudlinux-selector set --json --interpreter nodejs  --domain xyz.com --app-root my_apps/app1 --mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars '{ "var1" : "value1", "var2" : "value2" }'
 ```
 </div>
+
+::: tip Note
+With `--env-vars -`, the `create` and `set` commands read the environment variables JSON from stdin, so the values are not shown in the process list. For example:
+
+<div class="notranslate">
+
+```
+echo '{ "var1" : "value1" }' | cloudlinux-selector set --json --interpreter nodejs --user user1 --app-root my_apps/app1 --env-vars -
+```
+</div>
+:::
 
 ::: tip Note
 When changing Node.js version all replies from web application to get request will be checked in Node.js Selector (before and after version changing). HTTP response codes and MIME type are comparing. So, make sure application is available via http(s) at least locally.
