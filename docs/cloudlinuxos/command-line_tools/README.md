@@ -2299,6 +2299,46 @@ cloudlinux-selector migrate --json --interpreter nodejs --user <username> --app-
 
 The dry run checks eligibility and application health without replacing dependencies. The real run keeps the previous `node_modules` until the rebuilt application passes its health check and records progress for recovery after an interruption. Check the result and migration log before retrying an interrupted conversion. `--skip-web-check` skips the HTTP health check for applications that do not serve web requests.
 
+**Moving cPanel AI App Hosting applications**
+
+Move Node.js applications from cPanel AI App Hosting (Podman containers) to the Node.js Selector. The command runs as root only and supports only `--interpreter nodejs`.
+
+<div class="notranslate">
+
+```
+cloudlinux-selector migrate-webapp [--json] --interpreter nodejs --dry-run [--summary-only] [--no-live] [--user <str>]
+cloudlinux-selector migrate-webapp [--json] --interpreter nodejs (--user <str> [--app-name <str>] | --all)
+cloudlinux-selector migrate-webapp [--json] --interpreter nodejs (--rollback | --status | --cleanup) [--user <str>] [--app-name <str>] [--keep-days <int>]
+```
+</div>
+
+| Option | Description |
+|---|---|
+| `--dry-run` | scan the applications read-only and report a verdict for each one (`AUTO`, `AUTO+FIX`, `HOLD`, `MANUAL` or `BROKEN`); nothing is changed |
+| `--summary-only` | with `--dry-run`, print only the per-server counts, without account names |
+| `--no-live` | with `--dry-run`, skip the HTTP checks of each application |
+| `--user` | one account |
+| `--app-name` | one application of the `--user` account: its name in AI App Hosting |
+| `--all` | move the applications of every account; cannot be combined with `--user`, `--rollback`, `--status` or `--cleanup` |
+| `--rollback` | give the application's domain back to its container; requires `--user` and `--app-name` |
+| `--status` | show the state of the moves |
+| `--cleanup` | remove the containers of applications moved at least `--keep-days` days ago; rollback is possible until then |
+| `--keep-days` | with `--cleanup`, keep containers moved fewer days ago (default: 7) |
+
+Without `--dry-run`, `--rollback`, `--status` or `--cleanup`, the command moves applications, and you have to name them with `--user` or `--all`. Only applications with the `AUTO` or `AUTO+FIX` verdict are moved. The container is stopped, not removed, until you run `--cleanup`.
+
+**Examples**:
+
+<div class="notranslate">
+
+```
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --dry-run
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --user user1
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --rollback --user user1 --app-name myapp
+cloudlinux-selector migrate-webapp --json --interpreter nodejs --cleanup --keep-days 14
+```
+</div>
+
 
 
 #### **End user**
@@ -2476,6 +2516,20 @@ cloudlinux-selector set --json --interpreter nodejs  --user user1 --app-root my_
 cloudlinux-selector set --json --interpreter nodejs  --domain xyz.com --app-root my_apps/app1 --mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars '{ "var1" : "value1", "var2" : "value2" }'
 ```
 </div>
+
+**Example 3**:
+With `--env-vars -`, the JSON is read from standard input (up to 1 MB), so the variables are not shown in the process list:
+
+<div class="notranslate">
+
+```
+echo '{ "var1" : "value1", "var2" : "value2" }' | cloudlinux-selector set --json --interpreter nodejs --user user1 --app-root my_apps/app1 --env-vars -
+```
+</div>
+
+::: tip Note
+For Node.js, `--version` and `--new-version` accept a positive major version (for example, `20`) or a numeric `major.minor[.patch]` version (for example, `20.11.1`). Only the major version is used. Other values are rejected.
+:::
 
 ::: tip Note
 When changing Node.js version all replies from web application to get request will be checked in Node.js Selector (before and after version changing). HTTP response codes and MIME type are comparing. So, make sure application is available via http(s) at least locally.
