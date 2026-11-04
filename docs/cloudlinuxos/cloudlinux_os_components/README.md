@@ -7456,7 +7456,7 @@ Sets the soft and hard resource limits for the number of child processes of the 
 **Context** : httpd.conf, virtualhost, directory
 
 **Description** :
-Sets the soft and hard resource limits for CPU time, in seconds of the lsphp processes that mod_lsapi starts. Both values must be positive integers, and the soft limit cannot be greater than the hard limit. If the directive is not set, mod_lsapi does not change this limit.
+Sets the soft and hard resource limits for the CPU time of the lsphp processes that mod_lsapi starts, in seconds. Both values must be positive integers, and the soft limit cannot be greater than the hard limit. If the directive is not set, mod_lsapi does not change this limit.
 
 ---
 
@@ -7467,7 +7467,7 @@ Sets the soft and hard resource limits for CPU time, in seconds of the lsphp pro
 **Context** : httpd.conf, virtualhost, directory
 
 **Description** :
-Sets the soft and hard resource limits for the address space, in bytes of the lsphp processes that mod_lsapi starts. Both values must be positive integers, and the soft limit cannot be greater than the hard limit. If the directive is not set, mod_lsapi does not change this limit.
+Sets the soft and hard resource limits for the address space of the lsphp processes that mod_lsapi starts, in bytes. Both values must be positive integers, and the soft limit cannot be greater than the hard limit. If the directive is not set, mod_lsapi does not change this limit.
 
 ---
 
