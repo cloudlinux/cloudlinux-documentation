@@ -7061,6 +7061,10 @@ Please note that in the example above 2 different Virtual Hosts use different LV
 * [lsapi_backend_pgrp_max_crashes](./#lsapi-backend-pgrp-max-crashes)
 * [lsapi_backend_loglevel_info](./#lsapi-backend-loglevel-info)
 * [lsapi_backend_oom_score_adj](./#lsapi-backend-oom-score-adj)
+* [lsapi_rlimit_nofile](./#lsapi-rlimit-nofile)
+* [lsapi_rlimit_nproc](./#lsapi-rlimit-nproc)
+* [lsapi_rlimit_cpu](./#lsapi-rlimit-cpu)
+* [lsapi_rlimit_as](./#lsapi-rlimit-as)
 * [lsapi-server-tweak](./#lsapi-server-tweak) Beta
 
 [Connection pool mode](./#connection-pool-mode):
@@ -7377,8 +7381,8 @@ Switch LSAPI_ACCEPT_NOTIFY mode for lsphp. This option can be used both in Globa
 
 #### **lsapi_backend_pgrp_max_reqs**
 
-**Syntax** : lsapi_backend_prgrp_max_reqs [number]
-**Default** : lsapi_backend_max_reqs 0
+**Syntax** : lsapi_backend_pgrp_max_reqs [number]
+**Default** : lsapi_backend_pgrp_max_reqs 0
 **Context** : httpd.conf, virtualhost
 
 **Description** :
@@ -7388,8 +7392,8 @@ Controls how many requests a control process will process before it exits. Shoul
 
 #### **lsapi_backend_pgrp_max_crashes**
 
-**Syntax** : lsapi_backend_prgrp_max_crashes [number]
-**Default** : lsapi_backend_max_crashes 0
+**Syntax** : lsapi_backend_pgrp_max_crashes [number]
+**Default** : lsapi_backend_pgrp_max_crashes 0
 **Context** : httpd.conf, virtualhost
 
 **Description** :
@@ -7420,6 +7424,50 @@ Controls how many crashes of its worker processes a control process will detect 
 **Description**:  This option can be used to apply **oom_score_adj** values for PHP processes created by mod_lsapi. Value is an integer in the -1000 to 1000 range. The lower the value, the lower the chance that the process will be killed.
 When your server becomes low on free memory and an OOM killer is invoked then desirable that lsphp processes are sacrificed to free up memory. To do this, you need to set oom_score_adj to a large value.
 For more information on setting value **oom_score_adj**, see the page [https://man7.org/linux/man-pages/man5/proc.5.html](https://man7.org/linux/man-pages/man5/proc.5.html)
+
+---
+
+#### **lsapi_rlimit_nofile**
+
+**Syntax** : lsapi_rlimit_nofile [soft] [hard]
+**Default** : not set
+**Context** : httpd.conf, virtualhost, directory
+
+**Description** :
+Sets the soft and hard resource limits for the number of open files of the lsphp processes that mod_lsapi starts. Both values must be positive integers, and the soft limit cannot be greater than the hard limit. If the directive is not set, mod_lsapi does not change this limit.
+
+---
+
+#### **lsapi_rlimit_nproc**
+
+**Syntax** : lsapi_rlimit_nproc [soft] [hard]
+**Default** : not set
+**Context** : httpd.conf, virtualhost, directory
+
+**Description** :
+Sets the soft and hard resource limits for the number of child processes of the lsphp processes that mod_lsapi starts. Both values must be positive integers, and the soft limit cannot be greater than the hard limit. If the directive is not set, mod_lsapi does not change this limit.
+
+---
+
+#### **lsapi_rlimit_cpu**
+
+**Syntax** : lsapi_rlimit_cpu [soft] [hard]
+**Default** : not set
+**Context** : httpd.conf, virtualhost, directory
+
+**Description** :
+Sets the soft and hard resource limits for CPU time, in seconds of the lsphp processes that mod_lsapi starts. Both values must be positive integers, and the soft limit cannot be greater than the hard limit. If the directive is not set, mod_lsapi does not change this limit.
+
+---
+
+#### **lsapi_rlimit_as**
+
+**Syntax** : lsapi_rlimit_as [soft] [hard]
+**Default** : not set
+**Context** : httpd.conf, virtualhost, directory
+
+**Description** :
+Sets the soft and hard resource limits for the address space, in bytes of the lsphp processes that mod_lsapi starts. Both values must be positive integers, and the soft limit cannot be greater than the hard limit. If the directive is not set, mod_lsapi does not change this limit.
 
 ---
 
