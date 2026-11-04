@@ -7065,12 +7065,14 @@ Please note that in the example above 2 different Virtual Hosts use different LV
 * [lsapi_rlimit_nproc](./#lsapi-rlimit-nproc)
 * [lsapi_rlimit_cpu](./#lsapi-rlimit-cpu)
 * [lsapi_rlimit_as](./#lsapi-rlimit-as)
+* [lsapi_error_code](./#lsapi-error-code)
 * [lsapi-server-tweak](./#lsapi-server-tweak) Beta
 
 [Connection pool mode](./#connection-pool-mode):
 * [lsapi_with_connection_pool](./#lsapi-with-connection-pool)
 * [lsapi_backend_max_idle](./#lsapi-backend-max-idle)
 * [lsapi_backend_max_reqs](./#lsapi-backend-max-reqs)
+* [lsapi_max_connection](./#lsapi-max-connection)
 
 [CRIU support](./#criu-support-cloudlinux7-only):
 * [lsapi_criu](./#lsapi-criu)
@@ -7471,6 +7473,25 @@ Sets the soft and hard resource limits for the address space of the lsphp proces
 
 ---
 
+#### **lsapi_error_code**
+
+**Syntax** : lsapi_error_code [name] [status]
+**Context** : httpd.conf, virtualhost, directory
+
+**Description** :
+Sets the HTTP status that mod_lsapi returns to the client for a type of failure. The status must be from 400 to 599; another value is ignored.
+
+| | |
+|-|-|
+|**Name** | **Default status**|
+|`SERVER_DOCROOT`, `SERVER_UID`, `SCRIPT_PERMS` | 500|
+|`LSAPI_CREATE`, `LSAPI_INTERNAL`, `LSAPI_CONN_ACQUIRE`, `LSAPI_CONN_DETERMINE` | 503|
+|`BACKEND_NOHDRS`, `BACKEND_ENDHDRS`, `BACKEND_SENDREQ`, `BACKEND_RECVHDR`, `BACKEND_RECVRSP`, `BACKEND_CONNECT` | 503|
+|`BACKEND_REJECT` | 507|
+|`CLIENT_SETUP` | 400|
+
+---
+
 #### **lsapi_server_tweak** <Badge type="info" text="beta" />
 
 **Syntax**: lsapi_server_tweak [On/Off]
@@ -7493,6 +7514,16 @@ Sets the soft and hard resource limits for the address space of the lsphp proces
 
 **Description** :
 On/Off - disable enable connect pool, default is Off.
+
+---
+
+#### **lsapi_max_connection**
+
+**Syntax** : lsapi_max_connection [number]
+**Context** : httpd.conf
+
+**Description** :
+The maximum number of simultaneous connections to lsphp in the connection pool. The value must be greater than 0. If it is not set, mod_lsapi calculates it from `lsapi_backend_children` and the number of Apache processes. If the value is too high for them, mod_lsapi lowers it and writes a warning to the Apache error log.
 
 ---
 
@@ -7812,12 +7843,11 @@ To disable addition of PWD variable. Default value is Off. If set to On, the PWD
 
 #### **lsapi_max_resend_buffer**
 
-**Syntax** : lsapi_max_resend_buffer [number]tmp
-**Default** : lsapi_max_resend_buffer 200
+**Syntax** : lsapi_max_resend_buffer [number]
 **Context** : httpd.conf, virtualhost
 
 **Description** :
-Maximum buffer in KiB to resend for request that has a body (like POST request body).
+This directive is deprecated and has no effect. Remove it from the Apache configuration.
 
 
 See also [Apache mod_lsapi PRO CLI tools](/cloudlinuxos/command-line_tools/#apache-mod-lsapi-pro).
