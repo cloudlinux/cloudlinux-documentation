@@ -7,7 +7,7 @@ The main goal of this subsystem is to allow using the already existing CloudLinu
 
 ## How to install the CloudLinux subsystem on Ubuntu?
 
-See [Installation](/sub-system-ubuntu/installation/).
+See [Installation](/ubuntu/installation/).
 
 ## Is the CloudLinux Subsystem on Ubuntu paid/unpaid?
 
@@ -21,7 +21,7 @@ ISO images can be provided upon request.
 
 ## What control panel can be used with the CloudLinux subsystem on Ubuntu?
 
-As of now, only cPanel is supported. Plesk and DirectAdmin are not supported.
+Among hosting panels, cPanel is supported. Plesk and DirectAdmin are not supported. Servers with no control panel or with other panels can also be used, see [Supported control panels](/ubuntu/introduction/#supported-control-panels).
 
 ## How can I get support for my CloudLinux subsystem on Ubuntu servers?
 
@@ -37,7 +37,7 @@ Yes, it is available.
 
 ## How to set up a PHP-fpm handler for the domain?
 
-Since the PHP-fpm handler is required to use Accelerate WP, you may need to configure it manually.
+Since the Object Caching feature of AccelerateWP requires the PHP-fpm or mod_lsapi handler on Apache, you may need to configure it manually.
 
 These are configuration steps:
 
