@@ -1581,7 +1581,6 @@ MaxCacheMandatoryCookies cookie_consent
     * Cookie values are sanitized to `[A-Za-z0-9_-]` (others become `-`)
     * Case and underscores are preserved
     * Each value is prefixed with `-`
-    * Values appear in the order the tokens are listed. A cookie that is absent or empty adds nothing. For a nested token, if the parent cookie exists but the subkey does not, a single `-` is added.
 * **Example**:
 ```
 # Cache varies by currency and language
