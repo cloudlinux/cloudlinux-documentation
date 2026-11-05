@@ -8310,7 +8310,7 @@ Select the control panel you are using:
 * [cPanel](./#installing-on-cpanel-servers-with-ea-nginx)
 * No control panel - In progress
 * Plesk - In progress
-* DirectAdmin - In progreess
+* DirectAdmin - In progress
 
 #### Installing on cPanel servers with ea-nginx
 
@@ -8329,8 +8329,8 @@ service nginx restart
 ```
 </div>
 
-Use Apache2MaxWebserver to set up NGINX hosting on the server and automatically convert .htaccess files into corresponding NGINX configuration.
-For more details, please visit [Apache2MaxWebserver](/cloudlinuxos/apache2max_webserver/#apache2nginx).
+Use MAx Web Server to set up NGINX hosting on the server and automatically convert .htaccess files into corresponding NGINX configuration.
+For more details, please visit [MAx Web Server](/cloudlinuxos/max_webserver/#convert-to-nginx-hosting).
 
 
 ### Uninstalling
@@ -8342,7 +8342,7 @@ Select the control panel you are using:
 * [cPanel](./#uninstallation-procedure-for-cpanel-servers-with-ea-nginx)
 * No control panel - In progress
 * Plesk - In progress
-* DirectAdmin - In progreess
+* DirectAdmin - In progress
 
 
 #### Uninstallation procedure for cPanel servers with ea-nginx
@@ -8362,7 +8362,7 @@ service nginx restart
 ```
 </div>
 
-To remove NGINX from your system and restore Apache configuration, please visit [Apache2MaxWebserver](/cloudlinuxos/apache2max_webserver/#switch-back-to-apache-hosting).
+To remove NGINX from your system and restore Apache configuration, please visit [MAx Web Server](/cloudlinuxos/max_webserver/#switch-back-to-apache-hosting).
 
 #### Uninstallation procedure for servers with no control panel
 
@@ -8387,7 +8387,7 @@ service nginx restart
 * [Configuration references](./#configuration-references-1)
 
 :::tip Note
-If using Apache2MaxWebserver, no configuration is required for NGINX LSAPI Module. The module is automatically configured to process PHP requests.
+If using MAx Web Server, no configuration is required for NGINX LSAPI Module. The module is automatically configured to process PHP requests.
 :::
 
 In order to get NGINX LSAPI Module to work properly, you'll need to configure NGINX. To do this, we use a separate _lsapi.conf_ file.
@@ -8430,7 +8430,7 @@ The LSPHP handler can be enabled using the lsapi_handler directive. The lsapi_
 ```
 </div>
 
-If no handler is explicitly set for a request, the specified content type will be used as the handler name, therefore, please disable php.conf or any other PHP handler for using NGINX LSAPI Module. In this example application/x-httpd-lsphp is a default handler by which NGINX LSAPI Module processes requests with the lsphp binary from _/usr/local/bin/_ directory.
+If lsapi_handler is not set, application/x-httpd-lsphp is used, which processes requests with the lsphp binary from _/usr/local/bin/_ directory. Please disable php.conf or any other PHP handler for using NGINX LSAPI Module.
 
 The final lsapi.conf configuration might look like this:
 <div class="notranslate">
@@ -8457,19 +8457,23 @@ server {
 
 In order for NGINX LSAPI Module to work lsapi.conf should be loaded to NGINX through [Include](https://nginx.org/en/docs/ngx_core_module.html#include) directive.
 
-For a more detailed description of the module directives please visit the [Configuration reference](./#configuration-references-2).
+For a more detailed description of the module directives please visit the [Configuration reference](./#configuration-references-1).
 For the installation guide for NGINX LSAPI Module please visit [Installation](./#installation-3).
 
 #### Configuration references
 
+Contexts in this reference: main config is the `http {}` block, server config is a `server {}` block, and local config or location config is a `location {}` block. Directives marked main config are not accepted at the top level of nginx.conf.
+
 
 [NGINX LSAPI Module customization](./#nginx-lsapi-module-customization):
-* [lsapi_engine](./#lsapi-enabled)
-* [lsapi_sock_path](./#lsapi-sock-path)
+* [lsapi_engine](./#lsapi-engine-1)
+* [lsapi_socket_path](./#lsapi-socket-path-1)
 * [lsapi_per_user](./#lsapi-per-user-1)
 * [lsapi_disable_reject_mode](./#lsapi-disable-reject-mode-1)
-* [lsapi_terminate_backends_on_exit](./#lsapi-terminate-backends-on-exit)
-* [lsapi_avoid_zombies](./#lsapi-avoid-zombies)
+* [lsapi_terminate_backends_on_exit](./#lsapi-terminate-backends-on-exit-1)
+* [lsapi_avoid_zombies](./#lsapi-avoid-zombies-1)
+* [lsapi_starter_sock](./#lsapi-starter-sock)
+* [lsapi_starter_log](./#lsapi-starter-log)
 
 [Tuning LSPHP backend](./#tuning-lsphp-backend-1):
 * [lsapi_set_env](./#lsapi-set-env-1)
@@ -8486,17 +8490,20 @@ For the installation guide for NGINX LSAPI Module please visit [Installation](./
 * [lsapi_backend_pgrp_max_crashes](./#lsapi-backend-pgrp-max-crashes-1)
 * [lsapi_backend_loglevel_info](./#lsapi-backend-loglevel-info-1)
 * [lsapi_backend_oom_score_adj](./#lsapi-backend-oom-score-adj-1)
+* [lsapi_dump_debug_info](./#lsapi-dump-debug-info)
+* [lsapi_pwd_disabled](./#lsapi-pwd-disabled)
+* [lsapi_handler](./#lsapi-handler)
 
 [Connection pool mode](./#connection-pool-mode-1):
-* [lsapi_with_connection_pool](./#lsapi-with-connection-pool)
+* [lsapi_with_connection_pool](./#lsapi-with-connection-pool-1)
 * [lsapi_pool_size](./#lsapi-pool-size)
 * [lsapi_backend_max_idle](./#lsapi-backend-max-idle-1)
 * [lsapi_backend_max_reqs](./#lsapi-backend-max-reqs-1)
 
 [CRIU support](./#criu-support-2):
-* [lsapi_criu](./#lsapi-criu)
-* [lsapi_criu_socket_path](./#lsapi-criu-socket-path)
-* [lsapi_criu_imgs_dir_path](./#lsapi-criu-imgs-dir-path)
+* [lsapi_criu](./#lsapi-criu-1)
+* [lsapi_criu_socket_path](./#lsapi-criu-socket-path-1)
+* [lsapi_criu_imgs_dir_path](./#lsapi-criu-imgs-dir-path-1)
 * [lsapi_backend_initial_start](./#lsapi-backend-initial-start-1)
 * [lsapi_criu_use_shm](./#lsapi-criu-use-shm-1)
 * [lsapi_reset_criu_on_restart](./#lsapi-reset-criu-on-restart)
@@ -8534,10 +8541,10 @@ Enable/disable LSAPI module for nginx, server, or local directory.
 
 ---
 
-#### **lsapi_sock_path**
+#### **lsapi_socket_path**
 
-**Syntax** : lsapi_sock_path [path]
-**Example** : lsapi_sock_path /var/ngx_lsapi;
+**Syntax** : lsapi_socket_path [path]
+**Example** : lsapi_socket_path /var/ngx_lsapi;
 **Default** : `/var/ngx_lsapi`
 **Context** : main config
 **Type** : Optional
@@ -8573,7 +8580,7 @@ Then these Virtual Hosts will have a dedicated backend process, while others wil
 **Type** : Optional
 
 **Description** :
-If a new HTTP request is coming to LSPHP daemon when all LSPHP workers are still busy, it can process this situation in two different ways. In REJECT mode LSPHP daemon will reject such requests immediately. Otherwise, in legacy mode, LSPHP daemon will put this request into an infinite queue, until one of LSPHP daemons becomes free. When a HTTP request is rejected in REJECT mode, mod_lsapi will write the following message into the NGINX error.log: `Connect to backend rejected`, and the client will receive a 507 HTTP response. By default, the LSPHP daemon in CloudLinux OS uses the REJECT mode. It can be switched off with this option.
+If a new HTTP request is coming to LSPHP daemon when all LSPHP workers are still busy, it can process this situation in two different ways. In REJECT mode LSPHP daemon will reject such requests immediately. Otherwise, in legacy mode, LSPHP daemon will put this request into an infinite queue, until one of LSPHP daemons becomes free. When a HTTP request is rejected in REJECT mode, the NGINX LSAPI Module writes the following message into the NGINX error.log: `lsapi_parse_pkghdr: ReceiveLSHeader: REJECTED received`, and the client receives a 500 HTTP response. By default, the LSPHP daemon in CloudLinux OS uses the REJECT mode. It can be switched off with this option.
 
 ---
 
@@ -8607,7 +8614,7 @@ Enable or disable a mechanism to avoid the creation of zombie processes by lsphp
 
 **Syntax** : lsapi_starter_sock [path]
 **Example** : lsapi_starter_sock /var/run/lsapi-starter.sock;
-**Default** : /var/ngx_lsapi/starter.sock
+**Default** : /var/ngx_lsapi/lsapi-starter.sock
 **Context** : main config
 **Type** : Optional
 
@@ -8620,27 +8627,12 @@ This parameter configures the socket address for the lsphp backend spawner proce
 
 **Syntax** : lsapi_starter_log [path]
 **Example** : lsapi_starter_log /var/log/lsapi-starter.log;
-**Default** : -
+**Default** : /var/log/ngx_lsapi/starter.log
 **Context** : main config
 **Type** : Optional
 
 **Description** :
 This parameter configures the log file address for the lsphp backend spawner process.
-
----
-
-#### **lsapi_log**
-
-**Syntax** : lsapi_log [path]
-**Example** : lsapi_log /var/log/lsapi.log;
-**Default** : -
-**Context** : main config
-**Type** : Optional
-
-**Description** :
-This parameter configures the log file address for the NGINX LSAPI module context.
-**Note** :
-This parameter only works if the NGINX LSAPI module is built with the NGX_LSAPI_CUSTOM_LOGGER flag. Otherwise, the NGINX logger will be used for LSAPI module logging.
 
 ---
 
@@ -8741,12 +8733,12 @@ Redirecting log output of backend processes from NGINX error.log to dedicated lo
 
 **Syntax** : lsapi_backend_pgrp_max_crashes [number]
 **Example** : lsapi_backend_pgrp_max_crashes 300;
-**Default** : 300
+**Default** : 0
 **Context** : server config
 **Type** : Optional
 
 **Description** :
-Controls how many crashes of its worker processes a control process will detect before it exits. Should be more or equal to 0. In the case of a wrong format, a default value will be used. Optional, the default value is 0, which means an unlimited number of crashes.
+Controls how many crashes of its worker processes a control process will detect before it exits. Should be more or equal to 0. A value that is not a non-negative integer is rejected: NGINX reports `invalid number` and does not load the configuration. Optional, the default value is 0, which means an unlimited number of crashes.
 
 ---
 
@@ -8772,7 +8764,7 @@ Sets env variable LSAPI_PGRP_MAX_IDLE, in seconds. Controls how long a control p
 **Type** : Optional
 
 **Description** :
-Controls how many requests a control process will process before it exits. Should be more or equal to 0. In the case of a wrong format, the default value will be used. Optional, the default value is 0, which means an unlimited number of requests.
+Controls how many requests a control process will process before it exits. Should be more or equal to 0. A value that is not a non-negative integer is rejected: NGINX reports `invalid number` and does not load the configuration. Optional, the default value is 0, which means an unlimited number of requests.
 
 ---
 
@@ -8780,7 +8772,7 @@ Controls how many requests a control process will process before it exits. Shoul
 
 **Syntax**: lsapi_backend_loglevel_info [on/off]
 **Example**: lsapi_backend_loglevel_info on;
-**Example**: off
+**Default**: off
 **Context**: server config, location config
 **Type** : Optional
 
@@ -8807,7 +8799,7 @@ This option can apply oom_score_adj values for PHP processes created by mod_lsap
 **Syntax** : lsapi_dump_debug_info [on/off]
 **Example** : lsapi_dump_debug_info on;
 **Default** : off
-**Context** : server config
+**Context** : main config, server config
 **Type** : Optional
 
 **Description** :
@@ -8824,7 +8816,7 @@ Enable or not lsphp backend debug information dump.
 **Type** : Optional
 
 **Description** :
-Switch LSAPI_ACCEPT_NOTIFY mode for lsphp. This option can be used both in Global and VirtualHost scopes. This mode is incompatible with PHP 4.4.
+Switch LSAPI_ACCEPT_NOTIFY mode for lsphp. This mode is incompatible with PHP 4.4.
 
 ---
 
@@ -8833,7 +8825,7 @@ Switch LSAPI_ACCEPT_NOTIFY mode for lsphp. This option can be used both in Globa
 **Syntax** : lsapi_backend_coredump [on/off]
 **Example** : lsapi_backend_coredump on;
 **Default** : off
-**Context** : server config
+**Context** : main config, server config
 **Type** : Optional
 
 **Description** :
@@ -8858,12 +8850,12 @@ To disable the addition of the PWD variable. The default value is Off. If set to
 
 **Syntax** : lsapi_handler [string]
 **Example** : lsapi_handler application/x-httpd-lsphp;
-**Default** : -
-**Context** : server config
-**Type** : Mandatory
+**Default** : application/x-httpd-lsphp
+**Context** : server config, location config
+**Type** : Optional
 
 **Description** :
-Sets LSPHP handler for server (virtual host) configuration.
+Sets the LSPHP handler for a server or location configuration. `application/x-httpd-lsphp` runs `/usr/local/bin/lsphp`.
 
 ---
 
@@ -8872,8 +8864,8 @@ Sets LSPHP handler for server (virtual host) configuration.
 #### **lsapi_with_connection_pool**
 
 **Syntax** : lsapi_with_connection_pool [on/off]
-**Example** : lsapi_with_connection_pool off;
-**Default** : on
+**Example** : lsapi_with_connection_pool on;
+**Default** : off
 **Context** : main config
 **Type** : Optional
 
@@ -8891,33 +8883,33 @@ Enable/disable LSAPI connection pool mode.
 **Type** : Optional
 
 **Description** :
-It is relevant only with lsapi_with_connection_pool option switched on. Controls how long a worker process will wait for a new request before it exits. 0 stands for infinite. Should be more or equal to 0. In the case of a wrong format the default value will be used. Optional, default value is 300.
+It is relevant only with lsapi_with_connection_pool option switched on. Controls how long a worker process will wait for a new request before it exits. 0 stands for infinite. Should be more or equal to 0. A value that is not a non-negative integer is rejected: NGINX reports `invalid number` and does not load the configuration. Optional, default value is 300.
 
 ---
 
 #### **lsapi_backend_max_reqs**
 
-**Synt-backendax**-1 : lsapi_backend_max_reqs [number] -backend
-**-1Example** : lsapi_backend_max_reqs 20000;
--backend**Default-1** : 10000
+**Syntax** : lsapi_backend_max_reqs [number]
+**Example** : lsapi_backend_max_reqs 20000;
+**Default** : 10000
 **Context** : server config
 **Type** : Optional
 
 **Description** :
-It is relevant only with lsapi_with_connection_pool option switched on. Controls how many requests a worker process will process before it exits. Should be more than 0. In the case of a wrong format the default value will be used. Optional, default value is 10000.
+It is relevant only with lsapi_with_connection_pool option switched on. Controls how many requests a worker process will process before it exits. Should be more than 0. A value that is not a non-negative integer is rejected: NGINX reports `invalid number` and does not load the configuration. Optional, default value is 10000.
 
 ---
 
 #### **lsapi_pool_size**
 
 **Syntax** : lsapi_pool_size [number]
-**Example** : lsapi_pool_size 20;
-**Default** : 50
-**Context** : main config
+**Example** : lsapi_pool_size 50;
+**Default** : 20
+**Context** : main config, server config
 **Type** : Optional
 
 **Description** :
-The parameter sets the connection pool size for each virtual host.
+The parameter sets the connection pool size for each virtual host. A value set in a server block overrides the value from the main config.
 
 ---
 
@@ -9020,13 +9012,13 @@ Number of requests to virtualhost, when lsphp will be freezed. Default: 0 - mean
 #### **lsapi_process_phpini**
 
 **Syntax** : lsapi_process_phpini [on/off]
-**Example** : lsapi_process_phpini on;
-**Default** : off
+**Example** : lsapi_process_phpini off;
+**Default** : on
 **Context** : server config, location config
 **Type** : Optional
 
 **Description** :
-Enable or disable phpini_* directive processing. Default value is off.
+Enable or disable processing of the lsapi_phpini directive. Default value is on.
 
 ---
 
@@ -9123,7 +9115,7 @@ on/off - disable php_* directives, default On.
 **Syntax** : lsapi_param [var] [value]
 **Example**: lsapi_param PHP_ADMIN_VALUE "memory_limit=1024M";
 **Default** : -
-**Context** : server config, location config
+**Context** : main config, server config, location config
 **Type** : Optional
 
 **Description** :
@@ -9279,7 +9271,7 @@ NGINX LSAPI Module now supports the following parameters:
 |lsapi_criu_socket_path | Set path to socket for communication with criu service. | [path to socket] | <span class="notranslate"> /var/run/criu/criu_service.socket </span>|
 |lsapi_backend_initial_start | Number of request when lsphp should be freezed. | [number] 0 - no freezing | 0|
 |lsapi_criu_use_shm | Method of requests counting. <span class="notranslate"> off </span> - use shared memory. <span class="notranslate"> Signals </span> - use signals from child processes to parent. | <span class="notranslate"> off/signals </span> | <span class="notranslate"> off </span>|
-|lsapi_criu_imgs_dir_path | Path to folder where imgs of freezed PHP will be stored. | [path] | <span class="notranslate"> /var/nginx-mod-lsapi/ </span>|
+|lsapi_criu_imgs_dir_path | Path to folder where imgs of freezed PHP will be stored. | [path] | <span class="notranslate"> /var/ngx_lsapi/criu </span>|
 |lsapi_criu_debug | Enable/Disable CRIU related debug logging. | <span class="notranslate"> on/off </span> | <span class="notranslate"> off </span>|
 
 Example:
