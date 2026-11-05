@@ -1747,9 +1747,9 @@ rpmbuild --rebuild mod_hostinglimits-ver.el7.cloudlinux.1.src.rpm
 ```
 </div>
 
-3. Remove dependencies such as `httpd`, (`-devel` packages as well) and set your Apache packages instead, in the mod_hostinglimits spec file. Also, check the paths that lead to the <span class="notranslate">`modules`</span> or <span class="notranslate">`conf.d`</span> directories and change them if they are different on your system.
+3. Remove dependencies such as `httpd`, (`-devel` packages as well) and set your Apache packages instead, in the mod_hostinglimits spec file. Also, check the paths that lead to the <span class="notranslate">`modules`</span> or <span class="notranslate">`conf.d`</span> directories and change them if they are different on your system. If your modules directory differs, also change the <span class="notranslate">`LoadModule`</span> path in the <span class="notranslate">`modhostinglimits.conf`</span> file from the sources.
 
-4. Rebuild the package again, this time you should get to the compilation stage. During compilation, you may encounter the following errors:
+4. Rebuild the package again with `rpmbuild -bb ~/rpmbuild/SPECS/mod_hostinglimits.spec`, this time you should get to the compilation stage. During compilation, you may encounter the following errors:
 
 <div class="notranslate">
 
@@ -1777,6 +1777,10 @@ FIND_PATH (APACHE2_2_HTTPD_INCLUDE_DIR
 ```
 </div>
 
+:::tip Note
+The `%setup` macro in the spec file unpacks the source archive again on every build, so changes made under `~/rpmbuild/BUILD` are lost. Change the file in the archive in `~/rpmbuild/SOURCES` (unpack it, edit the file, pack it under the same name) or add the change as a patch in the spec file. Then build with `rpmbuild -bb ~/rpmbuild/SPECS/mod_hostinglimits.spec`. Do not use `rpmbuild --rebuild` here: it restores the original spec file from the source package.
+:::
+
 5. Rebuild the package again, if you set everything correctly, there shouldn't be any problems.
 
 6. Install the module, check that it is successfully loaded into Apache.
@@ -1791,7 +1795,7 @@ FIND_PATH (APACHE2_2_HTTPD_INCLUDE_DIR
 yum install -y rpm-build
 yum install -y liblsapi liblsapi-devel
 yum install -y autoconf cmake apr-devel apr-util-devel
-yum install -y python-lxml pytest python-mock
+yum install -y json-c-devel cloudlinux-venv
 ```
 </div>
 
@@ -1809,7 +1813,7 @@ On CloudLinux OS 8 and above you also should install next packages
 <div class="notranslate">
 
 ```
-yum install -y alt-python37-mock alt-python37-pytest httpd-devel
+yum install -y httpd-devel
 ```
 </div>
 
@@ -1824,9 +1828,11 @@ yumdownloader --source mod_lsapi --enablerepo=*source
 
 :::warning Note
 Make sure that versions of all installed and downloaded
+
 * `mod_lsapi`
 * `liblsapi`
 * `liblsapi-devel`
+
 packages completely coincide.
 Ensure that the copy of mod_lsapi.so visible to Apache is configured to load liblscapi.so of the same version.
 Mismatched versions can cause errors or unexpected behavior.
@@ -1853,7 +1859,7 @@ This ~/rpmbuild/SPECS/mod_lsapi.spec file will need to be modified.
 <div class="notranslate">
 
 ```
-install -D -m 644 conf/mod_lsapi.conf $RPM_BUILD_ROOT%{g_path}/confs/lsapi.conf
+install -D -m 644 conf/mod_lsapi.conf $RPM_BUILD_ROOT%{g_path}confs/lsapi.conf
 ```
 </div>
 
@@ -1862,7 +1868,7 @@ with the following line:
 <div class="notranslate">
 
 ```
-install -D -m 644 conf/mod_lsapi.conf $RPM_BUILD_ROOT/usr/local/apache/conf/lsapi.conf
+install -D -m 644 conf/mod_lsapi.conf $RPM_BUILD_ROOT/usr/local/apache/conf.d/lsapi.conf
 ```
 </div>
 
@@ -1890,14 +1896,24 @@ Also you should add mentions of both module and config files in the <span class=
 
 ```
 %config /usr/local/apache/conf.d/lsapi.conf
-/usr/local/apache/modules/mod_lsapi.conf
+/usr/local/apache/modules/mod_lsapi.so
 ```
 </div>
 
 6. Rebuild the package again, this time you should get to the compilation stage.
 
+To use the Apache search described in this step, first add `-DBUILD:BOOL=TRUE` to the `cmake` line in the `%build` section of `mod_lsapi.spec`. Without it, the build does not read `FindApacheForBuild.cmake` or the `CUSTOM_APACHE_*` variables below. This option also changes the default `HTTPD_USER` from `nobody` to `apache`, so if your Apache runs as another user, also pass `-DHTTPD_USER=NAME`.
+
+<div class="notranslate">
+
+```
+cmake %{g_cmake_options} -DBUILD:BOOL=TRUE .
+```
+</div>
+
 Use this command to rebuild a package
 <div class="notranslate">
+
 ```
 rpmbuild -bb ~/rpmbuild/SPECS/mod_lsapi.spec
 ```
@@ -1907,30 +1923,44 @@ During compilation, you may encounter some errors:
 <div class="notranslate">
 
 ```
--- Not Found Apache Bin Directory: APACHE2_2_HTTPD_BIN-NOTFOUND, APACHE2_2_HTTPD_MODULES-NOTFOUND
--- Can't find Apache2.2: APACHE2_2_HTTPD_INCLUDE_DIR-NOTFOUND
+-- Not Found Apache Bin Directory: APACHE2_4_HTTPD_BIN-NOTFOUND, APACHE2_4_HTTPD_MODULES-NOTFOUND, APACHE2_4_LIB_DIR-NOTFOUND
+-- Can't find Apache2.4: APACHE2_4_HTTPD_INCLUDE_DIR-NOTFOUND
 ```
 </div>
+
+With Apache 2.2 the messages use the `APACHE2_2_` prefix and `Apache2.2`, and the first message does not print the `LIB_DIR` value.
 
 In this case, you should specify the paths of your custom Apache in the <span class="notranslate">`mod_lsapi-1.1/cmake/FindApacheForBuild.cmake`</span> file. According to macros above, add the paths to the directory where httpd binary is located, to the dir where apache modules are located and to the dir where include files are located. It may look a such way:
 
 <div class="notranslate">
 
 ```
-FIND_PATH (APACHE2_2_HTTPD_INCLUDE_DIR
+FIND_PATH (APACHE2_4_HTTPD_INCLUDE_DIR
    NAMES
       httpd.h
    PATHS
-      ${APACHE2_2_INCLUDES_DIR}
+      ${CUSTOM_APACHE_INC_HTTPD}
+      ${APACHE2_4_INCLUDE_DIR}
       /usr/local/include/httpd
       /usr/include/httpd
+      /usr/local/apache2.4/include
+      /usr/local/apache24/include
       /usr/include/apache
-      /usr/local/apache/include/       # added line
+      /usr/local/apache/include
+      /usr/local/apache2/include
+      /usr/include/apache2
+      /opt/myapache/include/       # added line
 )
 ```
 </div>
 
+:::tip Note
+The `%setup` macro in the spec file unpacks the source archive again on every build, so changes made under `~/rpmbuild/BUILD` are lost. Change the file in the archive in `~/rpmbuild/SOURCES` (unpack it, edit the file, pack it under the same name) or add the change as a patch in the spec file. Then build with `rpmbuild -bb ~/rpmbuild/SPECS/mod_lsapi.spec`. Do not use `rpmbuild --rebuild` here: it restores the original spec file from the source package.
+:::
+
 Starting from mod_lsapi-1.1-57, you can use macros for custom paths to the Apache/APR includes/binaries.
+
+These macros are CMake variables for Apache 2.4 builds. Pass them to the `cmake` command in the `%build` section of `mod_lsapi.spec`, for example `cmake %{g_cmake_options} -DBUILD:BOOL=TRUE -DCUSTOM_APACHE_ROOT=/opt/myapache .`. They are read only with `-DBUILD:BOOL=TRUE`. If `CUSTOM_APACHE_ROOT` is not set, `/usr/local/apache` is used.
 
 A custom Apache location can be defined via the `CUSTOM_APACHE_ROOT` variable. This implies the following structure under the `${CUSTOM_APACHE_ROOT}`:
 
@@ -1956,11 +1986,18 @@ If the real structure of Apache root differs from the implied one, it's possible
 |`CUSTOM_APACHE_LIB_APU`|apr-util lib directory, libaprutil.so location|
 |`CUSTOM_APACHE_MODULES`|Apache modules directory, mod_alias.so location|
 
-7. To customize the switch_mod_lsapi script add into `mod_lsapi.spec` custom script and its configuration file. Configuration file name should be `config.ini` file. Script file name can be arbitrary, because its name should be mentioned in `config.ini` file. Both of them should be copied into */usr/share/lve/modlscapi/custom* in the *%install* section of the `mod_lsapi.spec` file. For example, if script file name is `custom.sh`, you should add the following lines into *%install* section of `mod_lsapi.spec` file:
+7. To customize the switch_mod_lsapi script add into `mod_lsapi.spec` custom script and its configuration file. Configuration file name should be `config.ini` file. Script file name can be arbitrary, because its name should be mentioned in `config.ini` file. Both of them should be copied into */usr/share/lve/modlscapi/custom* in the *%install* section of the `mod_lsapi.spec` file. For example, if the script file name is `custom.sh`, put both files into `~/rpmbuild/SOURCES` and declare them in `mod_lsapi.spec`:
 
 ```
-install -D -m 644 config.ini $RPM_BUILD_ROOT%{g_path}/custom/config.ini
-install -D -m 755 custom.sh $RPM_BUILD_ROOT%{g_path}/custom/custom.sh
+Source1: config.ini
+Source2: custom.sh
+```
+
+Then add the following lines to the *%install* section:
+
+```
+install -D -m 644 %{SOURCE1} $RPM_BUILD_ROOT%{g_path}/custom/config.ini
+install -D -m 755 %{SOURCE2} $RPM_BUILD_ROOT%{g_path}/custom/custom.sh
 ```
 
 Also you should add mentions of both files in the *%files* section of `mod_lsapi.spec`:
@@ -1970,12 +2007,13 @@ Also you should add mentions of both files in the *%files* section of `mod_lsapi
 /usr/share/lve/modlscapi/custom/custom.sh
 ```
 
-The requirements to the `config.ini` file and script file are described in the following [section](#how-to-integrate-switch_mod_lsapi-script-with-custom-panels)
+The requirements to the `config.ini` file and script file are described in the following [section](#how-to-integrate-switch-mod-lsapi-script-with-custom-panels)
 
 8. Rebuild the package again, if you set everything correctly, there shouldn't be any problems.
 
 Use this command to rebuild a package
 <div class="notranslate">
+
 ```
 rpmbuild -bb ~/rpmbuild/SPECS/mod_lsapi.spec
 ```
@@ -1985,9 +2023,9 @@ rpmbuild -bb ~/rpmbuild/SPECS/mod_lsapi.spec
 
 #### How to integrate switch_mod_lsapi script with custom panels
 
-To be able to use switch_mod_lsapi you have to do the steps mentioned below. We assume that if the /usr/share/lve/modlscapi/custom/config.ini file exists, then it is a Custom Panel.
+To be able to use switch_mod_lsapi you have to do the steps mentioned below. We assume that if the /usr/share/lve/modlscapi/custom/config.ini file exists and none of the supported control panels (cPanel, Plesk, DirectAdmin, H-Sphere, ISPmanager, InterWorx) is detected, then it is a Custom Panel.
 
-1. Create config.ini file /usr/share/lve/mod_lsapi/custom/ directory. As an example we have created a config.ini.example file. **All directives that are shown in example file needed in GLOBAL section:**
+1. Create the config.ini file in the /usr/share/lve/modlscapi/custom/ directory. As an example we have created a config.ini.example file. **All directives that are shown in example file needed in GLOBAL section:**
 
 ```
 [GLOBAL]
@@ -1998,7 +2036,7 @@ EXECUTABLE_BIN = custom.sh
 PANEL_NAME=CustomPanel
 ```
 
-2. Create executable script in */usr/share/lve/mod_lsapi/custom/executable.sh*. Name it as you want and specify in the config.ini file. Set EXECUTABLE_BIN=executable.sh in the GLOBAL section of the ini file. **Script must be located in the /usr/share/lve/mod_lsapi/custom/ directory.**
+2. Create executable script in */usr/share/lve/modlscapi/custom/executable.sh*. Name it as you want and specify in the config.ini file. Set EXECUTABLE_BIN=executable.sh in the GLOBAL section of the ini file. **Script must be located in the /usr/share/lve/modlscapi/custom/ directory.**
 
 3. Custom script options correspond to the options of the switch_mod_lsapi. For more information use the [this document](/cloudlinuxos/command-line_tools/#apache-mod-lsapi-pro).
 
@@ -2040,7 +2078,7 @@ switch_mod_lsapi --disable-global
 /usr/share/lve/modlscapi/custom/executable.sh --disable-global
 ```
 
-Сustom script executed with --verbose and --force arguments if switch_mod_lsapi are called with.
+Custom script is executed with the `--verbose` argument if `switch_mod_lsapi` is called with it. The `--force` argument is passed the same way, but only for `--setup` and `--enable-global`. Specify these options before the action, for example `switch_mod_lsapi --verbose --setup`. The script receives them after the action and the domain name.
 
 **Not supported options are:**
 
@@ -2050,6 +2088,8 @@ switch_mod_lsapi --disable-global
 --build-native-lsphp-cust
 --check-php
 --stat
+--enable-default-php-ini
+--disable-default-php-ini
 ```
 
 mod_lsapi uses one predefined lsphp handler *application/x-httpd-lsphp*, which relates to */usr/local/bin/lsphp* binary. All other lsphp handlers should be added by custom script into */etc/container/php.handler* file.
@@ -2081,7 +2121,7 @@ if [ "$CMD" == "--setup" ]; then
 fi
 
 if [ "$CMD" == "--uninstall" ]; then
-    sed -i "#application/x-httpd-php81-lsphp#d" /etc/container/php.handler
+    sed -i "\#application/x-httpd-php81-lsphp#d" /etc/container/php.handler
 fi
 
 if [ "$CMD" == "--enable-domain" ]; then
