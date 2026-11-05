@@ -1758,8 +1758,6 @@ CageFS does not install panel-specific ISPmanager or Interworx integrations. A w
 
 Once the template is initialized, you can start enabling users. By default, CageFS is disabled for all users.
 
-On CloudLinux OS 10, CageFS installs the <span class="notranslate">`/etc/systemd/system/httpd.service.d/cloudlinux-cagefs-override.conf`</span> systemd drop-in for Apache. If Apache was already running when you installed CageFS, restart it to apply this setting.
-
 Starting from **cagefs-6.1-27**, the <span class="notranslate">`fs.proc_can_see_other_uid`</span> setting is migrated (one time) from _/etc/sysctl.conf_ to _/etc/sysctl.d/90-cloudlinux.conf_. If this variable is not set in either file, it defaults to 0.
 
 It is strongly recommended not to set this variable in `90-cloudlinux.conf`. Instead, define it in `/etc/sysctl.conf` or another config file with an index number greater than `90-cloudlinux.conf`, such as `/etc/sysctl.d/95-custom.conf`.
@@ -2045,12 +2043,6 @@ cagefsctl --user-status USER
 
 And check that the command shows <span class="notranslate">`Disabled`</span>.
 
-This command updates the user's status only. If the user already has CageFS mounted, also run <span class="notranslate">`cagefsctl --unmount USER`</span>. <span class="notranslate">`cagefsctl --remount USER`</span> skips excluded users.
-
-When you remove a user from the exclude file, CageFS enables that user the next time <span class="notranslate">`cagefsctl`</span> applies the exclude list (for example, <span class="notranslate">`cagefsctl --user-status USER`</span>), in both modes. In <span class="notranslate">"Disable All"</span> mode, run <span class="notranslate">`cagefsctl --disable USER`</span> afterwards if the user should stay disabled.
-
-CageFS also excludes system accounts and control panel service accounts automatically. A cron job refreshes these lists in <span class="notranslate">`/etc/cagefs/exclude`</span> every 10 minutes, and accounts that the control panel reports as its users are left out. <span class="notranslate">`cagefsctl --enable`</span> reports such an account as excluded. Names you add to these files are kept.
-
 
 #### Mount points
 
@@ -2076,7 +2068,7 @@ To define individual custom directories in /etc/cagefs/cagefs.mp following forma
 <span class="notranslate">`@/full/path/to/directory,permission notation`</span>
 
 
-This is useful when you need to give each user a private directory at the path of a system directory. The directory is created in the user's home at `$USER_HOME/.cagefs/<path>` and starts empty; files of the system directory are not copied and are not visible to the user. The permission part is an octal mode and is optional; if it is omitted, 0755 is used. For example:
+This is useful when you need to give each user its own copy of a particular system directory, like:
 
 <span class="notranslate"> `@/var/run/screen,777` </span>
 
@@ -2099,17 +2091,6 @@ To modify mount points, edit /etc/cagefs/cagefs.mp. Here is an example of cagefs
 @/var/run/screen,777
 ```
 </div>
-
-To mount a directory read-only, start the line with an exclamation mark:
-
-<div class="notranslate">
-
-```
-!/usr/local/cpanel/base
-```
-</div>
-
-Then apply the changes with <span class="notranslate">`cagefsctl --remount-all`</span>.
 
 If you want to change mount points, make sure you re-initialize mount points for all customers:
 <div class="notranslate">
@@ -2455,11 +2436,11 @@ The following line is added to corresponding file in `/etc/pam.d/`:
 <div class="notranslate">
 
 ```
-session    required     pam_lve.so      500     1
+session    required     pam_lve.so      100     1
 ```
 </div>
 
-Where 500 stands for minimum <span class="notranslate"> UID </span> to put into <span class="notranslate">CageFS & LVE</span> , and 1 stands for CageFS enabled. When CageFS is installed, the value set with <span class="notranslate">`cagefsctl --set-min-uid`</span> is used instead of this parameter.
+Where 100 stands for minimum <span class="notranslate"> UID </span> to put into <span class="notranslate">CageFS & LVE</span> , and 1 stands for CageFS enabled.
 
 
 #### Filtering options for commands executed by proxyexec
@@ -2834,7 +2815,7 @@ The default wrapper already contains a check that does not allow to run it by th
 
 ```
 #!/bin/bash
-##CageFS proxyexec wrapper - ver N
+##CageFS proxyexec wrapper - ver 15
 
 if [[ $EUID -eq 0 ]]; then
     echo 'Cannot be run as root'

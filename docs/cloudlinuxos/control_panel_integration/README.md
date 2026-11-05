@@ -1415,8 +1415,6 @@ Refer to [documentation on limits](/cloudlinuxos/limits/#understanding-limits) f
 Temporary LVE is destroyed after the process terminates unless the option `--no-fork` passed.
 :::
 
-On cgroup v2, `--no-cpu-limit` without `--no-io-and-memory-limit` cannot be combined with temporary LVE options: `cagefs_enter_user` exits with an error. Use `--speed=<N>%` with a value above 100% instead of `--no-cpu-limit`.
-
 Add `--show-lve-id` to a command with temporary LVE options to print the ID of the temporary LVE to stdout before the command runs.
 
 ### Updating CageFS skeleton
@@ -1536,8 +1534,6 @@ cagefsctl --user-status USER
 
 to apply changes and check that the command shows <span class="notranslate">_Disabled_</span>:
 [Excluding users](/cloudlinuxos/cloudlinux_os_components/#excluding-users)
-
-This command updates the user's status only. If the user already has CageFS mounted, also run <span class="notranslate">`cagefsctl --unmount USER`</span>. <span class="notranslate">`cagefsctl --remount USER`</span> skips excluded users.
 
 ### How to add a file or a directory to CageFS
 

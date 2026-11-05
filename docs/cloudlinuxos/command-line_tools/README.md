@@ -69,8 +69,8 @@ Options:
 |-W | <span class="notranslate"> --unmount-all </span> |unmount CageFS skeleton directory and all users|
 |-l | <span class="notranslate"> --list </span> |list users that entered in CageFS|
 | | <span class="notranslate"> --list-logged-in </span> |list users that entered in CageFS via SSH|
-| | <span class="notranslate"> --enable </span> |enable CageFS for the user. If several usernames share the same UID, the change applies to all of them.|
-| | <span class="notranslate"> --disable </span> |disable CageFS for the user. If several usernames share the same UID, the change applies to all of them.|
+| | <span class="notranslate"> --enable </span> |enable CageFS for the user|
+| | <span class="notranslate"> --disable </span> |disable CageFS for the user|
 | | <span class="notranslate"> --enable-all </span> |switch to <span class="notranslate"> "Enable All" </span> mode and enable all users except excluded ones. The list of individually disabled users is cleared, and all users are remounted.|
 | | <span class="notranslate"> --disable-all </span> |switch to <span class="notranslate"> "Disable All" </span> mode and disable all users. The list of individually enabled users is cleared, and all users are remounted.|
 | | <span class="notranslate"> --display-user-mode </span> |display the current mode ( <span class="notranslate"> "Enable All" </span> or <span class="notranslate"> "Disable All" </span> )|
@@ -146,7 +146,7 @@ Yet, if a user have they shell disabled, it wouldn't work. To solve this issue, 
 
 * `--root` – tells the utility not to reset UID and GID to user ones. It might be dangerous to call untrusted commands.
 * `--no-fork` – do not create a child process for a called command. The called command will replace the cagefs_enter process with exec.
-* `--no-cpu-limit` - remove all CPU limits (requires `kmod-lve` >= 2.0.36). On cgroup v2 this also removes IO and memory limits.
+* `--no-cpu-limit`- remove all CPU limits (requires `kmod-lve` >= 2.0.36)
 * `--no-io-and-memory-limit` - remove all limits of IO and Memory (requires `kmod-lve` >= 2.0.36)
 
 If you disable CageFS for a user, then <span class="notranslate"> `cagefs_enter` </span> will be executed without <span class="notranslate"> `proxyexec` </span> .
