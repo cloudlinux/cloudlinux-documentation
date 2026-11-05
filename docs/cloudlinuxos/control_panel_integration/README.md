@@ -192,7 +192,7 @@ When using SUDO you should create the wrapper that will call your script using S
 ```
 [root]# cat /opt/cpvendor/bin/domains
 #!/usr/bin/env bash
-sudo /opt/cpvendor/bin/domains_real "$@"
+sudo opt/cpvendor/bin/domains_real
 ```
 </div>
 
