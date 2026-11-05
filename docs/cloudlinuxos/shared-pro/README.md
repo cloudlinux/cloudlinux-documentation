@@ -3545,15 +3545,7 @@ Example when an error appears during advice applying:
 
 ![Smart Advice table: Quick action Error log and Try again on Review row](/images/cloudlinuxos/shared-pro/x-ray/XRaySmartAdviceError.webp)
 
-Unless this is turned off on the server, X-Ray automatically installs the CloudLinux SmartAdvice must-use plugin into WordPress sites with active advice and removes it when no such advice remains. The plugin shows the advice in the WordPress admin area and can email about it, see *Email notifications* below and [SmartAdvice Plugin](/user-docs/user-docs-shared-pro-cloudlinux/#smartadvice-plugin). To change this for the whole server, run:
-
-```
-cloudlinux-awp-admin --api-version 1 set-options --smart-advice-wordpress-plugin=<on/off>
-```
-
-Turning plugin installation off does not remove already installed plugins right away. To remove them, run `cl-smart-advice wordpress-plugin-uninstall`. When Imunify360 is installed, its own settings control whether the plugin is also used for Imunify360 advice.
-
-**Email notifications.** When a WordPress site has advice in the *Review* status, the Smart Advice plugin emails the site's WordPress administrators and the email addresses of the control panel user. For each site, it sends at most one email a day about new advice, and a reminder if advice stays in the *Review* status for more than 30 days. The *Don't show me this advice again* link in the email stops emails about that type of advice for that address on that site. To turn these emails on or off for the whole server, run `cloudlinux-awp-admin --api-version 1 set-options --smart-advice-notifications=<on/off>`, which covers both new-advice emails and reminders, or `cloudlinux-awp-admin --api-version 1 set-options --smart-advice-reminders=<on/off>`, which covers reminders only. Emails about Imunify360 advice do not follow these two options; they follow the advice email setting in Imunify360.
+**Email notifications.** When a WordPress site has performance advice in the *Review* status, the Smart Advice plugin emails the site's WordPress administrators and the email addresses of the control panel user. For each site, it sends at most one email a day about new advice, and a reminder if advice stays in the *Review* status for more than 30 days. The *Don't show me this advice again* link in the email stops emails about that type of advice for that address on that site. To turn these emails on or off for the whole server, run `cloudlinux-awp-admin --api-version 1 set-options --smart-advice-notifications=<on/off>`, which covers both new-advice emails and reminders, or `cloudlinux-awp-admin --api-version 1 set-options --smart-advice-reminders=<on/off>`, which covers reminders only.
 
 #### Smart Advice FAQ
 
@@ -3585,8 +3577,6 @@ supported commands for `--api-version=1`:
 - `rollback` - rollbacks specific advice;
 - `details --advice_id=<id>` - shows details of specific advice;
 - `status --advice_id=<id>` - shows current status and progress of specific advice;
-- `wordpress-plugin-install` - installs or removes the SmartAdvice WordPress plugin on websites according to the current advice list; this also runs daily as a cron job;
-- `wordpress-plugin-uninstall` - removes the SmartAdvice WordPress plugin from all websites on the server. Websites with current advice get the plugin again on the next `wordpress-plugin-install` run, or earlier when the site owner lists or applies advice;
 
 ##### Advices list
 
@@ -4186,10 +4176,6 @@ If you managed to create a tracing task, this means that the <span class="notran
 Check for the <span class="notranslate">`CacheLookup on`</span> option in the `htaccess` file for your domain.
 If the option is there, LiteSpeed processes requests bypassing the PHP X-Ray extension.
 In this case, to get tracing information, you should remove the <span class="notranslate">`CacheLookup on`</span> option.
-
-#### I see the PHP warning "CloudLinux X-Ray: AccelerateWP optimization data ... could not be loaded". What does it mean?
-
-X-Ray could not load its WordPress profiler from `/opt/alt/php-xray` while tracing this site. The usual cause is that the open_basedir setting of this domain does not include this path. Tracing continues, but shortcode, cacheability and render-blocking resource data is not collected, and if [Advanced performance analytics](#advanced-performance-analytics) is enabled, its snippet is not added to this site. To collect this data, add `/opt/alt/php-xray` to the open_basedir setting of the domain.
 
 #### What is the proper format for the URL?
 
