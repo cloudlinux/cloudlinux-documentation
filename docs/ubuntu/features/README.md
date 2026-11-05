@@ -41,14 +41,15 @@ MySQL Governor allows restricting customers that use too many resources. It supp
 | READ  | bytes | bytes read. Cached reads are not counted, only those that were actually read from disk will be counted |
 | WRITE | bytes | bytes written. Cached writes are not counted, only once data is written to disk, it is counted         |
 
-You can set different limits for different periods: current, short, mid, long. By default those periods are defined as 1 second, 5 seconds, 1 minute and 5 minutes. They can be re-defined using the [configuration file](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
+You can set different limits for different periods: current, short, mid, long. By default those periods are defined as 1 second, 15 seconds, 1 minute and 5 minutes. They can be re-defined using the [configuration file](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation).
 The idea is to use larger acceptable values for shorter periods. Like you could allow a customer to use two cores (200%) for one second, but only 1 core (on average) for 1 minute, and only 70% within 5 minutes.
 That would make sure that customer can burst for short periods of time.
 
-When a customer is restricted, the customer will be placed into special LVE with ID 3. All restricted customers will be
-placed into that LVE, and you can control the amount of resources available to restricted customers. Restricted
-customers will also be limited to only 30 concurrent connections. This is done so they wouldn't use up all the MySQL
-connections to the server.
+When a customer is restricted, the customer's queries run inside that customer's own LVE (the default `abusers` mode,
+which needs the `dbuser-map` mapping file described below). In `single` mode, or for a database user with no entry in
+the mapping file, restricted customers are placed into a special LVE with ID 3, shared by all of them, and you can
+control the amount of resources available to them. Restricted customers will also be limited to 30 concurrent
+connections by default. This is done so they wouldn't use up all the MySQL connections to the server.
 
 ### Installation
 
@@ -87,12 +88,12 @@ apt  install governor-mysql
 /usr/share/lve/dbgovernor/mysqlgovernor.py --install --yes
 ```
 
-In case of installing on cPanel + Ubuntu server, set the following parameter:
+The installer accepts the package maintainer's version of configuration files. If dpkg still asks about the `usr.sbin.mysqld` config on a cPanel server, answer `Y`:
 
 ![Terminal output: dpkg prompt for usr.sbin.mysqld config with Y to install the package maintainer's version](/images/ubuntu/features/Param.webp)
 
 5. After installation, check that the database server is working properly. If you have any problems,
-   use [Support Portal]().
+   use [Support Portal](https://www.cloudlinux.com/support-portal/).
 6. Configure user mapping to the database. The mapping format is described in
    the [following section](/cloudlinuxos/cloudlinux_os_components/#mapping-a-user-to-a-database).
 
@@ -108,11 +109,11 @@ The format is as follows:
 
 The control panel should automatically generate this mapping and write it to the `/etc/container/dbuser-map` file. Usually,
 it is enough to write a hook when adding, deleting or renaming a database for a user. The control panel should implement
-such a mechanism for MySQL Governor to operate properly. MySQL Governor automatically applies changes from the
-dbuser-map file every five minutes.
+such a mechanism for MySQL Governor to operate properly. MySQL Governor checks the dbuser-map file for modifications
+every minute and applies the changes automatically.
 
 7. MySQL Governor configuration can be found in the
-   following [section](/cloudlinuxos/cloudlinux_os_components/#configuration-3).
+   following [section](/cloudlinuxos/cloudlinux_os_components/#configuration-2).
 8. MySQL Governor CLI tools description can be found in the
    following [section](/cloudlinuxos/command-line_tools/#mysql-governor).
 9. Having configured the mapping use `dbtop` to see the current user load on the database (you'd need to make some
@@ -129,6 +130,8 @@ dbtop
 You can find the instructions
 in [this documentation](/cloudlinuxos/cloudlinux_os_components/#upgrading-database-server).
 
+If the MySQL 8.0 server is installed together with the MySQL 8.4 client packages, which `cldiag` also reports, check it with `/usr/share/lve/dbgovernor/mysqlgovernor.py --check-version-mismatch` (exit code 0 means no mismatch, 1 means a mismatch) and replace the client with the 8.0 version with `/usr/share/lve/dbgovernor/mysqlgovernor.py --fix-version-mismatch`.
+
 ### Uninstalling
 
 To remove MySQL Governor, run the following command:
@@ -137,7 +140,7 @@ To remove MySQL Governor, run the following command:
 /usr/share/lve/dbgovernor/mysqlgovernor.py --delete
 ```
 
-The script will install the original MySQL server, and remove MySQL Governor.
+The script will remove MySQL Governor and the installed database server packages, and then install the cl-MySQL 8.0 packages.
 
 ### Configuration and operation
 
@@ -148,14 +151,14 @@ in [this documentation](/cloudlinuxos/cloudlinux_os_components/#configuration-an
 
 The documentation is available [here](/cloudlinuxos/lve_manager/#cloudlinux-manager).
 
-* [Dashboard](/sub-system-ubuntu/features/#dashboard)
+* [Dashboard](/ubuntu/features/#dashboard)
 * [Current Usage](/cloudlinuxos/lve_manager/#current-usage)
 * [Users](/cloudlinuxos/lve_manager/#users)
 * [Statistics](/cloudlinuxos/lve_manager/#statistics)
 * [Packages](/cloudlinuxos/lve_manager/#packages)
 * [Options](/cloudlinuxos/lve_manager/#options)
 * [PHP Selector](/cloudlinuxos/cloudlinux_os_components/#php-selector)
-    * [Installation instructions](/features/#php-selector-installation-instructions)
+    * [Installation instructions](/ubuntu/features/#php-selector-installation-instructions)
     * [Selector tab](/cloudlinuxos/lve_manager/#selector-tab)
     * [Selector tab additional features (cPanel)](/cloudlinuxos/lve_manager/#selector-tab-additional-features)
       CloudLinux Manager 6.0.1-2
@@ -176,11 +179,11 @@ Go to _CloudLinux Manager_ | _Dashboard_.
   hours.
 * Resellers hitting limits — number of enrolled Resellers that are reaching their limit in any kind of resource. Data is
   within the last 24 hours.
-* [PHP Selector](/cloudlinuxos/lve_manager/#php-selector-2) block displays the following information:
+* [PHP Selector](/cloudlinuxos/lve_manager/#php-selector-1) block displays the following information:
     * Default version — the default version of PHP binaries. Click _Manage_ to change the default version, enable or
       disable PHP Selector, change the list of supported versions, and choose default modules. You will be redirected to
       CloudLinux Manager | PHP Selector. PHP Selector (cPanel) has malfunctions warnings
-      about [the most common issues](/cloudlinuxos/lve_manager/#errors).
+      about [the most common issues](/cloudlinuxos/lve_manager/#php-selector-diagnostic-tool-and-notifications).
 * [CageFS](/cloudlinuxos/cloudlinux_os_components/#cagefs) block displays the following information:
     * CageFS status (Enabled/Disabled/Not installed). To manage CageFS, click _Manage_. You will be redirected to
       CloudLinux Manager | Options | CageFS. Click _Install_ to install CageFS.
@@ -251,7 +254,9 @@ other users.
 * If the site is limited by memory or number of processes limits, then the user will receive 500 or 503 errors that
   server cannot execute the script.
 
-#### ea-php81 with php-fpm
+## PHP installation
+
+### ea-php81 with php-fpm
 
 To install, run the following command:
 
@@ -259,7 +264,7 @@ To install, run the following command:
 apt install ea-php81*
 ```
 
-#### alt-php with suphp, cgi
+### alt-php with suphp, cgi
 
 To install, follow these steps:
 
@@ -274,7 +279,7 @@ To install, follow these steps:
    apt install alt-php74
    ```
 
-#### PHP Selector installation instructions
+### PHP Selector installation instructions
 
 The documentation is available [here](/cloudlinuxos/cloudlinux_os_components/#php-selector).
 
@@ -283,8 +288,19 @@ To install, run the following commands:
 ```
 apt install ea-apache24-mod-suphp ea-apache24-mod-suexec
 apt install cagefs
-cagefsctl –-init
+apt install alt-php74-meta
+cagefsctl --init
 ```
+
+Run the `apt install alt-php74-meta` command for each PHP version you need, using `alt-phpXX-meta`, where `XX` is the version without its dot, for example `alt-php81-meta` for PHP 8.1.
+
+By default, CageFS is disabled for all users after initialization. PHP Selector needs it enabled for the owner of the domain. To enable it for all users, run:
+
+```
+cagefsctl --enable-all
+```
+
+To enable it for specific users instead, see [Managing users](/cloudlinuxos/cloudlinux_os_components/#managing-users).
 
 ## Symlink owner match protection
 
@@ -296,8 +312,8 @@ The documentation is available [here](/cloudlinuxos/cloudlinux_os_kernel/#fs-enf
 
 ## Link traversal protection
 
-* [fs.protected_symlinks_create](/cloudlinuxos/cloudlinux_os_kernel/#link-traversal-protection)
-* [fs.protected_hardlinks_create](/cloudlinuxos/cloudlinux_os_kernel/#link-traversal-protection)
+* [fs.protected_symlinks_create](/cloudlinuxos/cloudlinux_os_kernel/#fs-protected-symlinks-create)
+* [fs.protected_hardlinks_create](/cloudlinuxos/cloudlinux_os_kernel/#fs-protected-symlinks-create)
 
 ## Tuned profiles
 
@@ -308,7 +324,7 @@ The documentation is available [here](/cloudlinuxos/cloudlinux_os_kernel/#tuned-
 ### General requirements
 
 General requirements are
-available [here](/cloudlinuxos/cloudlinux_os_components/#general-information-and-requirements-9).
+available [here](/cloudlinuxos/cloudlinux_os_components/#general-information-and-requirements-7).
 
 ### Installation
 
@@ -332,7 +348,7 @@ service apache2 restart
 
 ### Configuration
 
-Configuration instructions are available [here](/cloudlinuxos/cloudlinux_os_components/#configuration-4).
+Configuration instructions are available [here](/cloudlinuxos/cloudlinux_os_components/#configuration-3).
 
 ### Troubleshooting
 
@@ -344,7 +360,7 @@ In case the site responds with the error: 503 Service unavailable.
 chmod 755 /opt 
 ```
 
-2. Change the default folder for mod_lsapi socket:
+2. Make sure the folder for mod_lsapi sockets exists and has the correct owner and permissions. The default folder is /var/mod_lsapi:
 
 ```
 mkdir /var/mod_lsapi
@@ -352,10 +368,10 @@ chown nobody.nobody /var/mod_lsapi
 chmod 755 /var/mod_lsapi
 ```
 
-Add to /etc/apache2/conf.d/lsapi.conf new path:
+To use another folder, add its path to /etc/apache2/conf.d/lsapi.conf:
 
 ```
-lsapi_socket_path /var/mod_lsapi
+lsapi_socket_path /path/to/folder
 ```
 
 And restart service:
