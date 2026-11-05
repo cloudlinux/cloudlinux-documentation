@@ -68,7 +68,7 @@ The control panel vendor decides where to put CPAPI scripts (CloudLinux OS utils
 
 We recommend to deliver a set of scripts for CPAPI and integration file as a separate RPM package. This can greatly simplify support for vendors as they will be able to release any updates and compatibility fixes separately from the panel updates and use dependencies/conflicts management provided by a package manager.
 
-Assumed that this package contains a list of paths to the integration scripts (or to the one script if it deals with all `cpapi` commands). You can specify default script arguments in the <span class="notranslate">`integration_scripts`</span> section, additional arguments like <span class="notranslate">`filter`</span> and <span class="notranslate">`--name`</span> will be automatically added after the defined ones.
+Assumed that this package contains a list of paths to the integration scripts (or to the one script if it deals with all `cpapi` commands). You can specify default script arguments in the <span class="notranslate">`integration_scripts`</span> section. Additional arguments such as <span class="notranslate">`--owner`</span> and <span class="notranslate">`--name`</span> are automatically added after the defined ones. CloudLinux OS utilities pass an option and its value as two separate arguments, for example <span class="notranslate">`--owner user1`</span> rather than <span class="notranslate">`--owner=user1`</span>, so your script must accept this form.
 
 ### Versioning
 We provide information about the current version of the API in the form of rpm package capability (`Provides public_cp_vendors_api = VERSION`) added to our packages. While improving integration API, we may add new features and scripts and change `VERSION`.
@@ -85,7 +85,7 @@ Summary: added AccelerateWP integration.
 2. New feature `accelerate_wp` added to `supported_cl_features` of [`panel_info` script](/cloudlinuxos/control_panel_integration/#panel-info). This feature defines if your panel supports AccelerateWP integration.
 3. New script `php` description added.
 4. New field `php_version_id` in [domains](#domains) script added.
-5. New field 'handler` in [domains](#domains) script added.
+5. New field `handler` in [domains](#domains) script added.
 
 In order to integrate AccelerateWP, you should implement a new script [php](#php),
 follow [integration guide of X-RAY](/cloudlinuxos/control_panel_integration/#how-to-integrate-x-ray-and-acceleratewp-with-a-control-panel)
@@ -94,15 +94,15 @@ and add extra field `php_version_id` in [domains](#domains) script.
 Version 1.3
 
 Summary: added CloudLinux Wizard integrations.
-1. `Provides public_cp_vendors_api = 1.3` added to rpm spec of alt-python27-cllib package (see [versioning](/control_panel_integration/#versioning)).
-2. New feature `wizard` added to `supported_cl_features` of [`panel_info` script](/control_panel_integration/#panel-info). Now you can define if your panel supports the CloudLinux Wizard integration.
+1. `Provides public_cp_vendors_api = 1.3` added to rpm spec of alt-python27-cllib package (see [versioning](/cloudlinuxos/control_panel_integration/#versioning)).
+2. New feature `wizard` added to `supported_cl_features` of [`panel_info` script](/cloudlinuxos/control_panel_integration/#panel-info). Now you can define if your panel supports the CloudLinux Wizard integration.
 
 Version 1.2
 
 Summary: ability to integrate X-Ray added.
 1. `Provides public_cp_vendors_api = 1.2` added to rpm spec of alt-python27-cllib package (see [versioning](./#versioning)).
 2. [`domains` integration script](./#domains) updated: new optional flag `--with-php` added. This option is required for X-Ray integration only.
-3. New X-Ray feature added to `supported_cl_features` of [`panel_info` script](/control_panel_integration/#panel-info). Now the X-Ray UI tab is hidden by default until the panel makes the support clear by setting the `xray` feature to `true`.
+3. New X-Ray feature added to `supported_cl_features` of [`panel_info` script](/cloudlinuxos/control_panel_integration/#panel-info). Now the X-Ray UI tab is hidden by default until the panel makes the support clear by setting the `xray` feature to `true`.
 
 Version 1.1
 1. Added `Provides public_cp_vendors_api = 1.1` to rpm spec of alt-python27-cllib package (see [versioning](./#versioning)).
@@ -192,7 +192,7 @@ When using SUDO you should create the wrapper that will call your script using S
 ```
 [root]# cat /opt/cpvendor/bin/domains
 #!/usr/bin/env bash
-sudo opt/cpvendor/bin/domains_real
+sudo /opt/cpvendor/bin/domains_real "$@"
 ```
 </div>
 
@@ -223,7 +223,7 @@ As an alternative for sudo you can use regular SUID scripts, but we strongly rec
 
 You can find more details on how to configure your scripts in CageFS properly here:
 
-* [Configuration. General information](/cloudlinuxos/cloudlinux_os_components/#configuration-2)
+* [Configuration. General information](/cloudlinuxos/cloudlinux_os_components/#configuration-1)
 * [How to integrate CageFS with any control panel](./#how-to-integrate-cagefs-with-a-control-panel)
 
 ### Expected scripts responses
@@ -248,6 +248,8 @@ There are two expected formats of integration script responses. In case of succe
 }
 ```
 </div>
+
+The `data` field is validated against the specification of the script, and a key that the specification does not list can make the response invalid, so return only the documented keys. For example, the [`domains`](./#domains) script must return the `php` object for each domain when it is called with `--with-php`, and must not return it otherwise.
 
 In case of error, the output should be one of the following: Internal errors, Restricted access, Error in arguments,  Nonexistent entities.
 
@@ -425,8 +427,8 @@ Returns the information about the control panel in the specified format.
 |Key|Nullable| Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 |name|False| Control panel name                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 |<span class="notranslate">version</span>|False| Control panel version                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-|<span class="notranslate">user_login_url_template</span>|False| URL template for a user entering to control panel. Used in the lve-stats default templates reporting that user is exceeding server load. You can use the following placeholders in the template: <span class="notranslate">`{domain}`</span>. CloudLinux OS utility automatically replaces  placeholders to the real values. **Example**:<span class="notranslate">`“user_login_url_template”: “https://{domain}:2087/login”`</span> CloudLinux OS utility automatically replaces <span class="notranslate">`{domain}`</span>, and the link will look like <span class="notranslate">`https://domain.zone:2087/login`</span>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-|<span class="notranslate">supported_cl_features</span>|False| Available since API v1.1 (see [versioning](/control_panel_integration/#versioning)) <br> Object that describes which CloudLinux OS features are supported by your control panel and which must be hidden in web interface.<br>When `supported_cl_features` is omitted, we assume that all modules are supported. When `supported_cl_features` is empty object, all modules will be hidden. All features that are not listed in `supported_cl_features` are considered to be disabled. <br>We recommend you to always return object as we can add more features in the future and you will be able to test them and make them visible after checking and tuning.<br><br>Features that you currently can disable:<ul><li><a href="/cloudlinux_os_components/#php-selector">php_selector</a></li> <li><a href="/cloudlinux_os_components/#ruby-selector">ruby_selector</a></li> <li><a href="/cloudlinux_os_components/#python-selector">python_selector</a></li> <li><a href="/cloudlinux_os_components/#node-js-selector">nodejs_selector</a></li> <li><a href="/cloudlinux_os_components/#apache-mod-lsapi-pro">mod_lsapi</a></li> <li><a href="/cloudlinux_os_components/#mysql-governor">mysql_governor</a></li> <li><a href="/cloudlinux_os_components/#cagefs">cagefs</a></li> <li><a href="/cloudlinux_os_components/#reseller-limits">reseller_limits</a></li></ul> Available since API v1.2 (see [versioning](/control_panel_integration/#versioning)) <ul><li><a href="/cloudlinux-os-plus/#x-ray">xray</a> (CloudLinuxOS+ license only)</li></ul> Available since API v1.4 (see [versioning](/control_panel_integration/#versioning)) <ul><li><a href="/cloudlinux-os-plus/#acceleratewp">accelerate_wp</a> (AccelerateWP)</li><li><a href="/lve_manager/#installation-wizard">wizard</a> </li></ul> Both X-Ray and Accelerate WP require CloudLinux Shared Pro license. |
+|<span class="notranslate">user_login_url</span>|True| URL template for a user entering to control panel. Used in the lve-stats default templates reporting that user is exceeding server load. You can use the following placeholders in the template: <span class="notranslate">`{domain}`</span>. CloudLinux OS utility automatically replaces  placeholders to the real values. **Example**:<span class="notranslate">`"user_login_url": "https://{domain}:2087/login"`</span> CloudLinux OS utility automatically replaces <span class="notranslate">`{domain}`</span>, and the link will look like <span class="notranslate">`https://domain.zone:2087/login`</span>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+|<span class="notranslate">supported_cl_features</span>|False| Available since API v1.1 (see [versioning](/cloudlinuxos/control_panel_integration/#versioning)) <br> Object that describes which CloudLinux OS features are supported by your control panel and which must be hidden in web interface.<br>When `supported_cl_features` is omitted, we assume that all modules are supported. When `supported_cl_features` is empty object, all modules will be hidden. The features listed below are disabled unless they are included in `supported_cl_features`. <br>We recommend you to always return object as we can add more features in the future and you will be able to test them and make them visible after checking and tuning.<br><br>Features that you currently can disable:<ul><li><a href="/cloudlinuxos/cloudlinux_os_components/#php-selector">php_selector</a></li> <li><a href="/cloudlinuxos/cloudlinux_os_components/#ruby-selector">ruby_selector</a></li> <li><a href="/cloudlinuxos/cloudlinux_os_components/#python-selector">python_selector</a></li> <li><a href="/cloudlinuxos/cloudlinux_os_components/#node-js-selector">nodejs_selector</a></li> <li><a href="/cloudlinuxos/cloudlinux_os_components/#apache-mod-lsapi-pro">mod_lsapi</a></li> <li><a href="/cloudlinuxos/cloudlinux_os_components/#mysql-governor">mysql_governor</a></li> <li><a href="/cloudlinuxos/cloudlinux_os_components/#cagefs">cagefs</a></li> <li><a href="/cloudlinuxos/limits/#reseller-limits">reseller_limits</a></li></ul> Available since API v1.2 (see [versioning](/cloudlinuxos/control_panel_integration/#versioning)) <ul><li><a href="/cloudlinuxos/shared-pro/#x-ray">xray</a></li></ul> Available since API v1.3 (see [versioning](/cloudlinuxos/control_panel_integration/#versioning)) <ul><li><a href="/cloudlinuxos/lve_manager/#installation-wizard">wizard</a></li></ul> Available since API v1.4 (see [versioning](/cloudlinuxos/control_panel_integration/#versioning)) <ul><li><a href="/cloudlinuxos/shared-pro/#acceleratewp">accelerate_wp</a> (AccelerateWP)</li></ul><br>X-Ray and AccelerateWP are not available on CloudLinux OS Legacy (Shared). See [CloudLinux OS editions](/introduction/cloudlinux-os-editions/#cloudlinux-os-editions).<br>A feature set to `true` stays unavailable where the CloudLinux OS edition, the operating system or the environment does not support it. For example, Ruby, Python and Node.js Selectors are not available on Ubuntu. |
 
 
 
@@ -438,7 +440,7 @@ Returns the information about databases that are available to the control panel 
 For now, CloudLinux OS supports control panels only with MySQL databases.
 :::
 
-Integration script is optional, when there is no script, [lve-stats won’t collect SQL snapshots](cloudlinux_os_components/#plugins).
+Integration script is optional, when there is no script, [lve-stats won’t collect SQL snapshots](/cloudlinuxos/cloudlinux_os_components/#plugins).
 
 **Usage example**
 
@@ -571,7 +573,7 @@ If a reseller user or administrator user has a corresponding UNIX-user in the sy
 |Key|Required|Description|
 |<span class="notranslate">--owner, -o</span>|False|Used for filtering. When the argument is set, output only this owner users.|
 |<span class="notranslate">--package-name</span>|False|Used for filtering. Set the name of the package which users to output. Used ONLY in pair with <span class="notranslate">`--package-owner`</span>.|
-|<span class="notranslate">--package-owner</span>|False|Used in pair with package.name. Set the owner of the specified package.|
+|<span class="notranslate">--package-owner</span>|False|Used in pair with <span class="notranslate">`--package-name`</span>. Set the owner of the specified package.|
 |<span class="notranslate">--username</span>|False|Used for filtering. When the parameter is set, output the information about this UNIX user only.|
 |<span class="notranslate">--unix-id</span>|False|Used for filtering. When the parameter is set, output the information about this UNIX user only.|
 |<span class="notranslate">--fields</span>|False|List fields to output. Fields are divided with a comma; when there is no key, output all available fields.<br><br>The key is used to reduce the data size for the large systems. You can ignore the key and always output the full set of data. Note that in this case, CloudLinux OS will work more slowly.|
@@ -667,9 +669,9 @@ If a reseller user or administrator user has a corresponding UNIX-user in the sy
 
 Returns key-value object, where a key is a domain (or subdomain) and a value is a key-value object contains the owner name (UNIX users), the path to the site root specified in the HTTP server config, and the domain status (main or alternative).
 
-X-Ray support is available since API v1.2 (see [versioning](./#versioning)). In order to enable X-Ray support, the value for each domain should include php configuration. Full X-Ray integration documentation can be found [here](./#how-to-integrate-x-ray-with-a-control-panel)
+X-Ray support is available since API v1.2 (see [versioning](./#versioning)). In order to enable X-Ray support, the value for each domain should include php configuration. Full X-Ray integration documentation can be found [here](./#how-to-integrate-x-ray-and-acceleratewp-with-a-control-panel)
 AccelerateWP support is available since API v1.4 (see [versioning](./#versioning)). In order to enable AccelerateWP support,
-the `php_version_id` fields should be included in php configuration. `php_version_id` should match unique identifier retured by [php](#php) script and `handler` must be specified, one of the following: `fpm`, `cgi`, `lsapi`.
+the `php_version_id` fields should be included in php configuration. `php_version_id` should match unique identifier returned by [php](#php) script and `handler` must be specified, one of the following: `fpm`, `cgi`, `lsapi`.
 
 ::: warning WARNING
 To make Python/Node.js/Ruby/PHP Selector workable, this script should be executed with user access and inside CageFS. When running this script as the user, you must limit answer scope to values, allowed for the user to view.
@@ -692,7 +694,7 @@ E.g. if the control panel has two domains: <span class="notranslate">`user1.com`
 |Key|Required|Description|
 |<span class="notranslate">--owner, -o</span>|False|Used for filtering output; set a name of the owner whose domains to print|
 |<span class="notranslate">--name, -n</span>|False|Used for filtering output; set a name of the domain, to display information about it|
-|<span class="notranslate">--with-php</span>|False (X-Ray support only)|Used for extending output with PHP configuration, required by X-Ray (available since API v1.2, see [versioning](./#versioning))|
+|<span class="notranslate">--with-php</span>|False (X-Ray and AccelerateWP support only)|Used for extending output with PHP configuration, required by X-Ray and AccelerateWP (available since API v1.2, see [versioning](./#versioning))|
 
 :::warning IMPORTANT
 Do not add the **--with-php** flag to the **integration.ini** file.
@@ -779,7 +781,7 @@ All logic of running the script with or without this parameter is handled on the
 |<span class="notranslate">owner</span>|False|UNIX user who is a domain owner|
 |<span class="notranslate">document_root</span>|False|Absolute path to the site root directory. For CloudLinux Isolates, see the [additional document-root requirements](/cloudlinuxos/isolates/#enable-isolation-for-a-domain).|
 |<span class="notranslate">is_main</span>|False|Is the domain the main domain for a user|
-|<span class="notranslate">Nested dictionary (named array) php</span>|True (False if X-Ray support is enabled)|PHP configuration for a domain, required by X-Ray, see details [here](./#how-to-integrate-x-ray-with-a-control-panel) (available since API v1.2, see [versioning](./#versioning))|
+|<span class="notranslate">Nested dictionary (named array) php</span>|False, only with `--with-php`|PHP configuration for a domain. Return it only when the script is called with `--with-php`, and for every domain in that case. Without the flag the `php` key must be absent. Required by X-Ray and AccelerateWP, see details [here](./#how-to-integrate-x-ray-and-acceleratewp-with-a-control-panel) (available since API v1.2, see [versioning](./#versioning))|
 
 #### <span class="notranslate">resellers</span>
 
@@ -878,7 +880,7 @@ Gives information about panel’s administrators, output information about all p
       "locale_code": "Ru_ru",
       "email": "admin2@domain.zone",
       "is_main": false
-    },
+    }
   ],
   "metadata": {
     "result": "ok"
@@ -948,7 +950,7 @@ Gives information about panel’s supported php versions.
 |                                              |          |                                                                                                                                   |
 |----------------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------------------------|
 | Key                                          | Nullable | Description                                                                                                                       |
-| <span class="notranslate">identifier</span>  | False    | Unique identifier of php version. Must be in format XX-php-YZ, where XX - any latin symbols, YZ - numbers describing php version. |
+| <span class="notranslate">identifier</span>  | False    | Unique identifier of php version in format XX-phpYZ (for example, `alt-php74`), where XX - any latin symbols, YZ - numbers describing php version. The last two characters must be the version digits: CloudLinux OS derives the PHP version from them. |
 | <span class="notranslate">version</span>     | False    | PHP version in X.Y format.                                                                                                        |
 | <span class="notranslate">modules_dir</span> | False    | Path to the directory where php modules (*.so files) are stored.                                                                  |
 | <span class="notranslate">dir</span>         | False    | Path to the root directory of php installation.                                                                                   |
@@ -974,7 +976,7 @@ After creating a new administrator, the control panel should call the following 
 <div class="notranslate">
 
 ```
-/usr/share/cloudlinux/hooks/post_modify_admin.py create --username admin
+/usr/share/cloudlinux/hooks/post_modify_admin.py create --name admin
 ```
 </div>
 
@@ -1014,7 +1016,7 @@ After creating a new user, the following script should be called:
 |-|-|-|-|
 |Argument |Mandatory |Default |Description |
 |<span class="notranslate">--username, -u</span>|Yes | - |The name of the user account |
-|<span class="notranslate">--owner, -o</span>|Yes | - |The owned of the created account. The owner can be an administrator or a reseller |
+|<span class="notranslate">--owner, -o</span>|Yes | - |The owner of the created account. The owner can be an administrator or a reseller |
 
 After renaming a user (when a user name or a home directory was changed), the following script should be called:
 
@@ -1074,7 +1076,7 @@ After removing the user, you should call the following command:
 |Argument |Default |Description |
 |<span class="notranslate">--username, -u</span>| - |The name of the removed account |
 
-After restoring the user fron backup, you should call the following command:
+After restoring the user from backup, you should call the following command:
 
 <div class="notranslate">
 
@@ -1183,7 +1185,7 @@ This script should return information about the current user opening Web UI. It 
     "baseUri": "/user2/lvemanager/",
     "assetsUri": "/userdata/assets/lvemanager",
     "lang": "en",
-    "userDomain": "current-user-domain.com"
+    "defaultDomain": "current-user-domain.com"
 }
 ```
 </div>
@@ -1192,15 +1194,15 @@ This script should return information about the current user opening Web UI. It 
 * **<span class="notranslate">userId</span>** - system user ID if exist.
 * **<span class="notranslate">userType</span>** - can have the following values: “user”, “reseller”, “admin”
 * **<span class="notranslate">lang</span>** - used to identify a current locale in the user interface (‘en’, ‘ru’ - two-character language code)
-* **<span class="notranslate">userDomain</span>** - a current user domain. It can be the default domain or any selected user domain. Used to display in Selector. For example, in DirectAdmin the control panel opens only if a domain is selected — the selected domain is set. In cPanel, a domain is not selected — the default domain is set. If a domain is absent —  leave empty.
+* **<span class="notranslate">defaultDomain</span>** - a current user domain. It can be the default domain or any selected user domain. The LVE Manager web server (`run_service = 1`) uses it to prefill the domain in Selectors. If a domain is absent, leave empty. The PHP-based integration does not use this field.
 * **<span class="notranslate">baseUri</span>** - URI where LVE Manager files are available on the webserver
-* **<span class="notranslate">assetsUri</span>** - URI where assets files for LVE Manager are available on the webserver
+* **<span class="notranslate">assetsUri</span>** - URI of the directory that contains the `assets` folder. LVE Manager appends `/assets/...` to this value. With `base_path` set, files are copied to `<base_path>/assets`, so use the URI of `base_path`. With an empty `base_path`, serve `/usr/share/l.v.e-manager/commons/spa-resources` at `<assetsUri>/assets`.
 
 The following configuration file parameters are used to determine the location of the plugin UI part.
 
 * **<span class="notranslate">`base_path`</span>** - directory where file assets are copied for accessibility from the control panel. This is optional if the default directories `/usr/share/l.v.e-manager/commons` and `/usr/share/l.v.e-manager/panelless-version/lvemanager` are accessible from the control panel and correctly configured in the web server. The command `yum update lvemanager` performs file copying or replacement.
 * **<span class="notranslate">`run_service`</span>** - parameter that activates the LVE Manager web server. Set it to 1 during the installation or updating of LVE Manager to run the web server automatically.
-* **<span class="notranslate">`service_port`</span>** - port used for running a web server for access LVE Manager without the control panel (required if `run_service = 1`)
+* **<span class="notranslate">`service_port`</span>** - port used for running a web server for access LVE Manager without the control panel (default: 9000)
 * **<span class="notranslate">`use_ssl`</span>** - optional parameter that mandates the use of HTTPS for the LVE Manager web server when set to 1.
 * **<span class="notranslate">`ssl_cert`</span>** - conditional parameter that becomes essential when `use_ssl` is activated. Identifies the path to the SSL certificate file for the domain.
 * **<span class="notranslate">`ssl_key`</span>** - conditional parameter that becomes mandatory when `use_ssl` is enabled. Specifies the path to the SSL certificate key file for the domain.
@@ -1209,7 +1211,7 @@ The following configuration file parameters are used to determine the location o
 
 :::warning Known issues for GUI unification
 
-A user can run standalone services to provide access to LVE Manager without UI integration. These services use system authentication for users and the integration script <span class="notranslate">`ui-user-info script`</span> to get information about the current user.
+A user can run standalone services to provide access to LVE Manager without UI integration. These services use system authentication for users and the integration script <span class="notranslate">`ui_user_info`</span> to get information about the current user.
 
 These services have some issues:
 
@@ -1231,9 +1233,9 @@ require_once('lvemanager/widget.php');
 ```
 </div>
 
-This script defines the type of user and displays icons to open plugins included in LVE Manager.
-You can customize your styles by copying the file content and setting your control panel styles.
-In this case, all LVE Manager plugins will be opened in a new window.
+This script defines the type of user and displays links to open plugins included in LVE Manager.
+You can customize the list and its styles by copying the file content and setting your control panel styles.
+The links open in the same window.
 
 The second use case:
 
@@ -1244,7 +1246,7 @@ Embedding the specific plugin into the control panel page.
 ```
 <?php
 require_once('lvemanager/LveManager.php');
-$manager = new LveManager(‘<pluginName>’);
+$manager = new LveManager('<pluginName>');
 $manager->setCSRFToken();
 ?>
 <html><body>
@@ -2218,7 +2220,7 @@ Patch100: apr-2.4-httpd.2.patch
 
 </div>
 
-Then  apply this patch in the <span class="notranslate">`%setup`</span> section:
+Then apply this patch in the <span class="notranslate">`%prep`</span> section:
 
 <div class="notranslate">
 
@@ -2233,8 +2235,8 @@ If no errors appear during the build, the patch has been successfully applied.
 
 Instead of patching the apr library, you can build your custom Apache with one of the libapr-devel packages provided by CloudLinux OS. Every version of CloudLinux OS provides two versions of libapr - the system library as a package named `apr` and the alternative library as a package named `alt-apr`. Their versions are listed in the following table:
 
-|-|-|-|
 |CloudLinux OS version |apr version |alt-apr version |
+|-|-|-|
 |6 |1.3.9 |1.7.4 |
 |7 |1.4.8 |1.7.4 |
 |8 |1.6.3 |1.7.4 |
@@ -2253,7 +2255,7 @@ lrwxrwxrwx 1 root root 17 Feb 10  2023 /usr/local/apps/apache2/lib/libapr-1.so.0
 [root@cloudlinux ~]# rpm -ql alt-apr | grep libapr-1.so.0.7.4
 /opt/alt/alt-apr17/lib64/libapr-1.so.0.7.4
 [root@cloudlinux ~]#
-[root@cloudlinux ~]# ln -sf /opt/alt/alt-apr17/lib64/libapr-1.so.0.7.4 libapr-1.so.0
+[root@cloudlinux ~]# ln -sf /opt/alt/alt-apr17/lib64/libapr-1.so.0.7.4 /usr/local/apps/apache2/lib/libapr-1.so.0
 ```
 </div>
 
@@ -2279,7 +2281,7 @@ yum groupinstall alt-php{some_version}
 ```
 </div>
 
-For details, see [PHP Selector Installation and Update](/cloudlinuxos/cloudlinux_os_components/#installation-and-update-4)
+For details, see [PHP Selector Installation and Update](/cloudlinuxos/cloudlinux_os_components/#installation-and-update-3)
 
 ## CloudLinux OS kernel set-up
 
@@ -2303,7 +2305,7 @@ Run the following command to add administrators into <span class="notranslate">`
 <div class="notranslate">
 
 ```
-/usr/share/cloudlinux/hooks/post_modify_admin.py create --username <admin_name>
+/usr/share/cloudlinux/hooks/post_modify_admin.py create --name <admin_name>
 ```
 </div>
 
