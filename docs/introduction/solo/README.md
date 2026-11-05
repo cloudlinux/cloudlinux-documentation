@@ -107,7 +107,8 @@ Use it to [activate your system](./#license-activation)
 or to [convert server to CloudLinux](/cloudlinuxos/cloudlinux_installation/#converting-existing-servers) server.
 
 :::warning
-The CloudLinux OS Solo activation key registers CloudLinux OS Solo 8 and later. On a server that runs another edition of CloudLinux OS 8 or later, registering with this key [switches the server to CloudLinux OS Solo](/cloudlinuxos/cloudlinux_installation/#switching-to-a-different-license-type). The CloudLinux OS Solo license allows a maximum of one hosting account, so reduce the number of accounts before you switch. The key cannot be used with CloudLinux OS 6 or 7, or to convert CentOS 6 or 7.
+The CloudLinux OS Solo activation key is used ONLY for registration CloudLinux OS Solo 8.
+Trying use it for registration CloudLinux OS Legacy (Shared) 6/7/8 or converting from CentOS 6/7/ 8 to CloudLinux OS Legacy 6/7/8 cause errors.
 :::
 
 :::tip Note
@@ -204,9 +205,9 @@ Check the [Website Monitoring settings](/cloudlinuxos/lve_manager/#website-monit
 
 Yes, it is possible.
 
-### Can I register my CloudLinux OS Legacy (Shared) server with a CloudLinux OS Solo trial key?
+### Can I register my CloudLinux OS Legacy (Shared) 6/7/8 with CloudLinux OS Solo trial key?
 
-On CloudLinux OS 8 and later, yes, if the server has no more than one hosting account. The server [switches to CloudLinux OS Solo](/cloudlinuxos/cloudlinux_installation/#switching-to-a-different-license-type) after you confirm, and you may lose access to services that CloudLinux OS Solo does not include. On CloudLinux OS 6 and 7, no.
+No, you cannot.
 
 ### Can I convert CentOS 6,7 to CloudLinux OS Solo 8+ using the cldeploy script?
 

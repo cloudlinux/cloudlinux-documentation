@@ -50,13 +50,9 @@ You can convert your existing CloudLinux OS Solo installation to CloudLinux OS A
 2. Run `rhnreg_ks --force --activationkey=<new_key>`
 
 :::warning
-Before you switch, make sure the server has no more than 5 hosting accounts: the license does not allow more. Registration warns that services the new edition does not support may be lost, and asks you to confirm.
-
-If a server goes over the account limit of its edition, CloudLinux Manager shows an error page for the administrator and CloudLinux plugins become unavailable to users until you remove the extra accounts or upgrade the license.
-
 When you switch from another edition, the switch removes the `governor-mysql` package if it is installed; the database server packages stay installed. Default LVE limits are set to unlimited; in containers, LVE services are disabled instead.
 
-When you switch to CloudLinux OS Solo instead, the limit is 1 hosting account, the `mod_hostinglimits` and `governor-mysql` packages are removed, and LVE services are disabled.
+When you switch to CloudLinux OS Solo instead, the `mod_hostinglimits` and `governor-mysql` packages are removed, and LVE services are disabled.
 :::
 
 You can pass `--migrate-silently` argument to skip confirmation.
