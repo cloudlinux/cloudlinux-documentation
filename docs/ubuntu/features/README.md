@@ -360,7 +360,7 @@ In case the site responds with the error: 503 Service unavailable.
 chmod 755 /opt 
 ```
 
-2. Make sure the folder for mod_lsapi sockets exists and has the correct owner and permissions. The default folder is /var/mod_lsapi:
+2. Change the default folder for mod_lsapi socket:
 
 ```
 mkdir /var/mod_lsapi
@@ -368,10 +368,10 @@ chown nobody.nobody /var/mod_lsapi
 chmod 755 /var/mod_lsapi
 ```
 
-To use another folder, add its path to /etc/apache2/conf.d/lsapi.conf:
+Add to /etc/apache2/conf.d/lsapi.conf new path:
 
 ```
-lsapi_socket_path /path/to/folder
+lsapi_socket_path /var/mod_lsapi
 ```
 
 And restart service:
