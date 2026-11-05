@@ -6411,6 +6411,180 @@ Keep <span class="notranslate">`cl-bun-deliveryd.socket`</span> active: npm need
 * **Install scripts:** if a required install script fails, the Store stops the install and restores the previous dependencies. Some dependencies that npm treats as optional are required by the Store, so their script failures also stop the install. The administrator can exclude the account to use regular npm.
 * **Backups and transfers:** restored dependencies may be private copies and use more disk space and quota. A supported `npm install` can share them again if the destination has the Store enabled.
 
+### Node.js snapshots (CRIU)
+
+* [Snapshot requirements](./#snapshot-requirements)
+* [How snapshots work](./#how-snapshots-work)
+* [Enabling snapshots](./#enabling-snapshots)
+* [Checking that snapshots work](./#checking-that-snapshots-work)
+* [Snapshot directives](./#snapshot-directives)
+* [Snapshot storage](./#snapshot-storage)
+* [Disabling snapshots](./#disabling-snapshots)
+* [Snapshot limitations](./#snapshot-limitations)
+
+Passenger stops a <span class="notranslate">Node.js</span> application that has received no requests for <span class="notranslate">`PassengerPoolIdleTime`</span> and starts it again on the next request. With snapshots enabled, Passenger restores a saved copy of a freshly started <span class="notranslate">Node.js</span> process instead of starting <span class="notranslate">Node.js</span> from scratch, then loads the application as usual. Snapshots are made with CRIU (Checkpoint/Restore In Userspace), which CloudLinux also uses for PHP in <span class="notranslate">mod_lsapi</span>.
+
+The feature is in **beta** and **off by default**. It is available on cPanel servers and on servers without a control panel. DirectAdmin is not supported yet.
+
+#### **Snapshot requirements**
+
+* One of these Passenger packages:
+    * cPanel with EasyApache 4, CloudLinux OS 9 and 10: <span class="notranslate">`ea-apache24-mod-passenger`</span> 6.2.1-1.cloudlinux.3 or later;
+    * cPanel with EasyApache 4, CloudLinux OS 7 and 8: <span class="notranslate">`ea-ruby27-mod_passenger`</span> 6.2.1-1.cloudlinux.2 or later;
+    * without a control panel, CloudLinux OS 7–10: <span class="notranslate">`alt-mod-passenger`</span> 6.2.0-2 or later, with the system Apache (<span class="notranslate">`httpd`</span>).
+* <span class="notranslate">`criu-lve`</span> 4.2-6 or later (3.13-12 or later on CloudLinux OS 7). It is installed with Passenger.
+* The <span class="notranslate">`criu`</span> service running. <span class="notranslate">`criu-lve`</span> enables and starts it when it is installed.
+* <span class="notranslate">Node.js</span> applications served by Passenger under Apache, such as <span class="notranslate">Node.js Selector</span> applications. Ruby and Python applications, Passenger under NGINX or Standalone, and LiteSpeed Web Server are not supported.
+
+#### **How snapshots work**
+
+The first time an application starts with snapshots enabled, Passenger pauses the new <span class="notranslate">Node.js</span> process just before it loads the application's code and saves the process to disk. The process then continues and serves requests as usual.
+
+When the application has been stopped for being idle and a request arrives, Passenger restores the snapshot instead of starting a new <span class="notranslate">Node.js</span> process. The restored process returns to the account's LVE limits and CageFS, then loads the application as a normal start does: its code, its dependencies and its database connections. Code changes take effect as they do without snapshots.
+
+A restore saves the time <span class="notranslate">Node.js</span> itself takes to start. The application's own startup still runs every time, so the less an application does before it serves its first request, the more it gains.
+
+After a restore, Passenger checks that the application answers. If there is no snapshot yet, or the restore or this check fails, Passenger discards the snapshot and starts the application normally. The next start makes a new snapshot.
+
+Passenger discards an application's snapshot when:
+
+* the application is restarted, for example with **Restart** in <span class="notranslate">Node.js Selector</span>;
+* the application's <span class="notranslate">Node.js</span> version changes;
+* its <span class="notranslate">`package.json`</span> or <span class="notranslate">`package-lock.json`</span> changes;
+* Passenger is updated.
+
+#### **Enabling snapshots**
+
+As **root**, update Passenger from the beta repositories.
+
+cPanel, CloudLinux OS 9 and 10:
+
+<div class="notranslate">
+
+```
+yum update ea-apache24-mod-passenger --enablerepo=cl-ea4-testing --enablerepo=cloudlinux-updates-testing
+```
+</div>
+
+cPanel, CloudLinux OS 7 and 8:
+
+<div class="notranslate">
+
+```
+yum update ea-ruby27-mod_passenger --enablerepo=cl-ea4-testing --enablerepo=cloudlinux-updates-testing
+```
+</div>
+
+Without a control panel:
+
+<div class="notranslate">
+
+```
+yum update alt-mod-passenger --enablerepo=cloudlinux-updates-testing
+```
+</div>
+
+Then turn snapshots on with <span class="notranslate">`PassengerCriuEnabled on`</span>.
+
+**For every Node.js application on the server**, add the line to the Apache configuration and restart Apache:
+
+* cPanel: add it to <span class="notranslate">`/etc/apache2/conf.d/includes/pre_main_global.conf`</span> (<span class="notranslate">WHM → Service Configuration → Include Editor → Pre Main Include</span>), then run <span class="notranslate">`/scripts/restartsrv_httpd`</span>.
+* Without a control panel: add it to <span class="notranslate">`/etc/httpd/conf.d/passenger.conf`</span>, then run <span class="notranslate">`systemctl restart httpd`</span>.
+
+**For one application**, add the line to the <span class="notranslate">`.htaccess`</span> file in its document root, outside the block that <span class="notranslate">Node.js Selector</span> manages:
+
+<div class="notranslate">
+
+```
+PassengerCriuEnabled on
+
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+...
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+```
+</div>
+
+<span class="notranslate">Node.js Selector</span> rewrites everything between these markers when the application's settings change, so a line placed inside them is lost. A <span class="notranslate">`<Directory>`</span> block for the document root in an Apache include also works.
+
+**To leave one application out** while snapshots are on for the server, set <span class="notranslate">`PassengerCriuEnabled off`</span> for it in the same way.
+
+Each application makes its snapshot the next time it starts. Nothing needs to be done for each account.
+
+#### **Checking that snapshots work**
+
+Run <span class="notranslate">`passenger-status`</span> as **root**. Its path depends on the package:
+
+* <span class="notranslate">`ea-apache24-mod-passenger`</span>: <span class="notranslate">`/usr/sbin/passenger-status`</span>;
+* <span class="notranslate">`ea-ruby27-mod_passenger`</span>: <span class="notranslate">`/opt/cpanel/ea-ruby27/root/usr/sbin/passenger-status`</span>;
+* <span class="notranslate">`alt-mod-passenger`</span>: <span class="notranslate">`/opt/passenger/bin/passenger-status`</span>.
+
+The output includes a line such as:
+
+<div class="notranslate">
+
+```
+CRIU          : 4 restored, 1 fell back (no image 1)
+```
+</div>
+
+`restored` counts starts served from a snapshot. `fell back` counts normal starts, with their reasons in brackets. Until an application has looked for a snapshot, the line reads <span class="notranslate">`no spawns have consulted a checkpoint`</span>.
+
+| Reason | Meaning |
+|---|---|
+| `no image` | There was no snapshot to restore. Expected after an application's first start, a restart or an update. |
+| `restore failed` | CRIU could not restore the snapshot. Passenger discards it and leaves CRIU's reason in <span class="notranslate">`restore.log`</span> in the application's snapshot directory. |
+| `unhealthy` | The application was restored but failed the check that follows. Check the application. |
+| `pid busy`, `pid taken` | The process ID saved in the snapshot was in use. A few `pid busy` on a busy server are normal. |
+| `internal error` | Not expected. Contact [CloudLinux support](https://cloudlinux.zendesk.com/hc/en-us/requests/new). |
+
+When Passenger makes a snapshot, it logs <span class="notranslate">`CRIU: checkpointed app`</span> to the Apache error log, or to the application's <span class="notranslate">`PassengerAppLogFile`</span> if it has one.
+
+#### **Snapshot directives**
+
+| Directive | Default | Where it can be set | Meaning |
+|---|---|---|---|
+| <span class="notranslate">`PassengerCriuEnabled on\|off`</span> | `off` | server config, virtual host, directory, <span class="notranslate">`.htaccess`</span> | Turns snapshots on or off for the applications in its scope. Ruby and Python applications ignore it. |
+| <span class="notranslate">`PassengerCriuDir path`</span> | <span class="notranslate">`/var/cache/passenger-criu`</span> | server config | Directory that holds the snapshots. The path must be absolute and its parent directory must exist. An existing directory must be owned by `root:root` with no group or other permissions; otherwise snapshots stay off and Passenger logs the reason when it starts. |
+
+#### **Snapshot storage**
+
+Each application has one snapshot, stored in <span class="notranslate">`/var/cache/passenger-criu`</span> or the directory set with <span class="notranslate">`PassengerCriuDir`</span>. Passenger creates the directory on first use, readable only by root.
+
+The directory is outside every account, so snapshots do not count toward account disk quotas and are not part of account backups or transfers. A restored or transferred account makes new snapshots on its next starts.
+
+A daily job (<span class="notranslate">`/etc/cron.daily/passenger-criu`</span>) removes snapshots that have not been used for 30 days. There is no limit on the directory's total size: monitor it as you would any cache.
+
+#### **Disabling snapshots**
+
+Remove <span class="notranslate">`PassengerCriuEnabled on`</span>, or set it to `off`. Restart Apache after changing the server-wide setting; a change in <span class="notranslate">`.htaccess`</span> applies the next time the application starts. Applications then start normally. Existing snapshots stay on disk; to remove them, delete the snapshot directory:
+
+<div class="notranslate">
+
+```
+rm -rf /var/cache/passenger-criu
+```
+</div>
+
+Passenger needs the <span class="notranslate">`criu`</span> service to make snapshots, and so does CRIU for PHP in <span class="notranslate">mod_lsapi</span> (<span class="notranslate">`lsapi_criu`</span>). If you use neither, you can stop the service:
+
+<div class="notranslate">
+
+```
+systemctl disable --now criu.service
+```
+</div>
+
+Later <span class="notranslate">`criu-lve`</span> updates leave the service disabled.
+
+#### **Snapshot limitations**
+
+* **Node.js under Apache only.** Ruby and Python applications, Passenger under NGINX or Standalone, and LiteSpeed Web Server keep starting normally.
+* **No Node.js Selector setting.** Snapshots are turned on with the Apache directive or <span class="notranslate">`.htaccess`</span>.
+* **One process per snapshot.** A snapshot restores one process at a time. If an application runs more than one process, the others start normally.
+* **Applications that answer `/` with an error.** If the application's `/` returns a 5xx error, the check after every restore fails and the application always starts normally.
+* **Process ID.** <span class="notranslate">`process.pid`</span> is the same after every restore.
+* **State in memory.** As without snapshots, an idle stop loses in-memory state, and work an application schedules when it starts runs again on every start.
+
 
 
 ### Node.js deployment
