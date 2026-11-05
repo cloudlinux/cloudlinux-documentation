@@ -1382,8 +1382,8 @@ You may want to execute commands inside CageFS for security reasons. To do so, y
 <div class="notranslate">
 
 ```
-/bin/su -s /bin/bash -c “$COMMAND” - $USER
-/sbin/cagefs_enter_user $USER "$COMMAND"
+/bin/su -s /bin/bash -c "$COMMAND" - $USER
+/sbin/cagefs_enter_user $USER /bin/bash -c "$COMMAND"
 ```
 </div>
 
@@ -1392,7 +1392,7 @@ The commands above require root privileges. You can use the following command wh
 <div class="notranslate">
 
 ```
-/bin/cagefs_enter "$COMMAND"
+/bin/cagefs_enter /bin/bash -c "$COMMAND"
 ```
 </div>
 
@@ -1414,6 +1414,8 @@ Refer to [documentation on limits](/cloudlinuxos/limits/#understanding-limits) f
 :::tip Note
 Temporary LVE is destroyed after the process terminates unless the option `--no-fork` passed.
 :::
+
+Add `--show-lve-id` to a command with temporary LVE options to print the ID of the temporary LVE to stdout before the command runs.
 
 ### Updating CageFS skeleton
 
