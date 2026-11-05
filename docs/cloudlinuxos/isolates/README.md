@@ -93,7 +93,7 @@ For full details on this directive, see [lsapi_per_user in mod_lsapi documentati
 :::
 
 #### Compatible Control Panels
-| Handler                  | Status                       |
+| Control Panel            | Status                       |
 | -------                  | ---------------------------- |
 | cPanel                   | ✅ Supported                 |
 | Plesk                    | ✅ Supported                 |
@@ -660,7 +660,7 @@ Stores per-domain limits in the user's config and applies them to the kernel.
 | `--ep`     | Max entry processes (concurrent connections)               |
 | `--vmem`   | Virtual memory limit (bytes)                               |
 
-At least one limit parameter is required.
+At least one limit parameter is required. Limits you leave out keep the values already stored for the domain. `--cpu 0`, or a CPU limit that was never set, uses the account's current CPU limit.
 
 **Example:**
 
@@ -692,7 +692,7 @@ This sets: CPU 50%, 256 MB PMEM, 2048 KB/s IO, 30 procs, 500 IOPS, 20 entry proc
 isolatectl limits apply --domain <domain>
 ```
 
-Pushes the stored limits for a domain from the config file to the kernel. Use after manually editing the config or to re-apply limits after a restart.
+Pushes the stored limits for a domain from the config file to the kernel. Use after manually editing the config. Stored limits are also applied automatically whenever the account's LVE configuration is applied, including at server start.
 
 **Parameters:**
 
@@ -727,7 +727,7 @@ Shows resource usage for the calling account's isolated domains. Like the rest o
 | `--domain` | (Optional) Report a single domain only |
 | `--period` | (Optional) Time window to report over; default `10m` |
 
-The period grammar is <span class="notranslate">`lveinfo`</span>'s: <span class="notranslate">`s`</span>, <span class="notranslate">`m`</span>, <span class="notranslate">`h`</span>, <span class="notranslate">`d`</span>, plus <span class="notranslate">`today`</span>. **<span class="notranslate">`1m`</span> is one minute, not one month** — a month is <span class="notranslate">`30d`</span>.
+The period grammar is <span class="notranslate">`lveinfo`</span>'s: <span class="notranslate">`s`</span>, <span class="notranslate">`m`</span>, <span class="notranslate">`h`</span>, <span class="notranslate">`d`</span>, plus <span class="notranslate">`today`</span> and <span class="notranslate">`yesterday`</span>; units can be combined, as in <span class="notranslate">`1h30m`</span>. **<span class="notranslate">`1m`</span> is one minute, not one month** — a month is <span class="notranslate">`30d`</span>.
 
 **Example:**
 
@@ -745,16 +745,16 @@ $ isolatectl stats --domain example.com --period 1d
       "name": "example.com",
       "lve_id": 60057,
       "owner_uid": 1000,
-      "usage":  {"cpu": 120, "ep": 2, "vmem": 0, "pmem": 4096, "nproc": 5, "io": 0, "iops": 0},
-      "peak":   {"cpu": 900, "ep": 5, "vmem": 0, "pmem": 9012, "nproc": 9, "io": 0, "iops": 0},
-      "limits": {"cpu": 5000, "ep": 20, "vmem": 0, "pmem": 65536, "nproc": 30, "io": 2048, "iops": 500},
+      "usage":  {"cpu": 1, "ep": 2, "vmem": 0, "pmem": 4096, "nproc": 5, "io": 0, "iops": 0},
+      "peak":   {"cpu": 9, "ep": 5, "vmem": 0, "pmem": 36864, "nproc": 9, "io": 0, "iops": 0},
+      "limits": {"cpu": 50, "ep": 20, "vmem": 0, "pmem": 268435456, "nproc": 30, "io": 2048, "iops": 500},
       "faults": {"cpu": 0, "ep": 3, "vmem": 0, "pmem": 0, "nproc": 0, "io": 0, "iops": 0}
     }
   ]
 }
 ```
 
-<span class="notranslate">`usage`</span> is the average over the window, <span class="notranslate">`peak`</span> the highest sample in it, and <span class="notranslate">`limits`</span> the caps in force.
+<span class="notranslate">`usage`</span> is the average over the window, <span class="notranslate">`peak`</span> the highest sample in it, <span class="notranslate">`limits`</span> the caps in force and <span class="notranslate">`faults`</span> the number of times each limit was hit. In this report <span class="notranslate">`cpu`</span> is in whole percent, where 100 is one core, so a limit set with <span class="notranslate">`isolatectl limits set --cpu 5000`</span> is reported as <span class="notranslate">`50`</span>. <span class="notranslate">`pmem`</span> and <span class="notranslate">`vmem`</span> are in bytes, <span class="notranslate">`io`</span> in KB/s, <span class="notranslate">`iops`</span> in operations per second, and <span class="notranslate">`ep`</span> and <span class="notranslate">`nproc`</span> are counts.
 
 :::warning An idle website is absent, not zero
 Only domains that were active during the period are recorded at all, so a quiet website does not appear in <span class="notranslate">`domains`</span> rather than appearing with zeroes. An empty <span class="notranslate">`domains`</span> list is an ordinary answer, not an error — the <span class="notranslate">`scope`</span> object is always returned so that "quiet" can be told apart from "no such account".
@@ -981,7 +981,7 @@ The underlying <span class="notranslate">`lvectl`</span> commands are available 
 |<span class="notranslate">`lvectl deny-domain-limits <user>`</span> | Remove the account's LVP and disallow per-domain limits.|
 |<span class="notranslate">`lvectl enable-domain-limits <domain>`</span> | Register a domain LVE. The owner and document root are resolved from the control panel.|
 |<span class="notranslate">`lvectl disable-domain-limits <domain>`</span> | Unregister the domain LVE and remove its registry entry.|
-|<span class="notranslate">`lvectl list-domains <uid>`</span> | List the domain LVEs of the account with the given numeric UID.|
+|<span class="notranslate">`lvectl list-domains <uid>`</span> | List the members of the account's LVP. The output can also include the account's own LVE, whose id is the UID. A <span class="notranslate">`limit`</span> or <span class="notranslate">`default`</span> row is not a domain.|
 |<span class="notranslate">`lvectl regenerate-domains --username <user> ...`</span> | Refresh the domain configuration and id mapping after a rename or document root change.|
 
 See [lvectl](/cloudlinuxos/command-line_tools/#lvectl) for the full syntax.
