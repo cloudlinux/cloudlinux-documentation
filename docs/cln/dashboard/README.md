@@ -4,7 +4,7 @@ Dashboard helps quickly navigate to user's _Products_. It includes the following
 
 ## Products
 
-Click _Dashboard_. You will be redirected to the _Products_ page.
+Click _Main_ in the top menu. You will be redirected to the _Products_ page.
 
 ![CLN My Products page with three product license cards and sidebar navigation](/images/cln/dashboard/dashboard_zoom70.webp)
 
@@ -45,7 +45,7 @@ The following actions are available:
 
 * **Copy a [Default Activation Key](/cln/terminology/#terminology) to a clipboard**. To do so, click _Copy_ below the default key.
 * **Generate a new Activation Key**. To do so, click _Generate new activation key_. Specify the number of servers and some notes if any and click _Save Changes_ to confirm the action or _Cancel_ to close the popup.
-* **[Manage servers](/cln/billing/#overview-products)**.
+* **Manage servers** — click _Manage servers_ button. You will be redirected to the list of servers of this product (see [Servers](/cln/dashboard/#servers)).
 * **[Add server licenses or buy](/cln/purchase/#purchase)**, if only trial product is activated.
 * **Remove unused server licenses**. Click _Remove unused server licenses_ to delete all server licenses that are not used to activate a server. Do it to reduce your monthly bill as a customer pays per each server license and NOT per an activated server. Confirm the action in the opened popup by clicking _Remove_ or click _Cancel_ to close the popup.
 * **Go to [Activation Key Details page](/cln/dashboard/#cloudlinux-activation-key-details-page)**. To do so, click a specific activation key in the table.
@@ -129,7 +129,7 @@ Every KernelCare customer gets a default activation key upon license purchase. Y
 
 The following actions are available:
 
-* **Copy a Default Activation Key**. Click a key to copy it to a clipboard.
+* **Copy a Default Activation Key**. Click _Copy_ next to the default key to copy it to a clipboard.
 * **Generate a new Activation Key**. Click _Generate new activation key_. In an opened popup specify _Server quantity limit_, _IP range limit_, _Sticky tag_, and add some _Notes_, if any, and click _Save Changes_ to confirm the action or _Cancel_ to close the popup.
     ![Edit activation key dialog with IP range, Sticky tag date, Note field, Save Changes](/images/cln/dashboard/kceditpng.webp)
 * **[Manage servers](/cln/billing/#overview-products)**.
@@ -137,7 +137,7 @@ The following actions are available:
 * **Remove unused server licenses** . Click _Remove unused server licenses_ to delete all server licenses that are not used to activate a server. Do it to reduce your monthly bill as a customer pays per each server license and NOT per an activated server. Confirm your action in the opened popup by clicking _Remove_ or click _Cancel_ to close the popup.
 * **Go to [Activation Key Details](/cln/dashboard/#kernelcare-activation-key-details-page) page**. To do so, click a specific activation key in the table.
 
-The table with a list of of all KernelCare Activation Keys contains the following columns:
+The table with a list of all KernelCare Activation Keys contains the following columns:
 
 * **Activation key** — an activation key string. Click an activation key to go to [Activation Key Details](/cln/dashboard/#kernelcare-activation-key-details-page) page.
 * **IP range** — a range of IP addresses for a particular activation key;
@@ -163,7 +163,7 @@ On the _KernelCare Activation Keys_ page click an activation key in the table to
 This page contains the following information:
 
 * An **activation key** itself is displayed on the blue background; to copy it to a clipboard just click it;
-* **Servers (used/limits** ) — number of servers that have already been activated with this key (used) and a total number of servers that can be registered with this particular key (limits);
+* **Servers (used/limits)** — number of servers that have already been activated with this key (used) and a total number of servers that can be registered with this particular key (limits);
 * **Note** — any information you’ve added to this activation key.
 * **Sticky tag** — when the _Sticky Tag_ feature is enabled for particular servers, all such servers will get patches only released before the date specified in the _Sticky tag_ field.
 
@@ -283,7 +283,7 @@ The following actions are available:
 * **delete one or several activation keys** — tick one or several activation keys, or the checkbox in the table header (to select all) and click _Bin_ icon. On the popup click _Remove_ to confirm the action or _Cancel_ to close popup.
 
 
-:::tip Not
+:::tip Note
 Default Activation Key cannot be deleted.
 :::
 
@@ -301,7 +301,7 @@ This page contains the following information:
 The following actions are available:
 
 * **Generate a new activation key** — click _Generate new activation key_. Create activation key popup opens. Set number of servers to be activated with this key or tick unlimited. Enter some notes, if any. Click _Save Changes_ to generate a new key or _Cancel_ to close the popup. The new generated key is displayed in the table.
-* **Manage servers** — click _Manage servers_ button, you will be redirected to [ Billing → Overview → Products page](/cln/billing/#overview-products).
+* **Manage servers** — click _Manage servers_ button, you will be redirected to the list of servers of this product (see [Servers](/cln/dashboard/#servers)).
 * **Add server licenses** — click _Add server licenses_, you will be redirected to [Purchase](/cln/purchase/#purchase) page.
 * **Remove unused server licenses** — click _Remove unused server licenses_ to delete all server licenses that are not used to activate a server. Do it to reduce your monthly bill as a customer pays per each server license and NOT per an activated server. Confirm your action in the opened popup by clicking _Remove_ or click _Cancel_ to close the popup.
 
@@ -506,7 +506,7 @@ The table includes  the following columns:
 ## Servers
 
 
-Click _Dashboard → Servers_ to go to _All Servers_ page. A list of all servers with activated products belonged to this account is available.
+Click _Main → Servers_ to go to _All Servers_ page. A list of all servers with activated products belonged to this account is available.
 
 ![All Servers table with expanded rows for KernelCare and Imunify360 product details](/images/cln/dashboard/allserverspng_zoom70.webp)
 
