@@ -547,7 +547,7 @@ The kernel interface (`/proc/sys/fs/datacycle/`) is available with the CloudLinu
 
 3. <span class="notranslate"> **flush** </span> - a file for clearing events log. For flushing, the last <span class="notranslate"> event_id </span> from the events file is written to this file. Right after this, events log is truncated to that <span class="notranslate"> event_id </span> .
 
-4. <span class="notranslate"> **user_ro_mode** </span> - applies to processes running with a UID equal to or greater than the value set in this file, on any file system, not only in home directories. At boot, the file has -1, which means the feature is off. When a positive value is written, say 500, operations by these users, such as creating, deleting or renaming files and directories, fail with a <span class="notranslate"> ‘read-only filesystem’ </span> error. This feature is designed to prevent changes from going unrecorded when events are not handled.
+4. <span class="notranslate"> **user_ro_mode** </span> - forbidding users with UIDs equal or bigger that set in this file writing to their home directories. At the boot, the file has -1. When it’s written positive value, say 500, the system starts effectively preventing users from modifying their home dirs (on write attempt a user gets <span class="notranslate"> ‘read-only filesystem’ </span> error). This feature is designed to prevent users from updating their home dirs when events are not handled.
 
 5. <span class="notranslate"> **entries_in_buffer** </span> - just counter of log entries of events file.
 
@@ -1272,12 +1272,12 @@ The `kernel.memcg_oom_disable` parameter is available on the CloudLinux OS 7 nor
 
 In <span class="notranslate">**Ext4**</span> file system, the process with enabled capability <span class="notranslate"> CAP_SYS_RESOURCE </span> is not checked on the quota exceeding by default. It allows userland utilities <span class="notranslate"> _selectorctl_ </span> and <span class="notranslate"> _cagefs_ </span> to operate without fails even if a user exceeds a quota.
 
-In <span class="notranslate">**XFS**</span> file system, the same behavior is controlled by the <span class="notranslate">`fs.xfs.cap_res_quota_disable`</span> option: when it is set to 1, processes with enabled capability <span class="notranslate"> CAP_SYS_RESOURCE </span> are not checked on the quota exceeding. On CloudLinux OS 7 and later, it is set to 1 by default, so no action is needed. To check these processes too, set the option to 0:
+To disable quota checking in <span class="notranslate">**XFS**</span> file system set <span class="notranslate">`cap_res_quota_disable`</span> option to 1 using the following command:
 
 <div class="notranslate">
 
 ```
-echo 0 > /proc/sys/fs/xfs/cap_res_quota_disable
+echo 1 > /proc/sys/fs/xfs/cap_res_quota_disable
 ```
 </div>
 
