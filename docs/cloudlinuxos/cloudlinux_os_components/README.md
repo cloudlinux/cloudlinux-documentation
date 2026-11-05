@@ -9543,7 +9543,7 @@ yum install lve-wrappers
 
 LVE Wrappers provide two tools for placing programs inside LVE: <span class="notranslate">`lve_wrapper`</span> and `lve_suwrapper`.
 
-`/bin/lve_wrapper` can be used by any non-root user, as long as that user is in group lve (see `/etc/groups` file).
+`/bin/lve_wrapper` can be used by any non-root user, as long as that user is in group lve (see `/etc/group` file).
 
 **Syntax**
 
@@ -9565,7 +9565,7 @@ lve_wrapper make install
 
 The program will be executed within LVE with ID matching user's id.
 
-`/bin/lve_suwrapper` can be used by root user or any user in group lve (see `/etc/groups` file) to execute command within specified LVE.
+`/bin/lve_suwrapper` can be used by root user or any user in group lve (see `/etc/group` file) to execute command within specified LVE.
 
 **Syntax**
 
@@ -9593,13 +9593,13 @@ lve_suwrapper 10000 /etc/init.d/postgresql start
 
 ### MPM ITK
 
-CloudLinux OS <span class="notranslate">httpd RPM</span> comes with <span class="notranslate"> MPM ITK </span> built in. Yet, if you would like to build your own Apache, you need to apply our patch for <span class="notranslate"> MPM ITK </span>
+On CloudLinux OS 6 and 7, <span class="notranslate">httpd RPM</span> comes with <span class="notranslate"> MPM ITK </span> built in; the <span class="notranslate">httpd RPM</span> on CloudLinux OS 8 and later does not include it. If you would like to build your own Apache, you need to apply our patch for <span class="notranslate"> MPM ITK </span>
 
 * Download file: [https://repo.cloudlinux.com/cloudlinux/sources/da/cl-apache-patches.tar.gz](https://repo.cloudlinux.com/cloudlinux/sources/da/cl-apache-patches.tar.gz)
 * Extract: <span class="notranslate">apache2.2-mpm-itk-seculrelve12.patch</span>
 * And apply this patch to your Apache source code.
 
-When running <span class="notranslate"> MPM ITK </span>, you should disable <span class="notranslate">mod_hostinglimits</span>. All the functionality needed by <span class="notranslate"> MPM ITK </span> is already built into the patch.
+When running <span class="notranslate"> MPM ITK </span> with this patch (the <span class="notranslate"> MPM ITK </span> in the CloudLinux OS <span class="notranslate">httpd RPM</span> already includes it), you should disable <span class="notranslate">mod_hostinglimits</span>. All the functionality needed by <span class="notranslate"> MPM ITK </span> is already built into the patch.
 
 Directives which can be used by Apache with <span class="notranslate"> ITK </span> patch:
 
@@ -9621,7 +9621,7 @@ Directives which can be used by Apache with <span class="notranslate"> ITK </spa
   * [LVEErrorCode](./#lveerrorcode)
   * [LVEid](./#lveid)
   * [LVEUser](./#lveuser)
-  * [LVEUserGroupID](./#lveusergroupid)
+  * [LVEUseGroupID](./#lveusegroupid)
   * [LVERetryAfter](./#lveretryafter)
   * [LVESitesDebug](./#lvesitesdebug)
   * [LVEParseMode](./#lveparsemode)
@@ -9642,9 +9642,9 @@ The order of detection looks as follows:
 * LVEId
 * LVEUser
 * SuexecUserGroup
-* suPHP_UserGroup
 * RUidGid
 * AssignUserID
+* suPHP_UserGroup
 
 
 :::tip Note
@@ -9683,20 +9683,16 @@ The following message should appear:
 
 This means that the correct APR is installed with mod_hostinglimits.
 
-mod_hostinglimist has variable for Apache CustomLog format string <span class="notranslate">`%{LVE_ID}y`</span>.
+mod_hostinglimits has a variable for Apache CustomLog format string <span class="notranslate">`%{LVE_ID}y`</span>.
 
 **How to use**:
-
-LogFormat
 
 <div class="notranslate">
 
 ```
-"%h %l %u %t "%r" %>s %b "%{Referer}i" "%{User-Agent}i" req for lve "%{LVE_ID}y"
+LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" req for lve %{LVE_ID}y" combined
 ```
 </div>
-
-combined
 
 shows in access_log the following info:
 
@@ -9716,6 +9712,15 @@ shows in access_log the following info:
 **cPanel**
 
 Installed by default during EasyApache build. Requires <span class="notranslate">`lve-stats`</span> & <span class="notranslate">`lve-utils`</span> packages to be installed.
+
+On EasyApache 4, the module is provided by the `ea-apache24-mod_hostinglimits` package. It conflicts with `mod_hostinglimits`.
+
+<div class="notranslate">
+
+```
+yum install ea-apache24-mod_hostinglimits
+```
+</div>
 
 **DirectAdmin**
 
@@ -9782,6 +9787,28 @@ yum install mod_hostinglimits
 ```
 </div>
 
+**Ubuntu**
+
+On a CloudLinux Subsystem for Ubuntu server without a control panel:
+
+<div class="notranslate">
+
+```
+apt install mod-hostinglimits
+```
+</div>
+
+On cPanel the package is `ea-apache24-mod-hostinglimits`:
+
+<div class="notranslate">
+
+```
+apt install ea-apache24-mod-hostinglimits
+```
+</div>
+
+The two packages conflict with each other.
+
 **Custom Apache installation**
 
 Compile from the source: [https://repo.cloudlinux.com/cloudlinux/sources/mod_hostinglimits.tar.gz](https://repo.cloudlinux.com/cloudlinux/sources/mod_hostinglimits.tar.gz)
@@ -9792,12 +9819,23 @@ Compile from the source: [https://repo.cloudlinux.com/cloudlinux/sources/mod_hos
 wget https://repo.cloudlinux.com/cloudlinux/sources/mod_hostinglimits.tar.gz
 yum install cmake
 tar -zxvf mod_hostinglimits*.tar.gz
-cd mod_hostinglimits*
+cd mod_hostinglimits*/
 cmake .
 make
 make install
 ```
 </div>
+
+`cmake .` looks for `apachectl`, the Apache headers and the modules directory in common locations such as `/usr/local/apache`, `/usr/local/apache2`, `/usr/local/httpd` and `/etc/httpd`. If `apachectl` is not found, it assumes Apache 1.3. If your Apache is installed elsewhere, set the paths:
+
+<div class="notranslate">
+
+```
+cmake -DAPACHECTL=/path/bin/apachectl -DHTTPD_INCLUDE_DIR=/path/include -DAPR_INCLUDE_DIR=/path/include -DAPRUTIL_INCLUDE_DIR=/path/include -DHTTPD_MODULES=/path/modules .
+```
+</div>
+
+`make install` copies only `mod_hostinglimits.so`. Add the `LoadModule` line and the `AllowedHandlers` directive to your Apache configuration yourself, as in the example above.
 
 * Apache Module Identifier: `hostinglimits_module`
 * Source Files: `mod_hostinglimits.c`
@@ -9868,8 +9906,8 @@ SkipErrors Off
 |-|-|
 |**Description**| List of handlers that should be placed into LVE, support regexp|
 |**Syntax**|`AllowedHandlers cgi-script %^php%  my-script`|
-|**Default**| cgi-script %php% fcgid-script application/x-miva-compiled|
-|**Context**| server config|
+|**Default**| none in the module. The package config file sets `cgi-script %php% fcgid-script application/x-miva-compiled passenger-handler`|
+|**Context**| server config, virtual host, directory|
 
 This directive allows to list handlers which will be intercepted and placed into LVE.
 
@@ -9923,7 +9961,7 @@ In the following example, the module hostinglimits will process files for a URLs
    SkipErrors Off
    AllowedHandlers cgi-script %php% fcgid-script application/x-miva-compiled
 
-  <LocationMatch "^/weigthcontent/">
+  <LocationMatch "^/weightcontent/">
    AllowedHandlers *
   </LocationMatch>
 
@@ -9951,9 +9989,9 @@ In the following example, the module hostinglimits will process files for a URLs
 |**Description**| List of handlers that should not be placed into LVE, support regexp|
 |**Syntax**| <span class="notranslate">`DenyHandlers text/html`</span>|
 |**Default**| none|
-|**Context**| server config|
+|**Context**| server config, virtual host, directory|
 
-This directive works together with AllowHandlers, to exclude some handlers from being allowed in LVE.
+This directive works together with AllowedHandlers, to exclude some handlers from being allowed in LVE.
 
 **Example**:
 
@@ -9962,7 +10000,8 @@ Match all requests, but <span class="notranslate">`text/*`</span>
 <div class="notranslate">
 
 ```
-AllowedHandlers *DenyHandlers %text/*%
+AllowedHandlers *
+DenyHandlers %text/*%
 ```
 </div>
 
@@ -9977,9 +10016,9 @@ AllowedHandlers *DenyHandlers %text/*%
 | | |
 |-|-|
 |**Description**| Error code to display once entry is rejected due to maxEntryProcs|
-|**Syntax**| values from 500 to 510|
+|**Syntax**| `LVEErrorCode CODE`, values from 400 to 599. Any other value is treated as 508|
 |**Default**| 508|
-|**Context**| directory config|
+|**Context**| server config, virtual host|
 
 Specifies ErrorCode to use on LVE error (like too many concurrent processes running).
 
@@ -9987,10 +10026,9 @@ The message that will be displayed by default is:
 <div class="notranslate">
 
 ```
-Resource Limit Is Reached.
+Resource Limit Is Reached
 
-The website is temporarily unable to serve your request as it exceeded resource limit.
-
+The website is temporarily unable to service your request as it exceeded resource limit.
 Please try again later.
 ```
 </div>
@@ -10001,7 +10039,8 @@ Example:
 <div class="notranslate">
 
 ```
-LVEErrorCode 508ErrorDocument 508 508.html
+LVEErrorCode 508
+ErrorDocument 508 508.html
 ```
 </div>
 
@@ -10018,7 +10057,7 @@ LVEErrorCode 508ErrorDocument 508 508.html
 |**Description**| Allows to setup separate LVE ID on per directory level. If not set, user ID of a corresponding user is used.|
 |**Syntax**|<span class="notranslate">`LVEId number`</span>|
 |**Default**| User Id is used|
-|**Context**| directory config|
+|**Context**| server config, virtual host, directory|
 
 Specifies LVE id for particular directory
 
@@ -10046,7 +10085,7 @@ Specifies LVE id for particular directory
 |**Description**| Allows to setup separate LVE ID on per directory level.|
 |**Syntax**|<span class="notranslate">`LVEUser username`</span>|
 |**Default**| none|
-|**Context**| directory config|
+|**Context**| server config, virtual host, directory|
 
 Specifies LVE ID for particular directory.
 
@@ -10065,14 +10104,14 @@ Specifies LVE ID for particular directory.
 
 <div class="notranslate">
 
-#### **LVEUserGroupID**
+#### **LVEUseGroupID**
 
 </div>
 
 | | |
 |-|-|
 |**Description**| Use group ID instead of user ID for LVE container number.|
-|**Syntax**| <span class="notranslate">`LVEUserGroupID On/Off`</span>|
+|**Syntax**| <span class="notranslate">`LVEUseGroupID On/Off`</span>|
 |**Default**| User Id is used|
 |**Context**| global config only|
 
@@ -10087,7 +10126,7 @@ mod_hostinglimits: apr_lve_environment_init_group check ok
 ```
 </div>
 
-* If a compatible apr library is not found, the following error message will be display in error logs.
+* If a compatible apr library is not found, the following message is displayed in the error log:
 
 <div class="notranslate">
 
@@ -10096,14 +10135,12 @@ mod_hostinglimits:  apr_lve_* not found!!!
 ```
 </div>
 
-**Example**:
+**Example** (in the main server configuration):
 
 <div class="notranslate">
 
 ```
-<Directory "/home/user1/domain.com/forums">
-       LVEUserGroupID On
-</Directory>
+LVEUseGroupID On
 ```
 </div>
 
@@ -10117,10 +10154,10 @@ mod_hostinglimits:  apr_lve_* not found!!!
 
 | | |
 |-|-|
-|**Description**| Returns Retry-After header when LVE error 508 occurs.|
-|**Syntax**|`LERetryAfter MINUTES`|
+|**Description**| Returns Retry-After header when an LVE error occurs.|
+|**Syntax**|`LVERetryAfter MINUTES`|
 |**Default**| 240 minutes|
-|**Context**| directory config|
+|**Context**| server config, virtual host|
 
 Specifies interval for <span class="notranslate">`Retry-After`</span> header. The <span class="notranslate">`Retry-After`</span> response-header field can be used to indicate how long the service is expected to be unavailable to the requesting client.
 
@@ -10146,7 +10183,7 @@ LVERetryAfter 180
 |**Description**| Provides extended debug info for listed sites.|
 |**Syntax**|<span class="notranslate">`LVESitesDebug test.com test2.com`</span>|
 |**Default**| <span class="notranslate"> none </span>|
-|**Context**| directory config|
+|**Context**| server config, virtual host|
 
 Specifies virtual hosts to provide extra debugging information.
 
@@ -10155,9 +10192,7 @@ Specifies virtual hosts to provide extra debugging information.
 <div class="notranslate">
 
 ```
-<Directory "/home/user1/domain.com/forums">
-       LVESitesDebug abc.com yx.cnet
-</Directory>
+LVESitesDebug abc.com yx.cnet
 ```
 </div>
 
@@ -10171,10 +10206,10 @@ Specifies virtual hosts to provide extra debugging information.
 
 | | |
 |-|-|
-|**Description**| Determines the way LVE ID will be extraced. In Conf|
-|**Syntax**|`LVEParseMode CONF` `PATH` `OWNER` [`REDIS`](/cloudlinuxos/limits/#redis-support-for-hostinglimits)|
-|Default: | <span class="notranslate">`CONF`</span>|
-|Context: | directory config|
+|**Description**| Determines the way LVE ID will be extracted.|
+|**Syntax**|`LVEParseMode CONF`, `PATH` or `OWNER`|
+|**Default**| <span class="notranslate">`CONF`</span>|
+|**Context**| server config, virtual host|
 
 * In `CONF` mode, standard way to extract LVE ID is used (SuexecUserGroup, LVEId, or similar directives).
 
@@ -10182,7 +10217,7 @@ Specifies virtual hosts to provide extra debugging information.
 
 * In <span class="notranslate">`OWNER`</span> mode, the owner of the file is used as an LVE ID.
 
-* In <span class="notranslate">[`REDIS`](/cloudlinuxos/limits/#redis-support-for-hostinglimits)</span> mode, LVE ID is retrieved from Redis database.
+* <span class="notranslate">`REDIS`</span> mode is no longer supported, see [Redis support for HostingLimits](/cloudlinuxos/deprecated/#redis-support-for-hostinglimits).
 
 **Example**:
 
@@ -10206,7 +10241,7 @@ LVEParseMode CONF
 |**Description**| Regexp used to extract username from the path. Used in conjuction with `LVEParseMode PATH`|
 |**Syntax**|`LVEPathRegexp regexp`|
 |**Default**| <span class="notranslate">`/home/([^/]*)/`</span>|
-|**Context**| directory config|
+|**Context**| server config, virtual host|
 
 Used to extract usersname via path.
 
@@ -10229,7 +10264,7 @@ LVEPathRegexp /home/([^/]*)/
 
 | | |
 |-|-|
-|**Description**| Timeout in milliseconds, a site will return EP without lve_enter for LA decreasing after this time|
+|**Description**| After a virtual host reaches its entry processes limit, requests that would enter the LVE get the limit error for this many milliseconds without trying to enter it, which lowers the load average. The default `0` leaves this off. A virtual host without its own non-zero value uses the server-level value.|
 |**Syntax**|`LVELimitRecheckTimeout number`|
 |**Default**| 0|
 |**Context**| httpd.conf, virtualhost|
@@ -10251,7 +10286,7 @@ LVELimitRecheckTimeout 1000
 |**Description**| Use 429 error code as code returned on max entry limits ( <span class="notranslate"> on/off </span> ).|
 |**Syntax**|`LVEUse429 on`|
 |**Default**|<span class="notranslate">`off`</span>|
-|**Context**| httpd.conf, virtualhost|
+|**Context**| httpd.conf, virtualhost, directory|
 
 **Example**:
 
@@ -10363,30 +10398,30 @@ If the limits for users are set with <span class="notranslate"> cPanel LVE Exten
 |  |  |  |
 |----|----|--|
 |**Action**|**lvectl command**|**JSONHandler**|
-|enable  reseller limits|<span class="notranslate">`lvectl set-reseller res1 --speed=35%`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=set-reseller&lveid=res1&speed=30%&io=2048`|
-|disable reseller limits|<span class="notranslate">`lvectl remove-reseller res1`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=remove-reseller&lveid=res1`|
-|set default limits for reseller|<span class="notranslate">`lvectl set-reseller-default res1 --speed=91%`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=set-reseller-default&lveid=res1&speed=30%`|
-|set limits for package, created by reseller|<span class="notranslate">`lvectl package-set res1_pack1 --reseller res1 --speed=88%`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=package-set&lveid=res1_pack1&reseller=res1&speed=30%`|
-|set limits for user, created by reseller|<span class="notranslate">`lvectl set-user r1user1 --reseller res1 --speed=77%`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=set-user&lveid=r1user1&reseller=res1&speed=30%`|
-|set unlimited for user, created by reseller|<span class="notranslate">`lvectl set-user r1user1 --reseller res1 --unlimited`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=set-user&lveid=r1user1&reseller=res1&unlimited`|
+|enable  reseller limits|<span class="notranslate">`lvectl set-reseller res1 --speed=35%`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=set-reseller&lveid=res1&speed=35%&io=2048`|
+|disable reseller limits|<span class="notranslate">`lvectl remove-reseller res1`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=remove-reseller&lveid=res1`|
+|set default limits for reseller|<span class="notranslate">`lvectl set-reseller-default res1 --speed=91%`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=set-reseller-default&lveid=res1&speed=91%`|
+|set limits for package, created by reseller|<span class="notranslate">`lvectl package-set res1_pack1 --reseller res1 --speed=88%`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=package-set&lveid=res1_pack1&reseller=res1&speed=88%`|
+|set limits for user, created by reseller|<span class="notranslate">`lvectl set-user r1user1 --reseller res1 --speed=77%`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=set-user&lveid=r1user1&reseller=res1&speed=77%`|
+|set unlimited for user, created by reseller|<span class="notranslate">`lvectl set-user r1user1 --reseller res1 --unlimited`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=set-user&lveid=r1user1&reseller=res1&unlimited`|
 |set inodes limit|<span class="notranslate">`cloudlinux-limits set --username=r1user1 --inodes=9090,8989`</span>|`https://IP:2087/cpsess_YOURTOKEN/cgi/CloudLinux.cgi?cgiaction=jsonhandler&command=cloudlinux-limits&handler=set&username=r1user1&inodes=9090,8989`|
 
 #### Using a WHM API token
 
 You can use a WHM API token with curl as follows:
 
-<div clas="code">
+<div class="notranslate">
 
 ```
-curl -X POST -k -s -H "Authorization: whm root:WHM_TOKEN" "https://SERVER_IP:2087/cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=LVE_METHOD&PARAMETERS
+curl -X POST -k -s -H "Authorization: whm root:WHM_TOKEN" "https://SERVER_IP:2087/cgi/CloudLinux.cgi?cgiaction=jsonhandler&handler=LVE_METHOD&PARAMETERS"
 ```
 </div>
 
 Where:
 
 * <span class="notranslate">`WHM_TOKEN`</span> – a generated WHM API token (see: [Creating an API token](https://documentation.cpanel.net/display/DD/Guide+to+API+Authentication+-+API+Tokens+in+WHM#0ac291c40e454694a8b981c45988c1cb))
-* <span class="notranslate">`LVE_METHOD`</span> – lvectl method (for example: <span class="notranslate">`list`</span>. See also: [lvectl](/command-line_tools/#lvectl))
-* <span class="notranslate">`PARAMETERS`</span> – all other parametrs and options for a method according to the [documentation](/command-line_tools/#lvectl)
+* <span class="notranslate">`LVE_METHOD`</span> – lvectl method (for example: <span class="notranslate">`list`</span>. See also: [lvectl](/cloudlinuxos/command-line_tools/#lvectl))
+* <span class="notranslate">`PARAMETERS`</span> – all other parameters and options for a method according to the [documentation](/cloudlinuxos/command-line_tools/#lvectl)
 
 
 ### mod_proctitle
@@ -10399,7 +10434,7 @@ mod_proctitle is a module for gathering URL information per request. It is avail
 
 **For installation:**
 
-cPanel EasyApache 3 and non cPanel ( _CloudLinux 7 only for non cPanel_ ):
+cPanel EasyApache 3 and non cPanel ( _CloudLinux OS 7 and later for non cPanel_ ):
 
 <div class="notranslate">
 
@@ -10424,7 +10459,7 @@ DirectAdmin:
 ```
 cd /usr/local/directadmin/custombuild
 ./build update
-./build mod_procticle
+./build mod_proctitle
 ```
 </div>
 
@@ -10452,7 +10487,7 @@ for pid in `/usr/bin/pgrep $httpd`; do
 		break
 		done
 	if [ "$found" = "no" ]; then
-		echo "$pid.$tid not found"
+		echo "$pid.$tid NOT FOUND"
 	fi
     done
 done
@@ -10481,17 +10516,26 @@ Item info:
 Request information can contain:
 
 <span class="notranslate"> _NOT FOUND_ </span> - means that process of Apache doesn't handle requests.<br>
-<span class="notranslate"> _httpd_ </span> - request is active and waiting for new connection.<br>
+<span class="notranslate"> _httpd_ </span> - the process or thread is idle and waiting for a new request, or is handling a request whose handler is not monitored because of <span class="notranslate">WatchHandlers</span>.<br>
 <span class="notranslate"> _[seconds].[tenths of second] [host] [METHOD] [URL] [PROTOCOL]_ </span>
+
+Here <span class="notranslate"> _seconds_ </span> is the Unix time when the module records the request. The saved information is limited to 255 bytes, so a long URL can be cut off.
 
 #### Tuning parameters
 
 **Module parameters for tuning**
 
+The module settings are stored in the following file. Restart Apache after changing it.
+
+* cPanel EasyApache 4: <span class="notranslate">`/etc/apache2/conf.d/proctitle.conf`</span>
+* cPanel EasyApache 3: <span class="notranslate">`/usr/local/apache/conf/conf.d/proctitle.conf`</span>
+* DirectAdmin: <span class="notranslate">`/etc/httpd/conf/extra/modproctitle.conf`</span>
+* Non cPanel: <span class="notranslate">`/etc/httpd/conf.d/proctitle.conf`</span>
+
 | | |
 |-|-|
-|WatchHandlers | List of handlers for monitoring (httpd.conf, virtualhost).|
-|ProctitleUseFilter On/Off | Use old method of cleaning information or new via filter (for prefork better to use <span class="notranslate"> Off </span> )|
+|WatchHandlers | Space-separated list of handlers for monitoring (httpd.conf, virtualhost). Each item is a handler name, `*` for all handlers, or a regular expression between percent signs, for example `%php%`. When not set, all handlers are monitored.|
+|ProctitleUseFilter On/Off | Use old method of cleaning information ( <span class="notranslate"> Off </span> ) or new via filter ( <span class="notranslate"> On </span> ). The configuration file installed with the module sets <span class="notranslate"> On </span>. For prefork better to use <span class="notranslate"> Off </span>. With the worker and event MPMs the filter is always used, whatever the value. Can be set only in the global server configuration.|
 
 ### alt-suexec
 
@@ -10507,7 +10551,7 @@ Based on httpd 2.2.16 basic for Cloudlinux OS 6, httpd 2.4.6 basic for CloudLinu
 <div class="notranslate">
 
 ```
-switch_suexec -h
+switch_suexec -l
 ............
 
 USE_BIZ - DOCUMENT ROOT /biz/ MIN_UID 500 MIN_GID 100 CALLER apache
@@ -10685,7 +10729,7 @@ The DirectAdmin and CloudLinux OS (for httpd, httpd24-httpd and cPanel EasyApach
   :::tip NOTE
   Therefore, this module is necessary for the proper work of PHP Selector.
   :::
-2. This module is also necessary for the proper work of mod_hostinglimits. The <span class="notranslate">`SuexecUserGroup`</span> directive indicates for `mod_hostinglimits` in which LVE the user process should be put in.
+2. `mod_hostinglimits` can use this module to detect the user: the <span class="notranslate">`SuexecUserGroup`</span> directive indicates in which LVE the user process should be put. See [mod_hostinglimits](./#hostinglimits-module-for-apache) for the other directives it can use.
 
 
 ### Configuration
@@ -10707,12 +10751,12 @@ Control panels such as cPanel, Plesk, and DirectAdmin add this directive to the 
 
 The <span class="notranslate">`mod_suexec`</span> installation process varies depending on the control panel and Apache.
 
-* [Installing on cPanel servers with EasyApache 4](./#installing-on-cpanel-servers-with-easyapache-4-2)
+* [Installing on cPanel servers with EasyApache 4](./#installing-on-cpanel-servers-with-easyapache-4-1)
   * [Via command line](./#via-command-line)
   * [Via administrator interface](./#via-administrator-interface)
-* [Installing on Plesk servers](./#installing-on-plesk-servers-2)
-* [Installing on DirectAdmin servers](./#installing-on-directadmin-servers-2)
-* [Installing on servers with no control panel](./#installing-on-servers-with-no-control-panel-3)
+* [Installing on Plesk servers](./#installing-on-plesk-servers-1)
+* [Installing on DirectAdmin servers](./#installing-on-directadmin-servers-1)
+* [Installing on servers with no control panel](./#installing-on-servers-with-no-control-panel-1)
 
 #### Installing on cPanel servers with EasyApache 4
 
