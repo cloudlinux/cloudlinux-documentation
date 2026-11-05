@@ -69,11 +69,15 @@ php <whmcs_root>/clDeploy.php --migrate
 
 </div>
 
+The script requires the `unzip` command on the server.
+
 5. In WHMCS, open **System Settings → Addon Modules**.
 6. Activate **CloudLinux Licenses Addon** if it is not active.
 7. Click **Configure**, grant access to the required administrator roles, and save the settings.
 
 The migration is safe to run after every update. It creates or updates the module tables, including the durable license state used to track the exact registered IP or key. No manual database changes are required.
+
+Activating the addon also applies the database migrations. After an update, run the migration command above before using the addon.
 
 ::: warning Updating an existing installation
 Do not deactivate the addon as part of a normal update. Copy the new files over the existing installation and run the migration command.
@@ -141,7 +145,7 @@ Use **Addon Relations** only when an existing regular product addon must remain 
 1. Create and configure a hidden `CloudLinuxLicenses` product for the license.
 2. Open **Addons → CloudLinux Licenses Addon → Addon Relations**.
 3. Click **Add Relation**.
-4. Select the existing regular addon under **Product Addon** and the hidden license product under **Linked License Product**.
+4. Select the existing regular addon under **Product Addon** and the hidden license product under **Linked Product With License**.
 5. Save the relation.
 
 Activating the regular addon creates a separate free child service for the linked license product. For current WHMCS versions, prefer a module-backed product addon unless compatibility with an existing relation-based configuration is required.
@@ -153,7 +157,7 @@ Use **Product Relations** when every instance of a VPS or hosting product must i
 1. Create and configure a hidden `CloudLinuxLicenses` product for the license.
 2. Open **Addons → CloudLinux Licenses Addon → Product Relations**.
 3. Click **Add Relation**.
-4. Select the parent product under **Main product** and the hidden license product under **Linked License Product**.
+4. Select the parent product under **Main product** and the hidden license product under **Linked Product With License**.
 5. Save the relation.
 
 The related license product is created as a free child service. Include its commercial cost in the parent product instead of pricing the hidden license product separately.
@@ -335,7 +339,7 @@ Configure the price and sort order for every value:
 1. Open **Addons → CloudLinux Licenses Addon**.
 2. Select **Configurable Options Relations**.
 3. Click **Add Relation**.
-4. Select the hidden license product, configurable option group, and configurable option value.
+4. Select the hidden license product under **License Product**, the configurable option you added to the group under **Linked ConfigurableOption Group**, and the value under **Linked ConfigurableOption**.
 5. Add one relation for every value that must create a license. Do not map the **No license** value.
 
 The relation tab shows the license product associated with every selectable value:
@@ -393,7 +397,7 @@ Open **Addons → CloudLinux Licenses Addon** to access:
 * **Addon Licenses List** for module-backed product addons
 * relation editors for addons, products, and configurable options
 
-The lists can be filtered by client, product or addon, IP address, and license key.
+The lists can be filtered by client, product or addon, IP address, and license key. Filters match exact values. For the client filter, enter a first name or a first and last name separated by a space.
 
 ![CloudLinux Licenses list and filters](/images/cln/whmcs_plugin/licenses-list.webp)
 
