@@ -6,11 +6,11 @@ CloudLinux OS Solo is designed for installation on VPS or dedicated servers with
 
 Unlike [CloudLinux OS Legacy (Shared)](/introduction/), this edition is not designed for Shared Hosting usage and it does not include any [LVE-related](/cloudlinuxos/lve_manager/) features.
 
-We provide the CloudLinux OS Solo with pre-installed features, but for grafical interface, please install a control panel on your server.
+We provide the CloudLinux OS Solo with pre-installed features, but for graphical interface, please install a control panel on your server.
 
 :::warning
 Currently supported OS version is CloudLinux OS Solo 8+ only. Therefore, for now, there is no possibility to use CloudLinux OS Solo on servers with OS version 6 and 7.
-Please refer to the [currently supported OS versions](/introduction/#cloudlinux-os-solo-lifecycle).
+Please refer to the [currently supported OS versions](./#cloudlinux-os-solo-lifecycle).
 :::
 
 ### Benefits
@@ -26,7 +26,7 @@ to resolve any issues related to CloudLinux OS, its unique components and kernel
 
 ### CloudLinux OS Solo Features
  
-We've pre-installed a couple of useful features in our distribution. The complete list of supported features is available in the [table above](/solo/introduction/#cloudlinux-os-editions-comparison).
+We've pre-installed a couple of useful features in our distribution. The complete list of supported features is available in the [editions comparison table](/introduction/cloudlinux-os-editions/#cloudlinux-os-editions).
 
 * **CloudLinux Manager**
 
@@ -35,7 +35,7 @@ We've pre-installed a couple of useful features in our distribution. The complet
   
   The sub-modules you can find in CloudLinux Manager are Website Monitoring tool, PHP Slow Site analyzer, and X-Ray.
 
-  [See more](/solo/manager/).
+  [See more](/cloudlinuxos/lve_manager/#cloudlinux-manager).
 
 * **Website Monitoring tool**
 
@@ -63,6 +63,8 @@ We've pre-installed a couple of useful features in our distribution. The complet
   X-Ray can gather and visualize information about top slowest system functions, external requests, 
   software modules and database queries of the client’s PHP website.
 
+  If the X-Ray tab in CloudLinux Manager shows that X-Ray is not installed, click _Install_.
+
   [See more](/cloudlinuxos/shared-pro/#x-ray).
 
 ### How can I try your distribution before paying for it?
@@ -70,21 +72,22 @@ We've pre-installed a couple of useful features in our distribution. The complet
 We provide trial licenses for 30 days. You can get your trial key in two ways:
 
 1. On the CloudLinux OS Solo main page, see [CloudLinux OS Solo](https://lp.cloudlinux.com/cloudlinux-os-solo).
-2. In the CloudLinux Manager plugin, see the [Getting trial key](/solo/manager/#activation) section.
+2. In the CloudLinux Manager plugin: on a server that is not registered yet, follow the link to CLN, get a trial license for your account, then return and enter the activation key. See also [Getting a trial license](/cloudlinuxos/cloudlinux_installation/#getting-a-trial-license).
 
-
-The trial key must be entered during installation.
+Enter the key when you convert a server, or activate a newly installed server as described in [License activation](./#license-activation).
 
 ### CloudLinux OS Solo Lifecycle
 
 CloudLinux OS Solo has the same life cycle policy as RHEL. 
 Using a supported operating system is critical to maintaining a stable server environment.
 
-Currently, the following version are supported:
+Currently, the following versions are supported:
 
 |Operating System | Release Date| End of Life and Support|
 |-|--|-|
 |CloudLinux OS Solo 8 | Jun 1, 2021 | May 31, 2029 |
+|CloudLinux OS Solo 9 | - | May 31, 2032 |
+|CloudLinux OS Solo 10 | - | May 31, 2035 |
 
 ### What's next
 
@@ -95,13 +98,13 @@ Currently, the following version are supported:
 
 ### Getting license
 
-You will need a trial or payed activation key to be able to use your CloudLinux OS Solo server. 
+You will need a trial or paid activation key to be able to use your CloudLinux OS Solo server.
 Please [refer to this page](https://lp.cloudlinux.com/cloudlinux-os-solo) to find information on how to get activation key.
 
 The activation key looks like: `CLSOLO-d34463a182fede4f4d7e140f1841bcf2`
 
-Use it to [activate your system](/solo/activation/#license-activation) 
-or to [convert server to CloudLinux](/solo/installation/#converting-existing-servers) server.
+Use it to [activate your system](./#license-activation)
+or to [convert server to CloudLinux](/cloudlinuxos/cloudlinux_installation/#converting-existing-servers) server.
 
 :::warning
 The CloudLinux OS Solo activation key is used ONLY for registration CloudLinux OS Solo 8.
@@ -109,7 +112,7 @@ Trying use it for registration CloudLinux OS Legacy (Shared) 6/7/8 or converting
 :::
 
 :::tip Note
-Activation gives you access to the [CloudLinux Manager](/solo/manager/#cloudLinux_manager) features and system updates. 
+Activation gives you access to the [CloudLinux Manager](/cloudlinuxos/lve_manager/#cloudlinux-manager) features and system updates.
 :::
 
 ### License activation
@@ -119,14 +122,14 @@ There are several ways to register your server with CloudLinux Network:
 using the activation key by following commands:
 
 ```
-yum install rhn-setup --enablerepo=cloudlinux-base
+yum install rhn-setup
 /usr/sbin/rhnreg_ks --activationkey=<activation key>
 ```
 
 using IP-based licensing:
 
 ```
-yum install rhn-setup --enablerepo=cloudlinux-base
+yum install rhn-setup
 /usr/sbin/clnreg_ks
 ``` 
 
@@ -138,11 +141,11 @@ yum install rhn-setup --enablerepo=cloudlinux-base
 
 CloudLinux OS Solo is not designed for shared hosting usage and it does not include any [LVE-related](/cloudlinuxos/lve_manager/) features. 
 
-CloudLinux OS Solo provides a set of tools for website monitoring and performance tracking out-of-box. [Read more](/solo/manager/).
+CloudLinux OS Solo provides a set of tools for website monitoring and performance tracking out-of-box. [Read more](/cloudlinuxos/lve_manager/#cloudlinux-manager).
 
 ### Can I convert CloudLinux Solo to CloudLinux Legacy?
 
-Yes, you can follow the [instruction](/cloudlinuxos/cloudlinux_installation/#switch-license).
+Yes, you can follow the [instruction](/cloudlinuxos/cloudlinux_installation/#switching-to-a-different-license-type).
 
 ### Is the CloudLinux OS Solo paid/unpaid?
 
@@ -150,7 +153,7 @@ You should purchase a license to use CloudLinux OS Solo.
 
 ### Where can I get the latest ISO of CloudLinux OS Solo?
 
-You can download the latest ISO and use it to install CloudLinux OS Solo on your server using [this link](https://repo.cloudlinux.com/cloudlinux/8/iso/x86_64/).
+Download the CloudLinux OS 8 or 9 ISO and use it to install CloudLinux OS Solo, see [Downloading ISO](/cloudlinuxos/cloudlinux_installation/#downloading-iso). CloudLinux OS 10 ISOs are not available, use conversion instead.
 
 ### How can I get the CloudLinux OS Solo trial license?
 
@@ -178,7 +181,7 @@ The Website Monitoring tool is intended for monitoring the domain main page gene
 
 * The administrator can get the list of the slowest requests during 24 hours (the PHP Slow Site analyzer tab).
 * The administrator can receive the daily reports with the list of the slow requests.
-* The administrator receives instant emails if the domain main page is unavailable.
+* The administrator can receive instant emails if the domain main page is unavailable. To turn this on, select _Enable alert notifications_ in the [Settings](/cloudlinuxos/lve_manager/#website-monitoring-tab) subtab; it is off by default.
 
 You can read more about the Website Monitoring tool [here](/cloudlinuxos/lve_manager/#website-monitoring-tab).
 
@@ -188,7 +191,7 @@ The X-ray tool is intended for deep analysis of slow request cause. The X-ray to
 
 It can be used by the administrator and by the user.
 
-You can read more about the X-Ray tool [here](/solo/manager/#x-ray).
+You can read more about the X-Ray tool [here](/cloudlinuxos/shared-pro/#x-ray).
 
 ### Will the Website Monitoring Tool (WMT) work with the LiteSpeed and Nginx web servers?
 
@@ -196,7 +199,7 @@ Yes, they will.
 
 ### Why I don't receive emails from the Website Monitoring tool?
 
-Please verify your cPanel firewall settings.
+Check the [Website Monitoring settings](/cloudlinuxos/lve_manager/#website-monitoring-tab) in CloudLinux Manager. _Website monitoring_ must be turned on for any email to be sent. Immediate alerts are sent only if _Enable alert notifications_ is turned on, and it is off by default. Daily reports require _Enable summary notifications_. Both go to the address in _Email to send daily report_ or, if it is empty, to the server administrator's address. If the settings are correct, check that your firewall and mail configuration allow the server to send outgoing mail.
 
 ### Can I use other CloudLinux products (Imunify360, KernelCare) with CloudLinux OS Solo?
 
@@ -216,11 +219,11 @@ No. `cldeploy` keeps the same major OS version; it does not upgrade CentOS 6 or 
 
 ### What is the process of upgrading if the customer adds more users to the server and will have to upgrade? (i.e., upgrading from CloudLinux OS Solo to CloudLinux OS Legacy (Shared))
 
-Follow the edition switching [procedure](/cloudlinuxos/cloudlinux_installation/#switch-license).
+Follow the edition switching [procedure](/cloudlinuxos/cloudlinux_installation/#switching-to-a-different-license-type).
 
 ### How to set up PHP-fpm handler for the domain?
 
-Since the PHP-fpm handler is required to use AccelerateWP, you may need to configure it manually.
+Since the AccelerateWP Object Caching feature requires the PHP-fpm or LSAPI handler, you may need to configure it manually.
 
 These are configuration steps:
 
