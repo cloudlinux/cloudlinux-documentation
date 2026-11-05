@@ -5,7 +5,7 @@
 * [Inodes limits](/cloudlinuxos/limits/#inodes)
 * [Control panel integration guide](./#control-panel-integration-guide)
 
-<span class="notranslate">CloudLinux Manager</span> is a plugin for most popular control panels including cPanel, Plesk, DirectAdmin, InterWorx, and CyberPanel. It allows you to control and monitor limits, and set limits on per package bases.
+<span class="notranslate">CloudLinux Manager</span> is a plugin for most popular control panels including cPanel, Plesk, DirectAdmin, and CyberPanel. It allows you to control and monitor limits, and set limits on per package bases.
 
 <span class="notranslate">CloudLinux Manager</span> is installed by default on most servers. If it is missing you can always install it by running:
 
@@ -43,7 +43,7 @@ As you have CloudLinux OS installed, navigate to <span class="notranslate"> Clou
 
 ![WHM CloudLinux LVE Manager welcome: rocket art, START WIZARD button and Skip Wizard link.](/images/cloudlinuxos/lve_manager/installationwizardmain_zoom70.webp)
 
-To start setting up your CloudLinux OS, click <span class="notranslate">_Start Wizard_</span>, otherwise click <span class="notranslate">_Skip Wizard_</span>, and you will be redirected to the <span class="notranslate"> CloudLinux Manager Dashboard</span>.
+To start setting up your CloudLinux OS, click <span class="notranslate">_Start Wizard_</span>, otherwise click <span class="notranslate">_Skip Wizard_</span> and confirm with <span class="notranslate">_Agree_</span>, and you will be redirected to the <span class="notranslate"> CloudLinux Manager Dashboard</span>.
 
 :::tip Note
 Installation statuses of all components are duplicated inside their corresponding boxes on the <span class="notranslate">Dashboard</span>. All <span class="notranslate">Wizard</span> actions are available there as well. <span class="notranslate">Dashboard</span> will be automatically updated as soon as the installation process finishes.
@@ -57,6 +57,10 @@ The next step is selecting required components to be installed.
 Click <span class="notranslate">_Finish and Install_</span> to complete installation or click <span class="notranslate">_Skip Wizard_</span> to go back to the <span class="notranslate"> Dashboard</span>.
 
 You can find a complete description of the CloudLinux OS components below.
+
+:::tip Note
+The wizard shows only the components supported on your server, which depends on your control panel, OS, and edition. Among cPanel, DirectAdmin, and Plesk, only cPanel shows Ruby Selector, and only cPanel and DirectAdmin show Node.js Selector and Python Selector. On a panel connected through the control panel integration, the features the panel declares in [panel_info](/cloudlinuxos/control_panel_integration/#panel-info) decide what is shown. On Ubuntu, the wizard does not show Ruby Selector, Python Selector, or Node.js Selector. On CloudLinux OS Solo, it does not show Ruby Selector or MySQL Governor. On CloudLinux OS Admin, it does not show MySQL Governor.
+:::
 
 #### CloudLinux OS components
 </div>
@@ -86,7 +90,7 @@ It is the fastest and most reliable way to serve PHP pages for Apache web-server
 
 ![Info popover: mod_suexec not installed; mod_lsapi and CRIU note, documentation URL, OK button.](/images/cloudlinuxos/lve_manager/wizard_lsapi_zoom90.webp)
 
-LSAPI requires CRIU to operate and we also recommend you to use mod_suexec. You can find details in our [documentation](/cloudlinuxos/cloudlinux_os_components/#apache-mod-lsapi-pro).
+We recommend you to use mod_suexec with LSAPI. mod_suexec is also required for CRIU to work. You can find details in our [documentation](/cloudlinuxos/cloudlinux_os_components/#apache-mod-lsapi-pro).
 
 <div class="notranslate">
 
@@ -138,7 +142,7 @@ Allows end users to select the default version of <span class="notranslate">Pyth
 ![Enable Python Selector card: multiselect shows 2.7,3.3,3.5,3.7 checked; Profitability tag.](/images/cloudlinuxos/lve_manager/wizard_python_selector_zoom90.webp) 
 
 
-Here you can choose <span class="notranslate">Python</span> versions to be installed.
+Here you can choose the <span class="notranslate">Python</span> versions to install and the version to use as default.
 
 #### **PHP Selector**
 
@@ -146,7 +150,9 @@ Allows end users to select the specific version of PHP they need, with over 120 
 
 ![Tooltip: further PHP Selector setup in LVE Manager after install; docs link and OK.](/images/cloudlinuxos/lve_manager/wizard_php_selector_zoom90.webp)
 
-Go to <span class="notranslate">CloudLinux Manager</span> settings to set up <span class="notranslate"> PHP Selector</span> options and parameters. Read more in the [PHP Selector documentation](/cloudlinuxos/cloudlinux_os_components/#installation-and-update-4). 
+Here you can choose the PHP versions to install and turn on <span class="notranslate">_Enable Selector_</span>. The wizard turns the selector on only when CageFS is initialized, so select CageFS as well. If you clear the CageFS checkbox, the switch turns off and is locked until you select CageFS again.
+
+Go to <span class="notranslate">CloudLinux Manager</span> settings to set up <span class="notranslate"> PHP Selector</span> options and parameters. Read more in the [PHP Selector documentation](/cloudlinuxos/cloudlinux_os_components/#installation-and-update-3).
 
 :::tip Note
 CageFS should be enabled for PHP Selector to operate.
@@ -176,9 +182,9 @@ If module installation fails, the Installing button changes to <span class="notr
 ![Warning dropdown open: Mod_lsapi red info icon; CageFS, NodeJS, PHP, Python, Ruby show green checks.](/images/cloudlinuxos/lve_manager/wizard_warning_zoom70.webp)
 
 
-* Click ![Small light grey pencil-style toolbar icon.](/images/cloudlinuxos/lve_manager/wizard_download_btn.webp) to download the error log.
-* Click ![Small light grey gear/cog toolbar icon.](/images/cloudlinuxos/lve_manager/wizard_try_again_btn.webp) to try to install a module again.
-* Click ![Small light grey four-arrow move/drag toolbar icon.](/images/cloudlinuxos/lve_manager/wizard_close_btn.webp) to remove a specific module from the installation queue. The module will be displayed on the <span class="notranslate">Dashboard</span> but will not be installed.
+* Click ![Download log icon](/images/cloudlinuxos/lve_manager/wizard_download_btn.webp) to download the error log.
+* Click ![Try again icon](/images/cloudlinuxos/lve_manager/wizard_try_again_btn.webp) to try to install a module again.
+* Click ![Cancel icon](/images/cloudlinuxos/lve_manager/wizard_close_btn.webp) to remove a specific module from the installation queue. The module will be displayed on the <span class="notranslate">Dashboard</span> but will not be installed.
 
 If module auto-installation fails, you will see that the module indicator turns yellow.
 
@@ -193,9 +199,9 @@ In case of a fatal error, you will see the following warning.
 ![Wizard is broken dialog: Download log, Try again, Close wizard; status list with MySQL Governor error.](/images/cloudlinuxos/lve_manager/wizardbroken_zoom70.webp)
 
 
-* Click ![Small light grey pencil-style toolbar icon.](/images/cloudlinuxos/lve_manager/wizard_download_btn.webp) to download the error log.
-* Click ![Small light grey gear/cog toolbar icon.](/images/cloudlinuxos/lve_manager/wizard_try_again_btn.webp) to try to install module(s) again.
-* Click ![Small light grey four-arrow move/drag toolbar icon.](/images/cloudlinuxos/lve_manager/wizard_close_btn.webp) to cancel installation. The canceled modules will be removed from the installation process.
+* Click ![Download log icon](/images/cloudlinuxos/lve_manager/wizard_download_btn.webp) to download the error log.
+* Click ![Try again icon](/images/cloudlinuxos/lve_manager/wizard_try_again_btn.webp) to try to install module(s) again.
+* Click ![Close wizard icon](/images/cloudlinuxos/lve_manager/wizard_close_btn.webp) to cancel installation. The canceled modules will be removed from the installation process.
 
 You can contact our support team for further assistance anytime by [submitting a ticket in our helpdesk system](https://cloudlinux.zendesk.com/hc/requests/new).
 
@@ -218,9 +224,11 @@ Log in as administrator to get access to the following functionality:
 * <span class="notranslate">Statistics</span> tab displays the statistics of resource usage for proper timeframe or proper users;
 * <span class="notranslate">Options</span> tab - allows setting LVE Faults email notifications for users;
 * <span class="notranslate">Packages</span> allows managing packages limits;
-* <span class="notranslate">PHP Selector</span> tab.
+* <span class="notranslate">Website monitoring</span> tab, if available for your server - see [Website monitoring tool and Slow Site analyzer](./#website-monitoring-tool-and-slow-site-analyzer);
+* <span class="notranslate">Selector</span> tab - allows controlling <span class="notranslate">PHP Selector</span> settings;
+* <span class="notranslate">X-Ray</span>, <span class="notranslate">Smart Advice</span>, and <span class="notranslate">AccelerateWP</span> tabs, if available for your server - see [X-Ray](/cloudlinuxos/shared-pro/#x-ray), [X-Ray Smart Advice](/cloudlinuxos/shared-pro/#x-ray-smart-advice), and [AccelerateWP](/cloudlinuxos/shared-pro/#acceleratewp).
 
-For more details, please go to the [ImunifyAV documentation](https://docs.imunifyav.com/).
+The menu also shows an <span class="notranslate">Imunify AV</span> link on cPanel, DirectAdmin, and Plesk if the Imunify agent is not installed on the server. For more details, please go to the [ImunifyAV documentation](https://docs.imunifyav.com/).
 
 <div class="notranslate">
 
@@ -243,7 +251,7 @@ The following actions are available in the system notifications (information, wa
 * copy a command
 * copy a whole message
 * mark a notification as “Read”
-* snooze a notification
+* snooze a notification (only for the warning about a deprecated MySQL Governor mode)
 
 
 </div>
@@ -264,26 +272,24 @@ The <span class="notranslate">CloudLinux OS Dashboard</span> provides the follow
 
 * <span class="notranslate">End Users hitting limits</span> — number of users reaching their limit in any kind of resource. Data is within the last 24 hours.
 * <span class="notranslate">Resellers hitting limits</span> —  number of enrolled Resellers that are reaching their limit in any kind of resource. Data is within the last 24 hours.
-* <span class="notranslate">[Node.js Selector](./#node-js-selector-2)</span> block displays the following data:
+* <span class="notranslate">[Node.js Selector](./#node-js-selector-1)</span> block displays the following data:
   * <span class="notranslate">Node.js Selector</span> status (<span class="notranslate">Enabled/Disabled/Not installed</span>) —  displays a current status of the <span class="notranslate">Node.js Selector</span>.
   
-    * To manage <span class="notranslate">Node.js Selector</span>, click <span class="notranslate">_Manage_</span>. You will be redirected to <span class="notranslate">LVE Manager | Options | Node.js Selector</span>.
+    * To manage <span class="notranslate">Node.js Selector</span>, click <span class="notranslate">_Manage_</span>. You will be redirected to <span class="notranslate">CloudLinux Manager | Options | Node.js</span>.
 
-    * Click _Install_ to install <span class="notranslate">Node.js Selector</span>, you will be redirected to <span class="notranslate">CloudLinux Manager | Options | Node.js.Selector</span>.
+    * Click _Install_ to install <span class="notranslate">Node.js Selector</span>, you will be redirected to <span class="notranslate">CloudLinux Manager | Options | Node.js</span>.
   * Default version — the current default version of Node.js set in your system. Click <span class="notranslate">_Manage_</span> to change the default version account wide.
-  * <span class="notranslate">Applications</span> —  number of installed/all applications for the account.
+  * <span class="notranslate">Applications</span> —  number of running applications/all applications.
 * <span class="notranslate">Ruby Selector</span> block displays the following data:
   * <span class="notranslate">Ruby Selector</span> status (<span class="notranslate">Enabled/Disabled/Not installed</span>) — displays a current status of the Ruby Selector.
 
-    * To manage <span class="notranslate">Ruby Selector</span>, click <span class="notranslate">_Manage_</span>. You will be redirected to <span class="notranslate">CloudLinux Manager | Options | Ruby Selector</span>.
+    * This block has no <span class="notranslate">_Manage_</span> or <span class="notranslate">_Install_</span> button. If <span class="notranslate">Ruby Selector</span> is not installed, click <span class="notranslate">_Read more_</span> to open its documentation. See also [Ruby Selector](/cloudlinuxos/cloudlinux_os_components/#ruby-selector).
 
-    * Click <span class="notranslate">_Install_</span> to install <span class="notranslate">Ruby Selector</span>, you will be redirected to <span class="notranslate">CloudLinux Manager | Options | Ruby Selector</span>.
-
-  * <span class="notranslate">Applications</span> — number of installed/all applications for the account.
+  * <span class="notranslate">Applications</span> — number of all applications.
 * <span class="notranslate">[PHP Selector](./#php-selector-1)</span> block displays the following data:
   * <span class="notranslate">Default version</span> — the default version of PHP binaries.
-  Click <span class="notranslate">_Manage_</span> to change the default version, enable or disable <span class="notranslate">PHP Selector</span>, change the list of supported versions, and choose default modules. You will be redirected to <span class="notranslate">CloudLinux Manager | PHP Selector</span>.<br>
-  PHP Selector (cPanel) has malfunctions warnings about [the most common issues](./#errors).
+  Click <span class="notranslate">_Manage_</span> to change the default version, enable or disable <span class="notranslate">PHP Selector</span>, change the list of supported versions, and choose default modules. You will be redirected to <span class="notranslate">CloudLinux Manager | Selector</span>.<br>
+  PHP Selector (cPanel) has malfunctions warnings about [the most common issues](./#php-selector-diagnostic-tool-and-notifications).
   ![PHP tile: orange Malfunction label; tooltip says fix PHP issues via Manage; default version native.](/images/cloudlinuxos/lve_manager/PHPSelectorDashboardMalfunction.webp)
 * <span class="notranslate">[Python Selector](./#python-selector-1)</span> block displays the following data:
   * <span class="notranslate">Python Selector</span> status (<span class="notranslate">Enabled/Disabled/Not installed</span> — displays a current status of the Python Selector.
@@ -291,36 +297,36 @@ The <span class="notranslate">CloudLinux OS Dashboard</span> provides the follow
     * To manage <span class="notranslate">Python Selector</span>, click <span class="notranslate">_Manage_</span>. You will be redirected to <span class="notranslate">CloudLinux Manager | Options | Python Selector</span>.
 
     * Click <span class="notranslate">_Install_</span> to install <span class="notranslate">Python Selector</span>, you will be redirected to <span class="notranslate">CloudLinux Manager | Options | Python Selector</span>.
-  * <span class="notranslate">Applications</span> —  number of installed/all applications for the account.
+  * <span class="notranslate">Applications</span> —  number of running applications/all applications.
 * [Reseller Limits](./#reseller-interface) block displays the following data:
   * <span class="notranslate">Reseller Limits</span> status (<span class="notranslate">Enabled/Disabled</span>). To manage <span class="notranslate">Reseller Limits</span>, click <span class="notranslate">_Manage_</span>. You will be redirected to <span class="notranslate">CloudLinux Manager | Users</span> tab.
   * Reseller’s accounts with Reseller Limits/all —  the number of Reseller accounts with Reseller Limits enabled versus the total number of Reseller accounts.
   * Reseller’s End Users with enabled Reseller Limits/all — the number of end users with Reseller Limits enabled versus all End Users that belong to all resellers.
 * <span class="notranslate">[MySQL Governor](/cloudlinuxos/cloudlinux_os_components/#mysql-governor)</span> block displays the following data:
-  * <span class="notranslate">MySQL Governor</span> status (<span class="notranslate">Enabled/Disabled/Not installed/Skipped</span>). To manage <span class="notranslate">MySQL Governor</span>, click <span class="notranslate">_Manage_</span>. You will be redirected to <span class="notranslate">CloudLinux Manager | Options | MySQL Governor Mode of Operation</span>. Click <span class="notranslate">_Install_</span> to install <span class="notranslate">MySQL Governor</span>.
+  * <span class="notranslate">MySQL Governor</span> status (<span class="notranslate">Enabled/Disabled/Not installed/Skipped</span>). To manage <span class="notranslate">MySQL Governor</span>, click <span class="notranslate">_Manage_</span>. You will be redirected to <span class="notranslate">CloudLinux Manager | Options | MySQL Governor Mode of Operation</span>. If <span class="notranslate">MySQL Governor</span> is not installed, the block shows a short description and a <span class="notranslate">_Read more_</span> link. To install it, see [MySQL Governor](/cloudlinuxos/cloudlinux_os_components/#mysql-governor).
   * <span class="notranslate">[Mode](/cloudlinuxos/cloudlinux_os_components/#modes-of-operation)</span> — displays the <span class="notranslate">MySQL Governor</span> mode of operation. Click <span class="notranslate">_Manage_</span> to change the mode.
     * <span class="notranslate">Single</span> — single LVE is used for all customers that go over their DB limits (deprecated).
     * <span class="notranslate">Off</span> — monitor Only, no DB query limits are applied.
-    * <span class="notranslate">All</span> — all queries are run inside user's LVE.
+    * <span class="notranslate">All</span> — all queries are run inside user's LVE (deprecated).
     * <span class="notranslate">Abusers</span> — only queries that go over DB limits are executed inside that user's LVE (this is the default mode).
-  * <span class="notranslate">Database version</span> —  displays a current version of <span class="notranslate">MySQL/MariaDB/Percona</span> server installed in the system.
+  * <span class="notranslate">Governor ver.</span> —  displays the installed version of <span class="notranslate">MySQL Governor</span>.
 * [CageFS](/cloudlinuxos/cloudlinux_os_components/#cagefs) block displays the following data:
-  * <span class="notranslate">CageFS</span> status (<span class="notranslate">Enabled/Disabled/Not installed</span>). To manage CageFS, click <span class="notranslate">_Manage_</span>. You will be redirected to <span class="notranslate">CloudLinux Manager | Options | CageFS</span>. Click <span class="notranslate">_Install_</span> to install CageFS.
+  * <span class="notranslate">CageFS</span> status (<span class="notranslate">Enabled/Disabled/Not installed</span>). To manage CageFS, click <span class="notranslate">_Manage_</span>. You will be redirected to <span class="notranslate">CloudLinux Manager | Options | CageFS</span>. If CageFS is not installed, the block shows a short description and a <span class="notranslate">_Read more_</span> link. To install it, see [CageFS](/cloudlinuxos/cloudlinux_os_components/#cagefs).
   * <span class="notranslate">Mode</span> displays the current CageFS mode of operation.
   * <span class="notranslate">End users</span> — displays the number of users with CageFS enabled/all.
 * [ModLSAPI](/cloudlinuxos/cloudlinux_os_components/#apache-mod-lsapi-pro) block displays the following data:
-  * Mod_lsapi status (<span class="notranslate">Enabled/Disabled/Not installed</span>). Click <span class="notranslate">_Install_</span> to install Mod_lsapi.
-  * Module version displays the running version of Mod_lsapi.
-  * [Criu_status](/cloudlinuxos/cloudlinux_os_components/#criu-support) displays the status of lsapi_criu:
+  * Mod_lsapi status (<span class="notranslate">Enabled/Disabled/Not installed</span>). If Mod_lsapi is not installed, the block shows a short description and a <span class="notranslate">_Read more_</span> link.
+  * <span class="notranslate">LSAPI mod version</span> displays the running version of Mod_lsapi.
+  * <span class="notranslate">LSAPI criu</span> displays the value of the <span class="notranslate">[lsapi_criu](/cloudlinuxos/cloudlinux_os_components/#lsapi-criu)</span> option.
+  * <span class="notranslate">LSAPI with connection pool</span> displays the value of the <span class="notranslate">[lsapi_with_connection_pool](/cloudlinuxos/cloudlinux_os_components/#lsapi-with-connection-pool)</span> option.
+  * <span class="notranslate">[Criu status](/cloudlinuxos/cloudlinux_os_components/#criu-support)</span> displays the status of lsapi_criu. Hover over the status value to see the version of lsapi_criu.
     * <span class="notranslate">Running</span> —  means that lsapi_criu is working.
     * <span class="notranslate">Stopped</span> —  means that lsapi_criu is not working.
-  * <span class="notranslate">Total Domains</span> displays the total number of domains with Mod_lsapi configured as PHP handler.
-  * <span class="notranslate">Criu_version</span> displays the running version of lsapi_criu.
-  * LSAPI with connection pool.
+  * <span class="notranslate">Total domains</span> displays the total number of domains with Mod_lsapi configured as PHP handler.
 
 :::tip Note
 * If statistics for server is absent for any reasons, you can update it by pressing the <span class="notranslate">_Refresh_</span> button. This process can last from 10 seconds to one hour depending on your server's performance, number of users and applications.
-* If statistics collection is turned off it is not displayed. If you wish to get daily statistics for your server, please turn it on by adding <span class="notranslate">`cl_statistics_enabled=1`</span> parameter to the <span class="notranslate">`/etc/sysconfig/cloudlinux`</span> file.
+* If statistics collection is turned off it is not displayed. If you wish to get daily statistics for your server, please turn it on by running the <span class="notranslate">`cloudlinux-summary enable`</span> command.
 * Data for the Dashboard is collected once per day. If you want to update data manually, press <span class="notranslate">_Refresh_</span>. This process can last from 10 seconds to one hour depending on your server's performance, number of users and applications.
 :::
 
@@ -335,7 +341,7 @@ Choose <span class="notranslate">_Current usage_</span> tab to monitor users res
 
 Tick <span class="notranslate">_Hide MySQL usage_</span> checkbox to hide the information on MySQL usage.
 
-To expand the list of users click on the number above and in the dropdown choose the number of user to be displayed on the page.
+To change the number of users displayed on the page, click <span class="notranslate">_Show top_</span> and choose 10, 25, 50, or 100.
 
 ![Current Usage tab: auto-refresh bar, filters, MySQL Governor mode badge, usage table with warning on user1.](/images/cloudlinuxos/lve_manager/man_01_zoom73.webp)
 
@@ -354,6 +360,8 @@ But hoster can only **manage**:
 
 To manage Reseller’s end users hoster should login as a reseller.
 
+A warning icon next to a user in the <span class="notranslate">_ID_</span> column means that <span class="notranslate">MySQL Governor</span> has restricted this user. To lift the restriction, click the <span class="notranslate">_Unrestrict User_</span> icon in the <span class="notranslate">_Actions_</span> column. To lift it for all restricted users, click <span class="notranslate">_Unrestrict All_</span> above the table. These controls are available to the administrator and appear only when a user is restricted. To edit limits of a user, click the pencil icon in the <span class="notranslate">_Actions_</span> column.
+
 ### Users
 
 * [Actions](./#actions)
@@ -367,18 +375,15 @@ Choose <span class="notranslate">_Users_</span> tab to view the list of all user
 A hoster can view the list of resellers’ end users and their limits, but can not manage resellers’ end users limits (if those are set by reseller).
 :::
 
-* Tick <span class="notranslate">_Show users with CageFS enabled_</span> to show users with CageFS file system enabled.
-* Tick <span class="notranslate">_Show only ignored users_</span> to show users with ignored <span class="notranslate">MySQL Governor</span>.
-
 The following filters are available:
-* <span class="notranslate">Manage by</span>
+* <span class="notranslate">Manage</span>
   * <span class="notranslate">End users</span>
   * <span class="notranslate">Resellers</span>
   * <span class="notranslate">Reseller's end users</span>
   * <span class="notranslate">Reseller's end users (no Reseller limit)</span>
 * <span class="notranslate">Show only</span>
-  * <span class="notranslate">Ignored users</span> - show users with ignored MySQL Governor.
-  * <span class="notranslate">Users with CageFS enabled</span>
+  * <span class="notranslate">Governor</span> (if MySQL Governor is installed) - <span class="notranslate">Ignored by Governor</span> or <span class="notranslate">Monitored by Governor</span>.
+  * <span class="notranslate">CageFS</span> (if CageFS is installed) - <span class="notranslate">CageFS enabled</span> or <span class="notranslate">CageFS disabled</span>.
 
 Also, you can search user by his <span class="notranslate">Username</span>, <span class="notranslate">domain</span> or <span class="notranslate">LVE ID</span> in the <span class="notranslate">_Search_</span> field.
 
@@ -387,6 +392,7 @@ Also, you can search user by his <span class="notranslate">Username</span>, <spa
 Click pencil icon in <span class="notranslate">_Actions_</span> column to edit limits for a particular user. The following actions are available:
 
 * Enable/disable <span class="notranslate">CageFS</span>
+* Enable/disable <span class="notranslate">**Track user by MySQL Governor**</span> - when the switch is off, <span class="notranslate">MySQL Governor</span> ignores the user, and the user appears under <span class="notranslate">Show only</span>, <span class="notranslate">Ignored by Governor</span>. Available when <span class="notranslate">MySQL Governor</span> is installed; not shown for the <span class="notranslate">DEFAULT</span> row.
 * <span class="notranslate">**Reset**</span> - to reset limits to default values
 * Apply <span class="notranslate">**Do not limit**</span> to set the limits to unlimited;
 * Setting the limits values:
@@ -420,7 +426,7 @@ If CageFS is disabled, group actions are not available. See how you can enable C
 
 * **View users with enabled CageFS**
   
-  To view users with enabled CageFS, click <span class="notranslate">_Show only >> Users with CageFS enabled_</span>
+  To view users with enabled CageFS, click <span class="notranslate">_Show only >> CageFS >> CageFS enabled_</span>
   ![Users tab: Show only menu open with Users with CageFS enabled checked; user limits table behind.](/images/cloudlinuxos/lve_manager/CageFSEnabledUsers.webp)
 
 * **Disable CageFS for several users**
@@ -461,7 +467,7 @@ Click <span class="notranslate">_Manage_</span> to choose type of users to be di
 
 ![Statistics tab: filter row; Manage dropdown open; per-user stats table with mini chart actions.](/images/cloudlinuxos/lve_manager/statisticstabhoster_zoom70.webp)
 
-Click chart symbol in the <span class="notranslate">_View_</span> column to view the detailed resource usage history for a particular account. Use timeframe drop-down to view the history for a particular period of time.
+Click chart symbol in the <span class="notranslate">_Actions_</span> column to view the detailed resource usage history for a particular account. Use timeframe drop-down to view the history for a particular period of time.
 
 ![History: Timeframe Last 7 days open; stacked usage charts with red limit and green average lines.](/images/cloudlinuxos/lve_manager/history_charts_zoom70.webp)
 
@@ -475,7 +481,7 @@ The following sections are available to set the required options:
 * <span class="notranslate">[Inode limits](./#inode-limits)</span> - allows to manage inode limits
 * <span class="notranslate">[User interface settings](./#user-interface-settings)</span> - allows to manage user interface settings
 * <span class="notranslate">[MySQL Governor settings](./#mysql-governor-settings)</span> - allows to manage MySQL Governor settings (if MySQL Governor is installed)
-* <span class="notranslate">[CageFS](./#cagefs-2)</span> - allows to manage CageFS settings
+* <span class="notranslate">[CageFS](./#cagefs-1)</span> - allows to manage CageFS settings
 * <span class="notranslate">[Node.js](./#node-js)</span> - allows to enable/disable and manage Node.js Selector
 * <span class="notranslate">[Python Selector](./#python-selector-section)</span> - allows to enable/disable and manage Python Selector
 
@@ -542,8 +548,9 @@ Allows to reset inode limits and show/hide end-user inode usage.
 
 Allows to manage user interface settings:
 
-* **<span class="notranslate">Hide LVE end user usage statistic</span>** - a user will not be able to see his usage statistic in his web interface
+* **<span class="notranslate">Hide end user usage statistic</span>** - a user will not see the <span class="notranslate">Resource Usage</span> plugin and usage statistics in the web interface
 * **<span class="notranslate">Hide Ruby App in web-interface</span>** - a user will not be able to see Ruby Selector in his web interface
+* **<span class="notranslate">Hide X-Ray App in web-interface</span>** - a user will not be able to see X-Ray in his web interface (displayed when X-Ray is available)
 
 #### MySQL Governor settings
 
@@ -554,9 +561,9 @@ Allows to manage MySQL Governor settings.
 <span class="notranslate">**MySQL Governor Mode of operation**</span>
 
 * <span class="notranslate">**Off**</span> - monitor Only – not throttle customer's queries, only monitor MySQL usage.
-* <span class="notranslate">**Single**</span> - single restricted LVE for all restricted customers – all queries for all restricted customers  well be sharing the same LVE.
+* <span class="notranslate">**Single**</span> (deprecated) - single restricted LVE for all restricted customers – all queries for all restricted customers will be sharing the same LVE. Shown only if the server already uses this mode, and cannot be selected.
 * <span class="notranslate">**Abusers**</span> - use LVE for a user to restrict queries (default mode) –  if a user goes over the limits, all his queries will execute inside his LVE.
-* <span class="notranslate">**All**</span> - always run queries inside user's LVE – limits are applied to both PHP & MySQL queries at the same time.
+* <span class="notranslate">**All**</span> (deprecated) - always run queries inside user's LVE – limits are applied to both PHP & MySQL queries at the same time. Shown only if the server already uses this mode. Use the <span class="notranslate">Abusers</span> mode instead.
 
 <span class="notranslate">**MySQL Governor restrict type mode**</span>
 
@@ -628,7 +635,7 @@ Allows to enable/disable and manage Node.js Selector.
 
 See more:
 
-* [Node.js Selector UI](./#node-js-selector-2)
+* [Node.js Selector UI](./#node-js-selector-1)
 * [Node.js Selector](/cloudlinuxos/cloudlinux_os_components/#node-js-selector)
 
 #### Python Selector section
@@ -639,7 +646,7 @@ Allows to enable/disable and manage Python Selector.
 
 See more:
 
-* [Python Selector UI](./#python-selector-2)
+* [Python Selector UI](./#python-selector-1)
 * [Python Selector](/cloudlinuxos/cloudlinux_os_components/#python-selector)
 
 When you've done with settings, click <span class="notranslate">**Save Changes**</span> to apply changes.
@@ -741,6 +748,8 @@ To manage the package limits edit the needed package:
 
 Choose default modules from the list for a proper PHP version or for native.
 
+Click <span class="notranslate">_Save_</span> to apply the selection. <span class="notranslate">_Reset_</span> discards unsaved changes. <span class="notranslate">_Panel Default_</span> selects the modules available in the native PHP version; click <span class="notranslate">_Save_</span> to apply it. These buttons are not shown for native.
+
 ![PHP Selector admin: enabled, default native, supported versions checkboxes, large default modules grid with arrows.](/images/cloudlinuxos/lve_manager/php_selector.webp)
 
 :::tip Note
@@ -769,7 +778,7 @@ Admin can filter the list:
 
 ![Domains table: Show only filter open (Multi PHP checked); search field and per-row action buttons.](/images/cloudlinuxos/lve_manager/SelectorFilters.webp)
 
-If an admin clicks <span class="notranslate">_Use PHP selector_</span> in the <span class="notranslate">_Action_</span> table, the PHP version for a domain in MultiPHP Selector is changed to the system default version and <span class="notranslate">`php-fpm`</span> is disabled. Users' websites will use the version set in CloudLinux OS PHP Selector (user interface). Group operation also can be used.
+If an admin clicks <span class="notranslate">_Use PHP selector_</span> in the <span class="notranslate">_Action_</span> table, the PHP version for a domain in MultiPHP Manager is changed to the system default version and <span class="notranslate">`php-fpm`</span> is disabled. Users' websites will use the version set in CloudLinux OS PHP Selector (user interface). Group operation also can be used.
 
 ![Domains table: four domains selected; bulk Use PHP selector control highlighted.](/images/cloudlinuxos/lve_manager/UsePHPSelector.webp)
 
@@ -788,7 +797,13 @@ Initialize CageFS in the Options tab (see [installation instructions](/cloudlinu
 
 ![Options list: CageFS section with blue INIT button highlighted.](/images/cloudlinuxos/lve_manager/CageFSInit.webp)
 
-2. <span class="notranslate">PHP Selector cannot be activated for this domain. Enable CageFS for this user in the Users tab first</span>.
+2. <span class="notranslate">PHP Selector cannot be activated for this domain. Enable CageFS in the Options tab first</span>.
+
+**Solution**
+
+Turn on the <span class="notranslate">CageFS</span> switch in [Options | CageFS](./#cagefs-1).
+
+3. <span class="notranslate">PHP Selector cannot be activated for this domain. Enable CageFS for this user in the Users tab first</span>.
 
 ![Domains table: tooltip—enable CageFS for user in Users tab; next row shows active Use PHP Selector.](/images/cloudlinuxos/lve_manager/Error2.webp)
 
@@ -801,7 +816,7 @@ Enable CageFS in the Users tab (see [installation instructions](/cloudlinuxos/cl
 * You can enable CageFS for one user by individual slider (for lve 1001 in the picture above)
 * You can enable CageFS for a group of user by the CageFS button (for lve 1002, 1003 in the picture above)
 
-3. Some PHP related issues need to be resolved in order to enable domain management. Find the list of PHP related issues that prevent domain management above.
+4. Some PHP related issues need to be resolved in order to enable domain management. Find the list of PHP related issues that prevent domain management above.
 
 ![Domains table: tooltip—resolve listed PHP issues before domain management; three blue action buttons.](/images/cloudlinuxos/lve_manager/Error3.webp)
 
@@ -817,7 +832,7 @@ The diagnostic tool allows to catch some issues. You can start diagnostic by cli
 
 The most popular errors and solutions:
 
-1. Your PHP Handler does not support CLoudLinux OS PHP Selector
+1. Looks like your PHP handler doesn't support CloudLinux PHP Selector
 
 ![Red diagnostic banner: PHP handler/mod_ruid blocks PHP Selector; Copy and message pager.](/images/cloudlinuxos/lve_manager/Issue1.webp)
    
@@ -936,7 +951,7 @@ It is impossible:
 #### Make a particular Python version as a default
 
 :::tip Note
-You can set a particular Python version as a default version in the CloudLinux OS [installation wizard](./#cloudlinux-installation-wizard) during the first installation.
+You can set a particular Python version as a default version in the CloudLinux OS [installation wizard](./#installation-wizard) during the first installation.
 :::
 
 To make a particular Python version as a default version, do the following:
@@ -983,7 +998,7 @@ See also: [Python Selector client plugin](./#python-selector-client-plugin)
 * [Enable and disable particular Node.js version](./#enable-and-disable-particular-node-js-version)
 * [Install and delete particular Node.js version](./#install-and-delete-particular-node-js-version)
 * [Make a particular Node.js version as a default](./#make-a-particular-node-js-version-as-a-default)
-* [Applications column](./#applications-column-2)
+* [Applications column](./#applications-column-1)
 * [Application error log](./#application-error-log)
 
 
@@ -1007,7 +1022,7 @@ To display all changes immediately click <span class="notranslate"> _Refresh_ </
 * To disable Node.js move the slider back to <span class="notranslate">_Disable_</span>. 
 
 ::: tip Note
-If you disable Node.js, its version for all your applications will not be changed, but you can not add a new application to this version.
+If you disable Node.js, all users won't be able to manage their applications. The Node.js version of existing applications is not changed.
 :::
 
 ![Node.js section: master toggle on with red arrow; versions table with default 9.4.0.](/images/cloudlinuxos/lve_manager/nodejsslider_zoom70.webp)
@@ -1087,7 +1102,7 @@ All packages of the application(s) will be re-installed.
 :::
 
 :::tip Note
-You can also use [Node.js Selector CLI](/cloudlinuxos/command-line_tools/#hoster-2)
+You can also use [Node.js Selector CLI](/cloudlinuxos/command-line_tools/#hoster-1)
 :::
 
 See also: [Node.js Selector client plugin](./#node-js-selector-client-plugin)
@@ -1120,7 +1135,7 @@ See also: [Node.js Selector CLI tools](/cloudlinuxos/command-line_tools/#node-js
 * [The wmt-api CLI utility](/cloudlinuxos/command-line_tools/#the-wmt-api-utility)
 * [FAQ](./#faq)
 
-**Website monitoring tool** is a new tool that collects the statistics of the domains' availability and responsiveness, as well as errors that occur when accessing these domains. An admin can get email reports with the statistics. The website monitoring tool uses the simple curl request like `curl http://domain.com` to get domains’ statistics.
+**Website monitoring tool** is a new tool that collects the statistics of the domains' availability and responsiveness, as well as errors that occur when accessing these domains. An admin can get email reports with the statistics. The website monitoring tool sends a simple HTTP GET request to each domain to get domains’ statistics: first over HTTPS and, if that does not return status code 200, over HTTP.
 
 **PHP Slow Site analyzer** is a new tool that generates daily reports for the server administrator with information about the top N slow PHP-based domains and URLs. Slow Site analyzer tracks all PHP-based requests and selects slow ones by certain rules.   
 
@@ -1146,7 +1161,7 @@ You can turn off the _Website monitoring_, _PHP Sites Analyzer_ in the _[Setting
 
 You can configure the Website monitoring tool and Slow Site analyzer and view the daily reports in the CloudLinux Manager -> Website monitoring tab.
 
-There are Main, PHP Site analyzer, and Settings subtabs here.
+There are Main, PHP Sites Analyzer, and Settings subtabs here.
 
 #### Main
 
@@ -1159,7 +1174,7 @@ Remember that report is created every 24 hours and all changes in configuration 
 * **Total number of requests** - requests that were sent to all domains, existing on the servers
 * **Successful requests** - the number of requests for all domains with ![Inline snippet: Status Code label, green dot, and 200.](/images/cloudlinuxos/lve_manager/Code200.webp)
 * **Requests with errors** - the number of requests for all domains which status code is not 200
-* **Not started requests due to short check interval** - this metric is used to adjust configuration. If it is not equal 0, an admin should increase the value of Requests sending interval, because the tool does not fit into this interval to send requests to all domains.
+* **Not started requests due to short check interval** - this metric is used to adjust configuration. If it is not equal 0, an admin should increase the value of Check every X minutes (in the <span class="notranslate">_Settings_</span> subtab), because the tool does not fit into this interval to send requests to all domains.
 * **Slowest websites in 24h and Websites with most errors in 24h** - in these sections you can find the number of domains that was exposed here.
 
   ![Setting Top N slow websites to show with value 4 and helper text.](/images/cloudlinuxos/lve_manager/TopSlow.webp)
@@ -1186,13 +1201,15 @@ Here, an admin can configure the Website monitoring and the PHP Site analyzer.
 All settings which was changed after starting Website monitoring and Slow site analyzer will be applied for the next 24h (from midnight).
 :::
 
+* **Email to send daily report** - the address that receives Website monitoring and PHP Sites Analyzer email reports and Website monitoring alert notifications. If it is not set, the system administrator's email is used.
+
 To enable or disable **Website monitoring**, use the following slider.
 
 ![Website monitoring setting row with subtitle and blue ON toggle.](/images/cloudlinuxos/lve_manager/WebsiteMonitoringSlider.webp)
 
 * **Enable summary notifications** - turn on/off summary daily email report notifications
 * **Enable alert notifications** - turn on/off immediate alert email notifications
-* **Domains and URLs Ignore List** - domains and URLs that will not be requested and displayed in reports; supported formats: `example.com, http://example.com`
+* **Domains and URLs Ignore List** - domains and URLs, separated by commas, that will not be requested and displayed in reports. An entry without `*` matches any URL containing that text: `example.com` also excludes `sub.example.com` and `example.com.other.tld`. Use `*.example.com` for subdomains. To skip only `example.com`, use `*://example.com`, and add `*://www.example.com` for www.
 * **Top N slow websites to show** - this number (N) will be used to select the top N domains from the list of all domains, sorted by response duration (Slowest websites list). And this number also will be used to select the top N domains from the list of all domains, sorted by amount of errors (Websites with most errors list).
 * **Check every X minutes** - this is a period in minutes between requests to the same domain.
 * **Time allowed for response** - if there is no answer from the website for this period of time, the Website Monitoring tool will regard this behaviour as the `HTTP 408` error.
@@ -1203,7 +1220,7 @@ The scanner tries HTTPS first (following redirects) and, if the final HTTPS resp
 :::
 
 
-To enable or disable the **Slow site analyzer**, use the following slider.
+To enable or disable the **PHP Sites Analyzer** (Slow Site analyzer), use the following slider.
 
 :::tip Note
 Slow Site analyzer is not available for CloudLinux OS Legacy (Shared) 6.
@@ -1211,7 +1228,7 @@ Slow Site analyzer is not available for CloudLinux OS Legacy (Shared) 6.
 
 ![PHP site analyzer setting row with subtitle and blue ON toggle.](/images/cloudlinuxos/lve_manager/WebsiteMonitoringSlider1.webp)
 
-* **Enable Autotracing** - turn on/off Autotracing;
+* **Enable Autotracing** - automatically creates PHP X-Ray tracing tasks each day for the slow URLs found by the analyzer. Available only while the analyzer is on. When Autotracing is available on the server, the dialog that confirms turning on the analyzer also has an _Enable Autotracing_ checkbox, ticked by default; clear it if you do not want Autotracing to start. See [X-Ray Autotracing](/cloudlinuxos/shared-pro/#x-ray-autotracing);
 * **Enable summary notifications** - turn on/off summary daily email report notifications;
 * **Top N slow websites to show** - Set the number of top slow websites to show in the “PHP Sites Analyzer“ report;
 * **Top slow URLs** - this number (N) will be used to select the top N URLs for each domain, marked as slow;
@@ -1219,14 +1236,14 @@ Slow Site analyzer is not available for CloudLinux OS Legacy (Shared) 6.
 * **Slow requests number** - number of slow requests in the period of time to mark the URL as a slow one;
 * **Analysis time** - the period of time in hours required to analyze slow requests;
 * **Enable slow requests density threshold** - turn on/off slow requests density threshold;
-* **Slow requests density threshold** - can be in the interval [0..1], by default it is 0.8. The **density threshold** can be disabled. And the **Domains and URLs Ignore List** can be specified;
-* **Domains and URLs Ignore List** - domains and URLs that will not be displayed in reports;
+* **Slow requests density threshold** - must be greater than 0 and not greater than 1, by default it is 0.8. The **density threshold** can be disabled. And the **Domains and URLs Ignore List** can be specified;
+* **Domains and URLs Ignore List** - a comma-separated list of domains and URLs that will not be displayed in reports. An entry without `*` matches any URL containing that text. An entry with `*` is a wildcard pattern that must match through the end of the URL, for example `*.staging.com/*` ignores all pages of all subdomains of staging.com.
 
 #### What is the density threshold?
 
 We try to find the most interesting requests for the optimisation from all number of requests to domains during 24 hours. The _Density threshold_ parameter helps to find the most visited URLs and the most popular requests. 
 
-A density threshold is a numerical measure of some type of correlation, meaning the power of the statistical relationship between slow requests and all requests to the domain. If this parameter is enabled then the resulting table will contain slow requests that have exceeded the specified threshold. Requests with the highest density are usually the most distributed per day and are considered valuable to users, thus interesting for optimization.
+A density threshold is a numerical measure of some type of correlation, meaning the power of the statistical relationship between all requests to the URL and all requests to the domain during the day. If this parameter is enabled then the resulting table will contain only slow URLs whose value exceeds the specified threshold. Requests with the highest density are usually the most distributed per day and are considered valuable to users, thus interesting for optimization.
 
 Slow requests that represent bursts of activity and are weakly related to all activity per domain typically have a low density and will be weeded out.
 
@@ -1313,7 +1330,7 @@ The bottom line star in the table displays the total reseller resource usage. It
 
 </div>
 
-Choose <span class="notranslate">_Historical Usage_</span> tab to view reseller and resellers’ end users resource usage history and faults. The list of users can be filtered by <span class="notranslate">_Timeframe_</span>.
+Choose <span class="notranslate">_Historical Usage_</span> tab to view reseller and resellers’ end users resource usage history and faults. The data can be limited by <span class="notranslate">_Timeframe_</span>, a preset or a date range. <span class="notranslate">_Time Unit_</span> groups the chart values by day, hour or minute; the summary and the <span class="notranslate">_Top 5 Users_</span> list always cover the whole timeframe.
 
 When reseller’s end user reaches the limits set by hoster for the reseller, this will be displayed on the chart. 
 
@@ -1321,7 +1338,7 @@ When reseller’s end user reaches the limits set by hoster for the reseller, th
 In this case reseller’s end user would not necessarily reaches his limits set by the reseller. These faults are not displayed on the chart.
 :::
 
-On the <span class="notranslate">_Historical Usage_</span> page the reseller is also able to see the list of <span class="notranslate">_Top 5 Reseller’s end users_</span> (based on resource usage, for the same period as charts/overall usage). Click <span class="notranslate">_History_</span> in the <span class="notranslate">_Actions_</span> column to view resource usage statistics for particular user.
+On the <span class="notranslate">_Historical Usage_</span> page the reseller is also able to see the list of <span class="notranslate">_Top 5 Users_</span> (based on resource usage, for the same period as charts/overall usage). Click <span class="notranslate">_History_</span> in the <span class="notranslate">_Actions_</span> column to view resource usage statistics for particular user.
 
 Click <span class="notranslate">_LVE Statistics_</span> on the top of the <span class="notranslate">Top 5</span> list to go to the <span class="notranslate">_Statistics_</span> page to view or manage the rest of users.
 
@@ -1344,8 +1361,6 @@ Choose <span class="notranslate">_Users_</span> tab to view and manage the list 
 
 You can filter the list by <span class="notranslate">_Username_, _Domain_, _LVE ID_.</span>
 
-Tick <span class="notranslate">_Show only ignored users_</span> to display only users with <span class="notranslate">MySQL Governor</span> disabled.
-
 ![Reseller Users tab: DEFAULT row blue; user1 limits in red; edit and history icons.](/images/cloudlinuxos/lve_manager/userstabreseller_zoom70.webp)
 
 <div class="notranslate">
@@ -1358,7 +1373,7 @@ Click on a pencil icon in <span class="notranslate">_Actions_</span> column to e
 
 * Click <span class="notranslate">Reset</span> to reset limits to default values.
 * Click <span class="notranslate">Apply</span> for <span class="notranslate">Do not limit</span> to set unlimited resources to a user.
-* Set values for <span class="notranslate"> PEED, PMEM, IO, IOPS, EP</span>, and NPROC and click <span class="notranslate">_Save_</span> to save changes or <span class="notranslate">_Cancel_</span> to close the window.
+* Set values for <span class="notranslate"> SPEED, PMEM, IO, IOPS, EP</span>, and NPROC and click <span class="notranslate">_Save_</span> to save changes or <span class="notranslate">_Cancel_</span> to close the window.
 
 ![Reseller edit limits modal: SPEED 400%, PMEM 9.54G, IO 127KB/s; Reset, Apply no limit, Cancel, Save.](/images/cloudlinuxos/lve_manager/userstabpopup_zoom70.webp)
 
@@ -1384,7 +1399,7 @@ The following parameters are displayed:
 ![Reseller Statistics: many filter tags; user row with A/L/F columns and chart icon.](/images/cloudlinuxos/lve_manager/statisticstabreseller_zoom70.webp)
 
 
-Use <span class="notranslate">_Charts_</span> in the <span class="notranslate">_View_</span> column to view detailed resource usage charts for a particular period of time.
+Click the chart icon in the <span class="notranslate">_Actions_</span> column to view detailed resource usage charts for a particular period of time.
 
 For example, 7 days period chart.
 
@@ -1403,7 +1418,7 @@ In <span class="notranslate">_LVE Faults email notifications_</span> section tic
 
 Starting from CloudLinux Manager v.7.3.0-1 and LVE-Stats v.4.1.4-1 users can disable in their Resource Usage plugin email notifications about hitting LVE limits by themselves.
 
-To allow users to do so, the reseller should enable the _Notify Customers_ and _Notify Reseller’s Customers_ options.
+To allow users to do so, the reseller should enable the _Notify Customers_ option.
 
 Unfortunately, it is not possible to disable LVE Faults Email Notifications for all users by default so that users can enable the feature themselves in their interface.
 
@@ -1422,7 +1437,7 @@ In <span class="notranslate">_Faults to include_</span> section tick checkboxes 
 
 In <span class="notranslate">_Minimum number of Faults to notify_</span> section enter the number of faults required for the notification to be sent for reseller and customer. You can also set the reseller notification frequency.
 
-Set the frequency of sending the reseller email notifications in <span class="notranslate">_Notify Reseller Every ... days/hours/minutes/seconds_</span> section.
+Set the frequency of sending the reseller email notifications in <span class="notranslate">_Notify Reseller Every ... days/hours_</span> section, and the customer email notifications in <span class="notranslate">_Notify Customers Every ... days/hours_</span> section.
 
 ![Reseller minimum faults: Reseller and Customer thresholds; notify every 12 hours; templates path note.](/images/cloudlinuxos/lve_manager/options03_zoom70.webp)
 
@@ -1444,7 +1459,8 @@ Click pencil icon in a package row to set the following limits for a package:
 * <span class="notranslate">Physical memory (PMEM)</span> (can be set as unlimited by setting 0);
 * <span class="notranslate">I/O</span> limits;
 * <span class="notranslate">IOPS</span> limits;
-* <span class="notranslate">Concurrent connections (EP)</span> limits.
+* <span class="notranslate">Concurrent connections (EP)</span> limits;
+* <span class="notranslate">Number of processes (NPROC)</span> limits.
 
 When limits are set click <span class="notranslate">_Save_</span> to apply changes.
 
@@ -1459,7 +1475,7 @@ Requires <span class="notranslate">CloudLinux Manager</span> 2.0-33+
 
 It is possible to apply branding to the LVE Plugins in cPanel end users’ interface. To brand the cPanel end users'  interface please do the following:
 
-* Create a script that will patch <span class="notranslate">CloudLinux Manager</span> files (with branding data, for example, image and logo) after every update of <span class="notranslate">`lvemanager rpm`</span> package;
+* Create a script that will patch <span class="notranslate">CloudLinux Manager</span> files (with branding data, for example, image and logo);
 
 * Locate this script in <span class="notranslate">`/usr/share/l.v.e-manager/branding_script`</span>;
 
@@ -1472,7 +1488,7 @@ chmod a+x /usr/share/l.v.e-manager/branding_script
 ```
 </div>
 
-When done, the branding script will be executed while every update of <span class="notranslate">lvemanager</span> package and all branding changes will be applied in the end user’s interface.
+When done, the branding script will be executed after every cPanel update, and all branding changes will be applied in the end user’s interface. After an update of the <span class="notranslate">lvemanager</span> package, run the script manually to apply the branding again.
 
 :::tip Note
 Modifying the <span class="notranslate">CloudLinux Manager WHM</span> plugin (<span class="notranslate">`/usr/local/cpanel/whostmgr/docroot/cgi/CloudLinux.cgi`</span>) via <span class="notranslate">`branding_script`</span> is not allowed.
@@ -1481,16 +1497,14 @@ Modifying the <span class="notranslate">CloudLinux Manager WHM</span> plugin (<s
 
 ### User message for PHP version
 
-Since version 1.0-4 <span class="notranslate">CloudLinux Manager</span> acquired a feature of adding user messages to PHP versions*. To add a message, you should create a file in <span class="notranslate">`/opt/alt/phpXX/name_modifier`</span> with a message that you want to be shown to a user.
+Since version 1.0-4 <span class="notranslate">CloudLinux Manager</span> acquired a feature of adding user messages to PHP versions. To add a message, you should create a file in <span class="notranslate">`/opt/alt/phpXX/name_modifier`</span> with a message that you want to be shown to a user.
 
 For example, if you need to add the following message <span class="notranslate">`Don't use this PHP version`</span> to PHP version 4.4, you should create the following file:
 
 <div class="notranslate">
 
 ```
-/opt/alt/php44/name_modifier:
-
-echo 'Don`t use this php version' > /opt/alt/php44/name_modifier
+echo "Don't use this PHP version" > /opt/alt/php44/name_modifier
 ```
 </div>
 
@@ -1519,21 +1533,17 @@ As a result, <span class="notranslate">CloudLinux Manager</span> will automatica
 |![End-user PHP Extensions with Maximize: same dropdown including warning-labeled PHP version.](/images/cloudlinuxos/lve_manager/PHP_version_message_DirectAdmin_user.webp)|
 | Figure 2.2 DirectAdmin CloudLinux Manager (user)| 
 
-:::tip Note
-*For cPanel and DirectAdmin only.
-:::
-
 ## Client plugins
 
 * [Resource Usage client plugin](./#resource-usage-client-plugin)
-* [Dashboard](./#dashboard-2)
-* [Current Usage](./#current-usage-3)
+* [Dashboard](./#dashboard-1)
+* [Current Usage](./#current-usage-1)
   * [Current Usage table](./#current-usage-table)
   * [Filters](./#filters)
   * [Charts](./#charts)
   * [Usage](./#usage)
 * [Snapshot](./#snapshot)
-  * [Server processes snapshots](./#server-processes-snapshots)
+  * [Server process snapshots](./#server-process-snapshots)
   * [Process list](./#process-list)
   * [Database queries (cPanel only)](./#database-queries-cpanel-only)
   * [HTTP queries](./#http-queries)
@@ -1548,32 +1558,36 @@ As a result, <span class="notranslate">CloudLinux Manager</span> will automatica
   * [Migrate application](./#migrate-application)
 * [Node.js Selector client plugin](./#node-js-selector-client-plugin)
   * [How to manage application](./#how-to-manage-application)
-  * [Start application](./#start-application-2)
-  * [Stop application](./#stop-application-2)
-  * [Restart application](./#restart-application-2)
-  * [Remove application](./#remove-application-2)
-  * [Edit application](./#edit-application-2)
+  * [Create application](./#create-application-1)
+  * [Start application](./#start-application-1)
+  * [Stop application](./#stop-application-1)
+  * [Restart application](./#restart-application-1)
+  * [Remove application](./#remove-application-1)
+  * [Edit application](./#edit-application-1)
 * [Ruby Selector client plugin](./#ruby-selector-client-plugin)
 * [PHP Selector client plugin](./#php-selector-client-plugin)
   * [PHP Selector. My Domains tab (cPanel)](./#php-selector-my-domains-tab) <sup>CloudLinux Manager 6.0.1-2</sup>
 * [CloudLinux Manager options](./#cloudlinux-manager-options)
   * [Changing settings manually](./#changing-settings-manually)
-  * [Changing settings in the config file](./#changing-settings-in-the-config-file)
+  * [Changing settings from the command line](./#changing-settings-from-the-command-line)
 
 ### Resource Usage client plugin
 
 Client resource usage plugin for cPanel, Plesk, and DirectAdmin allows host’s end users to view and monitor resource usage.
 
 
-Go to your control panel and click _CPU and concurrent connection usage_.
+Go to your control panel and click _Resource Usage_.
 
 ![cPanel Metrics grid; CPU and Concurrent Connection Usage tile outlined in red.](/images/cloudlinuxos/lve_manager/client_resource_usage.webp)
 
-Here you can see three tabs:
+Here you can see four tabs:
 
 * **<span class="notranslate">Dashboard</span>**: displays the general condition of your site. If your site is limited, this displays on the Dashboard.
 * **<span class="notranslate">Current usage</span>**: here you can find full information on the resource usage displayed in charts and tables.
 * **<span class="notranslate">Snapshot</span>**: server snapshots with processes list and database and HTTP queries.
+* **<span class="notranslate">Options</span>**: [email notifications](./#turning-on-off-email-notifications-per-user) about hitting LVE limits.
+
+Without LVE support, only the <span class="notranslate">Current usage</span> tab is available.
 
 ![Resource usage Dashboard tab: site limited in 24h for CPU; DETAILS button.](/images/cloudlinuxos/lve_manager/RU-dashboard.webp)
 
@@ -1594,7 +1608,7 @@ Go to the <span class="notranslate">_Current Usage_</span> tab to see the detail
 ![Resource usage Current usage: inodes summary, timeframe controls, charts, hourly usage table with pagination.](/images/cloudlinuxos/lve_manager/RU-current-usage.webp)
 
 :::tip Note
-It's possible to add the <span class="notranslate">`normalized_user_cpu = N`</span> value to the <span class="notranslate">`/etc/sysconfig/cloudlinux`</span> file. So you can see for example CPU Usage X/200 (%) in the scenario where a user's LVE CPU limit is 200%. If the value is equal to `Y`, CPU Usage cannot get greater than 100%.
+By default (<span class="notranslate">`normalized_user_cpu = Y`</span> in <span class="notranslate">`/etc/sysconfig/cloudlinux`</span>), end-user CPU charts and the cPanel statistics bar show CPU relative to the user's limit: 100% represents the user's CPU limit (in charts, the highest limit in the displayed period). Set <span class="notranslate">`normalized_user_cpu = N`</span> to make 100% represent one full core, so that you can see, for example, CPU Usage X/200 (%) where a user's LVE CPU limit is 200%. This setting does not change the Current Usage and Usage tables.
 :::
 
 
@@ -1603,7 +1617,7 @@ It's possible to add the <span class="notranslate">`normalized_user_cpu = N`</sp
 The <span class="notranslate">_Current Usage_</span> table displays resource usage.
 
 :::warning Warning
-**<span class="notranslate">Inodes</span>** usage is displayed if it is enabled and **<span class="notranslate">Inodes</span>** limits are set for the user. cPanel only.
+**<span class="notranslate">Inodes</span>** usage is displayed if the administrator has enabled <span class="notranslate">_Show end-user inode usage_</span> in <span class="notranslate">_Options_</span> and a hard inode limit applies to the user.
 :::
 
 ![Current usage table: Description, Usage, Limit, Fault for SPEED, I/O, IOPS, NPROC, EP, PMEM, Inodes.](/images/cloudlinuxos/lve_manager/RU-current-usage-table.webp)
@@ -1611,7 +1625,7 @@ The <span class="notranslate">_Current Usage_</span> table displays resource usa
 * **<span class="notranslate">Description</span>**: resource name
 * **<span class="notranslate">Usage</span>**: resource usage value
 * **<span class="notranslate">Limit</span>**: resource usage limit
-* **<span class="notranslate">Fault</span>**: number of faults
+* **<span class="notranslate">Fault</span>**: current measurements do not include fault counts. Faults for the selected period are shown in the [Charts](./#charts) and the [Usage](./#usage) table.
 
 #### Filters
 
@@ -1639,6 +1653,8 @@ All charts have the color legend:
 You can also see the Faults chart with all faults for all resources.
 
 ![Faults chart: CPU fault spike; legend for IOPSf, EPf, PMemF, NprocF, CPUf, IOf, VMemf.](/images/cloudlinuxos/lve_manager/RU-faults-chart.webp)
+
+Click <span class="notranslate">_View details_</span> to enlarge a chart. Use <span class="notranslate">_Display_</span> to switch between <span class="notranslate">_Lines_</span> and <span class="notranslate">_Bars_</span>. Select <span class="notranslate">_Old mode_</span> for the previous charts, which do not follow the selected Time Unit.
 
 #### Usage
 
@@ -1743,6 +1759,8 @@ Python Selector icon in end user interface is hidden when Python is disabled
 End User interface allows end users to setup and manage Python for their web applications.
 
 Go to <span class="notranslate">cPanel → Software Section → Setup Python App</span>.
+
+In DirectAdmin, open <span class="notranslate">Setup Python App</span>. This plugin is not available in Plesk.
  
 Web Applications page is displayed.
 
@@ -1774,7 +1792,7 @@ Do not use "python37", "python38", "python311" (i.e. **"python{version number}"*
     * <span class="notranslate">Application URL</span> —  HTTP/HTTPS link to your application (optional);
     * <span class="notranslate">Application startup file</span> — the file where WSGI callable object is located. It is required for application to run. Default is <span class="notranslate">`passenger_wsgi.py`</span>;
     * Application Entry point — WSGI callable object for your application (optional). Default is <span class="notranslate">`application`</span>;
-    * <span class="notranslate">Passenger log file</span> — starting from CloudLinux Manager 5.1.0-2 you can set paths to Passenger logs for Python applications via UI (or using [cloudlinux-selector utility](/command-line_tools/#new-python-selector)).
+    * <span class="notranslate">Passenger log file</span> — starting from CloudLinux Manager 5.1.0-2 you can set paths to Passenger logs for Python applications via UI (or using [cloudlinux-selector utility](/cloudlinuxos/command-line_tools/#python-selector)). The field is not displayed when LiteSpeed is running.
 3. Optionally, add environment variable. To do so, click <span class="notranslate">_Add Variable_</span> and specify variable name and value, then click the <span class="notranslate">_Done_</span> or <span class="notranslate">_Cancel_</span> to close an adding form.
 
 To delete or edit environment variable, click <span class="notranslate">_Bin_</span> or <span class="notranslate">_Pencil_</span> for the required variable.
@@ -1832,18 +1850,19 @@ The following actions are available:
 * Open Application URL — click the <span class="notranslate">_Open_</span>.
 * Change Application startup file — specify as <span class="notranslate">`NAME.py`</span> file.
 * Change Application Entry point — specify WSGI callable object for your application.
-* Passenger log file — starting from CloudLinux Manager 5.1.0-2 you can set paths to Passenger logs for Python applications via UI (or using [cloudlinux-selector](/cloudlinuxos/command-line_tools/#new-python-selector) utility).
+* Passenger log file — starting from CloudLinux Manager 5.1.0-2 you can set paths to Passenger logs for Python applications via UI (or using [cloudlinux-selector](/cloudlinuxos/command-line_tools/#python-selector) utility). The field is not displayed when LiteSpeed is running.
 * Run pip install command — click <span class="notranslate">_Run pip install_</span> to install the package(s) described in the configuration file.
+* Execute a Python script — in <span class="notranslate">_Execute python script_</span>, enter the path to the script and its arguments, for example <span class="notranslate">`/path/to/manage.py migrate`</span>, then click <span class="notranslate">_Run Script_</span>. Only Python scripts are allowed. The output is shown below the field.
 * Add Configuration files — click <span class="notranslate">_Add_</span> and specify all required information.
 * Edit available configuration file — click <span class="notranslate">_Edit_</span>, the file opens in a new popup.
-* Remove available configuration file from the list — click <span class="notranslate">_Remove_</span> and confirm the action or click <span class="notranslate">_Cancel_</span> to close the popup.
+* Remove available configuration file from the list — click <span class="notranslate">_Delete_</span> and confirm the action or click <span class="notranslate">_Cancel_</span> to close the popup.
 * Add Environment variables — click <span class="notranslate">_Add Variable_</span> and specify a name and a value.
   
 Click <span class="notranslate">_Save_</span> to save all changes or <span class="notranslate">_Cancel_</span> to close the tab.
 
 #### Migrate application
 
-For details see [How to migrate an application to the new Python Selector](/cloudlinuxos/cloudlinux_os_components/#how-to-migrate-an-application-to-the-new-python-selector)
+If an application was created in the legacy version of Python Selector, the <span class="notranslate">_Migrate_</span> icon is displayed in the <span class="notranslate">_Actions_</span> column of its row. Click it and then click <span class="notranslate">_Migrate_</span> in the confirmation popup. Alternatively, open the application, click the info icon next to the Python version, click <span class="notranslate">_Migrate now_</span>, and then click <span class="notranslate">_Migrate_</span> in the confirmation popup. The process can take up to 30 seconds and may cause downtime. Upon migration, you will get a confirmation.
 
 
 :::tip Note
@@ -1861,6 +1880,8 @@ You can also use [Python Selector CLI](/cloudlinuxos/command-line_tools/#end-use
 End User interface allows end users to setup and manage Node.js for their web applications.  
 Go to <span class="notranslate">_cPanel → Software Section → Setup Node.js App_</span>.
 
+In DirectAdmin, open <span class="notranslate">_Setup Node.js App_</span>. This plugin is not available in Plesk.
+
 <span class="notranslate">_Web Applications_</span> page is displayed.
 
 ![Node WEB APPLICATIONS table: URI, root, production mode, started status, action icon row.](/images/cloudlinuxos/lve_manager/nodejsusermain_zoom70.webp)
@@ -1873,6 +1894,10 @@ There are several columns in the list.
 * <span class="notranslate"> Actions </span> — allows to start, restart, stop, edit, and remove a particular application.
 
 #### How to manage application
+
+#### Create application
+
+Click <span class="notranslate">_Create application_</span>. Choose the Node.js version and <span class="notranslate">_Application mode_</span> (<span class="notranslate">_Production_</span> or <span class="notranslate">_Development_</span>; <span class="notranslate">_Development_</span> is preselected). Specify <span class="notranslate">_Application root_</span> (required), <span class="notranslate">_Application URL_</span> and <span class="notranslate">_Application startup file_</span>. Optionally set <span class="notranslate">_Passenger log file_</span> (the field is not shown when LiteSpeed is running) and add environment variables with <span class="notranslate">_Add variable_</span>. Click <span class="notranslate">_Create_</span>.
 
 #### Start application
 
@@ -1911,20 +1936,21 @@ To edit application do the following:
 
 The following actions are available:
 * Restart application — click <span class="notranslate"> _Restart_ </span> button.
-* Stop Node.js — click <span class="notranslate"> _Stop Node.js_ </span> button.
-* Run JavaScript script — click <span class="notranslate"> _Run JS Script_ </span> button to run a command specified in the <span class="notranslate"> Scripts </span> section of the <span class="notranslate"> package.json </span> file. Specify the name of the script to run plus any parameters then click <span class="notranslate"> Ok </span> .
-* Remove application — click <span class="notranslate"> _Delete_ </span> button and confirm the action in a pop-up.
+* Stop application — click <span class="notranslate"> _Stop app_ </span> button.
+* Run JavaScript script — click <span class="notranslate"> _Run JS script_ </span> button to run a command specified in the <span class="notranslate"> Scripts </span> section of the <span class="notranslate"> package.json </span> file. Specify the name of the script to run plus any parameters then click <span class="notranslate"> Ok </span> . The button appears only while the application is started and <span class="notranslate"> package.json </span> exists.
+* Remove application — click <span class="notranslate"> _Destroy_ </span> button and confirm the action in a pop-up.
 * Change Node.js version — choose Node.js version from a drop-down.
 * Change Application mode — choose application mode from a drop-down. Available modes are <span class="notranslate"> _Production_ </span> and <span class="notranslate"> _Development_ </span> .
 * Application root — specify in a field a physical address to the application on a server that corresponds with its URI.
 * Application URL — specify in a field an HTTP/HTTPS link to the application.
 * Application startup file — specify as <span class="notranslate"> NAME.js file </span>.
-* Passenger log file — starting from CloudLinux Manager 5.1.0-2 you can set paths to Passenger logs for Node.js applications via UI (or using [cloudlinux-selector](/cloudlinuxos/command-line_tools/#node-js-selector) utility).
-* Run <span class="notranslate"> npm install command </span> — click <span class="notranslate"> _Run npm install_ </span> button to install the package(s) described in the <span class="notranslate"> package.json </span> file.
+* Passenger log file — starting from CloudLinux Manager 5.1.0-2 you can set paths to Passenger logs for Node.js applications via UI (or using [cloudlinux-selector](/cloudlinuxos/command-line_tools/#node-js-selector) utility). The field is not displayed when LiteSpeed is running.
+* Run <span class="notranslate"> npm install command </span> — click <span class="notranslate"> _Run NPM Install_ </span> button to install the package(s) described in the <span class="notranslate"> package.json </span> file. The button is disabled until <span class="notranslate"> package.json </span> exists in the application root.
+* Edit a configuration file — click <span class="notranslate"> _Edit_ </span> next to the file name, for example <span class="notranslate"> package.json </span>.
 * Add Environment variables — click <span class="notranslate"> _Add Variable_ </span> and specify a name and a value.
 
 :::tip Note
-You can also use [Node.js Selector CLI](/cloudlinuxos/command-line_tools/#end-user-2)
+You can also use [Node.js Selector CLI](/cloudlinuxos/command-line_tools/#end-user-1)
 :::
 
 ### Ruby Selector client plugin
@@ -1950,6 +1976,8 @@ End user interface allows end users to select and manage PHP extensions and opti
 
 Go to <span class="notranslate">_cPanel → Software Section → Select PHP Version_</span>.
 
+In DirectAdmin, open <span class="notranslate">_Select PHP version_</span>. In Plesk, use the <span class="notranslate">_PHP Selector_</span> button on the domain page. CloudLinux OS Solo does not show this button in Plesk.
+
 ![cPanel SOFTWARE grid; Select PHP Version gauge icon highlighted red.](/images/cloudlinuxos/lve_manager/PHPSelectorClientPlugin.webp)
 
 PHP Extensions page opens.
@@ -1958,7 +1986,7 @@ PHP Extensions page opens.
 
 Here you can choose extensions for the particular PHP version, the current PHP version and reset to default.
 
-To manage PHP options, click <span class="notranslate">_Switch to PHP options_</span>.
+To manage PHP options, open the <span class="notranslate">_Options_</span> sub-tab.
 
 ![PHP Selector Options for 7.3: memory_limit dropdown open; Switch to PHP extensions button.](/images/cloudlinuxos/lve_manager/php_selector_options.webp)
 
@@ -2003,49 +2031,46 @@ If `php-fpm` is enabled for a domain the only administrator can set it to <span 
 
 ### CloudLinux Manager options
 
-You can change CloudLinux Manager settings for a server manually via cPanel/WHM or, if you have many servers, you can change CloudLinux Manager settings for them in the config file.
+You can change CloudLinux Manager settings for a server manually via cPanel/WHM or, if you have many servers, from the command line.
 
 ####  Changing settings manually
 
-* Log in to cPanel, go to WHM, choose CloudLinux OS and click <span class="notranslate">_Options_</span>.
+* Log in to WHM, choose CloudLinux Manager and click <span class="notranslate">_Options_</span>.
 * Change settings.
 
-#### Changing settings in the config file
+#### Changing settings from the command line
 
-You can modify the following options in the config file <span class="notranslate">`/var/cpanel/cpanel.config`</span> directly for example via Puppet.
+To change the following options on many servers, for example via Puppet, use the [cloudlinux-config](/cloudlinuxos/command-line_tools/#cloudlinux-config) utility. It applies the changes to the user interface automatically, so no further command is needed.
 
 | | |
 |-|-|
-|<span class="notranslate">`lve_hideextensions`</span>| Hides (when =1) range of php extensions for user in <span class="notranslate"> Select PHP </span> version|
-|<span class="notranslate">`lve_hideuserstat  `</span>| Hides (when =1) LVE statistics in <span class="notranslate">cPanel Stats Bar (UI)</span>|
-|<span class="notranslate">`lve_showinodeusage`</span>| Displays (when =1) used inodes in cPanel (UI)|
-|<span class="notranslate">`lve_hide_selector`</span>| Turns off <span class="notranslate">UI PHP Selector</span> (Select <span class="notranslate">PHP Version</span> option)|
-|<span class="notranslate">`lve_enablerubyapp`</span>|Displays (when =1) Ruby Selector in user’s interface (UI)|
-
-
-:::warning Note
-It is not allowed to change <span class="notranslate">`lve_enablepythonapp`</span> option in the config file directly.
-:::
-
-You can use <span class="notranslate">`cloudlinux-selector`</span> utility to change <span class="notranslate">`lve_enablepythonapp`</span> option:
+|<span class="notranslate">`uiSettings`</span> / <span class="notranslate">`hidePHPextensions`</span>| Hides (when `true`) the list of PHP extensions for users in <span class="notranslate">Select PHP Version</span>|
+|<span class="notranslate">`uiSettings`</span> / <span class="notranslate">`hideLVEUserStat`</span>| Hides (when `true`) the <span class="notranslate">Resource Usage</span> plugin and LVE statistics in the <span class="notranslate">cPanel Stats Bar</span>|
+|<span class="notranslate">`inodeLimits`</span> / <span class="notranslate">`showUserInodesUsage`</span>| Displays (when `true`) used inodes to users|
+|<span class="notranslate">`uiSettings`</span> / <span class="notranslate">`hideRubyApp`</span>| Hides (when `true`) Ruby Selector in the user interface|
+|<span class="notranslate">`uiSettings`</span> / <span class="notranslate">`hideXrayApp`</span>| Hides (when `true`) X-Ray in the user interface|
 
 <div class="notranslate">
 
 ```
+cloudlinux-config set --json --data '{"options":{"uiSettings":{"hideRubyApp":false}}}'
+```
+</div>
+
+Editing the <span class="notranslate">`lve_*`</span> options in <span class="notranslate">`/var/cpanel/cpanel.config`</span> no longer changes these settings.
+
+To turn PHP Selector, Python Selector or Node.js Selector on or off, use the <span class="notranslate">`cloudlinux-selector`</span> utility:
+
+<div class="notranslate">
+
+```
+cloudlinux-selector set --json --interpreter=php --selector-status=disabled
 cloudlinux-selector set --json --interpreter=python --selector-status=enabled
+cloudlinux-selector set --json --interpreter=nodejs --selector-status=enabled
 ```
 </div>
 
-Or you can change it via <span class="notranslate">WHM -> CloudLinux Manager -> Options -> Python Selector -> Python</span>
-
-After modifying the config files directly, you should execute the following command to apply changes:
-
-<div class="notranslate">
-
-```
-/usr/share/l.v.e-manager/utils/dynamicui.py --sync-conf=all
-```
-</div>
+Or you can change Python Selector via <span class="notranslate">WHM -> CloudLinux Manager -> Options -> Python Selector -> Python</span>
 
 
 ## cPanel LVE Extension
@@ -2088,6 +2113,10 @@ Your changes to <span class="notranslate">_LVE Settings_</span> will appear in t
 |<span class="notranslate"> Nproc Settings </span> | Maximum number of processes usage for an account. Must be a positive number. Type <span class="notranslate">`DEFAULT`</span> to use default value. Type `0` for unlimited resource.|
 |<span class="notranslate"> IO Settings </span> | Maximum <span class="notranslate">I/O (input/output)</span> usage speed for an account. Is measured in <span class="notranslate">`Kb/s`</span>. Must be a positive number. Type <span class="notranslate">`DEFAULT`</span> to use default value. Type `0` for unlimited resource.|
 |<span class="notranslate"> IOPS Settings </span> | Maximum <span class="notranslate">`IOPS`</span> (input/output operations per second) usage for an account. Must be a positive number. Type <span class="notranslate">`DEFAULT`</span> to use default value. Type `0` to unlimited resource.|
+|<span class="notranslate">INODES soft limit</span> | Soft limit on the number of inodes for an account. Must be a number. Type <span class="notranslate">`DEFAULT`</span> to use default value.|
+|<span class="notranslate">INODES hard limit</span> | Hard limit on the number of inodes for an account. Must be a number. Type <span class="notranslate">`DEFAULT`</span> to use default value.|
+|<span class="notranslate">MySQL CPU limit</span> | [MySQL Governor](./#mysql-governor-package-limits) CPU limit for an account. Must be a number, optionally followed by `%`. Type <span class="notranslate">`DEFAULT`</span> to use default value.|
+|<span class="notranslate">MySQL IO limit</span> | [MySQL Governor](./#mysql-governor-package-limits) I/O limit for an account. Must be a number. Type <span class="notranslate">`DEFAULT`</span> to use default value.|
 
 ![WHM Add a Package: LVE Settings fields Speed, Memory, EP, NPROC, IO, IOPS filled; Add.](/images/cloudlinuxos/lve_manager/lve-extension_03.webp) 
 
@@ -2105,7 +2134,7 @@ To edit package extensions, go to <span class="notranslate"> _Packages_</span> |
 
 <span class="notranslate">**CloudLinux Manager**</span>
 
-To edit package extensions, go to <span class="notranslate">CloudLinux Manager</span> | <span class="notranslate">Server Configuration</span> | <span class="notranslate"> CloudLinux OS CloudLinux Manager</span> | <span class="notranslate"> Packages</span> and click pencil (edit) icon.
+To edit package extensions, go to <span class="notranslate">WHM</span> | <span class="notranslate">CloudLinux Manager</span> | <span class="notranslate">Packages</span> and click pencil (edit) icon.
 
 ![WHM LVE Manager Packages tab: limits table; pencil edit on cltest_package row circled.](/images/cloudlinuxos/lve_manager/lve-extension_05.webp)
 

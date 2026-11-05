@@ -744,6 +744,7 @@ Since CloudLinux Manager version 7.11.0-1 added support of Resource Usage client
 :::tip Note:
 Because the CloudLinux OS Solo does not support LVE, customer can only see the Inodes usage.
 Follow this documentation to [setup Inodes limits](https://docs.cloudlinux.com/cloudlinuxos/limits/#inodes)
+On Plesk, CloudLinux OS Solo does not show the Resource Usage button. The plugin is available in cPanel and DirectAdmin.
 :::
 
 ![Resource usage dashboard Current usage table one Inodes usage row with numeric usage and limit columns](/images/user-docs/user-docs-solo-cloudlinux/ResourceUsageWithoutLVE.webp)
