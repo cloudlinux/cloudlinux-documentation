@@ -93,7 +93,7 @@ This stage may take **up to an hour**, so schedule the upgrade accordingly.
 
 During the preparation stages - that is, when the upgrade process is first *initiated* and before the system is rebooted - the system's services will function normally.
 
-Note that different upgrade scenarios behave somewhat differently during the preparation stage. For example, the cPanel scenario will disable the site functionality from the inital stage up until completion, while the no-panel/custom panel scenario will not.
+Note that different upgrade scenarios behave somewhat differently during the preparation stage. For example, the cPanel scenario will disable the site functionality from the initial stage up until completion, while the no-panel/custom panel scenario will not.
 
 
 ### How long does it take?
@@ -225,7 +225,7 @@ Make sure your system is running the latest kernel before proceeding with the up
 
 #### Kernel modules deprecated
 
-Some kernel modules are deprecated in the CloudLinux 8 major versions. To proceed with the upgade, unload them.
+Some kernel modules are deprecated in the CloudLinux 8 major versions. To proceed with the upgrade, unload them.
 Leapp will advise on the list of modules to be removed.
 
 ```
@@ -243,7 +243,7 @@ Inhibitor: A YUM/DNF repository defined multiple times
 
 Refer to the `/var/log/leapp/leapp-report.txt` for the details on the repository in question.
 
-To correct the issue, examine your yum reposiory configuration and clear out any dupicate entries before restarting the upgrade process.
+To correct the issue, examine your yum repository configuration and clear out any duplicate entries before restarting the upgrade process.
 
 
 #### Package upgrades being pulled from incorrect repositories
@@ -482,7 +482,7 @@ If you'd like to add the configuration data for new repositories and packages to
 
 #### Modified or custom package repositories
 
-CloudLinux Elevate is intended for use with the default CloudLinux repositories. If you have custom/local repositories providing CloudLinux packages, or have disalbed CLN communication, you most likely won't be able to complete the upgrade process.
+CloudLinux Elevate is intended for use with the default CloudLinux repositories. If you have custom/local repositories providing CloudLinux packages, or have disabled CLN communication, you most likely won't be able to complete the upgrade process.
 
 If you encounter problems in this scenario:
 * Before restarting the upgrade, restore the stock configuration of repositories.
@@ -611,7 +611,7 @@ sudo yum install https://repo.cloudlinux.com/elevate/elevate-release-latest-el$(
 :::tip Note
 In some cases, e.g. when directed by support, you may want to make use of the beta CloudLinux Leapp packages when running the upgrade.
 
-To do so, enable the `cloudlinux-elevate-updates-testing` repository, brought by the `elevate-release` package, before installing the leapp packages.
+To do so, set `enabled=1` in the `[cloudlinux-elevate-updates-testing]` section of `/etc/yum.repos.d/cloudlinux-elevate.repo`, installed by the `elevate-release` package, before installing the leapp packages. This repository is disabled by default.
 :::
 
 :::tip
@@ -833,7 +833,7 @@ Start the upgrade by running the following command:
 `/scripts/elevate-cpanel --start`
 
 :::tip Note
-By default, the system will be automatically restarted during the upgrade process when nessesary. You can make the process require manual reboots by adding the switch `--manual-reboots`.
+By default, the system will be automatically restarted during the upgrade process when necessary. You can make the process require manual reboots by adding the switch `--manual-reboots`.
 
 Make sure you know what you're doing when using this switch, as you *must* manually reboot the server between the upgrade phases when using it - otherwise the process will remain incomplete and your system in a half-functional state.
 
