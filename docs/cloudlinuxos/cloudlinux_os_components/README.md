@@ -3352,7 +3352,7 @@ More details of the governor operation modes are described in the [Modes of oper
 |<span class="notranslate"> READ </span> | bytes | bytes read. Cached reads are not counted, only those that were actually read from disk will be counted|
 |<span class="notranslate"> WRITE </span> | bytes | bytes written. Cached writes are not counted, only once data is written to disk, it is counted|
 
-You can set different limits for different periods: current, short, med, long. By default those periods are defined as 1 second, 5 seconds, 1 minute and 5 minutes. They can be re-defined using [configuration file](./#configuration-and-operation). The idea is to use larger acceptable values for shorter periods. Like you could allow a customer to use two cores (200%) for one second, but only 1 core (on average) for 1 minute, and only 70% within 5 minutes. That would make sure that customer can burst for short periods of time.
+You can set different limits for different periods: current, short, mid, long. By default those periods are defined as 1 second, 15 seconds, 1 minute and 5 minutes. They can be re-defined using [configuration file](./#configuration-and-operation). The idea is to use larger acceptable values for shorter periods. Like you could allow a customer to use two cores (200%) for one second, but only 1 core (on average) for 1 minute, and only 70% within 5 minutes. That would make sure that customer can burst for short periods of time.
 
 Customers will also be limited to a finite number of concurrent connections, this number is 30 by default and can be changed. This is done so they wouldn't use up all the MySQL connections to the server. <span class="notranslate"> MySQL Governor </span> can also kill off slow <span class="notranslate"> SELECT </span> queries.
 
@@ -3366,7 +3366,7 @@ Before any SQL request, MySQL Governor determines which user sent the request an
 
 This is how common server resources can be managed.
 
-#### Why the СPU/IO charts are different for database and LVE usage?
+#### Why the CPU/IO charts are different for database and LVE usage?
 
 SQL requests are not limited inside LVE, so there are not any calculations for IO usage there. It can be clearly viewed via the lve-stats charts:
 
@@ -3632,7 +3632,7 @@ Example configuration:
 <!--  'all' - user's queries always run inside LVE for that user -->
 <!--  'single' - single LVE=3 for all abusers. -->
 <!-- 'on' - deprecated (old restriction type) -->
-<!-- To change resource usage of restricted user in LVE mode use command /usr/sbin/lvectl set 3 --cpu=<new value> --ncpu=<new value> --io=<new value> --save-all-parameters -->
+<!-- To change resource usage of restricted user in LVE mode use command /usr/sbin/lvectl set 3 --speed=<new value>% --io=<new value> --save-all-parameters -->
 <lve use="on|single|off|abusers|all"/>
 
 <!-- connection information -->
@@ -3643,16 +3643,16 @@ Example configuration:
 <connector host="..." login="..." password=".." prefix_separator="_"/>
 
 <!-- Intervals define historical intervals for burstable limits. In seconds -->
-<intervals short="5" mid="60" long="300"/>
+<intervals short="15" mid="60" long="300"/>
 
 <!-- log all errors/debug info into this log -->
-<log file=”/var/log/dbgovernor-error.log” mode=”DEBUG|ERROR”/>
+<log file="/var/log/dbgovernor-error.log" mode="DEBUG|ERROR"/>
 
 <!-- s -- seconds, m -- minutes, h -- hours, d -- days -->
 <!-- on restart, restrict will disappear -->
 <!-- log file will contain information about all restrictions that were take -->
 <!-- timeout - penalty period when user not restricted, but if he hit his limit during this period he will be restricted with higher level of restrict (for more long time) -->
-<!- level1, level2, level3, level4 - period of restriction user for different level of restriction. During this period all user's requests will be placed into LVE container -->
+<!-- level1, level2, level3, level4 - period of restriction user for different level of restriction. During this period all user's requests will be placed into LVE container -->
 
 <!-- if user hits any of the limits during period of time specified in timeout, higher level of restrict will be used to restrict user. If user was already on level4, level4 will be applied again -->
 <!-- attribute format set an restrict log format:
@@ -3687,9 +3687,8 @@ user_max_connections="30"/>
 <limit name="cpu" current="150" short="100" mid="90" long="65"/>
 <limit name="read" current="100000000" short="90000000" mid="80000000" long="70000000"/>
 <limit name="write" current="100000000" short="90000000" mid="80000000" long="70000000"/>
-<!-- Time to kill slow SELECT queries for account, can be different for accounts in seconds(but unit can be specified) -->
+<!-- Time in seconds to kill slow SELECT queries for account, can be different for accounts. Specify a plain number: time units are not supported -->
 <!-- enabled only when slow_queries run="on" -->
-<!-- s -- seconds, m -- minutes, h -- hours, d -- days -->
 <!-- Requests are checked at 15 second intervals, so a request will be canceled after a timeout + 15 seconds maximum -->
 <limit name="slow" current="30"/>
 </default>
@@ -3748,7 +3747,7 @@ If the `dbuser-map` file is absent on the server, the `abusers` mode emulates th
 
 With the `single` and `abusers` mode, once user is restricted, the queries for that user will be limited as long as user is using more than limits specified. After a minute that user is using less, we will unrestricted that user.
 
-You can specify modes of operation using [dbctl](/cloudlinuxos/command-line_tools/#dbctl) or by changing [configuration file](./#configuration-3).
+You can specify modes of operation using [dbctl](/cloudlinuxos/command-line_tools/#dbctl) or by changing [configuration file](./#configuration-2).
 
 #### MySQL Governor limits
 
@@ -3766,7 +3765,7 @@ Here they are:
 * absolute values of the LVE limits
 
 
-MySQL Governor allows setting the burstable limits for accounts. To provide that possibility, four levels of limits are defined: `current`, `short`, `middle`, and `long`. Correctly set limits can give users more CPU without having a bottleneck on MySQL.
+MySQL Governor allows setting the burstable limits for accounts. To provide that possibility, four levels of limits are defined: `current`, `short`, `mid`, and `long`. Correctly set limits can give users more CPU without having a bottleneck on MySQL.
 
 **General principles of choosing the limits**:
 
@@ -3774,7 +3773,7 @@ MySQL Governor allows setting the burstable limits for accounts. To provide that
 * setting the `current` and `short` limits more than the LVE limit prevents bottlenecks in SQL request processing
 * `middle` limit can be more or less that the LVE limit
 * `long` on the contrary, should not be more than the LVE limit
-* setting the `middle` and `long` limits less than the LVE limit prevents abuse of other processes in the account (Apache, PHP) by MySQL
+* setting the `mid` and `long` limits less than the LVE limit prevents abuse of other processes in the account (Apache, PHP) by MySQL
 
 **Coefficients for calculating limits**
 
@@ -3784,18 +3783,18 @@ MySQL Governor limits should be calculated based on the corresponding LVE limits
 
 | Limit level | Formula | Description |
 |---|---|---|
-| `current` | `LVE_CPUSPEED × 1` | Slightly above the LVE CPU limit to avoid bottlenecks |
+| `current` | `LVE_CPUSPEED × 1` | Equal to the LVE CPU limit, to avoid bottlenecks |
 | `short` | `LVE_CPUSPEED × 0.95` | Short-term burst allowance |
-| `middle` | `LVE_CPUSPEED × 0.87` | Medium-term average |
+| `mid` | `LVE_CPUSPEED × 0.87` | Medium-term average |
 | `long` | `LVE_CPUSPEED × 0.75` | Long-term sustained maximum |
 
 *IO limits:*
 
 | Limit level | Formula | Description |
 |---|---|---|
-| `current` | `LVE_IO × 1` | Slightly above the LVE IO limit |
+| `current` | `LVE_IO × 1` | Equal to the LVE IO limit |
 | `short` | `LVE_IO × 0.83` | Short-term burst allowance |
-| `middle` | `LVE_IO × 0.76` | Medium-term average |
+| `mid` | `LVE_IO × 0.76` | Medium-term average |
 | `long` | `LVE_IO × 0.59` | Long-term sustained maximum |
 
 **How IO limits are calculated**
@@ -3812,7 +3811,7 @@ In the MySQL Governor configuration (`/etc/container/mysql-governor.xml`), the `
 * If you face spike CPU consumption with these limits, it is recommended to reduce the excess of the `current` and `short` limits over the LVE limit. For example, to the values 150/110/100/90.
 * If the average level of CPU consumption is too high, then it is recommended to reduce the `middle` and `long` limits, too. For example, to the values 150/100/80/50.
 * Then MySQL processes will fall into LVE and be limited by LVE limits more often.
-* The same clues are applicable to the IO limits – the `current` and `short` IO limits for MySQL Governor can exceed IO LVE limits, but the `middle` and `long` cannot.
+* The same clues are applicable to the IO limits – the `current` and `short` IO limits for MySQL Governor can exceed IO LVE limits, but the `mid` and `long` cannot.
 
 **Configuration example**
 
@@ -3997,7 +3996,7 @@ To install beta version of MySQL:
 |mariadb101 | MariaDB v10.1|
 |mariadb102 | MariaDB v 10.2|
 |mariadb103 | MariaDB v 10.3 [requires <span class="notranslate"> MySQL Governor 1.2-36+; for cPanel - MySQL Governor 1.2-41+ </span> ]|
-|mariadb104 | MariaDB v 10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+]||
+|mariadb104 | MariaDB v 10.4 [requires <span class="notranslate">MySQL Governor</span> 1.2-53+]|
 |mariadb105 | MariaDB v 10.5 [requires <span class="notranslate">MySQL Governor</span> 1.2-62+]|
 |mariadb106 | MariaDB v 10.6 [requires <span class="notranslate">MySQL Governor</span> 1.2-76+]|
 |mariadb1011 | MariaDB v 10.11 [requires <span class="notranslate">MySQL Governor</span> 1.2-103+]|
@@ -4057,7 +4056,7 @@ whmapi1 configureservice service=mysql enabled=1 monitored=0
 ```
 </div>
 
-The following script could be used before installing MySQL-governor and MySQL/MariaDB packages to create the backup:
+After you install the `governor-mysql` package, and before you run `mysqlgovernor.py --install`, the following script could be used to create the backup:
 <div class="notranslate">
 
 ```
@@ -4097,7 +4096,7 @@ dbctl --lve-improved-accuracy off
 
 The calculation of CPU usage has become more accurate, so the `dbtop` utility provides more correct information to the MySQL Governor and it places user’s requests to the LVE in a proper moment. And as a result, such improvements reduce the possibility of absorbing whole server resources by one user.
 
-One mpre possible outcome of calculation improvements is that some server users will become in need of MySQL Governor limits reconfiguration.
+One more possible outcome of calculation improvements is that some server users will become in need of MySQL Governor limits reconfiguration.
 
 #### How to view the impact of improvements?
 
@@ -4111,7 +4110,7 @@ In this case, CPU usage by database could be less than LVE average CPU usage (bl
 
 **The new type of  CPU usage calculation is turned on**.
 
-In this case, CPU usage by database become more similar to LVE average CPU usage (blue chart and green chart on the sceen):
+In this case, CPU usage by database become more similar to LVE average CPU usage (blue chart and green chart on the screen):
 
 ![CPU Usage chart: green average and blue database lines track together near 100% below limit](/images/cloudlinuxos/cloudlinux_os_components/NewTurnedOn.webp)
 
@@ -4125,7 +4124,7 @@ Before any SQL request, MySQL Governor determines which user sent the request an
 
 This is how common server resources can be managed.
 
-#### Why the СPU/IO charts are different for database and LVE usage?
+#### Why the CPU/IO charts are different for database and LVE usage?
 
 SQL requests are not limited inside LVE, so there are not any calculations for IO usage there. It can be clearly viewed via the lve-stats charts:
 
@@ -4139,7 +4138,7 @@ This is the user’s real IO Database usage which was calculated by MySQL Govern
 
 This is the user’s IO Database usage which was calculated by lve-stats.
 
-Also for different types of database load (for example in case, there is a huge amount of shot requests), CPU usage charts for LVE and database can be different.
+Also for different types of database load (for example in case, there is a huge amount of short requests), CPU usage charts for LVE and database can be different.
 
 Take a look on this chart:
 
@@ -4193,7 +4192,7 @@ touch /etc/systemd/system/mariadb.service.d/limits.conf
 ```
 </div>
 
-3. Add the following content to the the file <span class="notranslate"> `/etc/systemd/system/mariadb.service.d/limits.conf` </span> :
+3. Add the following content to the file <span class="notranslate"> `/etc/systemd/system/mariadb.service.d/limits.conf` </span> :
 
 <div class="notranslate">
 
