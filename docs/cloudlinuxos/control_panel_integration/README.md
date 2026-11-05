@@ -16,7 +16,7 @@
 * [CloudLinux OS LVE and CageFS patches](./#cloudlinux-os-lve-and-cagefs-patches)
 * [Hardened PHP](./#hardened-php)
 * [CloudLinux OS kernel set-up](./#cloudlinux-os-kernel-set-up)
-* [How to integrate X-Ray and AccelerateWP with a conrol panel](./#how-to-integrate-x-ray-and-acceleratewp-with-a-control-panel)
+* [How to integrate X-Ray and AccelerateWP with a control panel](./#how-to-integrate-x-ray-and-acceleratewp-with-a-control-panel)
 
 :::tip Note
 We encourage you to create a pull request with your feedback at the bottom of the page.
