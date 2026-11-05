@@ -111,32 +111,18 @@ not logged-in, a common site cache will be used, otherwise each logged-in userâ€
 
 ### File Optimization
 
-File Optimization consists of Minification and file Combining.
+File Optimization consists of Minification and, for JavaScript, file Combining.
 
 Minification is the process of minimizing code in your web pages and script files. Webmasters look at minification as a
 primary method of reducing website load times via the bandwidth they use.
 
-Minification also reduces JS, CSS and HTML files. The goal is removing comments and extra spaces. It crunches variables
+Minification also reduces JS and CSS files. The goal is removing comments and extra spaces. It crunches variables
 that minimize code and ultimately reduces the file size.
 
 After minification, the file still functions as it should. The difference is a reduction in bandwidth due to network
 requests.
 
-**By combining CSS & JS files, HTTP/1 does not allow multiple requests from the same TCP connection between a host
-server and a web browser.**
-
-Putting CSS and JS files into their respective groups, makes requests for downloads from a browser safe and more
-efficient. The old way meant multiple connections that took up bandwidth.
-
-**File (CSS & JS) combining is not necessary for HTTP/2 (see https://webspeedtools.com/should-i-combine-css-js/)**
-
-HTTP/2 introduced multiplexing. Now, the browser can send unlimited number of requests to the server, then download all
-files simultaneously with only one TCP connection.
-
-Consequently, HTTP/2 takes care of multiple TCP connections and the waiting time before each download. In one sense,
-consolidating CSS and JS files might be unnecessary.
-
-To verify which HTTP version is used for requests on your site, you can use https://tools.keycdn.com/http2-test
+Combining JavaScript files merges internal, external and inline scripts to reduce the number of HTTP requests.
 
 ### CSS Files
 
@@ -144,27 +130,21 @@ To verify which HTTP version is used for requests on your site, you can use http
 
 Minify CSS reduces file sizes by taking out white space and comments embedded in the code.
 
-**Combine CSS**
-
-Combine CSS reduces HTTP requests by merging all your files into one. Combine CSS is not recommended if your site uses
-HTTP/2.
-
 **Excluded CSS Files**
 
-To single out those CSS files that should not be minimized, list the URLs attached to the CSS files that should be
-excluded from minification and concatenation (one per line).
+To single out those CSS files that should not be minimized, list the URLs of the CSS files that should be excluded from minification (one per line).
 
 :::warning Caution!
-Minification removes the domain from the URL.
+For internal files, the domain part of the URL is stripped automatically.
 :::
 
-To prevent that, use (. *).CSS wildcards to exclude all files in a specific location.
+Use `(.*).css` wildcards to exclude all CSS files located at a specific path, for example `/wp-content/plugins/some-plugin/(.*).css`.
 
 3rd Party: when excluding external CSS files, use the domain or the full URL path.
 
 **Aggressive mobile CSS optimization**
 
-Reduces CSS exclusions on mobile, keeping only critical ones (`admin-bar`, `dashicons`, `wp-admin`). This option is a child of "Optimize CSS delivery" and requires "Separate cache files for mobile devices" to be enabled.
+Reduces CSS exclusions on mobile, keeping only critical ones (`admin-bar`, `dashicons`, `wp-admin`). This option is a child of "Optimize CSS delivery" and requires "[Separate cache files for mobile devices](#mobile-caching)" to be enabled.
 
 ![AccelerateWP File Optimization CSS area with Optimize CSS delivery and Aggressive mobile CSS optimization checked; red arrow.](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPAgressiveMobileCssOptimizationOption.webp)
 
@@ -178,9 +158,17 @@ Default: OFF. Aggressive CSS optimization may break styling on some sites. Each 
 
 Minify JavaScript removes whitespace and comments to reduce the file size.
 
+**Excluded JavaScript Files**
+
+Specify URLs of JavaScript files to exclude from minification and combining (one per line). The domain part of internal URLs is stripped automatically. Use `(.*).js` wildcards to exclude all JS files located at a specific path. For external files, use the full URL or the domain name.
+
 **Combine JavaScripts files**
 
 This option will be active only if you choose Minify javascript files. It is not recommended for HTTP2.
+
+**Excluded Inline JavaScript**
+
+Specify patterns of inline JavaScript to exclude from combining (one per line).
 
 **Load JavaScript deferred**
 
@@ -195,6 +183,10 @@ HTML and DOM processes. Quietly, the script rests in the background, then runs o
 
 So, the `Load JavaScript deferred` option adds to each script tag the `defer` attribute.
 
+**Excluded JavaScript Files** (defer)
+
+Specify URLs or keywords of JavaScript files to exclude from defer (one per line).
+
 **Delay JavaScript Execution**
 
 This option helps to decrease the page load time by delaying loading of all JavaScripts on the page. This option can be
@@ -202,7 +194,7 @@ applied only for already cached pages, it is incompatible with the Combine JavaS
 
 **Apply Delay JS only on mobile devices**
 
-When enabled, Delay JS is applied only for mobile visitors while desktop visitors get standard JavaScript loading. This option is a child of "Delay JavaScript Execution" and requires "Separate cache files for mobile devices" to be enabled.
+When enabled, Delay JS is applied only for mobile visitors while desktop visitors get standard JavaScript loading. This option is a child of "Delay JavaScript Execution" and requires "[Separate cache files for mobile devices](#mobile-caching)" to be enabled.
 
 ![Delay JavaScript execution panel with exclusions and Apply Delay JS only on mobile devices checked; red arrow.](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPApplyDelayJsOnlyOnMobileOption.webp)
 
@@ -215,14 +207,15 @@ Default: OFF. Aggressive optimization may affect JavaScript interactivity on som
 **LazyLoad**
 
 LazyLoad affects the page in the next way - if the user opens the page for the first loading there will be only first
-displayed (visible to user) images, others will be loaded if the user scrolls down. Images added via CSS file,
-the `<style>` tag or via `Elementor` will not be affected by the LazyLoad.
+displayed (visible to user) images, others will be loaded if the user scrolls down. Images added via a CSS file or
+the `<style>` tag are lazy-loaded only when **Enable for CSS background images** is on.
 
 The following options allows working with LazyLoad
 
-* Enable LazyLoad for images
+* Enable for images
 * Enable for CSS background images
-* Enable LazyLoad for iframes and videos
+* Enable for iframes and videos
+* Replace YouTube iframe with preview image (available when LazyLoad for iframes and videos is on; it can significantly improve loading time on pages with many YouTube videos)
 * Excluded images or iframes
 
 **Reduce font-related layout shifts**
@@ -288,11 +281,11 @@ Provide a list of URLs that cannot be cached.
 
 **Never Cache Cookies**
 
-Provide a list of Cookie files that cannot be cached.
+Provide a list of full or partial cookie IDs (one per line). A page is not cached when one of these cookies is set in the visitor's browser.
 
 **Never Cache User Agent(s)**
 
-Provide a list of User Agent names that cannot be cached.
+Provide a list of user agent strings that should never see cached pages (one per line).
 
 **Always Purge URL(s)**
 
@@ -366,8 +359,7 @@ After setting up the Pull zone, you will receive an address, for example: domain
 
 ![CDN control panel Pull Zone General view with Hostname field clwp.b-cdn.net highlighted on an orange bar.](/images/wpos-plugin/CDNGeneral.webp)
 
-Go to the WP Admin of your WordPress site, open the settings of the AccelerateWP (Step 1) and select the CDN section (
-Step 2). Select the option: Enable Content Delivery Network (Step 3) and fill in the "CDN CNAME(s)" field with the
+Go to the WP Admin of your WordPress site, open the settings of the AccelerateWP (Step 1) and select the Content Delivery section (Step 2). Select the option: Enable Content Delivery Network (Step 3) and fill in the "CDN CNAME(s)" field with the
 previously received domain.b-cdn.net address (Step 4).
 
 ![AccelerateWP CDN settings in WordPress with red numbered steps for menu, CDN tab, enable CDN, CNAME field, and Save.](/images/wpos-plugin/CDNFlow.webp)
@@ -387,7 +379,7 @@ settings* button.
 ## AccelerateWP Premium: Object caching feature
 
 :::tip Note
-Object caching is a premium feature which is currently in beta and available only for some hosters.
+Object caching is a feature of AccelerateWP Premium.
 :::
 
 Unlike full page caching, this mechanism is not saving the whole page in cache, but stores database
@@ -443,7 +435,9 @@ Object caching does not require any additional configuration.
 
 There are the following requirements to activate Object Caching:
 
-* Website must use ea-PHP version 7.4 or 8.0.
+* Website must use PHP version 7.2 or higher.
+* Website must use the php-fpm or lsapi PHP handler.
+* Redis PHP extension must be installed and loaded for the PHP version of the website.
 * WordPress version must be 3.7 and higher.
 * Other WordPress Caching plugins must not be installed.
 * [Snuffleupagus](https://snuffleupagus.readthedocs.io/) must be turned off.
