@@ -349,6 +349,7 @@ For example, if a package encounters a fatal error inside its `%preun` or `%prei
 
 It is recommended to remove such packages prior to the upgrade, or, alternatively, add them to the `to_keep` list (see *Transaction Configuration Files* section) to prevent Leapp from attempting to upgrade them.
 
+
 #### Missing upgrade package files
 
 In some cases, you may find the upgrade process halting at the main upgrade DNF transaction with a list of error messages similar to the following:
@@ -369,6 +370,28 @@ leapp.workflow.RPMUpgrade.dnf_upgrade_transaction: Leapp upgrade is running - us
 ```
 
 If neither of those appear to be the problem, its source may be different from the known one. Please contact support for further assistance.
+
+
+#### Acronis Backup components are left untouched during the upgrade
+
+This is actually not an issue. Acronis Backup packages aren't tied to a specific CloudLinux version, so they don't need to be upgraded, and you can leave them installed. What happens to them during the upgrade depends on the scenario.
+
+**No panel or a custom panel (incl. DirectAdmin).**
+
+The Acronis Backup agent stays installed as is.
+
+The preupgrade report lists the agent packages under "Packages not signed by a known packager found on the system". For Acronis packages this is expected and doesn't block the upgrade.
+
+**cPanel.**
+
+The cPanel ELevate script handles Acronis Backup itself: before the upgrade it removes the Acronis Backup plugin and agent, and after the upgrade it reinstalls the plugin. Removing the plugin disconnects it from your Acronis account, and the agent isn't reinstalled, so backups don't run until you set them up again:
+
+1. In WHM, open the Acronis Backup plugin and sign in to your Acronis account.
+2. Install the backup agent when the plugin asks you to.
+
+On CloudLinux 9, the agent needs `dkms`, which is only available from EPEL. If the agent installation fails to install a package, install EPEL with `dnf install epel-release` and restart the installation.
+
+If `/scripts/elevate-cpanel --check` reports the Acronis repository (`acronis-cpanel-stable`) as unsupported, your copy of the script is outdated.
 
 
 ### ELevate cPanel Scenario issues
