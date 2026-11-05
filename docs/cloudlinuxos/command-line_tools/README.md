@@ -2880,7 +2880,7 @@ cldeploy --hostinglimits                            # update httpd and install m
 | <span class="notranslate"> `set-user`   </span> |set parameters for a LVE and/or create a LVE using username instead of ID|
 | <span class="notranslate"> `list` </span> |list loaded LVEs|
 | <span class="notranslate"> `list-user`   </span> |list loaded LVEs, display username instead of user id|
-| <span class="notranslate"> `limits` </span> |show limits for loaded LVEs|
+| <span class="notranslate"> `limits <LVE_ID\|default\|all>` </span> |show limits for the given loaded LVE, the default LVE, or all loaded LVEs|
 | <span class="notranslate"> `delete` </span> |delete LVE and set configuration for that LVE to defaults|
 | <span class="notranslate"> `delete-user` </span> |delete LVE and set configuration for that user to defaults|
 | <span class="notranslate"> `destroy` </span> |destroy LVE (configuration file remains unchanged)|
@@ -2889,7 +2889,7 @@ cldeploy --hostinglimits                            # update httpd and install m
 | <span class="notranslate"> `package-set` </span> | set LVE parameters for a package|
 | <span class="notranslate"> `package-list` </span> |list LVE parameters for packages|
 | <span class="notranslate"> `package-delete` </span> |delete LVE parameters for a package|
-| <span class="notranslate"> `paneluserslimits` </span> |show current user's limits for control panel|
+| <span class="notranslate"> `paneluserslimits [reseller]` </span> |show limits for control panel users. The reseller name is optional; with it, only that reseller's users are listed|
 | <span class="notranslate"> `limit` </span> |limit PID into specified LVE. Parameters PID LVE_ID|
 | <span class="notranslate"> `release` </span> |release PID from LVE. Parameters PID|
 | <span class="notranslate"> `set-binary` </span> |add binary to be run inside LVE on execution|
@@ -2897,7 +2897,7 @@ cldeploy --hostinglimits                            # update httpd and install m
 | <span class="notranslate"> `list-binaries` </span> |list all binaries to be run inside LVE on execution|
 | <span class="notranslate"> `load-binaries` </span> |load binaries (used on startup) from config file|
 | <span class="notranslate"> `reload-binaries` </span> |re-load list of binaries from config file|
-| <span class="notranslate"> `help (-h)` </span> |show this message|
+| <span class="notranslate"> `help (--help)` </span> |show this message|
 | <span class="notranslate"> `version (-v)` </span> |version number|
 | <span class="notranslate"> `lve-version` </span> |LVE version number|
 | <span class="notranslate"> `set-reseller` </span> |create LVE container and set LVE parameters for a reseller|
@@ -2933,12 +2933,12 @@ Under a control panel, use the [CageFS Isolates commands](/cloudlinuxos/isolates
 | <span class="notranslate"> `--ncpu=N` </span> |limit VCPU usage (deprecated)|
 | <span class="notranslate"> `--io=N` </span> |define io limits (KB/s)|
 | <span class="notranslate"> `--nproc=N` </span> |limit number of processes|
-| <span class="notranslate"> `--pmem=N`   </span> |limit physical memory usage for applications inside LVE|
+| <span class="notranslate"> `--pmem=N`   </span> |limit physical memory usage for applications inside LVE. `N` takes the suffix `K`, `M`, `G` or `T`, in either case; without a suffix it is in kilobytes|
 | <span class="notranslate"> `--iops=N` </span> |limit io per second|
-| <span class="notranslate"> `--mem=N` </span> | mem alias for vmem (deprecated)|
-| <span class="notranslate"> `--vmem=N` </span> |limit virtual memory for applications inside LVE|
+| <span class="notranslate"> `--mem=N` </span> | mem alias for vmem (deprecated). `N` takes the suffix `K`, `M`, `G` or `T`, in either case; without a suffix it is in kilobytes|
+| <span class="notranslate"> `--vmem=N` </span> |limit virtual memory for applications inside LVE. `N` takes the suffix `K`, `M`, `G` or `T`, in either case; without a suffix it is in kilobytes|
 | <span class="notranslate"> `--maxEntryProcs=N` </span> |limit number of entry processes|
-| <span class="notranslate"> `--save` </span> |save configuration settings (use with set) (deprecated)|
+| <span class="notranslate"> `--save` </span> |deprecated. `set` saves changed limits to the configuration without this option|
 | <span class="notranslate"> `--save-all-parameters` </span> |save all parameters even if they match with defaults settings|
 | <span class="notranslate"> `--json` </span> |returns result of command json formatted|
 | <span class="notranslate"> `--unlimited` </span> |set all limits to unlimited|
@@ -2991,7 +2991,7 @@ Under a control panel, use the [CageFS Isolates commands](/cloudlinuxos/isolates
 <div class="notranslate"> 
 
 ```
-lveps [-p] [-n] [-o <fmt1:width1,...>] [-d] [-c <time>] [-s <style>] [-t] [-h]
+lveps [-p] [-n] [-w] [-l] [-m] [-x] [-r] [-o <fmt1:width1,...>] [-d] [-c <time>] [-s <style>] [-t] [-h]
 ```
 </div>
 
@@ -3001,20 +3001,24 @@ lveps [-p] [-n] [-o <fmt1:width1,...>] [-d] [-c <time>] [-s <style>] [-t] [-h]
 |-|-|
 |`-p`| to print per-process/per-thread statistics|
 |`-n`| to print LVE ID instead of username|
-|`-o`| to use formatted output (fmt=id,ep,pid,tid,cpu,mem,io)|
+|`-o`| to use formatted output (fmt=id,ep,pid,tid,cpu,mem,io); `pno`, `tno`, `iops` and `com` are also accepted|
 |`-d`| to show dynamic cpu usage instead of total cpu usage|
-|`-c`| to calculate average cpu usage for &lt;time&gt; seconds (used with `-d`)|
+|`-c`| to calculate average cpu usage for &lt;time&gt; seconds (used with `-d`); the default is 3 seconds|
 |`-r`| to run under realtime priority for more accuracy (needs privileges)|
-|`-s`| to sort LVEs in output (cpu, process, thread, mem, io)|
+|`-s`| to sort LVEs in output (cpu, process, thread, mem, io, iops); prefix the value with `!` to reverse the order|
 |`-t`| to run in the top-mode|
 |`-h`| to print this brief help message|
+|`-w`| to show PIDs instead of command names (with `-p`)|
+|`-l`| to print CPU usage in the old format (with `-d` or `-t`), where 100% is all CPU resources; not compatible with `-m`|
+|`-m`| to print CPU usage in MHz (with `-d`); not compatible with `-l`|
+|`-x`| to print at least one space between columns, for parsing the output|
 
 
 Command like <span class="notranslate">`lveps -p`</span> will display processes running inside 'active' LVEs.
 
 | | |
 |-|-|
-|<span class="notranslate"> CPU </span> | The number of seconds LVE/process/thread has been running (each <span class="notranslate"> CPU </span> /core is counted separately), or the average CPU load (100% is all <span class="notranslate"> CPU </span> resources) if used with <span class="notranslate">`-d`</span>.|
+|<span class="notranslate"> CPU / SPEED </span> | The number of seconds the LVE/process/thread has been running (each <span class="notranslate"> CPU </span> /core is counted separately). By default, with <span class="notranslate">`-d`</span> or <span class="notranslate">`-t`</span> the column is named <span class="notranslate">SPEED</span> and shows the average load, where 100% is one core. With <span class="notranslate">`-l`</span> added to <span class="notranslate">`-d`</span> or <span class="notranslate">`-t`</span>, the column is named <span class="notranslate">CPU</span> and 100% is all <span class="notranslate"> CPU </span> resources.|
 |<span class="notranslate">MEM</span>| The number of megabytes of resident memory in use by LVE/process/thread (shared memory is not included).|
 |<span class="notranslate">IO</span> | The number of kilobytes read and written in sum by LVE, or kb/sec if used with `-d`.|
 |<span class="notranslate">ID</span> | LVE ID or username.|
@@ -3025,7 +3029,7 @@ Command like <span class="notranslate">`lveps -p`</span> will display processes 
 |<span class="notranslate">TID</span> | <span class="notranslate">TID</span> of the thread.|
 |<span class="notranslate">TNO</span> | The number of threads belonging to the LVE.|
 |<span class="notranslate">DO</span> | The number of disk operations belonging to the LVE from the time it was created.|
-|<span class="notranslate">DT</span> | Total amount of disk transfer in megabytes from LVE creation time.|
+|<span class="notranslate">DT</span> | Total amount of disk transfer in kilobytes from LVE creation time. Shown instead of <span class="notranslate">IO</span> when neither `-d` nor `-t` is used.|
 |<span class="notranslate">IOPS</span> | The number of I/O operations per second|
 
 ### lvetop
@@ -3035,7 +3039,7 @@ Command like <span class="notranslate">`lveps -p`</span> will display processes 
 <div class="notranslate">
 
 ```
-ID        EP PNO TNO SPEED MEM  IO   IPOS
+ID        EP PNO TNO SPEED MEM  IO   IOPS
 testuser1 0  1   1   0%    7    0    0
 testuser2 0  0   0   5%    0    3    0
 testuser3 1  2   2   0%    102  2727 0
@@ -3052,10 +3056,12 @@ testuser5 0  2   2   1%    52   0    0
 |<span class="notranslate"> `EP`</span>|number of entry processes (concurrent scripts executed)|
 |<span class="notranslate"> `PNO`</span>|number of processes within LVE|
 |<span class="notranslate"> `TNO`</span>|number of threads within LVE|
-|<span class="notranslate"> `CPU`</span>|<span class="notranslate"> CPU</span> usage by LVE, relative to total <span class="notranslate"> CPU </span>  resources of the server|
-|<span class="notranslate"> `MEM`</span>|Memory usage by LVE, in KB|
-|<span class="notranslate"> `I/O`</span>|<span class="notranslate"> I/O </span> usage|
+|<span class="notranslate"> `SPEED`</span>|<span class="notranslate"> CPU</span> usage by LVE; 100% is one core|
+|<span class="notranslate"> `MEM`</span>|Memory usage by LVE, in MB|
+|<span class="notranslate"> `IO`</span>|<span class="notranslate"> I/O </span> usage, in KB/s|
 |<span class="notranslate"> `IOPS`</span>|number of read/write operations per second|
+
+`lvetop` runs `lveps` in the top-mode and passes its options to `lveps`; `-p` is not compatible with it.
 
 
 ### cldetect
@@ -3080,13 +3086,13 @@ testuser5 0  2   2   1%    52   0    0
 |||
 |----|--|
 |<span class="notranslate">`cldetect -h`/`-h`/`--help`</span>|show this message|
-|<span class="notranslate">`--detect-edition`</span>|detects and prints OS [edition](/introduction/#cloudlinux-os-editions) name:<ul><li><span class="notranslate">CloudLinux OS Solo</span></li><li><span class="notranslate">CloudLinux OS Admin</span></li><li><span class="notranslate">CloudLinux OS Shared</span></li><li><span class="notranslate">CloudLinux OS Shared Pro</span></li></ul><b>Note:</b> "<span class="notranslate">CloudLinux OS Shared</span>" is a historic name for "<span class="notranslate">CloudLinux OS Legacy</span>" edition and is kept here for backward-compatibility purpose.|
+|<span class="notranslate">`--detect-edition`</span>|detects and prints OS [edition](/introduction/cloudlinux-os-editions/) name:<ul><li><span class="notranslate">CloudLinux OS Solo</span></li><li><span class="notranslate">CloudLinux OS Admin</span></li><li><span class="notranslate">CloudLinux OS Shared</span></li><li><span class="notranslate">CloudLinux OS Shared Pro</span></li></ul><b>Note:</b> "<span class="notranslate">CloudLinux OS Shared</span>" is a historic name for "<span class="notranslate">CloudLinux OS Legacy</span>" edition and is kept here for backward-compatibility purpose.|
 |<span class="notranslate">`--detect-cp`</span>|prints control panel and its version (<span class="notranslate">CP_NAME,CP_VERSION</span>)|
 |<span class="notranslate">`--detect-cp-full`</span>|prints control panel, version and panel specific data (<span class="notranslate">CP_NAME,CP_VERSION</span>,...). Specific data: for <span class="notranslate">ISP Manager5 - Master/Node</span>|
 |<span class="notranslate">`--detect-cp-nameonly`</span>|prints control panel name (<span class="notranslate">CP_NAME</span>)|
 |<span class="notranslate">`--get-admin-email`</span>|prints control panel admin email (<span class="notranslate">CP_ADMIN_EMAIL</span>)|
 |<span class="notranslate">`--cxs-installed`</span>|check if CXS is installed. Returns 0 if installed, 1 otherwise|
-|<span class="notranslate">`--cpanel-suphp-enabled`</span>|check if suPHP is enabled in cPanel.Returns 0 if enabled, 1 otherwise|
+|<span class="notranslate">`--cpanel-suphp-enabled`</span>|check if suPHP is enabled in cPanel. Returns 0 if enabled, 1 otherwise|
 |<span class="notranslate">`--detect-litespeed`</span>|check if LiteSpeed is installed. Returns 0 if installed, 1 otherwise|
 |<span class="notranslate">`--detect-postgresql`</span>|check if PostGreSQL is installed. Returns 0 if installed, 1 otherwise|
 |<span class="notranslate">`--print-apache-gid`</span>|prints current apache gid|
@@ -3101,7 +3107,11 @@ testuser5 0  2   2   1%    52   0    0
 |<span class="notranslate">`-q`</span>|check license. Returns 0 if license is not older than 3 days, 1 otherwise|
 |<span class="notranslate">`--no-valid-license-screen`</span>|returns no valid license found screen|
 |<span class="notranslate">`--license-out-of-date-email`</span>|returns License out of Date Email.|
-|<span class="notranslate">`--check-openvz`</span>|returns enviroment id|
+|<span class="notranslate">`--check-openvz`</span>|returns environment id|
+|<span class="notranslate">`--detect-ea4`</span>|checks if EasyApache 4 is installed and prints the result (`EA4 detected` or `No EA4 detected`). Only for cPanel|
+|<span class="notranslate">`--detect-nginx`</span>|checks if nginx is running and prints the result (`Nginx is running` or `Nginx is not running`)|
+|<span class="notranslate">`--detect-os`</span>|prints the OS name and version|
+|<span class="notranslate">`--detect-os-nameonly`</span>|prints the OS name|
 
 
 #### **clsupergid auto-configuration**
@@ -3135,13 +3145,13 @@ You can change the email in the following ways:
   * Set the desired email instead of the default CP value in the `EMAIL` option
   * Set the `CP` value in the `EMAIL` option in the `license_check` section. Add an option with the path to the panel script for receiving emails:
     ```
-    {PANEL_NAME}_getemail_script=/path/to/getemail_script)
+    {PANEL_NAME}_getemail_script=/path/to/getemail_script
     ```
-  `{PANEL_NAME}` is the name of the panel from the `cldetect --detect-cp-name` command output.
+  `{PANEL_NAME}` is the name of the panel from the <span class="notranslate">`cldetect --detect-cp-nameonly`</span> command output.
   * If there is no panel script, the default email (`root@localhost.localdomain`) will be used.
   * The `/path/to/getemail_script` file should be executable and output to stdout the admin email to which an email with checks results will be sent. Note that the settings of the mail server can change the final email.
 
-In all cases, for the negative checker result, the exit code will be > 0 (at the moment it will be equal to the number of failed checkers).
+When checkers are run directly or with `--all`, a negative result gives an exit code above 0, equal to the number of checkers that returned `FAILED` or `INTERNAL_TEST_ERROR`. `--generate-email` and `--cron-check` report checker failures by email; these failures do not produce a nonzero exit code.
 
 All the checkers support additional <span class="notranslate">`--json`</span> option with the unified output in an appropriate format.
 
@@ -3178,7 +3188,7 @@ Possible checkers results:
 1. <span class="notranslate">`OK`</span> - the check succeeded.
 2. <span class="notranslate">`FAILED`</span> - the check revealed a problem.
 3. <span class="notranslate">`SKIPPED`</span> - the check was skipped as it made no sense in the actual environment (e.g. wrong control panel) or it could not be executed for some reason (e.g. no users with enabled CageFS found). Such result doesn’t mean there is a problem and can be considered as a positive.
-4. <span class="notranslate">`INTERNAL_TEST_ERROR`</span> - the check has failed because of a problem in the checker itself. Please report such problems using [https://cloudlinux.zendesk.com/agent/](https://cloudlinux.zendesk.com/agent/).
+4. <span class="notranslate">`INTERNAL_TEST_ERROR`</span> - the check has failed because of a problem in the checker itself. Please report such problems using [https://cloudlinux.zendesk.com/hc/requests/new](https://cloudlinux.zendesk.com/hc/requests/new).
 
 The utility includes several built-in checkers, and can also import and run checkers from other utilities.
 
@@ -3249,14 +3259,14 @@ Fails if users from <span class="notranslate">`/var/cpanel/users/`</span> direct
 
 #### check-defaults-cfg
 
-Checks <span class="notranslate">`/etc/cl.selector/default.cfg`</span>.
+Checks <span class="notranslate">`/etc/cl.selector/defaults.cfg`</span>.
 
 Checking that if this config exists, the default PHP version is not disabled in it. Also performing minimal syntax checks for PHP modules settings and displaying the incorrect.
  
-Fails if there are some problems in <span class="notranslate">`/etc/cl.selector/default.cfg`</span> found.
+Fails if there are some problems in <span class="notranslate">`/etc/cl.selector/defaults.cfg`</span> found.
 
 Possible reasons for failure:
-   * Default version is undefined, which means <span class="notranslate">`/etc/cl.selector/default.cfg`</span> file does not contain section [versions] with the defined default version. 
+   * Default version is undefined, which means <span class="notranslate">`/etc/cl.selector/defaults.cfg`</span> file does not contain section [versions] with the defined default version.
    * Default PHP version is disabled.
 
 #### check-cagefs
@@ -3354,7 +3364,7 @@ This new checker is available starting from LVE-Utils 4.2.21-2
 Checks the things on a server of client which are required for correct work of client part of Centralized Monitoring:
 * Checks the validity and presence of JWT token
 * Checks that service <span class="notranslate">`cl_plus_sender`</span> is present, enabled and active
-* Checks that service <span class="notranslate">`node_exporter`</span> is present, enabled and active
+* Checks that service <span class="notranslate">`cl_node_exporter`</span> (<span class="notranslate">`node_exporter`</span> on older installations) is present, enabled and active
 * Checks that service <span class="notranslate">`lvestats`</span> is present, enabled and active
 * Checks that RPM packages <span class="notranslate">`cl-end-server-tools`</span> and <span class="notranslate">`cl-node-exporter`</span> are installed
 
@@ -3416,16 +3426,16 @@ If this option is provided cldoctor script will be downloaded to a temp director
 
 ### cloudlinux-config
 
-**cloudlinux-config** utility shows/sets various parameters related to [LVE Manager](/cloudlinuxos/lve_manager/#lve-manager-options) UI, [MySQL Governor](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation) and [faults notifications for LVE-Stats 2](/cloudlinuxos/cloudlinux_os_components/#configuration)
+**cloudlinux-config** utility shows/sets various parameters related to [CloudLinux Manager](/cloudlinuxos/lve_manager/#cloudlinux-manager-options) UI, [MySQL Governor](/cloudlinuxos/cloudlinux_os_components/#configuration-and-operation) and [faults notifications for LVE-Stats 2](/cloudlinuxos/cloudlinux_os_components/#configuration)
 
 **Usage:**
 
 <div class="notranslate">
 
 ```
-cloudlinux-config get [--json] [--for-reseller resname ]
-cloudlinux-config set [--json] --data <str> [--for-reseller resname ]
-cloudlinux-config set [--json] --reset-inodes-limit
+cloudlinux-config [get] --json [--for-reseller resname ]
+cloudlinux-config set --json --data <str> [--for-reseller resname ]
+cloudlinux-config set --json --reset-inodes-limit
 ```
 </div>
 
@@ -3440,7 +3450,7 @@ cloudlinux-config set [--json] --reset-inodes-limit
 
 | | |
 |-|-|
-|<span class="notranslate">`--json`</span>| Sets/returns values in json format|
+|<span class="notranslate">`--json`</span>| Sets/returns values in json format. Required on servers with LVE support; other output modes are not supported there.|
 |<span class="notranslate">`--data`</span>| Sets values from the data string that follows|
 |<span class="notranslate">`--for-reseller`</span>| Sets/limits the output only to the data related to reseller _resname_ |
 |<span class="notranslate">`--reset-inodes-limit`</span>| Resets inode limits (in case disk quota breaks)|
@@ -3469,10 +3479,10 @@ Each Level1 option can have nested Level2 options specified using the same synta
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`faultsToInclude`</span>|<span class="notranslate">`iops`</span>| |<span class="notranslate">`true`</span>/<span class="notranslate">`false`</span>| Include IOPS value in notification emails|
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`faultsToInclude`</span>|<span class="notranslate">`mem`</span>| |<span class="notranslate">`true`</span>/<span class="notranslate">`false`</span>| Include RAM consumption value in notification emails|
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`faultsToInclude`</span>|<span class="notranslate">`nproc`</span>| |<span class="notranslate">`true`</span>/<span class="notranslate">`false`</span>| Include number of processes value in notification emails|
-|<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`fminimumNumberOfFaultsToNotify`</span>| <span class="notranslate">`admin`</span>| | `N`| The minimum number of faults to notify for admin|
-|<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`fminimumNumberOfFaultsToNotify`</span>| <span class="notranslate">`user`</span>| | `N`| The minimum number of faults to notify for users|
-|<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`fminimumNumberOfFaultsToNotify`</span>| <span class="notranslate">`reseller`</span><sup> *</sup>| | `N`| The minimum number of faults to notify for reseller|
-|<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`fminimumNumberOfFaultsToNotify`</span>| <span class="notranslate">`customer`</span><sup> *</sup>| | `N`| The minimum number of faults to notify for reseller's customers|
+|<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`minimumNumberOfFaultsToNotify`</span>| <span class="notranslate">`admin`</span>| | `N`| The minimum number of faults to notify for admin|
+|<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`minimumNumberOfFaultsToNotify`</span>| <span class="notranslate">`user`</span>| | `N`| The minimum number of faults to notify for users|
+|<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`minimumNumberOfFaultsToNotify`</span>| <span class="notranslate">`reseller`</span><sup> *</sup>| | `N`| The minimum number of faults to notify for reseller|
+|<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`minimumNumberOfFaultsToNotify`</span>| <span class="notranslate">`customer`</span><sup> *</sup>| | `N`| The minimum number of faults to notify for reseller's customers|
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`notify`</span>|<span class="notranslate">`admin`</span>|<span class="notranslate">`period`</span>| `N`| The period of faults notifications for admin|
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`notify`</span>|<span class="notranslate">`admin`</span>|<span class="notranslate">`unitOfTime`</span>|<span class="notranslate">`minutes`</span>/<span class="notranslate">`hours`</span>/<span class="notranslate">`days`</span>| Time units of period of faults notifications for admin|
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`notify`</span>|<span class="notranslate">`user`</span>|<span class="notranslate">`period`</span>| `N`| The period of faults notifications for users|
@@ -3480,7 +3490,7 @@ Each Level1 option can have nested Level2 options specified using the same synta
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`notify`</span>|<span class="notranslate">`reseller`</span><sup> *</sup>|<span class="notranslate">`period`</span>| `N`| The period of faults notifications for resellers|
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`notify`</span>|<span class="notranslate">`reseller`</span><sup> *</sup>|<span class="notranslate">`unitOfTime`</span>|<span class="notranslate">`minutes`</span>/<span class="notranslate">`hours`</span>/<span class="notranslate">`days`</span>| Time units of period of faults notifications for resellers|
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`notify`</span>|<span class="notranslate">`customer`</span><sup> *</sup>|<span class="notranslate">`period`</span>| `N`| The period of faults notifications for reseller's customers|
-|<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`notify`</span>|<span class="notranslate">`customer*`</span>|<span class="notranslate">`unitOfTime`</span>|<span class="notranslate">`minutes`</span>/<span class="notranslate">`hours`</span>/<span class="notranslate">`days`</span>| Time units of period of faults notifications for reseller's customers|
+|<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`notify`</span>|<span class="notranslate">`customer`</span><sup> *</sup>|<span class="notranslate">`unitOfTime`</span>|<span class="notranslate">`minutes`</span>/<span class="notranslate">`hours`</span>/<span class="notranslate">`days`</span>| Time units of period of faults notifications for reseller's customers|
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`notifyAdmin`</span>| | |<span class="notranslate">`true`</span>/<span class="notranslate">`false`</span>| Send faults notifications to admin|
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`notifyResellerCustomers`</span>| | | <span class="notranslate">`true`</span>/<span class="notranslate">`false`</span>| Send faults notification to reseller users|
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`notifyResellerOnCustomers`</span><sup> *</sup>| | | <span class="notranslate">`true`</span>/<span class="notranslate">`false`</span>| Send users' faults notifications to the respective reseller|
@@ -3490,7 +3500,7 @@ Each Level1 option can have nested Level2 options specified using the same synta
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`email`</span>|<span class="notranslate">`notifyCharset`**</span>| |<span class="notranslate">`utf-8`/null</span>|Set charset used in email|
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`email`</span>|<span class="notranslate">`notifyFromEmail`**</span> | |<span class="notranslate">`admin@email.com`/null</span>|Set email to notify from|
 |<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`email`</span>|<span class="notranslate">`notifySubject`**</span> | |<span class="notranslate">`Subject`/null</span>|Set email subject|
-|<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`email`</span>|<span class="notranslate">`reportAdminEmail`**</span> | |<span class="notranslate">`admin@email.com`/null</span>|Set admin email for notifications|
+|<span class="notranslate">`faultsNotification`</span>|<span class="notranslate">`email`</span>|<span class="notranslate">`reportAdminMail`**</span> | |<span class="notranslate">`admin@email.com`/null</span>|Set admin email for notifications|
 
 :::tip Note
 To reset options marked with ** set `null`.
@@ -3511,7 +3521,7 @@ Options marked with `*` are for reseller use only
 |<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`logRestrictedUsersQueries`</span>| | | <span class="notranslate">`true`</span>/<span class="notranslate">`false`</span>| Enables logging of restricted user queries |
 |<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`modeOfOperation`</span>| | |<span class="notranslate">`off`</span>/<span class="notranslate">`single`</span>/<span class="notranslate">`abusers`</span>/<span class="notranslate">`all`</span>| Sets the mode of operation |
 |<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`restrictLog`</span>|<span class="notranslate">`format`</span>| |<span class="notranslate">`SHORT`</span>/<span class="notranslate">`MEDIUM`</span>/<span class="notranslate">`LONG`</span>/<span class="notranslate">`VERYLONG`</span>| Sets the format for restrict log |
-|<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`restrictLog`</span>|<span class="notranslate">`logPath`</span>| |<span class="notranslate">`/var/log/dbgovernor-restrict.log`</span>| Sets the format for restrict log |
+|<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`restrictLog`</span>|<span class="notranslate">`logPath`</span>| |<span class="notranslate">`/var/log/dbgovernor-restrict.log`</span>| Sets restrict log destination file |
 |<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`restrictType`</span>|<span class="notranslate">`mode`</span>| |<span class="notranslate">`period`</span>/<span class="notranslate">`limit`</span>| Sets the restriction mode |
 |<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`restrictType`</span>|<span class="notranslate">`unlimit`</span>|<span class="notranslate">`period`</span>| `N`| Sets the restriction expiration period |
 |<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`restrictType`</span>|<span class="notranslate">`unlimit`</span>|<span class="notranslate">`unitOfTime`</span>|<span class="notranslate">`seconds`</span>/<span class="notranslate">`minutes`</span>/<span class="notranslate">`hours`</span>/<span class="notranslate">`days`</span>| Sets the restriction expiration period units of time |
@@ -3524,7 +3534,7 @@ Options marked with `*` are for reseller use only
 |<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`restrictedTimePeriods`</span>|<span class="notranslate">`level4`</span>|<span class="notranslate">`period`</span>| `N`| Sets L4 restriction time period |
 |<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`restrictedTimePeriods`</span>|<span class="notranslate">`level4`</span>|<span class="notranslate">`unitOfTime`</span>|<span class="notranslate">`seconds`</span>/<span class="notranslate">`minutes`</span>/<span class="notranslate">`hours`</span>/<span class="notranslate">`days`</span>| Sets L4 restriction time period units of time |
 |<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`restrictedTimePeriods`</span>| <span class="notranslate">`timeout`</span>|<span class="notranslate">`period`</span>| `N`| Sets restriction time period timeout|
-|<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`restrictedTimePeriods`</span>|<span class="notranslate">`timeout`</span>|<span class="notranslate">`unitOfTime`</span>|<span class="notranslate">`seconds`</span>/<span class="notranslate">`minutes`</span>/<span class="notranslate">`hours`</span>/<span class="notranslate">`days`</span>| Sets L1 restriction time period timeout units of time |
+|<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`restrictedTimePeriods`</span>|<span class="notranslate">`timeout`</span>|<span class="notranslate">`unitOfTime`</span>|<span class="notranslate">`seconds`</span>/<span class="notranslate">`minutes`</span>/<span class="notranslate">`hours`</span>/<span class="notranslate">`days`</span>| Sets restriction time period timeout units of time |
 |<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`scriptPath`</span>| | | <span class="notranslate">`/path/to/script`</span>| Path to script to be triggered when account is restricted |
 |<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`slowQueries`</span>|<span class="notranslate">`kill`</span>| | <span class="notranslate">`true`</span>/<span class="notranslate">`false`</span>| Enables killing of slow queries |
 |<span class="notranslate">`mySQLGovSettings`</span>|<span class="notranslate">`slowQueries`</span>|<span class="notranslate">`logPath`</span>| |<span class="notranslate">`/path/to/sqkill.log`</span>| Sets the path to slow query kill log file |
@@ -3662,7 +3672,7 @@ The lack of user file synchronization does not affect the actual quota enforceme
 
 <span class="notranslate"> cl-quota </span> utility allows setting <span class="notranslate"> inodes </span> limits for users of the system.
 
-<span class="notranslate"> cl-quota </span> integrates with the panels through a standard mechanism - [Integrating LVE Limits with Packages](/cloudlinuxos/lve_manager/#detecting-and-working-with-cloudlinux).
+<span class="notranslate"> cl-quota </span> uses the control panel API for user and package information. See [control panel integration](/cloudlinuxos/control_panel_integration/#the-list-of-the-integration-scripts).
 
 Panel users are such users whose UIDs are issued by the above panel integration mechanism. The list of panel packages and the information on the user's affiliation to a particular package is obtained from there as well.
 
@@ -3676,7 +3686,7 @@ When installing/reading the limits, the following peculiarities are applied:
 
 4. Limits setting only works for panel users, for all other users limits are not set (the command is ignored). The only exception - <span class="notranslate"> uid=0 </span> . The limits are never set for the <span class="notranslate"> root </span> user <span class="notranslate"> (uid=0) </span> , but they are stored in <span class="notranslate"> DB </span> file and are used by inheritance mechanism. See [Limits Inheritance](./#limits-inheritance).
 
-5. <span class="notranslate"> Hard </span> and <span class="notranslate"> soft </span> limits are completely independent, <span class="notranslate"> сl-quota </span> does not apply any interdependencies to them. Setting only one of them (any) is acceptable, the other one will not change.
+5. <span class="notranslate"> Hard </span> and <span class="notranslate"> soft </span> limits are completely independent, <span class="notranslate"> cl-quota </span> does not apply any interdependencies to them. Setting only one of them (any) is acceptable, the other one will not change.
 
 <span class="notranslate"> cl-quota </span> utility also supports package limits set/read. When setting package limits, they are set for all users of a particular package except for those whose limits are set individually. See also [Limits Inheritance](./#limits-inheritance).
 
@@ -3698,7 +3708,7 @@ Thus <span class="notranslate"> cl-quota </span> has two limit values, which are
 
 You can use the words <span class="notranslate"> “default” </span> and <span class="notranslate"> “unlimited” </span> instead of 0 and -1 respectively, they are fully interchangeable. See also [DB File](./#quotas-db-file) and [CLI Options](./#cli-options-examples).
 
-Individual and package limits are always saved in DB file. Limits from there are used when synchronizing <span class="notranslate"> quotas </span> . Please find more details in [Limits Synchronization](/cloudlinuxos/lve_manager/#caching-and-synchronizing-the-limits).
+Individual and package limits are always saved in DB file. Limits from there are used when synchronizing <span class="notranslate"> quotas </span> . Please find more details in [Limits Synchronization](./#caching-and-synchronizing-the-limits).
 
 Also, find detailed information on DB file itself in [Quotas DB File](./#quotas-db-file) section.
 
@@ -3734,7 +3744,7 @@ To disable this feature and stop CloudLinux from interfering with system quotas,
 #### Quotas DB file
 
 
-All <span class="notranslate"> cl-quota </span> limits settings are stored in along with the <span class="notranslate"> UID </span> or the name of the package the limit was set for.
+All <span class="notranslate"> cl-quota </span> limits settings are stored in <span class="notranslate">`/etc/container/cl-quotas.dat`</span> along with the <span class="notranslate"> UID </span> or the name of the package the limit was set for.
 
 When saving the limits to a file, the following rules are applied:
 
@@ -3835,7 +3845,7 @@ done
 #### CLI options/examples
 
 
-<span class="notranslate"> cl-quotа </span> utility has the following command line options:
+<span class="notranslate"> cl-quota </span> utility has the following command line options:
 <div class="notranslate">
 
 ```
@@ -3848,7 +3858,7 @@ done
 -P | --package-limits        : prints package limits
 -a | --all-package-limits : prints all package limits (including packages without limits)
 -Y | --sync                  : synchronizes packages and users limits with the database
--C | --cache-content        : cache quota data to a file the database
+-C | --cache                : cache quota data to a file
 -F | --force                : save user quotas even when they are equal to defaults
        --check                : check if quotas is enabled/activated/suported; if disabled show diagnostic information; using with --user or --user-id options
 ```
@@ -3868,7 +3878,7 @@ done
 
 <span class="notranslate"> **--sync** </span> - synchronizes users <span class="notranslate"> quotas </span> and packages with the database.
 
-<span class="notranslate"> **--cache-contents** </span> - performs <span class="notranslate"> quotas </span> caching.
+<span class="notranslate"> **--cache** </span> - performs <span class="notranslate"> quotas </span> caching.
 
 <span class="notranslate"> **--force** </span> - saving user <span class="notranslate"> quotas </span> even if they are equal to the current.
 
@@ -3943,10 +3953,10 @@ cl-quota -YC
 
 ### cloudlinux-limits
 
-* [Usage](./#usage-3)
+* [Usage](./#usage-2)
 * [Commands](./#commands)
 * [Options](./#options)
-* [Examples](./#examples-5)
+* [Examples](./#examples-4)
 
 <span class="notranslate">`cloudlinux-limits`</span> is an alternative to `lvectl` CLI tool for LVE management. <span class="notranslate">`cloudlinux-limits`</span> utility allows you to get/set any CloudLinux OS limits.
 
@@ -3970,8 +3980,8 @@ cloudlinux-limits command [options] [options]
 
 | | |
 |-|-|
-|<span class="notranslate">`--json`</span>|return data in JSON format|
-|<span class="notranslate">`--lve-id <int>`</span>|Display record only for that LVE ID|
+|<span class="notranslate">`--json`</span>|Return data in JSON format. Required: other output modes are not supported|
+|<span class="notranslate">`--lve-id <int>`</span>|Execute command only for that LVE ID. Use <span class="notranslate">`0`</span> or <span class="notranslate">`DEFAULT`</span> for the default limits|
 |<span class="notranslate">`--username <str>`</span>|Execute command only for that specific user|
 |<span class="notranslate">`--reseller-name <str>`</span>|Execute command only for that specific reseller|
 |<span class="notranslate">`--reseller-id <int>`</span>|Execute command only for that specific reseller ID|
@@ -3986,13 +3996,13 @@ cloudlinux-limits command [options] [options]
 |<span class="notranslate">`--cagefs <enabled\|disabled>`</span>|Enable or disable CageFS for a user|
 |<span class="notranslate">`--mysql-restrict <[un]restricted>`</span>|Set user restrict status with dbctl (<span class="notranslate">`restricted`</span> or <span class="notranslate">`unrestricted`</span>)|
 |<span class="notranslate">`--mysql-unrestrict-all`</span>|Unrestrict all restricted users with dbctl|
-|<span class="notranslate">`--speed <str>`</span>|Limit CPU usage for LVE | LVP|
-|<span class="notranslate">`--pmem <str>`</span>|Limit physical memory usage for applications inside LVE | LVP|
-|<span class="notranslate">`--vmem <str>`</span>|Limit virtual memory for applications inside LVE|
-|<span class="notranslate">`--nproc <str>`</span>|Limit number of processes for LVE | LVP|
-|<span class="notranslate">`--io <str>`</span>|Define IO limits for LVE | LVP (KB/s)|
-|<span class="notranslate">`--iops <str>`</span>|Limit IO per second for LVE | LVP|
-|<span class="notranslate">`--maxEntryProcs <str>`</span>|Limit number of entry processes for LVE | LVP|
+|<span class="notranslate">`--speed <str>`</span>|Limit CPU usage for LVE \| LVP|
+|<span class="notranslate">`--pmem <str>`</span>|Limit physical memory usage for applications inside LVE \| LVP. A value without a unit is in KB. Use <span class="notranslate">`k`</span>, <span class="notranslate">`m`</span>, or <span class="notranslate">`g`</span>, for example <span class="notranslate">`512m`</span>|
+|<span class="notranslate">`--vmem <str>`</span>|Limit virtual memory for applications inside LVE. A value without a unit is in KB. Use <span class="notranslate">`k`</span>, <span class="notranslate">`m`</span>, or <span class="notranslate">`g`</span>, for example <span class="notranslate">`1g`</span>|
+|<span class="notranslate">`--nproc <str>`</span>|Limit number of processes for LVE \| LVP|
+|<span class="notranslate">`--io <str>`</span>|Define IO limits for LVE \| LVP (KB/s)|
+|<span class="notranslate">`--iops <str>`</span>|Limit IO per second for LVE \| LVP|
+|<span class="notranslate">`--maxEntryProcs <str>`</span>|Limit number of entry processes for LVE \| LVP|
 |<span class="notranslate">`--mysql-cpu <int>`</span>|Set MySQL Governor CPU limit (pct)|
 |<span class="notranslate">`--mysql-io <int>`</span>|Set MySQL Governor IO limit (read + write MB/s)|
 |<span class="notranslate">`--inodes <N,M>`</span>|Set inode limits. `N` - soft, `M` - hard|
@@ -4004,7 +4014,7 @@ cloudlinux-limits command [options] [options]
 <span class="notranslate">`cloudlinux-limits`</span> allows you to manage limits and states for the next types of users:
 
 * users, created by admin; 
-* users, created by resellers with reseller limits enabled (see [documentation](/cloudlinuxos/cloudlinux_os_components/#reseller-limits))
+* users, created by resellers with reseller limits enabled (see [documentation](/cloudlinuxos/limits/#reseller-limits))
 * users, created by resellers without reseller limits enabled. 
 
 For resellers' users with reseller limits enabled admin should use the <span class="notranslate">`--for-reseller`</span> option.
