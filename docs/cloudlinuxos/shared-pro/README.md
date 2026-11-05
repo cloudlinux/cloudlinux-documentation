@@ -1293,10 +1293,12 @@ This design eliminates per-request regex compilation in `.htaccess`, resulting i
 
 AccelerateWP and W3 Total Cache both use this module to serve the correct static page without invoking PHP or writing complex RewriteRule-based configurations. This document summarizes the module's directives and describes how any page cache plugin can integrate with the same capabilities.
 
-The module includes two independent subsystems: **cache serving** (serves pre-generated static HTML files, bypassing PHP) and **full .htaccess caching** (caches parsed `.htaccess` files in shared memory, eliminating per-request disk I/O). Both are included in the same `ea-apache24-mod_maxcache` package and can be enabled independently.
+The module includes two independent subsystems: **cache serving** (serves pre-generated static HTML files, bypassing PHP) and **full .htaccess caching** (caches parsed `.htaccess` files in shared memory, eliminating per-request re-reading and re-parsing). Both are included in the same `ea-apache24-mod_maxcache` package and can be enabled independently.
 
 :::warning Note:
 MAx Cache is currently supported on cPanel control panels only. 
+
+MAx Cache works on CloudLinux OS Solo, Admin and Shared Pro. On other editions the module loads but serves nothing, full .htaccess caching stays off, and the Apache error log shows a warning about an unsupported CloudLinux edition.
 :::
 
 ### MAx Cache Installation
@@ -1321,25 +1323,30 @@ After installation, the full .htaccess caching subsystem is enabled by default (
 
 Use the following commands to manage MAx Cache on your server via the cloudlinux-awp-admin tool. 
 
+When AccelerateWP is first installed on a site and a MAx Cache module is already on the server, the plugin turns MAx Cache on for that site automatically. Sites that already ran AccelerateWP before the module was installed stay off until you enable them.
+
 :::tip Note on Prerequisites
-**Important:** For either command to work, a supported caching plugin must be installed and up-to-date on the WordPress sites you are targeting: AccelerateWP, or W3 Total Cache 2.11.0 or newer with Page Cache set to _Disk: Enhanced_. Old versions of either plugin do not support the current configuration.
+**Important:** For either command to work, the AccelerateWP plugin must be installed and up-to-date on the WordPress sites you are targeting. Sites without it are skipped and listed as not installed. Old versions of the plugin do not support the current configuration. W3 Total Cache sites (2.11.0 or newer, Page Cache set to _Disk: Enhanced_) are not managed by these commands: enable MAx Cache from the plugin, see [Using MAx Cache with W3 Total Cache](/cloudlinuxos/shared-pro/#using-max-cache-with-w3-total-cache).
 :::
 
 #### 1. Bulk Activation (Server-Wide) 
 
 Use this command to enable MAx Cache for all compatible websites on the server at once. 
 ```
-cloudlinux-awp-admin maxcache enable --all 
+cloudlinux-awp-admin maxcache --enable --all
 ```
 
 **What this does:**
 
 * **Mass Deployment:** Activates the MAx Cache feature directly on every compatible WordPress site hosted on the server.
-* **Prerequisite:** Ensure a supported caching plugin (**AccelerateWP** or **W3 Total Cache**) is updated on the target sites before running this. The configuration requires the latest plugin version to apply successfully. 
+* **Prerequisite:** Ensure the **AccelerateWP** plugin is updated on the target sites before running this. The configuration requires the latest plugin version to apply successfully.
+* **W3 Total Cache sites:** The command acts on AccelerateWP only: a site that uses W3 Total Cache without AccelerateWP is listed under `accelerate_wp_plugin_not_installed`, and you activate MAx Cache for it in WordPress, see [Using MAx Cache with W3 Total Cache](/cloudlinuxos/shared-pro/#using-max-cache-with-w3-total-cache).
+
+The command prints the lists `maxcache_enabled` (`maxcache_disabled` with `--disable`), `error`, `accelerate_wp_plugin_needs_to_be_updated` and `accelerate_wp_plugin_not_installed`. Entries have the form `user:domain:path`.
 
 #### 2. Single Site Activation 
 
-Use this command to enable MAx Cache for a specific WordPress installation. 
+Use this command to enable MAx Cache for one domain. It applies to the WordPress installations found in that domain's document root and in its immediate subfolders, except a subfolder that is the document root of another domain. `--domain` is optional: with `--user` alone, the command does the same for every document root of that account.
 ```
 cloudlinux-awp-admin maxcache --enable --user {USERNAME} --domain {USERDOMAIN} 
 ```
@@ -1348,6 +1355,18 @@ cloudlinux-awp-admin maxcache --enable --user {USERNAME} --domain {USERDOMAIN}
 
 * `--user {USERNAME}`: Replace `{USERNAME}` with the system username of the account (e.g., `john`).
 * `--domain {USERDOMAIN}`: Replace `{USERDOMAIN}` with the specific domain name (e.g., `example.com`). 
+
+A `--domain` value that matches no document root is also listed under `accelerate_wp_plugin_not_installed`.
+
+Site owners can also use the **MAx Cache** toggle on the **Add-ons** tab of the AccelerateWP plugin, see [One-click AccelerateWP Add-ons](/user-docs/user-docs-shared-pro-cloudlinux/#one-click-acceleratewp-add-ons), or run `cloudlinux-awp-user maxcache --enable [--domain {USERDOMAIN}]` and `cloudlinux-awp-user maxcache --disable [--domain {USERDOMAIN}]`.
+
+#### 3. Deactivation
+
+Use `--disable` in place of `--enable` to turn MAx Cache off:
+```
+cloudlinux-awp-admin maxcache --disable --all
+cloudlinux-awp-admin maxcache --disable --user {USERNAME} --domain {USERDOMAIN}
+```
 
 ### Using MAx Cache with W3 Total Cache
 
@@ -1410,12 +1429,14 @@ If the extension activates but pages are not served from cache, check in this or
 
 ### Module Directives 
 
+Settings from several levels combine like this: `MaxCacheExclude*`, `MaxCacheMandatoryCookies`, `MaxCacheDynamicCookies`, `MaxCacheIgnoreHeaders`, `MaxCacheQSAllowedParams` and `MaxCacheQSIgnoredParams` are added to those of the parent level. `MaxCacheSuffixLiterals` combines per key: a key the lower level does not set keeps the parent's value, and `enc-gzip` and `enc-br` count as one key. All other directives, including `MaxCacheOptions`, take the value from the most specific level that sets them, so a `MaxCacheOptions` line in `.htaccess` replaces the one from the server configuration, even when it uses `+` or `-`.
+
 #### MaxCache 
 
 * **Syntax**: `MaxCache On|Off`
 * **Default**: Off
 * **Context**: server config, virtual host, directory, .htaccess
-* **Description**: Master enable/disable switch for all module features. When disabled, the module performs no processing and immediately declines the request. When enabled, the module evaluates eligibility and serves cache files when found.
+* **Description**: Enable/disable switch for cache serving. Full .htaccess caching has its own switch, `MaxCacheHtaccess`. When disabled, the module performs no cache-serving processing and immediately declines the request. When enabled, the module evaluates eligibility and serves cache files when found.
 * **Example**: 
 ```
 <IfModule maxcache_module>
@@ -1428,7 +1449,7 @@ If the extension activates but pages are not served from cache, check in this or
 * **Syntax**: `MaxCachePath <template>`
 * **Default**: none (required for cache serving)
 * **Context**: .htaccess only
-* **Description**: Defines the cache file path template using placeholders. This directive is required for the module to serve cache files. The template describes the full path under the document root where cache files are stored.
+* **Description**: Defines the cache file path template using placeholders. This directive is required for the module to serve cache files. The template describes the full path under the document root where cache files are stored. On Apache the template must start with a literal directory, such as `/wp-content/cache/`. A template that starts with a placeholder is not served: requests go to PHP and an error is logged.
 * **Placeholders**: 
 
 | Placeholder | Description | Example Value |
@@ -1440,11 +1461,11 @@ If the extension activates but pages are not served from cache, check in this or
 | `{QS_SUFFIX}` | Query string suffix | `#color=red` or empty |
 | `{MOBILE_SUFFIX}` | Mobile device suffix | `-mobile` or empty |
 | `{SSL_SUFFIX}` | HTTPS suffix | `-https` or empty |
-| `{WEBP_SUFFIX}` | WebP suffix | `-webp` or empty |
-| `{DYNAMIC_COOKIE_SUFFIX}` | Dynamic cookies suffix | `-usd-en` or empty |
+| `{WEBP_SUFFIX}` | WebP suffix. Set when the browser supports WebP and the page's cache directory has no `.no-webp` file. | `-webp` or empty |
+| `{DYNAMIC_COOKIE_SUFFIX}` | Dynamic cookies suffix | `-USD-en` or empty |
 | `{GZIP_SUFFIX}` | Gzip suffix | `_gzip` or empty |
-| `{SLASH_SUFFIX}` | Suffix emitted when the request URI ends in `/`. The literal it emits is set by `MaxCacheSuffixLiterals slash=` (no built-in default) | per `slash=` or empty |
-| `{ENC_SUFFIX}` | Compression-encoding suffix covering both gzip and brotli. The literals are set by `MaxCacheSuffixLiterals enc-gzip=` / `enc-br=`. Supersedes `{GZIP_SUFFIX}`, which is gzip-only | `_gzip` / `_br` or empty |
+| `{SLASH_SUFFIX}` | Suffix emitted when the request URI ends in `/`. The literal it emits is set by `MaxCacheSuffixLiterals slash=` (no built-in default). Requires `ea-apache24-mod_maxcache` 1.2.6 or newer. | per `slash=` or empty |
+| `{ENC_SUFFIX}` | Compression-encoding suffix covering both gzip and brotli. The literals are set by `MaxCacheSuffixLiterals enc-gzip=` / `enc-br=`. Supersedes `{GZIP_SUFFIX}`, which is gzip-only. Requires `ea-apache24-mod_maxcache` 1.2.6 or newer. | `_gzip` / `_br` or empty |
 * **Example** (standard cache layout): 
 ```
 MaxCachePath /wp-content/cache/{HTTP_HOST}{USER_SUFFIX}{REQUEST_URI}{QS_SUFFIX}/index{MOBILE_SUFFIX}{SSL_SUFFIX}{WEBP_SUFFIX}{DYNAMIC_COOKIE_SUFFIX}.html{GZIP_SUFFIX}
@@ -1458,15 +1479,15 @@ This produces cache file paths like:
 * **Syntax**: `MaxCacheSuffixLiterals slash=<literal> ssl=<literal> enc-gzip=<literal> enc-br=<literal>`
 * **Default**: `ssl=-https`; the other literals unset
 * **Context**: server config, virtual host, directory, .htaccess
-* **Description**: Sets the exact bytes the `{SLASH_SUFFIX}`, `{SSL_SUFFIX}` and `{ENC_SUFFIX}` placeholders emit, so the module can reproduce a plugin's own cache-filename scheme byte for byte (for example, W3 Total Cache's layout differs from AccelerateWP's). Only the keys you pass take effect; a key you leave out keeps its built-in behavior. The directive is **all-or-nothing per line**: one unknown token, or `slash=` with an empty value, rejects the whole line, so the same `.htaccess` behaves identically on Apache and NGINX.
+* **Description**: Sets the exact bytes the `{SLASH_SUFFIX}`, `{SSL_SUFFIX}` and `{ENC_SUFFIX}` placeholders emit, so the module can reproduce a plugin's own cache-filename scheme byte for byte (for example, W3 Total Cache's layout differs from AccelerateWP's). Only the keys you pass take effect; a key you leave out keeps its built-in behavior. The directive is **all-or-nothing per line**: one unknown token, or `slash=` with an empty value, rejects the whole line. The result of a rejected line in `.htaccess` differs by server. Apache treats it as a configuration error, so requests under that `.htaccess` get a 500 response until the line is fixed. On NGINX the `maxcache-nginx-configd` daemon skips the line, as if it were not there. Requires `ea-apache24-mod_maxcache` 1.2.6 or newer.
 * **Keys**: 
 
 | Key | Placeholder | Notes |
 |---|---|---|
 | `slash` | `{SLASH_SUFFIX}` | Emitted when the request URI ends in `/`. No built-in default, so it is required if `{SLASH_SUFFIX}` is used. |
 | `ssl` | `{SSL_SUFFIX}` | Omitted = built-in `-https`. |
-| `enc-gzip` | `{ENC_SUFFIX}` (gzip) | Literal for a gzip-encoded variant. |
-| `enc-br` | `{ENC_SUFFIX}` (brotli) | Literal for a brotli-encoded variant. |
+| `enc-gzip` | `{ENC_SUFFIX}` (gzip) | Literal for a gzip-encoded variant. No built-in default: `{ENC_SUFFIX}` needs at least one of `enc-gzip` and `enc-br`. Without them the template is refused and requests go to PHP. |
+| `enc-br` | `{ENC_SUFFIX}` (brotli) | Literal for a brotli-encoded variant. Preferred over gzip when the client accepts both. Leave a key out if the plugin writes no such file. |
 
 * **Example**:
 ```
@@ -1485,9 +1506,9 @@ MaxCacheSuffixLiterals ssl=_ssl enc-gzip=_gzip enc-br=_brotli
 | `TabletAsMobile` | Treat tablets as mobile devices for both the `-mobile` filename suffix (when `{MOBILE_SUFFIX}` is used) and the `SkipCacheOnMobile` gate. Without `SkipCacheOnMobile`, this option still matters: it changes whether tablets use the `-mobile` cache variant. |
 | `SkipCacheOnMobile` | Never serve cached content to mobile devices (and tablets, if `TabletAsMobile` is also enabled). |
 | `ExportVars` | Export `CL_DEVICE_TYPE` and `CL_SUPPORTS_WEBP` to subprocess_env| 
-| `FoldQSIgnoredCase` | Match the names in `MaxCacheQSIgnoredParams` case-insensitively. Enable it when the plugin screens the query string with a case-insensitive expression (so `FBCLID` folds onto `fbclid`); leave it off to match byte for byte, as a PHP plugin comparing `$_GET` keys does. |
+| `FoldQSIgnoredCase` | Match the names in `MaxCacheQSIgnoredParams` case-insensitively. Enable it when the plugin screens the query string with a case-insensitive expression (so `FBCLID` folds onto `fbclid`); leave it off to match byte for byte, as a PHP plugin comparing `$_GET` keys does. Requires `ea-apache24-mod_maxcache` 1.2.6 or newer. |
 
-* **Description**: Fine-tunes mobile/tablet and query-string behavior. The `ExportVars` option provides environment variables for use in `RewriteRule`: `%{ENV:CL_DEVICE_TYPE}` and `%{ENV:CL_SUPPORTS_WEBP}`. We recommend to simply use `MaxCachePath` instead.
+* **Description**: Fine-tunes mobile/tablet and query-string behavior. The `ExportVars` option provides environment variables for use in `RewriteRule`: `%{ENV:CL_DEVICE_TYPE}` and `%{ENV:CL_SUPPORTS_WEBP}`. `CL_DEVICE_TYPE` is `mobile`, `tablet` or `desktop`; `CL_SUPPORTS_WEBP` is `1` or `0`. The environment variables are set only for requests that passed `MaxCacheIgnoreHeaders` and the URI, User-Agent and cookie checks. Apache expressions can read `%{CL_DEVICE_TYPE}` and `%{CL_SUPPORTS_WEBP}` without this option, for example `RewriteCond expr "%{CL_DEVICE_TYPE} == 'mobile'"`. We recommend to simply use `MaxCachePath` instead. A name without a prefix enables the option, the same as `+`. On Apache, write either all names with a prefix or all without one: a line that mixes the two forms is a configuration error.
 * **Example**: 
 ```
 # Treat tablets as mobile
@@ -1502,7 +1523,7 @@ MaxCacheOptions +SkipCacheOnMobile +TabletAsMobile
 * **Syntax**: `MaxCacheExcludeURI "<regex>"`
 * **Default**: none
 * **Context**: server config, virtual host, directory, .htaccess
-* **Description**: Excludes requests whose URI matches the given regex pattern (case-insensitive). Multiple directives can be specified; if any pattern matches, the request is not served from cache. 
+* **Description**: Excludes requests whose URI matches the given regex pattern (case-insensitive). Multiple directives can be specified; if any pattern matches, the request is not served from cache. The query string is not part of the match, so a pattern cannot exclude by query parameter.
     * **Important**: Unlike RewriteCond rules that use `!` for negation, this directive uses **positive matching** — URIs that match are excluded. 
     * **Performance tip**: Using `MaxCacheExcludeURI` patterns like `/(?:wp-content|wp-includes)/` is more efficient than wrapping directives in `<If "%{REQUEST_URI} !~ ...">` blocks. The module checks URI exclusions early and declines immediately, avoiding further processing.
 * **Example**:
@@ -1543,7 +1564,7 @@ MaxCacheExcludeCookie "(wordpress_logged_in_.+|wp-postpass_|wptouch_switch_toggl
 * **Syntax**: `MaxCacheMandatoryCookies <cookie1> [<cookie2> ...]`
 * **Default**: none
 * **Context**: server config, virtual host, directory, .htaccess
-* **Description**: Declares cookie names that **must be present** in the request for cache serving to occur. If any mandatory cookie is missing, the request falls back to PHP. Useful for gated content or opt-in caching scenarios.
+* **Description**: Declares cookie names that **must be present** in the request for cache serving to occur. If any mandatory cookie is missing, the request falls back to PHP. Useful for gated content or opt-in caching scenarios. Names are separated by spaces or `|` and must match the cookie name exactly.
 * **Example**:  
 ```
 # Only serve cache if user has accepted cookies
@@ -1555,11 +1576,10 @@ MaxCacheMandatoryCookies cookie_consent
 * **Syntax**: `MaxCacheDynamicCookies <token> [<token> ...]`
 * **Default**: none
 * **Context**: server config, virtual host, directory, .htaccess
-* **Description**: Declares cookie names whose values become part of the cache filename via `{DYNAMIC_COOKIE_SUFFIX}`. Supports both scalar cookies (`currency`) and nested cookies (`preferences[language]`).
+* **Description**: Declares cookie names whose values become part of the cache filename via `{DYNAMIC_COOKIE_SUFFIX}`. Supports both scalar cookies (`currency`) and nested cookies (`preferences[language]`). On Apache, tokens may also be separated by `|`. On NGINX, separate them with spaces only.
 * **Normalization**:
     * Cookie values are sanitized to `[A-Za-z0-9_-]` (others become `-`)
-    * Result is lowercased
-    * Underscores are converted to hyphens
+    * Case and underscores are preserved
     * Each value is prefixed with `-`
 * **Example**:
 ```
@@ -1567,8 +1587,8 @@ MaxCacheMandatoryCookies cookie_consent
 MaxCacheDynamicCookies currency language
 
 # Request with Cookie: currency=USD; language=en_US
-# Results in suffix: -usd-en-us
-# Full filename: index-https-usd-en-us.html
+# Results in suffix: -USD-en_US
+# Full filename: index-https-USD-en_US.html
 ```
 
 #### MaxCacheQSAllowedParams 
@@ -1581,13 +1601,14 @@ MaxCacheDynamicCookies currency language
     * Sorts remaining keys ascending
     * Builds a normalized query string
     * Appends `#<normalized_query>` to the cache directory path via `{QS_SUFFIX}`
-    * If no allowlisted parameter is present, requests with query strings are not served from cache (fall back to PHP).
+    * Normalization works like this: names and values are percent-decoded and re-encoded as PHP `urlencode()` does (a space becomes `+`), with lowercase hexadecimal in `%xx`. Dots and spaces in a name become `_`. A parameter with no value gets `=`. For a repeated parameter the last value is kept, except that `name[]` becomes `name[0]`, `name[1]` and so on, with the brackets encoded. Parameters that are neither allowed nor ignored stay in the key. A query string longer than 4096 bytes is not served from cache.
+    * If parameters remain after removing the ignored ones and none of them is allowlisted, the request is not served from cache (falls back to PHP). If every parameter is ignored, the base page is served.
 * **Example:**
 ```
 # Allow caching for search and pagination
 MaxCacheQSAllowedParams s paged
 
-# Request: /search/?s=hello&page=2
+# Request: /search/?s=hello&paged=2
 # Cache path includes: #paged=2&s=hello
 ```
 
@@ -1599,6 +1620,8 @@ MaxCacheQSAllowedParams s paged
 * **Description**: Declares query parameters that are removed from the cache key. These parameters never affect cache variants—they're stripped before the query string is normalized.
 * **Example**:
 ```
+MaxCacheQSAllowedParams color
+
 # Ignore tracking parameters
 MaxCacheQSIgnoredParams utm_source utm_medium utm_campaign fbclid gclid
 
@@ -1611,7 +1634,7 @@ MaxCacheQSIgnoredParams utm_source utm_medium utm_campaign fbclid gclid
 * **Syntax**: `MaxCacheIgnoreHeaders "Header-Name: Substring"`
 * **Default**: none
 * **Context**: server config, virtual host, directory, .htaccess
-* **Description**: Skip cache serving for requests carrying specific headers. The header value is checked for substring match.
+* **Description**: Skip cache serving for requests carrying specific headers. The header name is matched case-insensitively and the value as a case-sensitive substring. An entry without a colon or without a value never matches, so it cannot test only that a header is present.
 * **Example**:
 ```
 # Don't serve cache for AJAX requests
@@ -1677,7 +1700,7 @@ The simplest possible configuration — just two lines to start serving cached p
 |---|---|
 | `https://example.com/`  | `/wp-content/cache/example.com/index.html` |
 | `https://example.com/blog/`  | `/wp-content/cache/example.com/blog/index.html` |
-| `https://example.com/products/widget`/ | `/wp-content/cache/example.com/products/widget/index.html` | 
+| `https://example.com/products/widget/` | `/wp-content/cache/example.com/products/widget/index.html` |
 
 ####  Step 2: HTTPS Awareness with {SSL_SUFFIX} 
 
@@ -1738,6 +1761,13 @@ Serve pre-compressed cache files for faster delivery. Just add the gzip suffix:
 * Apache serves these with proper `Content-Encoding: gzip` headers
 * Browsers decompress automatically — users see faster load times
 * Clients without gzip support still get non-compressed `.html` cache files
+
+Add a MIME type for the gzip files, because Apache does not recognize the `.html_gzip` extension:
+```
+<IfModule mod_mime.c>
+    AddType text/html .html_gzip
+</IfModule>
+```
 
 #### Step 5: Protecting Dynamic Content with Exclusions 
 
@@ -1827,12 +1857,15 @@ By default, URLs with query strings bypass the cache. But some query strings _sh
 **How query strings become cache paths:**
 | Request | Cache Directory |
 |---|---|
-| `/?s=hello` | `.../example.com#s=hello/` |
-| `/?lang=en&s=test` | `.../example.com#lang=en&s=test/` |
+| `/?s=hello` | `.../example.com/#s=hello/` |
+| `/?lang=en&s=test` | `.../example.com/#lang=en&s=test/` |
+| `/cat?s=hello` | `.../example.com/cat#s=hello/` |
 | `/?random=xyz` | ❌ _Not cached (param not in allowlist)_ |
 
+The `/` before `#` is present only when the request URI ends in `/`.
+
 :::tip Key insight:  
-Only requests with at least one allowed parameter get cached. Unknown query strings fall through to PHP.
+Only requests with at least one allowed parameter get a query-string variant. A query string made up only of `MaxCacheQSIgnoredParams` names is served the base page. Other query strings fall through to PHP.
 :::
 
 #### Step 9: Stripping Tracking Parameters 
@@ -1859,7 +1892,7 @@ Marketing tools add tracking parameters (utm_source, fbclid, etc.) that create c
 | Request | Effective Cache Key |
 |---|---|
 | `/?s=hello&utm_source=google` | `#s=hello (utm_source stripped)` |
-| `/?fbclid=abc123` | ❌ _Falls to PHP (no allowed params remain)_ |
+| `/?fbclid=abc123` | Base page, no suffix (every parameter is ignored) |
 | `/?s=test&gclid=xyz&lang=en` | `#lang=en&s=test (gclid stripped, sorted)` |
 
 #### Step 10: Behavior Fine-Tuning with `MaxCacheOptions`
@@ -1951,11 +1984,11 @@ Cache different versions based on cookie values:
     # Cache varies by these cookie values
     MaxCacheDynamicCookies currency language
 
-    # {DYNAMIC_COOKIE_SUFFIX} adds -usd-en style suffixes
+    # {DYNAMIC_COOKIE_SUFFIX} adds -USD-en style suffixes
     MaxCachePath /wp-content/cache/{HTTP_HOST}{REQUEST_URI}/index{MOBILE_SUFFIX}{SSL_SUFFIX}{DYNAMIC_COOKIE_SUFFIX}.html{GZIP_SUFFIX}
 </IfModule> 
 ```
-**Result**: `Cookie: currency=USD; language=en` → `index-https-usd-en.html_gzip` 
+**Result**: `Cookie: currency=USD; language=en` → `index-https-USD-en.html_gzip`
 
 ### Cache Path Construction 
 
@@ -1964,16 +1997,18 @@ For a complete understanding, here's how the module builds cache paths:
 1. Eligibility checks (in order):
     - Is `MaxCache` On?
     - Is request method `GET`?
-    - For query strings: is at least one `MaxCacheQSAllowedParams` key present? (if not, request is declined)
+    - Is the URI outside `/wp-admin/`? (never served from cache)
     - Do any `MaxCacheIgnoreHeaders` match?
     - Do any `MaxCacheExcludeURI` patterns match?
     - Do any `MaxCacheExcludeUA` patterns match?
     - Do any `MaxCacheExcludeCookie` patterns match?
     - Are all `MaxCacheMandatoryCookies` present?
-    - Is `MaxCacheOptions +SkipCacheOnMobile` enabled and device is mobile/tablet?
+    - Is `MaxCacheOptions +SkipCacheOnMobile` enabled and the device mobile (or a tablet, with `+TabletAsMobile`)?
+    - For query strings: after removing `MaxCacheQSIgnoredParams`, does any parameter remain, and if so is at least one of them in `MaxCacheQSAllowedParams`? (if none remains, the base page is used; if none is allowed, the request is declined)
 
 2. Template evaluation (lazy, only if eligible):
     - Parse `MaxCachePath` into segments
+    - The template must begin with a literal path such as `/wp-content/cache/`, not a placeholder; otherwise the request is declined and an error is logged.
     - Evaluate each placeholder as needed
     - Build complete cache URI
 
@@ -1982,6 +2017,8 @@ For a complete understanding, here's how the module builds cache paths:
     - Check if file exists and is a regular file
     - If found: rewrite request to serve static file
     - If not found: decline (request falls through to PHP) 
+
+To see which file the module looks for, set `LogLevel maxcache_module:trace5` in the Apache configuration, restart Apache, repeat the request and look in the Apache error log for `MaxCache: candidate cache path=`, `MaxCache: cache HIT` and `MaxCache: cache MISS`. Trace logging is verbose: remove the setting when you finish.
 
 ### Performance Notes 
 
@@ -2000,16 +2037,17 @@ MAx Cache will not work in AccelerateWP when:
 * The site language is Korean (ko_KR) (the MAx Cache .htaccess block is skipped).
 * Using the AccelerateWP PHP filter to replace dots with underscores.
 * Using the AccelerateWP PHP filter forces the full path to cache files instead of using DOCUMENT_ROOT. 
+* The site's `.htaccess`, or its directory when the file does not exist, is not writable by the user WordPress runs as. The enable command still lists such a site under `maxcache_enabled`, so check that the block is in `.htaccess`.
 
 ### Full .htaccess caching
 
-Full .htaccess caching is the second subsystem of `mod_maxcache`. It caches parsed `.htaccess` files in shared memory, so Apache does not re-read and re-parse them from disk on every request. On shared-hosting servers with thousands of sites, this eliminates thousands of `stat()` and `open()` syscalls per second.
+Full .htaccess caching is the second subsystem of `mod_maxcache`. It caches parsed `.htaccess` files in shared memory, so Apache does not re-read and re-parse them from disk on every request. On shared-hosting servers with thousands of sites, this eliminates thousands of `.htaccess` file opens and reads per second.
 
 Full .htaccess caching benefits **all** `.htaccess`-heavy sites regardless of whether MAx Cache page caching is enabled.
 
 #### How it works
 
-By default, Apache re-reads and re-parses `.htaccess` files from disk on every request. On shared-hosting servers with thousands of sites, this creates significant disk I/O overhead. Full .htaccess caching parses each `.htaccess` once (on first request) and stores the result in shared memory so all Apache workers can reuse it without touching the disk again. The cache populates lazily as traffic arrives.
+By default, Apache re-reads and re-parses `.htaccess` files from disk on every request. On shared-hosting servers with thousands of sites, this creates significant disk I/O overhead. Full .htaccess caching parses each `.htaccess` once (on first request) and stores the result in shared memory so all Apache workers can reuse it without re-reading and re-parsing the file. The cache populates lazily as traffic arrives.
 
 #### Change detection
 
@@ -2026,12 +2064,16 @@ With the default value of `0`, any `.htaccess` create, modify, or delete is dete
 
 All full .htaccess caching directives go inside `<IfModule mod_maxcache.c>` in the Apache configuration. Full .htaccess caching is configured in `/etc/apache2/conf.d/maxcache_htaccess.conf`.
 
+The older `MaxCacheHTCache*` directive names and the `htcache-status` handler still work, but they log a deprecation warning. Use the `MaxCacheHtaccess*` names and `maxcache-htaccess-status`.
+
 #### MaxCacheHtaccess
 
 * **Syntax**: `MaxCacheHtaccess On|Off`
 * **Default**: On (in shipped config)
 * **Context**: server config, virtual host
 * **Description**: Master enable/disable switch for the full .htaccess caching subsystem.
+
+`MaxCacheHtaccess On` in a virtual host takes effect only when it is also on at the server level, as in the shipped `maxcache_htaccess.conf`.
 
 #### MaxCacheHtaccessRevalidateInterval
 
@@ -2046,7 +2088,7 @@ All full .htaccess caching directives go inside `<IfModule mod_maxcache.c>` in t
 * **Syntax**: `MaxCacheHtaccessEntries <count>`
 * **Default**: 50000
 * **Range**: 10–500000
-* **Context**: server config, virtual host
+* **Context**: server config (accepted in a virtual host, but the value is read from the main server configuration only)
 * **Description**: Maximum number of cached `.htaccess` entries in shared memory. When this limit is reached, new directories fall back to Apache's standard processing.
 
 #### MaxCacheHtaccessMemorySize
@@ -2054,8 +2096,8 @@ All full .htaccess caching directives go inside `<IfModule mod_maxcache.c>` in t
 * **Syntax**: `MaxCacheHtaccessMemorySize <MB>`
 * **Default**: auto (derived from `MaxCacheHtaccessEntries`)
 * **Range**: 1–4096
-* **Context**: server config, virtual host
-* **Description**: Shared memory arena size in megabytes. Normally sized automatically — only set this if you see `maxcache-htaccess: arena memory exhausted` in the error log.
+* **Context**: server config (accepted in a virtual host, but the value is read from the main server configuration only)
+* **Description**: Shared memory arena size in megabytes. Normally sized automatically — only set this if you see `maxcache-htaccess: arena memory exhausted` in the error log. Two arenas of this size are created, plus a patch pool (`Patch Pool` in the status output) of a quarter of this size, at least 1 MB. The automatic size is 8 KB per entry in `MaxCacheHtaccessEntries`, between 16 MB and 4096 MB.
 
 #### MaxCacheHtaccessExclude
 
@@ -2073,7 +2115,7 @@ MaxCacheHtaccessExclude /home/staging /tmp
 * **Syntax**: `MaxCacheHtaccessMaxFileSize <KB>`
 * **Default**: 256
 * **Range**: 0–10240
-* **Context**: server config, virtual host
+* **Context**: server config (accepted in a virtual host, but the value is read from the main server configuration only)
 * **Description**: Maximum `.htaccess` file size (in KB) that full .htaccess caching will process. Files exceeding this limit are skipped and served via Apache's standard processing. Set to `0` for unlimited.
 
 #### MaxCacheHtaccessMaxEntriesPerDocroot
@@ -2081,7 +2123,7 @@ MaxCacheHtaccessExclude /home/staging /tmp
 * **Syntax**: `MaxCacheHtaccessMaxEntriesPerDocroot <count>`
 * **Default**: 256
 * **Range**: 0–100000
-* **Context**: server config, virtual host
+* **Context**: server config (accepted in a virtual host, but the value is read from the main server configuration only)
 * **Description**: Maximum cached entries under a single document root. Prevents one user from monopolizing the shared cache on multi-tenant servers. Set to `0` for unlimited (the global `MaxCacheHtaccessEntries` limit still applies).
 
 #### Configuration examples
@@ -2092,7 +2134,7 @@ MaxCacheHtaccessExclude /home/staging /tmp
 MaxCacheHtaccess On
 ```
 
-Enables full .htaccess caching globally with default settings (50,000 max entries, 60-second revalidation).
+Enables full .htaccess caching globally with default settings (50,000 max entries, revalidation on every request).
 
 ##### Production shared hosting
 
@@ -2113,7 +2155,6 @@ For a server with ~5,000 WordPress sites:
     DocumentRoot /home/example/public_html
 
     MaxCacheHtaccess On
-    MaxCacheHtaccessEntries 10000
     MaxCacheHtaccessExclude /home/example/public_html/tmp
 </VirtualHost>
 ```
@@ -2144,7 +2185,7 @@ Full .htaccess caching provides a status handler for monitoring. To enable it, a
 </Location>
 ```
 
-Then query it:
+Restart Apache (`systemctl restart httpd`), then query it:
 
 ```
 curl -s http://localhost/maxcache-htaccess-status
@@ -2162,20 +2203,33 @@ Ready: yes
 Entries: 1234 / 50000
 Lazy compiles: 5678
 PCRE mode: shared (GOT patched)
+GOT saves: 4 / 256
 
 Arena Architecture: Base + Patch Pool + Shadow
 Active Base: Arena A
-Arena size: 50MB each (x 2)
-Arena usage: 8192KB / 50MB (16%)
-Patch Pool: 256KB / 12MB used (2%)
+Arena size: 390MB each (x 2)
+Arena usage: 8192KB / 390MB (2%)
+Patch Pool: 256KB / 97MB used (0%)
 Compacting: no
 Compaction threshold: 80%
 
-Revalidate interval: 0s
+Arena A: allocated
+Arena B: allocated
+Patch Pool: allocated
+
+Revalidate interval: 0s (per-request stat)
 
 Cache (global):
   Hits:     45000
   Misses:   1234
+
+Cache (this process):
+  Hits:     1500
+  Misses:   40
+  Hit rate: 97.3%
+
+Cached directories:
+  (Total cached: 1234 entries)
 ```
 
 Key fields to check:
@@ -2183,7 +2237,7 @@ Key fields to check:
 | Field | Healthy value | Problem indicator |
 | --- | --- | --- |
 | Enabled | `yes` | `no` — full .htaccess caching is turned off in config |
-| Ready | `yes` | `no` — engine failed to initialize |
+| Ready | `yes` | `no` — engine failed to initialize, or this CloudLinux edition is not supported. Check the Apache error log. |
 | Entries | below max | at max — increase `MaxCacheHtaccessEntries` |
 | Arena usage | below 90% | above 90% — increase `MaxCacheHtaccessMemorySize` |
 | Hits | increasing | staying at 0 — full .htaccess caching is not serving cached results |
@@ -2214,6 +2268,8 @@ MAx Cache for NGINX (`ea-nginx-maxcache`) is the NGINX counterpart of the [Apach
 
 :::tip 
 MAx Cache for NGINX is currently supported on cPanel control panels only. 
+
+MAx Cache for NGINX works on CloudLinux OS Solo, Admin and Shared Pro. On other editions the module loads but serves nothing and logs a warning about an unsupported CloudLinux edition.
 :::
 
 ### Installation
@@ -2228,6 +2284,7 @@ This pulls in all required dependencies:
 | Package                  | Description                                                     |
 | ------------------------ | --------------------------------------------------------------- |
 | `ea-nginx-maxcache`      | NGINX dynamic module (`.so` file) and module loader config      |
+| `ea-nginx` | NGINX itself. The module is built for one `ea-nginx` version and requires that version, so `ea-nginx` is installed with it if the server does not have it, and an `ea-nginx` update needs the `ea-nginx-maxcache` build for the same version. |
 | `libmaxcache`            | Shared C library for device detection, WebP, cookie/QS handling |
 | `maxcache-nginx-configd` | Configuration daemon: parses `.htaccess`, writes shared memory  |
 
@@ -2249,9 +2306,13 @@ journalctl -u maxcache-nginx-configd -f
 
 #### Default: automatic via maxcache-nginx-configd daemon
 
-In the default mode, the `maxcache-nginx-configd` daemon reads AccelerateWP `.htaccess` directives and writes parsed per-domain configuration to shared memory (`/dev/shm/maxcache_config`). The NGINX module reads this shared memory on each request. No manual NGINX configuration is needed per domain.
+In the default mode, the `maxcache-nginx-configd` daemon reads the MAx Cache directives that the caching plugin writes to the site's `.htaccess` and writes parsed per-domain configuration to shared memory (`/dev/shm/maxcache_config`). The NGINX module reads this shared memory on each request. No manual NGINX configuration is needed per domain.
 
-The `maxcache_dynamic` directive (enabled by default) and `maxcache_shm_path` are the only `http`-level directives required. The `ea-nginx-maxcache` package configures them automatically.
+The daemon recognizes a block only when it opens with exactly `<IfModule maxcache_module>`, and directive names must be spelled as in this documentation. A block opened with `<IfModule mod_maxcache.c>` works on Apache but is ignored on NGINX.
+
+The daemon keeps one configuration per domain. A WordPress site in a subdirectory of `public_html` that has no document root of its own is registered under the account's main domain. If a domain has several separate WordPress installations with MAx Cache enabled, NGINX serves only one of them from cache at a time.
+
+No `http`-level directives are required: `maxcache_dynamic` is on by default and `maxcache_shm_path` defaults to the path the daemon uses. The `ea-nginx-maxcache` package only adds the `load_module` line.
 
 #### ea-nginx reverse proxy (proxy\_pass)
 
@@ -2263,7 +2324,9 @@ NGINX handles all traffic without Apache. PHP requests go to PHP-FPM via `fastcg
 
 #### Manual NGINX configuration
 
-For domains not managed by AccelerateWP, static directives (`maxcache on`, `maxcache_path`, exclusions, etc.) can be set directly in `nginx.conf` or included config files. These also serve as fallbacks when the daemon does not have configuration for a domain.
+For domains not managed by a caching plugin, set `maxcache_dynamic off;` in the `http` block and set static directives (`maxcache on`, `maxcache_path`, exclusions, etc.) directly in `nginx.conf` or included config files. `maxcache_dynamic off` applies to the whole server, so daemon-managed domains then need static directives too.
+
+While dynamic mode is on and the shared memory is available, a domain the daemon has no configuration for is not served from cache, and static directives for it are ignored. They are used only if the shared memory cannot be opened.
 
 ### Activation
 
@@ -2271,14 +2334,14 @@ Use the `cloudlinux-awp-admin` tool to enable MAx Cache:
 
 ```
 # Enable for all compatible sites on the server
-cloudlinux-awp-admin maxcache enable --all
+cloudlinux-awp-admin maxcache --enable --all
 
 # Enable for a specific site
 cloudlinux-awp-admin maxcache --enable --user {USERNAME} --domain {USERDOMAIN}
 ```
 
 :::tip
-A supported caching plugin must be installed and up-to-date on the target WordPress sites: AccelerateWP, or W3 Total Cache 2.11.0 or newer with Page Cache set to _Disk: Enhanced_. See [Using MAx Cache with W3 Total Cache](/cloudlinuxos/shared-pro/#using-max-cache-with-w3-total-cache).
+The AccelerateWP plugin must be installed and up-to-date on the target WordPress sites. W3 Total Cache sites (2.11.0 or newer, Page Cache set to _Disk: Enhanced_) are not managed by this tool: enable MAx Cache from the plugin, see [Using MAx Cache with W3 Total Cache](/cloudlinuxos/shared-pro/#using-max-cache-with-w3-total-cache).
 :::
 
 ### Known issues
@@ -2294,7 +2357,7 @@ When using NGINX in **standalone mode** (without Apache), `mod_ruid2` can cause 
 **Symptoms:**
 
 * NGINX always passes requests to the backend despite MaxCache being enabled.
-* NGINX error log shows `permission denied` when opening cache files.
+* The module does not report this as an error. With the error log at `info` level, these requests log `maxcache: cache MISS` for the cache file although the file exists. Confirm the cause with the `sudo -u nobody test -r` check under Troubleshooting below.
 
 **Resolution:**
 
@@ -2315,17 +2378,23 @@ setfacl -R -d -m u:nobody:rX /home/username/public_html/wp-content/cache/
 
 ### Configuration directives
 
-All directives below map directly to their [Apache MAx Cache counterparts](https://docs.cloudlinux.com/cloudlinuxos/shared-pro/#max-cache-documentation) . In most deployments with `maxcache_dynamic on` (the default), these are managed automatically by the daemon.
+All directives below, except `maxcache_dynamic` and `maxcache_shm_path`, map directly to their [Apache MAx Cache counterparts](https://docs.cloudlinux.com/cloudlinuxos/shared-pro/#max-cache-documentation) . In most deployments with `maxcache_dynamic on` (the default), these are managed automatically by the daemon.
+
+For directives set in NGINX configuration files, a list directive such as `maxcache_exclude_uri` at a lower level replaces the list of the parent level instead of adding to it, so repeat any exclusions you still need.
 
 #### maxcache
 
-Enables or disables the module.
+Enables or disables the module for static configuration. It has no effect on a domain configured through the `maxcache-nginx-configd` daemon. To turn MAx Cache off for such a site, run `cloudlinux-awp-admin maxcache --disable --user {USERNAME} --domain {USERDOMAIN}` on an AccelerateWP site, or deactivate the MAx Cache extension in W3 Total Cache.
 
 **Syntax:** `maxcache on | off;` **Default:** `off` **Context:** `http`, `server`, `location`
 
 #### maxcache\_path
 
-Cache file path template with variable substitution.
+Cache file path template with variable substitution, relative to the document root (`root`). For example:
+
+```
+maxcache_path "/wp-content/cache/wp-rocket/{HTTP_HOST}{REQUEST_URI}/index{SSL_SUFFIX}.html{GZIP_SUFFIX}";
+```
 
 **Syntax:** `maxcache_path "<template>";` **Default:** none (required when `maxcache on`) **Context:** `http`, `server`, `location`
 
@@ -2336,19 +2405,21 @@ Supported template variables:
 | `{HTTP_HOST}`             | Request hostname                          | `example.com`       |
 | `{REQUEST_URI}`           | Request URI path                          | `/blog/hello-world` |
 | `{SSL_SUFFIX}`            | `-https` if HTTPS, empty otherwise        | `-https`            |
-| `{MOBILE_SUFFIX}`         | `-mobile` for mobile/tablet devices       | `-mobile`           |
-| `{WEBP_SUFFIX}`           | `-webp` if browser supports WebP          | `-webp`             |
+| `{MOBILE_SUFFIX}`         | `-mobile` for mobile devices, and for tablets when `tablet_as_mobile` is on | `-mobile`           |
+| `{WEBP_SUFFIX}`           | WebP suffix. Set when the browser supports WebP and the page's cache directory has no `.no-webp` file. | `-webp`             |
 | `{GZIP_SUFFIX}`           | `_gzip` if client accepts gzip            | `_gzip`             |
 | `{QS_SUFFIX}`             | Normalized query string suffix            | `#lang=en`          |
 | `{USER_SUFFIX}`           | Per-user cache suffix for logged-in users | `-admin-a1b2c3`     |
 | `{USER_SHARED_SUFFIX}`    | Shared logged-in cache suffix             | `-loggedin-a1b2c3`  |
 | `{DYNAMIC_COOKIE_SUFFIX}` | Dynamic cookie variant suffix             | `-fr-eur`           |
-| `{SLASH_SUFFIX}`          | Emitted when the request URI ends in `/`; literal set by `maxcache_suffix_literals slash=` | per `slash=` or empty |
-| `{ENC_SUFFIX}`            | Compression-encoding suffix (gzip and brotli); literals set by `maxcache_suffix_literals enc-gzip=` / `enc-br=`. Supersedes `{GZIP_SUFFIX}` | `_gzip` / `_br` or empty |
+| `{SLASH_SUFFIX}`          | Emitted when the request URI ends in `/`; literal set by `maxcache_suffix_literals slash=`. Requires `ea-nginx-maxcache` 1.2.6 or newer. | per `slash=` or empty |
+| `{ENC_SUFFIX}`            | Compression-encoding suffix (gzip and brotli); literals set by `maxcache_suffix_literals enc-gzip=` / `enc-br=`. Supersedes `{GZIP_SUFFIX}`. Requires `ea-nginx-maxcache` 1.2.6 or newer. | `_gzip` / `_br` or empty |
+
+`{SLASH_SUFFIX}` and `{ENC_SUFFIX}` have no built-in value. A `maxcache_path` that uses `{SLASH_SUFFIX}` needs the `slash=` key of `maxcache_suffix_literals`, and one that uses `{ENC_SUFFIX}` needs `enc-gzip=` or `enc-br=`; otherwise NGINX refuses the configuration.
 
 #### maxcache\_suffix\_literals
 
-Sets the exact bytes the `{SLASH_SUFFIX}`, `{SSL_SUFFIX}` and `{ENC_SUFFIX}` placeholders emit, so the module reproduces a plugin's own cache-filename scheme byte for byte. Only the keys you pass take effect; the directive is all-or-nothing (one unknown token, or `slash=` with an empty value, rejects the whole line). Keys: `slash`, `ssl` (omitted = built-in `-https`), `enc-gzip`, `enc-br`.
+Sets the exact bytes the `{SLASH_SUFFIX}`, `{SSL_SUFFIX}` and `{ENC_SUFFIX}` placeholders emit, so the module reproduces a plugin's own cache-filename scheme byte for byte. Only the keys you pass take effect; the directive is all-or-nothing (one unknown token, or `slash=` with an empty value, rejects the whole line). Keys: `slash`, `ssl` (omitted = built-in `-https`), `enc-gzip`, `enc-br`. Requires `ea-nginx-maxcache` 1.2.6 or newer.
 
 **Syntax:** `maxcache_suffix_literals slash=<lit> ssl=<lit> enc-gzip=<lit> enc-br=<lit>;` **Default:** `ssl=-https`, others unset **Context:** `http`, `server`, `location`
 
@@ -2363,11 +2434,11 @@ Behavior options for mobile and query-string handling.
 | `skip_mobile`          | Mobile devices bypass cache and receive dynamic content.           |
 | `tablet_as_mobile`     | Tablets are treated as mobile devices.                             |
 | `export_vars`          | Exports `$cl_device_type` and `$cl_supports_webp` NGINX variables. |
-| `fold_qs_ignored_case` | Match `maxcache_qs_ignored_params` names case-insensitively (e.g. `FBCLID` folds onto `fbclid`). Off = byte-for-byte match. |
+| `fold_qs_ignored_case` | Match `maxcache_qs_ignored_params` names case-insensitively (e.g. `FBCLID` folds onto `fbclid`). Off = byte-for-byte match. Requires `ea-nginx-maxcache` 1.2.6 or newer. |
 
 #### maxcache\_exclude\_uri
 
-Regex (case-insensitive) to exclude matching URIs from caching.
+Regex (case-insensitive) to exclude matching URIs from caching. The query string is not part of the match, so a pattern cannot exclude by query parameter.
 
 **Syntax:** `maxcache_exclude_uri "<regex>";` **Default:** none **Context:** `http`, `server`, `location`
 
@@ -2397,7 +2468,7 @@ Cookies that create dynamic cache variants (e.g., for multi-currency or multi-la
 
 #### maxcache\_qs\_allowed\_params
 
-Query string parameters allowed in the cache key. Without this, any query string bypasses the cache.
+Query string parameters allowed in the cache key. Without this, a query string bypasses the cache unless all its parameters are listed in `maxcache_qs_ignored_params`, in which case the base page is served.
 
 **Syntax:** `maxcache_qs_allowed_params <param1> [param2] ...;` **Default:** none **Context:** `http`, `server`, `location`
 
@@ -2409,7 +2480,7 @@ Query string parameters to strip from the cache key (typically tracking params).
 
 #### maxcache\_ignore\_headers
 
-Request header/value pairs that bypass the cache. Format: `"Header-Name: value"`.
+Request header/value pairs that bypass the cache. Format: `"Header-Name: value"`. Matching follows the rules of `MaxCacheIgnoreHeaders`.
 
 **Syntax:** `maxcache_ignore_headers "<Header>: <value>";` **Default:** none **Context:** `http`, `server`, `location`
 
@@ -2456,8 +2527,9 @@ nginx -T 2>&1 | grep maxcache
 **Cache files missing or wrong permissions:**
 
 ```
-ls -la /home/user/public_html/wp-content/cache/example.com/
-sudo -u nobody test -r /home/user/public_html/wp-content/cache/example.com/index-https.html && echo "OK" || echo "Permission denied"
+# AccelerateWP (for W3 Total Cache, look under wp-content/cache/page_enhanced/example.com/)
+ls -la /home/user/public_html/wp-content/cache/wp-rocket/example.com/
+sudo -u nobody test -r /home/user/public_html/wp-content/cache/wp-rocket/example.com/index-https.html && echo "OK" || echo "Permission denied"
 ```
 
 **Daemon not running:**
@@ -2479,6 +2551,8 @@ systemctl reload maxcache-nginx-configd
 ```
 echo '{"action":"status"}' | socat - UNIX-CONNECT:/opt/cloudlinux/maxcache/notify.sock
 ```
+
+The list shows the names the daemon has registered. cPanel `www.` aliases are not registered on their own, so `www.example.com` is normally not listed. A request for `www.example.com` uses the entry of `example.com` unless `www.example.com` has its own entry. The cache file path still uses the host name in the request.
 
 **Debug logging:**
 
