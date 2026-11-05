@@ -10,7 +10,7 @@ This section explains why the old mirror system will not support newer CloudLinu
 
 New CloudLinux versions are moving to the new mirror service and open HTTPS mirrors. The legacy mirror system (custom SSL/XMLRPC) will not support newer OS and package versions. Customers should reconfigure their mirrors to the new standard HTTPS layout and endpoint.
 
-**Currently, only CloudLinux OS 10 is supported**, and support for older versions will be enabled gradually.
+**The new mirror service (`cl-mirrors`) is supported on CloudLinux OS 7, 7 Hybrid, 8, 9 and 10.** Unmodified repository configuration uses it starting with these `cloudlinux-release` versions: `7.9-2.15` on CloudLinux OS 7 and 7 Hybrid, `8.10-14` on CloudLinux OS 8, `9.7-2` on CloudLinux OS 9, `10-4` on CloudLinux OS 10. If the update leaves a `cloudlinux.repo.rpmnew` file, review and merge it with your local `cloudlinux.repo`.
 
 For customer-managed mirrors, the migration means **adding a new HTTPS mirror** (or **replacing** the legacy mirror endpoint) rather than "reconfiguring". In most cases you can **reuse existing storage** and just adjust the mirror layout/paths and transport (open HTTPS).
 
@@ -30,15 +30,17 @@ For customer-managed mirrors, the migration means **adding a new HTTPS mirror** 
 ## What you need to do (migration quick plan)
 
 1. **Set up a new HTTPS mirror** that exposes SWNG content via standard HTTPS.
-2. **Use the new mirrorlist endpoint**:
-   - `https://repo.cloudlinux.com/cloudlinux/mirrorlists/cl-mirrors`
+2. **Know the new mirrorlist endpoint.** Servers with an unmodified repository configuration from a supported `cloudlinux-release` package already use it. Each repository has its own list under this endpoint, for example for CloudLinux OS 10:
+   - `https://repo.cloudlinux.com/cloudlinux/mirrorlists/cl-mirrors/cloudlinux-x86_64-server-10`
+
+   After your mirror has been added, fetch this URL from a server that should use the mirror to see whether it is listed.
 3. **Optionally mirror only the versions you need** (partial mirrors are supported).
 4. **Provide your mirror URL and scope** to CloudLinux support so it can be added to mirror rotation.
 
 :::tip
 - SWNG is the main operational repository for updates.
 - `repo.cloudlinux.com` contains conversion and install assets.
-- Full `repo.cloudlinux.com` is large (>3 TB), so partial sync is recommended unless you need a fully autonomous environment.
+- Full `repo.cloudlinux.com` is large (>3 TB), so partial sync is recommended unless you need a complete local copy.
 :::
 
 ## Creating a CloudLinux Mirror (SWNG)
@@ -92,7 +94,7 @@ Ensure the index matches the upstream structure. Mixed setups can use `<domain>/
 
 ### Optional: mirror `repo.cloudlinux.com` content
 
-Use this only if you need a fully autonomous install/conversion environment:
+Use this only if you need a local copy of install and conversion assets.
 
 - Full sync is **3+ TB**.
 - In most cases, sync only the required sub-repositories.
@@ -144,7 +146,7 @@ If you are behind a corporate proxy/firewall, ensure outbound access from the mi
 ```
 # Dry-run a small test sync (replace path as needed)
 mkdir -p /tmp/cl-mirror-test
-rsync -avv --delete rsync://rsync.upstream.cloudlinux.com/SWNG/10/ /tmp/cl-mirror-test/ | head -n 50
+rsync -avv --dry-run --delete rsync://rsync.upstream.cloudlinux.com/SWNG/10/ /tmp/cl-mirror-test/ | head -n 50
 ```
 
 Common rsync pitfalls:
@@ -217,7 +219,7 @@ nslookup upstream.cloudlinux.com
 
 ```
 # Test with verbose output
-rsync -avv --delete rsync://rsync.upstream.cloudlinux.com/CLOUDLINUX/ /tmp/test-sync/
+rsync -avv --dry-run --delete rsync://rsync.upstream.cloudlinux.com/CLOUDLINUX/ /tmp/test-sync/
 
 # Check disk space
 df -h
