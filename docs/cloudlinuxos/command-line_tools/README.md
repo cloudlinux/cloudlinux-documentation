@@ -2767,7 +2767,7 @@ Show list of disabled users:
 	
 ```
 /usr/sbin/cloudlinux-autotracing status --list-disabled
-{"result": "success", "disabled_users": ["user1"]}
+{"result": "success", "status": "enabled", "disabled_users": ["user1"]}
 ```
 	
 Enable all:
@@ -2775,6 +2775,12 @@ Enable all:
 ```
 /usr/sbin/cloudlinux-autotracing enable --all
 {"result": "success"}
+```
+
+If a requirement is not met, Autotracing is switched on but does not work, and the output has a `malfunction` field with the reason:
+
+```
+{"result": "success", "malfunction": "Slow Site Analyzer is disabled. You should enable it in order to get Auto Tracing work"}
 ```
 
 ## Other CLI tools
