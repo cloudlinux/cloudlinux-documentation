@@ -60,6 +60,25 @@ To check the installed versions:
 rpm -q cagefs lve-wrappers lve ea-apache24-mod_hostinglimits
 ```
 
+##### Web server reloads on LiteSpeed
+
+On standalone LiteSpeed, a change to a domain's isolation rebuilds `httpd.conf` and reloads LiteSpeed. Each reload makes LiteSpeed load its whole configuration again, which can take a long time on servers with many virtual hosts.
+
+Starting with cagefs 7.6.54-1, `cagefsctl --isolates-enable` does this at most once per command, however many domains, of one or several users, the command names:
+
+* `httpd.conf` is rebuilt once and LiteSpeed is reloaded once, at the end of the command.
+* A domain that is already isolated causes no rebuild and no reload. The same applies to an addon domain's alias (for example, `addon.maindomain.com`) whose document root is already isolated.
+
+`cagefsctl --isolates-disable` reloads LiteSpeed only when a domain's document root actually leaves isolation, once for each such document root.
+
+To enable isolation for many domains, pass them to one `cagefsctl --isolates-enable` command instead of running the command once per domain:
+
+```
+# cagefsctl --isolates-enable site1.com site2.com site3.com
+```
+
+Earlier cagefs versions rebuild `httpd.conf` and reload LiteSpeed once for every domain passed, including domains that are already isolated.
+
 #### Compatible PHP Handlers
 
 The following table applies to **Apache**. For standalone LiteSpeed, see [LiteSpeed requirements](#litespeed-requirements) above.
@@ -388,6 +407,7 @@ site1.com,site2.com
 5. If this is the first isolated website for the user, CageFS is remounted
 6. Existing PHP processes for the domain are terminated and restarted in isolation
 7. Document root monitoring service is started
+8. On standalone LiteSpeed, the web server configuration is rebuilt and LiteSpeed is reloaded once for the whole command (see [Web server reloads on LiteSpeed](#web-server-reloads-on-litespeed))
 
 ***
 
