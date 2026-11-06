@@ -712,7 +712,7 @@ yourself.
 
 ### Overview
 
-To manager PHP versions and modules for user domains find “ Select PHP selector “
+To manage PHP versions and modules for user domains, find **Select PHP Version** in cPanel (**Select PHP version** in DirectAdmin, **PHP Selector** in Plesk).
 
 ![cPanel Software section grid icons Select PHP Version MultiPHP editors AccelerateWP and related tools](/images/user-docs/user-docs-solo-cloudlinux/userdoc_php_selector_1.webp)
 
