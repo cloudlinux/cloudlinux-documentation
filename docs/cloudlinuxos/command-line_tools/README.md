@@ -1794,7 +1794,7 @@ To start all users CLI commands use <span class="notranslate">`cagefs_enter`</sp
 
     If you do not pass `--version`, the application uses the default version set by the administrator with `set --default-version`. If no default version is set, `create` fails with `python default version not defined`; pass `--version`.
 
-       **Example:**
+    **Example:**
     
     <div class="notranslate">
     
