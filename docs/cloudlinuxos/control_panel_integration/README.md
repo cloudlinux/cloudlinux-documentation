@@ -1902,15 +1902,6 @@ Also you should add mentions of both module and config files in the <span class=
 
 6. Rebuild the package again, this time you should get to the compilation stage.
 
-To use the Apache search described in this step, first add `-DBUILD:BOOL=TRUE` to the `cmake` line in the `%build` section of `mod_lsapi.spec`. Without it, the build does not read `FindApacheForBuild.cmake` or the `CUSTOM_APACHE_*` variables below. This option also changes the default `HTTPD_USER` from `nobody` to `apache`, so if your Apache runs as another user, also pass `-DHTTPD_USER=NAME`.
-
-<div class="notranslate">
-
-```
-cmake %{g_cmake_options} -DBUILD:BOOL=TRUE .
-```
-</div>
-
 Use this command to rebuild a package
 <div class="notranslate">
 
@@ -1960,7 +1951,7 @@ The `%setup` macro in the spec file unpacks the source archive again on every bu
 
 Starting from mod_lsapi-1.1-57, you can use macros for custom paths to the Apache/APR includes/binaries.
 
-These macros are CMake variables for Apache 2.4 builds. Pass them to the `cmake` command in the `%build` section of `mod_lsapi.spec`, for example `cmake %{g_cmake_options} -DBUILD:BOOL=TRUE -DCUSTOM_APACHE_ROOT=/opt/myapache .`. They are read only with `-DBUILD:BOOL=TRUE`. If `CUSTOM_APACHE_ROOT` is not set, `/usr/local/apache` is used.
+These macros are CMake variables for Apache 2.4 builds. Pass them to the `cmake` command in the `%build` section of `mod_lsapi.spec`, for example `cmake %{g_cmake_options} -DCUSTOM_APACHE_ROOT=/opt/myapache .`. If `CUSTOM_APACHE_ROOT` is not set, `/usr/local/apache` is used.
 
 A custom Apache location can be defined via the `CUSTOM_APACHE_ROOT` variable. This implies the following structure under the `${CUSTOM_APACHE_ROOT}`:
 
