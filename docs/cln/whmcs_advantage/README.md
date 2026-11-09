@@ -101,6 +101,8 @@ The addon does not list individual requests. Errors are written to the Module Lo
 
 To offer AccelerateWP Premium, open its section and select the hosting packages under **Add packages**. Value-add for hosting packages adds one package at a time; repeat **Add packages** for more. For an add-on subscription, set the monthly price if the form asks for it; the other billing cycles are calculated from the monthly price. Click **Next**. In the **Automatic Server Activation** dialog, review the changes and click **Scan and Activate**. Cron activates the feature on all compatible servers that host the selected packages. AccelerateWP CDN has no section on this page; link its option group to the product as described in [Product/Service setup](./#product-service-setup).
 
+The **MyImunify** tab offers MyImunify - Account protection as an add-on subscription on cPanel servers. Select the hosting packages under **Add packages**, click **Next** and then **Scan and Activate**. More details: [MyImunify for hosting administrators](https://docs.imunify360.com/myimunify/#what-is-myimunify-for-hosting-admin).
+
 To deactivate a package, click **Deactivate** next to it under **Currently active**, then click **Confirm**.
 
 ### FAQ
