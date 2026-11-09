@@ -1060,7 +1060,7 @@ ptrace protection is known to break PSA service for Plesk 11
 By adding <span class="notranslate"> xen_blkfront.sda_is_xvda=0 </span> to kernel boot line in <span class="notranslate"> grub.conf </span> you will make sure no naming translation is done, and the drives will be identified as <span class="notranslate"> xvde </span> .
 
 By default, this option is set to 1 in the kernel, and drives are detected as <span class="notranslate"> xvda </span> .
-This is needed only for CloudLinux OS 6 and CloudLinux OS 6 <span class="notranslate"> Hybrid </span> kernels. The CloudLinux OS 7, CloudLinux OS 7 hybrid and CloudLinux OS 8 kernels do not have this option.
+This is needed only for the CloudLinux OS 6 kernel. The CloudLinux OS 7, CloudLinux OS 7 hybrid and CloudLinux OS 8 kernels do not have this option.
 
 ## Umask behavior
 
