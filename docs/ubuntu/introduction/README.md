@@ -5,7 +5,7 @@
 * [Ubuntu](https://ubuntu.com/) is a registered trademark of Canonical Ltd.
 :::
 
-CloudLinux subsystem on Ubuntu is a scope of deb-packages which allows using CloudLinux features on Ubuntu OS. It is a Stable version of a free extension designed exclusively for Ubuntu® 22.04 LTS users.
+CloudLinux subsystem on Ubuntu is a scope of deb-packages which allows using CloudLinux features on Ubuntu OS. It is designed exclusively for Ubuntu® 22.04 LTS users and follows the same licensing model as CloudLinux OS.
 
 ## Supported version of Ubuntu
 
