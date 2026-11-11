@@ -26,9 +26,9 @@
 
 #### Why is it needed?
 
-* Old LVE-statistics store averages as integer numbers, as % of <span class="notranslate">CPU</span> usage. If user used 100% of <span class="notranslate">CPU</span> for 1 second within an hour, it is only 1-2% for a minute, and 0 for 5 minutes. Data in old LVE-statistics is aggregated to 1-hour intervals. So, such peak load will noExat be recorded and we need to store data with much higher precision.
+* Old LVE-statistics store averages as integer numbers, as % of <span class="notranslate">CPU</span> usage. If user used 100% of <span class="notranslate">CPU</span> for 1 second within an hour, it is only 1-2% for a minute, and 0 for 5 minutes. Data in old LVE-statistics is aggregated to 1-hour intervals. So, such peak load will not be recorded and we need to store data with much higher precision.
 * 100% <span class="notranslate">CPU</span> usage in old lve statistics means “all cores”. On 32 core servers usage is not visible for most users (as they are limited to 1 core).
-* Old LVE-statistics does not provide a way to determine a cause of LVE faults, i.e. what processes are running when user hits LVE limits.Example
+* Old LVE-statistics does not provide a way to determine a cause of LVE faults, i.e. what processes are running when user hits LVE limits.
 * Notifications in old LVE-statistics are not accurate because they are based on average values for <span class="notranslate">CPU, IO, IOPS.</span>
 * Old LVE-statistics functionality is hard to extend.
 
@@ -228,7 +228,7 @@ accessible regardless of which one is currently active.
 The main configuration file <span class="notranslate">`/etc/sysconfig/lvestats2`</span> contains the following options:
 
 * <span class="notranslate">`db_type`</span> - selects appropriate database type to use;
-* <span class="notranslate">`connect-string`</span> - connection string for <span class="notranslate">PostGreSQL</span> and MySQL database, has the following form:
+* <span class="notranslate">`connect_string`</span> - connection string for <span class="notranslate">PostGreSQL</span> and MySQL database, has the following form:
 
   <div class="notranslate">
 
@@ -253,7 +253,7 @@ The main configuration file <span class="notranslate">`/etc/sysconfig/lvestats2`
 
   <span class="notranslate">`lvestats-server`</span> reports the effective value, and whether it came from the configuration file or the default, in its startup summary.
   :::
-* <span class="notranslate">`mode`</span> – sets compatibility output mode (compatibility with older lveinfo version
+* <span class="notranslate">`mode`</span> – sets compatibility output mode (compatibility with older lveinfo version):
   * Value `v1` enables compatibility with old version of <span class="notranslate">lveinfo</span>.
   * Value `v2` enables <span class="notranslate">`extended`</span> output mode, but can break LVE plugins for control panels (statistics in <span class="notranslate">LVE Manager</span>, <span class="notranslate">Resource Usage</span>, etc). Support of `v2` mode will be added to LVE plugins in the recent future. When mode parameter is absent, later version of <span class="notranslate">lveinfo</span> is implied.
 * <span class="notranslate">`disable_snapshots`</span> - disable snapshots and incidents.
@@ -288,13 +288,13 @@ Configuration files for plugins are located in <span class="notranslate">`/etc/s
 * <span class="notranslate">`NOTIFY_ADMIN`</span> – enables notification for admin (<span class="notranslate">`Y/N`</span>, default `N`);
 * <span class="notranslate">`NOTIFY_RESELLER`</span> – enables notification for reseller (<span class="notranslate">`Y/N`</span>, default `N`);
 * <span class="notranslate">`NOTIFY_CUSTOMER`</span> - enables notification for customers (<span class="notranslate">`Y/N`</span>, default `N`);
-* <span class="notranslate">`NOTIFY_INCLUDE_RESELLER_CUSTOMER`</span> – `Y`=notify all users, `N`=notify only hoster's users (whos reseller is root), default = `N`;
-* <span class="notranslate">`NOTIFY_CPU`</span> – notify about <span class="notranslate">CPU</span> faults when customer hits 100% of his <span class="notranslate">CPU</span> limit (<span class="notranslate">`Y/N`</span>, default `N`);
-* <span class="notranslate">`NOTIFY_IO`</span> - notify about <span class="notranslate">IO</span> faults when customer hits 100% of his <span class="notranslate">IO</span> limit (<span class="notranslate">`Y/N`</span>, default `N`);
-* <span class="notranslate">`NOTIFY_IOPS`</span> - notify about <span class="notranslate">IOPS</span> faults when customer hits 100% of his <span class="notranslate">IOPS</span> limit (<span class="notranslate">`Y/N`</span>, default `N`);
-* <span class="notranslate">`NOTIFY_MEMORY`</span> - notify about memory faults (<span class="notranslate">`Y/N`</span>, default `N`);
-* <span class="notranslate">`NOTIFY_EP`</span> – notify about entry processes faults (<span class="notranslate">`Y/N`</span>, default `N`);
-* <span class="notranslate">`NOTIFY_NPROC`</span> – notify about number of processes faults (<span class="notranslate">`Y/N`</span>, default `N`);
+* <span class="notranslate">`NOTIFY_INCLUDE_RESELLER_CUSTOMER`</span> – `Y`=notify all users, `N`=notify only hoster's users (whose reseller is root), default = `N`;
+* <span class="notranslate">`NOTIFY_CPU`</span> – notify about <span class="notranslate">CPU</span> faults when customer hits 100% of his <span class="notranslate">CPU</span> limit (<span class="notranslate">`Y/N`</span>, shipped default `Y`);
+* <span class="notranslate">`NOTIFY_IO`</span> - notify about <span class="notranslate">IO</span> faults when customer hits 100% of his <span class="notranslate">IO</span> limit (<span class="notranslate">`Y/N`</span>, shipped default `Y`);
+* <span class="notranslate">`NOTIFY_IOPS`</span> - notify about <span class="notranslate">IOPS</span> faults when customer hits 100% of his <span class="notranslate">IOPS</span> limit (<span class="notranslate">`Y/N`</span>, shipped default `Y`);
+* <span class="notranslate">`NOTIFY_MEMORY`</span> - notify about memory faults (<span class="notranslate">`Y/N`</span>, shipped default `Y`);
+* <span class="notranslate">`NOTIFY_EP`</span> – notify about entry processes faults (<span class="notranslate">`Y/N`</span>, shipped default `Y`);
+* <span class="notranslate">`NOTIFY_NPROC`</span> – notify about number of processes faults (<span class="notranslate">`Y/N`</span>, shipped default `Y`);
 * <span class="notranslate">`NOTIFY_MIN_FAULTS_ADMIN`</span> – minimum number of faults to notify admin (default `1`);
 * <span class="notranslate">`NOTIFY_MIN_FAULTS_USER`</span> – minimum number of faults to notify customer (default `1`);
 * <span class="notranslate">`NOTIFY_INTERVAL_ADMIN`</span> – period of time to notify admin (default `12h`);
@@ -531,7 +531,7 @@ Or replace the symbols manually:
 ```
 </div>
 
-After that <span class="notranslate">`сonnect_string`</span> will look as follows:
+After that <span class="notranslate">`connect_string`</span> will look as follows:
 
 <div class="notranslate">
 
@@ -783,7 +783,7 @@ OR replace the symbols manually:
 ```
 </div>
 
-After that <span class="notranslate">`сonnect_string`</span> will look as follows:
+After that <span class="notranslate">`connect_string`</span> will look as follows:
 
 <div class="notranslate">
 
@@ -798,7 +798,7 @@ After that <span class="notranslate">`сonnect_string`</span> will look as follo
 
 The templates for notifications are located in <span class="notranslate">`/usr/share/lve/emails/LOCALE`</span>, where <span class="notranslate">`LOCALE`</span> is the directory with localization name (language codes are formed according to <span class="notranslate">ISO 639-1</span> and <span class="notranslate">ISO 639-2</span>).
 
-By default the templates for English are set: <span class="notranslate">`/usr/share/lve/emails/en_US.`</span>.
+By default the templates for English are set: <span class="notranslate">`/usr/share/lve/emails/en_US`</span>.
 
 <span class="notranslate">`/usr/share/lve/emails/en_US`</span> contains the following templates:
 
@@ -809,11 +809,11 @@ By default the templates for English are set: <span class="notranslate">`/usr/sh
 
 Starting from `lve-stats-4.1.2`, it allows server administrators to use their own lvestats notifier email notification templates.
 
-To use the custom templates, place them and the `locales.json` file to the `/etc/cl.emails.d/LOCALE` directory. File names are the same as in general `/etc/cl.emails.d/LOCALE` file.
+To use the custom templates, place them and the `locale_defines.json` file in the `/etc/cl.emails.d/LOCALE` directory. File names are the same as in the general `/usr/share/lve/emails/LOCALE` directory.
 
 If the `/etc/cl.emails.d/LOCALE` doesn't exist or doesn't contain the templates, you can use the `/usr/share/lve/emails/LOCALE` directory, as it was in previous versions of lve-stats.
 
-Please do not edit the templates in the the `/usr/share/lve/emails` and place the new updated templates in the `/etc/cl.emails.d` directory.
+Please do not edit the templates in the `/usr/share/lve/emails` and place the new updated templates in the `/etc/cl.emails.d` directory.
 
 
 The notification is formed as <span class="notranslate">_Multipart content type_</span> [RFC1341(MIME)](https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html).
@@ -988,13 +988,13 @@ LVE-stats2 comes with a set of generic plugins:
 |-|--|--|--|-|
 |Plugin Name | Order | Default | Period (seconds) | Description|
 |LVECollector | 1000 | Y | 5 | Collects usage/limits data from `/proc/lve/list`|
-|CPUInfoCollector | 2000 | Y | 5 | collents info about <span class="notranslate"> CPU - `/proc/cpuinfo`</span>|
+|CPUInfoCollector | 2000 | Y | 5 | collects info about <span class="notranslate"> CPU - `/proc/cpuinfo`</span>|
 |LVEUsernamesCollector | 3000 | Y | 3600 | collects usernames & user ids to match <span class="notranslate">`uid <-> lve id`</span> later on|
 |LVEUsageAnalyzer | 4000 | Y | 5 | analyzes usage of LVE|
 |LveUsageAggregator | 5000 | Y | 60 | aggregates data by time periods|
 |DBGovSaver | 6000 | Y | 5 | Saves data about database governor|
 |FileSaver | 7000 | Y | 5 | Saves LVE data into <span class="notranslate">`/var/lve/info`</span> |
-|CloudLinuxTopFileSaver | 8000 | Y | 60 | saves data used by <span class="notranslate"> cloudlinux-top to `/var/lve/cloudlinux-top.json`</span>|
+|CloudLinuxTopFileSaver | 8000 (optimized backend), 9000 (original backend) | Y | 5 | saves data used by <span class="notranslate"> cloudlinux-top to `/var/lve/cloudlinux_top.json`</span>|
 |DBSaver | 9000 | Y | 60 | save LVE data to database|
 |DbUsernamesSaver | 10000 | Y | 3600 | saves users name to database|
 |DBSaverX60 | 11000 | Y | 3600 | saves aggregated hourly data into database|
@@ -1056,7 +1056,7 @@ When the server starts, it performs the search of plugins in the directory speci
 <div class="notranslate">
 
 ```
-service lvestats restart.
+service lvestats restart
 ```
 </div>
 
@@ -1184,7 +1184,7 @@ class FSize_watcher_collector (LveStatsPlugin):
 		try:
 			# if monitoring file absent, do nothing
 			if self.file_to_monitoring is None or not os.path.exists(self.file_to_monitoring):
-		return
+				return
 
 			# Get file size
 			stat_info = os.stat(self.file_to_monitoring)
@@ -1195,7 +1195,7 @@ class FSize_watcher_collector (LveStatsPlugin):
 			lve_data[COLLECTOR_KEY] = fsize
 		except (OSError, IOError):
 			# file absent or any other error - remove size from dictionary
-			del lve_data[COLLECTOR_KEY]
+			lve_data.pop(COLLECTOR_KEY, None)
 ```
 </div>
 
@@ -1254,7 +1254,8 @@ class FSize_watcher_analyzer (LveStatsPlugin):
 	order = 1
 	# Last file size
 	file_last_size = 0
-	# Plugin run period in secondsperiod = 60
+	# Plugin run period in seconds
+	period = 60
 
 	def __init__(self):
 		pass
@@ -1265,7 +1266,7 @@ class FSize_watcher_analyzer (LveStatsPlugin):
 		lve_data[SAVER_DATA_PRESENCE] = 0
 		# Check presence data
 		if COLLECTOR_KEY not in lve_data:
-		return
+			return
 
 		# Get file size from server data dictionary
 		fsize = lve_data[COLLECTOR_KEY]
@@ -1438,7 +1439,7 @@ Fri Feb  6 06:18:52 2015 - FSize_watcher: file size is 14782647 bytes
 Fri Feb  6 06:21:52 2015 - FSize_watcher: file size is 14782898 bytes
 Fri Feb  6 06:48:54 2015 - FSize_watcher: file size is 14785238 bytes
 Fri Feb  6 07:09:56 2015 - FSize_watcher: file size is 14785677 bytes
-Tue Feb  6 08:03:15 2015 - File watcher saver plugin: TERMINATE
+Fri Feb  6 08:03:15 2015 - File watcher saver plugin: TERMINATE
 ```
 </div>
 
@@ -1593,10 +1594,15 @@ When writing to this file we make sure that: average <span class="notranslate"> 
 
 Example:
 
+<div class="notranslate">
+
+```
 0,0,20,0,2500,0,262144,0,0,262144,0,0,100,0,0,0,0,1024,1024,0,0,0,0
 600,1,20,2492,2500,70,262144,0,0,262144,33,0,100,1,0,0,0,1024,1024,0,5,0,0
 200,0,20,0,2500,0,262144,0,0,262144,0,0,100,0,0,0,0,1024,1024,0,0,0,0
 500,0,20,0,2500,0,262144,0,0,262144,0,0,100,0,0,0,0,1024,1024,0,0,0,0
+```
+</div>
 
 First line of the file is ' <span class="notranslate"> default limits </span> '.
 
@@ -1608,7 +1614,7 @@ Fields:
 # 1 - mep (average entry processes)
 # 2 - lep  (limit ...)
 # 3 - cpu_usage (average speed)
-# 4 - lcpu (limit spped)
+# 4 - lcpu (limit speed)
 # 5 - mem_usage (average virtual memory)
 # 6 - lmem (limit ...)
 # 7 - mem_fault (number of virtual memory faults)
@@ -1639,7 +1645,7 @@ You can also use [LVE-stats 2 CLI](/cloudlinuxos/command-line_tools/#lve-stats-2
 
 There is <span class="notranslate">`/var/log/lve-stats.log`</span> file with additional information (warnings, tracebacks for errors).
 
-To see which letters were sent via lves-tats notifier in the logs, do the following:
+To see which letters were sent via lve-stats notifier in the logs, do the following:
 
 1. In the `/etc/sysconfig/lvestats2`, specify `logging_level=debug`;
 2. Execute the `service lvestats restart` command.
