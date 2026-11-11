@@ -5900,9 +5900,9 @@ OpenLiteSpeed is not compatible with Python Selector due to lack of `.htaccess` 
 
 ### Installation
 
-You can install Python Selector using the [CloudLinux OS Installation Wizard](/cloudlinuxos/lve_manager/#cloudlinux-os-shared-installation-wizard).
+You can install Python Selector using the [CloudLinux OS Installation Wizard](/cloudlinuxos/lve_manager/#installation-wizard).
 
-After installation, please make sure that you have set appropriate checkboxes in CloudLinux Manager Options tab to show Python App in the web-interface.
+After installation, enable Python Selector in the CloudLinux Manager Options tab (see [How to enable/disable Python Selector](/cloudlinuxos/lve_manager/#how-to-enable-disable-python-selector)), or run `cloudlinux-selector set --json --interpreter python --selector-status enabled`.
 
 #### Manual installation
 
@@ -5933,7 +5933,7 @@ yum install lvemanager lve-utils alt-python-virtualenv
 ```
 </div>
 
-Phusion Passenger could be installed by using **either** ```ea-ruby24-mod_passenger``` **or** ```ea-ruby27-mod_passenger```. ```ea-ruby27-mod_passenger``` is **not** compatible with systems running CloudLinux OS 6. CloudLinux OS 7 supports **both** ```ea-ruby24-mod_passenger``` and ```ea-ruby27-mod_passenger```. If your system runs CloudLinux OS 8, you can **only** use ```ea-ruby27-mod_passenger```.
+Phusion Passenger could be installed by using **either** ```ea-ruby24-mod_passenger``` **or** ```ea-ruby27-mod_passenger```. ```ea-ruby27-mod_passenger``` is **not** compatible with systems running CloudLinux OS 6. CloudLinux OS 7 supports **both** ```ea-ruby24-mod_passenger``` and ```ea-ruby27-mod_passenger```. If your system runs CloudLinux OS 8, you can **only** use ```ea-ruby27-mod_passenger```. On CloudLinux OS 9 and later, use ```ea-apache24-mod-passenger``` instead: ```ea-ruby27-mod_passenger``` is not available there.
 
 Adding Python module requires executing permissions to <span class="notranslate">`gcc/make`</span> binaries.
 Please enable compilers in Compiler Access section of WHM, then run:
@@ -5972,7 +5972,7 @@ yum install lve-utils lvemanager alt-python-virtualenv alt-mod-passenger
 * We recommend use CageFS for better security. See [CageFS documentation for details](./#cagefs).
 
 
-* See also [Python Selector UI](/cloudlinuxos/lve_manager/#python-selector).
+* See also [Python Selector UI](/cloudlinuxos/lve_manager/#python-selector-1).
 * See also [Python Selector CLI](/cloudlinuxos/command-line_tools/#python-selector).
 
 ## Ruby Selector
@@ -6004,7 +6004,7 @@ yum groupinstall alt-ruby
 </div>
 
 ::: tip Note
-After installation, please make sure that you have unmarked appropriate checkboxes in <span class="notranslate"> VE Manager Options</span> tab to show <span class="notranslate">Ruby App</span> in web-interface. Find the instructions on the [link](./#hide-ruby-selector-icon).
+After installation, please make sure that you have unmarked appropriate checkboxes in <span class="notranslate"> LVE Manager Options</span> tab to show <span class="notranslate">Ruby App</span> in web-interface. Find the instructions on the [link](./#hide-ruby-selector-icon).
 :::
 
 ::: tip Note
@@ -6016,7 +6016,7 @@ Adding Ruby modules requires executing permissions to <span class="notranslate">
 * [End user access](/cloudlinuxos/lve_manager/#ruby-selector-client-plugin)
 * [Hide Ruby Selector icon](./#hide-ruby-selector-icon)
 * [Deploying Redmine using Ruby Selector](./#deploying-redmine-using-ruby-selector)
-* [EasyApache 4](./#easyapache-4-2)
+* [EasyApache 4](./#easyapache-4)
 
 #### End user access
 
@@ -6055,7 +6055,7 @@ You can find <span class="notranslate"> Redmine </span> version 2.6.0 and newer 
 #### EasyApache 4
 
 :::tip Note
-```ea-apache24-mod-alt-passenger``` is deprecated in favor of ```ea-ruby24-mod_passenger``` and ```ea-ruby27-mod_passenger```
+```ea-apache24-mod-alt-passenger``` is deprecated in favor of ```ea-ruby24-mod_passenger``` and ```ea-ruby27-mod_passenger```, or ```ea-apache24-mod-passenger``` on CloudLinux OS 9 and later
 :::
 
 Starting with cPanel/WHM version 66 provides <span class="notranslate">```ea-ruby24-mod_passenger```</span> (more information on the [link](https://documentation.cpanel.net/display/66Docs/Application+Manager)), this allows creating <span class="notranslate"> Ruby </span> applications with cPanel application manager.
@@ -6064,8 +6064,9 @@ CloudLinux OS features its own <span class="notranslate">Python and  Ruby Select
 
 * ```ea-ruby24-mod_passenger```
 * ```ea-ruby27-mod_passenger```
+* ```ea-apache24-mod-passenger``` (CloudLinux OS 9 and later)
 
-```ea-ruby27-mod_passenger``` is **not** compatible with systems running CloudLinux OS 6. CloudLinux OS 7 supports **both** ```ea-ruby24-mod_passenger``` and ```ea-ruby27-mod_passenger```. If your system runs CloudLinux OS 8, you can **only** use ```ea-ruby27-mod_passenger```.
+```ea-ruby27-mod_passenger``` is **not** compatible with systems running CloudLinux OS 6. CloudLinux OS 7 supports **both** ```ea-ruby24-mod_passenger``` and ```ea-ruby27-mod_passenger```. If your system runs CloudLinux OS 8, you can **only** use ```ea-ruby27-mod_passenger```. On CloudLinux OS 9 and later, use ```ea-apache24-mod-passenger``` instead: ```ea-ruby27-mod_passenger``` is not available there.
 
 The <span class="notranslate"> ```ea-ruby2X-mod_passenger``` </span> allows you to run applications via <span class="notranslate"> cPanel application manager </span> and <span class="notranslate"> Ruby Selector</span>.
 
@@ -6088,6 +6089,16 @@ yum install ea-ruby27-mod_passenger
 ```
 </div>
 
+or, on CloudLinux OS 9 and later:
+
+<div class="notranslate">
+
+```
+yum install lvemanager alt-python-virtualenv
+yum install ea-apache24-mod-passenger
+```
+</div>
+
 See also [Ruby Selector CLI tools](/cloudlinuxos/command-line_tools/#ruby-selector).
 
 
@@ -6095,7 +6106,7 @@ See also [Ruby Selector CLI tools](/cloudlinuxos/command-line_tools/#ruby-select
 
 ### General information and requirements
 
-* [Requirements](./#requirements-3)
+* [Requirements](./#requirements-1)
 * [Limitation](./#limitations)
 
 <span class="notranslate"> Node.js Selector </span>  is a CloudLinux OS component that allows each user to easily create Node.js applications, choose Node.js version and other parameters for applications based on their needs.
@@ -6142,8 +6153,10 @@ In this case you can use the following cjs wrapper app_wrapper.cjs to load esm s
 
 ```
 cat app_wrapper.cjs
-(() => import('app.js'))();
+(() => import('./app.js'))();
 ```
+
+Set `app_wrapper.cjs` as the application startup file.
 
 ### Installation and update
 
@@ -6168,10 +6181,10 @@ yum install lvemanager lve-utils
 ```
 </div>
 
-Phusion Passenger could be installed by using **either** ```ea-ruby24-mod_passenger``` **or** ```ea-ruby27-mod_passenger```. ```ea-ruby27-mod_passenger``` is **not** compatible with systems running CloudLinux OS 6. CloudLinux OS 7 supports **both** ```ea-ruby24-mod_passenger``` and ```ea-ruby27-mod_passenger```. If your system runs CloudLinux OS 8, you can **only** use ```ea-ruby27-mod_passenger```.
+Phusion Passenger could be installed by using **either** ```ea-ruby24-mod_passenger``` **or** ```ea-ruby27-mod_passenger```. ```ea-ruby27-mod_passenger``` is **not** compatible with systems running CloudLinux OS 6. CloudLinux OS 7 supports **both** ```ea-ruby24-mod_passenger``` and ```ea-ruby27-mod_passenger```. If your system runs CloudLinux OS 8, you can **only** use ```ea-ruby27-mod_passenger```. On CloudLinux OS 9 and later, use ```ea-apache24-mod-passenger``` instead: ```ea-ruby27-mod_passenger``` is not available there.
 
 :::tip Note
-```ea-apache24-mod-alt-passenger``` is deprecated in favor of ```ea-ruby24-mod_passenger``` and ```ea-ruby27-mod_passenger```
+```ea-apache24-mod-alt-passenger``` is deprecated in favor of ```ea-ruby24-mod_passenger``` and ```ea-ruby27-mod_passenger```, or ```ea-apache24-mod-passenger``` on CloudLinux OS 9 and later
 :::
 
 For EasyApache 3:
@@ -6204,6 +6217,7 @@ systemctl restart cpanel.service
 
 CloudLinux OS 6:
 <div class="notranslate">
+
 ```
 service cpanel restart
 ```
@@ -6215,10 +6229,13 @@ To use <span class="notranslate"> Node.js Selector, please install Node.js </spa
 <div class="notranslate">
 
 ```
-yum groupinstall alt-nodejs6 alt-nodejs8 alt-nodejs9
+yum groupinstall alt-nodejs<major>
 ```
 </div>
-Also, please install <span class="notranslate"> LVE Manager, LVE Utils and Fusion Passenger </span> by running the following command:
+
+Replace `<major>` with a major version listed for your OS in the Supported versions table above, for example `alt-nodejs20`. Run the command for each version you need.
+
+Also, please install <span class="notranslate"> LVE Manager, LVE Utils and Phusion Passenger </span> by running the following command:
 <div class="notranslate">
 
 ```
@@ -6598,8 +6615,8 @@ Later <span class="notranslate">`criu-lve`</span> updates leave the service disa
 
 #### Remote usage of Node.js interpreters
 
-1. Create a Node.js project in <span class="notranslate"> IntelliJ IDEA/WebStorm </span> . You can download [this archive](https://docs.cloudlinux.com/nodejs_example.zip) and use it as a basis.
-2. Install <span class="notranslate"> alt-nodejs </span> packages on the server in use. See [installation instructions](./#installation-and-update-7).
+1. Create a Node.js project in <span class="notranslate"> IntelliJ IDEA/WebStorm </span>.
+2. Install <span class="notranslate"> alt-nodejs </span> packages on the server in use. See [installation instructions](./#installation-and-update-5).
 3. Create an application on the server. You can do it by three ways:
   * Via UI of the Node.js plugin.
   * Using the following command to create an application:
@@ -6607,7 +6624,7 @@ Later <span class="notranslate">`criu-lve`</span> updates leave the service disa
 <div class="notranslate">
 
 ```
-cloudlinux-selector create --interprete=nodejs --json --app-root=<USER_NAME> --app-uri=<APP_NAME> --app-mode=develompent --version=<VERSION> --domain=<DOMAIN>
+cloudlinux-selector create --interpreter=nodejs --json --app-root=<APP_NAME> --app-uri=<APP_URI> --app-mode=development --version=<VERSION> --domain=<DOMAIN>
 ```
 </div>
 
@@ -6623,7 +6640,7 @@ In the <span class="notranslate"> IntelliJ IDEA </span> you can create and run a
 ![Run/Debug Configurations: remote Node 8 SFTP interpreter, app.js, env vars, path mappings](/images/cloudlinuxos/cloudlinux_os_components/setconfiguration_zoom70.webp)
 
   * Specify a path to the remote Node.js interpreter. To be able to specify the remote interpreter, you should install the <span class="notranslate"> _Node.js Remote Interpreter_ </span> plugin first. Please find more information [here](https://www.jetbrains.com/help/idea/configure-node-js-remote-interpreter.html) , using server access credentials for a user <span class="notranslate"> _(Main menu → Run → Edit configurations...)_ </span> .
-  * Specify initial _JavaScript file_ that will be run with the <span class="notranslate"> _node_ </span> command (it is the _app.js_ file from the archive).
+  * Specify initial _JavaScript file_ that will be run with the <span class="notranslate"> _node_ </span> command (your application's startup file, for example _app.js_).
   * Specify <span class="notranslate"> _Path Mappings_ </span> between a local and a remote project <span class="notranslate"> _(Preferences → Deployments → Add)_ </span> . If you have created your application with the <span class="notranslate"> _cloudlinux-selector utility_ </span> or via plugin UI the <span class="notranslate"> _Path Mappings_ </span> should be as follows:
 
 <div class="notranslate">
@@ -6639,20 +6656,11 @@ In the <span class="notranslate"> IntelliJ IDEA </span> you can create and run a
 
 ![IntelliJ Run toolbar and console running remote node on app.js with red annotation arrows](/images/cloudlinuxos/cloudlinux_os_components/runapp_zoom60.webp)
 
-8. If you are using the application from the archive attached, you can see the running application on port 3003 — <span class="notranslate"> _http://DOMAIN:3003_ . </span>
+8. Open the running application in a browser on the port it listens on — <span class="notranslate"> _http://DOMAIN:PORT_ . </span>
 
 ::: tip Note
 The port should be available to a server user.
 :::
-
-![Simple web page: Hello Node.js Server, bold v8.9.4, JSON env block, green timestamp line](/images/cloudlinuxos/cloudlinux_os_components/runningappdomain_zoom70.webp)
-
-The following information should be displayed on this page:
-* A version of the running Node.js interpreter;
-* Current environment variables;
-* The current time.
-
-So that, you can be sure that deployed modules are used properly.
 
 If you’d like to use a different version of Node.js to run an application, change a path to the interpreter in the configuration settings of the running.
 To apply all changes to the project, synchronize all changes with the server and restart the running application.
@@ -6665,7 +6673,7 @@ Useful links:
 * <span class="notranslate"> WebStorm </span> : [https://www.jetbrains.com/help/webstorm/configure-node-js-remote-interpreter.html](https://www.jetbrains.com/help/webstorm/configure-node-js-remote-interpreter.html)
 
 ::: tip Note
-It is not required to install <span class="notranslate"> _Passenger_ </span> while working in <span class="notranslate"> IDE </span> if you are using this approach.
+Passenger is not required to run the application from the IDE with a remote interpreter.
 :::
 
 #### Remote usage of the cloudlinux-selector utility
@@ -6682,7 +6690,7 @@ You can see the running app at <span class="notranslate"> http://DOMAIN/APPLICAT
 To apply all changes, restart the application.
 
 * See also [Node.js Selector CLI tools](/cloudlinuxos/command-line_tools/#node-js-selector).
-* See also [Node.js Selector UI](/cloudlinuxos/lve_manager/#node-js-selector-2).
+* See also [Node.js Selector UI](/cloudlinuxos/lve_manager/#node-js-selector-1).
 
 ### Troubleshooting
 
@@ -6714,7 +6722,7 @@ This is a much more convenient approach to developing an application and debuggi
 In this case, there is no useful information for debugging errors and this is suitable for production mode. More information about [PassengerFriendlyErrorPages](https://www.phusionpassenger.com/library/config/apache/reference/#passengerfriendlyerrorpages) and [PassengerAppEnv](https://www.phusionpassenger.com/library/config/apache/reference/#passengerappenv).
 
 #### Known Restrictions and Issues
-1. In some cases running commands e.g. `npm build` can produce an Out Of Memory error.
+1. In some cases running commands e.g. `npm run build` can produce an Out Of Memory error.
 
    When the error is encountered in Nodejs Selector UI or in the web browser terminal, check the physical and virtual memory LVE limits. Also check the process limits through `ulimit -v -m` command in Terminal UI or "Max data size", "Max address space" or "Max resident set" values inside the `/proc/<process_id>/limits` file. Increase the limits if necessary.
 
@@ -6727,9 +6735,9 @@ In this case, there is no useful information for debugging errors and this is su
 
    In some cases, due to bugs in underlying Node.js frameworks (e.g. [Out of memory: wasm memory](https://github.com/nodejs/node/issues/41319#issuecomment-1001025128)) it could be necessary to increase `maxmem` up to 50 Gb (`value=51200`) or even to `unlimited`.
 
-2. Sometimes an Out Of Memory error appears in the web browser terminal in cPanel. Because of CPANEL-39397 bug terminal inherences limits of `cpsrvd` process. As a workaround, you could increase `maxmem` value as described above.
+2. Sometimes an Out Of Memory error appears in the web browser terminal in cPanel. Because of a cPanel bug, the terminal inherits limits of the `cpsrvd` process. As a workaround, you could increase `maxmem` value as described above.
 
-   Alternetive workaround: override soft and hard virtual memory limit only for the user encountering the problem. Override hard limit by adding the following line to the `/etc/security/limits.conf` file:
+   Alternative workaround: override soft and hard virtual memory limit only for the user encountering the problem. Override hard limit by adding the following line to the `/etc/security/limits.conf` file:
    ```
    username	hard	as	unlimited
    ```
