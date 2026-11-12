@@ -6,7 +6,7 @@ CloudLinux OS Admin is designed for shared hosting providers who want to flawles
 big shared hosting customer to individual VPS with same CloudLinux features as on Shared hosting. 
 At the same time you will be able to separate such a user's websites if necessary and isolate them 
 with CageFS for efficient and extra security.
-Also it may be suitable for a little server with less than 5 customers on it.
+Also it may be suitable for a little server with up to 5 customers on it.
 
 Most of the features of CloudLinux OS Legacy (Shared) are available in this edition, with a small differences:
 
@@ -25,7 +25,8 @@ CloudLinux OS Admin is very close to the regular CloudLinux Legacy (Shared) edit
 
 The exclusions are:
 
- - [MySQL Governor](/cloudlinuxos/control_panel_integration/#mysql-governor) is not available
+ - [MySQL Governor](/cloudlinuxos/cloudlinux_os_components/#mysql-governor) is not available
+ - [Reseller limits](/cloudlinuxos/limits/#reseller-limits) are not available
  - [X-Ray](/cloudlinuxos/shared-pro/#x-ray) is available like with CloudLinux Shared Pro
  - [Accelerate WP](/cloudlinuxos/shared-pro/#acceleratewp) is available like with CloudLinux Shared Pro
 
@@ -47,6 +48,12 @@ You can convert your existing CloudLinux OS Solo installation to CloudLinux OS A
 
 1. Obtain new key from [CLN](https://cln.cloudlinux.com)
 2. Run `rhnreg_ks --force --activationkey=<new_key>`
+
+:::warning
+When you switch from another edition, the switch removes the `governor-mysql` package if it is installed; the database server packages stay installed. Default LVE limits are set to unlimited; in containers, LVE services are disabled instead.
+
+When you switch to CloudLinux OS Solo instead, the `mod_hostinglimits` and `governor-mysql` packages are removed, and LVE services are disabled.
+:::
 
 You can pass `--migrate-silently` argument to skip confirmation.
 
