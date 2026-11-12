@@ -15,6 +15,7 @@ More information about the actual kernel changes and releases can be obtained fr
 * [Xen XVDA](./#xen-xvda)
 * [Umask behavior](./#umask-behavior)
 * [IO limits latency](./#io-limits-latency)
+* [Kernel defaults on CloudLinux OS 8 and CloudLinux OS 7 hybrid](./#kernel-defaults-on-cloudlinux-os-8-and-cloudlinux-os-7-hybrid)
 * [Reading LVE usage](./#reading-lve-usage)
 * [Flashcache](./#flashcache)
 * [OOM killer for LVE processes](./#oom-killer-for-lve-processes)
@@ -48,7 +49,7 @@ The LTS kernel is compatible with CL8 / CL9 systems.
 dnf install kernel-lts kmod-lve-lts
 ```
 ::: tip Note
-If `kernel-lts-purge-all` was previously installed then add `--allowerasing`.
+Regular `kmod-lve` packages on CloudLinux OS 8 and 9 recommend the `kernel-lts-purge-all` package, so it can be installed automatically, even if you have never used the LTS kernel. It conflicts with the LTS kernel packages. If `rpm -q kernel-lts-purge-all` finds it, add `--allowerasing` to the command above.
 :::
 
 2. After that, you should reboot:
@@ -101,6 +102,7 @@ Hybrid kernels allow you to take advantage of the benefits and features availabl
 For example, for the CloudLinux 7 kernel, based on version 3.10, you can install a hybrid kernel (same as on CloudLinux 8), which is based on version 4.18.
 This provides more kernel options, memory and overall optimization, as well as a positive impact on system performance.
 
+<!----><a id="how-to-migrate-from-the-normal-to-hybrid-channel-cl6h"></a>
 #### How to migrate from the normal kernel to hybrid one
 
 ::: tip Note
@@ -108,7 +110,7 @@ The system must have an active CloudLinux OS license
 :::
 
 :::warning Warning
-If you use `yum-plugin-protectbase`, please make sure it is disabled before stating the normal-to-hybrid script.
+If you use `yum-plugin-protectbase`, please make sure it is disabled before starting the normal-to-hybrid script.
 :::
 
 You should perform the following commands:
@@ -143,12 +145,14 @@ The protection requires setting multiple kernel parameters to be enabled:
 * [fs.enforce_symlinksifowner](./#fs-enforce-symlinksifowner)
 * [fs.symlinkown_gid](./#fs-symlinkown-gid)
 
+<!----><a id="link-traversal-protection"></a>
 **Link Traversal Protection:**
 * [fs.protected_symlinks_create](./#fs-protected-symlinks-create)
 * [fs.process_symlinks_by_task](./#fs-process-symlinks-by-task)
 
-Please reffer to [this article](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/managing_monitoring_and_updating_the_kernel/configuring-kernel-parameters-at-runtime_managing-monitoring-and-updating-the-kernel#doc-wrapper) in order to know how to setup these parameters.
+Please refer to [this article](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/managing_monitoring_and_updating_the_kernel/configuring-kernel-parameters-at-runtime_managing-monitoring-and-updating-the-kernel#doc-wrapper) in order to know how to setup these parameters.
 
+<!----><a id="symlink-owner-match-protection"></a>
 #### **fs.enforce_symlinksifowner**
 
 To protect against symlink attack where attacker tricks Apache web server to read some other user PHP config files, or other sensitive file, enable:
@@ -169,8 +173,8 @@ fs.symlinkown_gid = 48
 | | |
 |-|-|
 |<span class="notranslate"> _fs.enforce_symlinksifowner = 0_ </span> | do not check <span class="notranslate"> symlink </span> ownership|
-|<span class="notranslate"> _fs.enforce_symlinksifowner = 1_ </span> | deny if <span class="notranslate"> symlink </span> ownership doesn’t match target, and process <span class="notranslate"> gid </span> matches <span class="notranslate"> _symlinkown_gid</span>|
-|<span class="notranslate"> _fs.enforce_symlinksifowner = 2_ </span> | deny if a process is in <span class="notranslate"> LVE </span> or <span class="notranslate"> symlink </span> ownership doesn’t match target, and process gid matches <span class="notranslate"> _symlinkown_gid</span>|
+|<span class="notranslate"> _fs.enforce_symlinksifowner = 1_ </span> | deny if <span class="notranslate"> symlink </span> ownership doesn’t match target, and process <span class="notranslate"> gid </span> matches <span class="notranslate">`fs.symlinkown_gid`</span>|
+|<span class="notranslate"> _fs.enforce_symlinksifowner = 2_ </span> | deny if a process is in <span class="notranslate"> LVE </span> or <span class="notranslate"> symlink </span> ownership doesn’t match target, and process gid matches <span class="notranslate">`fs.symlinkown_gid`</span>|
 
 When <span class="notranslate"> _fs.enforce_symlinksifowner_ </span> set to 1, processes with <span class="notranslate"> GID </span> 48 will not be able to follow <span class="notranslate"> symlinks </span> if they are owned by <span class="notranslate"> user1 </span> , but point to file owned <span class="notranslate"> user2 </span> .
 
@@ -285,7 +289,7 @@ Permission denied. /bin/tar: .cagefs/tmp/.s.PGSQL.5432: Cannot create symlink to
 
 Any backup for accounts (including cPanel backup) cannot be extracted.
 
-* `dmesg` is flooded with the <span class="notranslate">`may_create_sym_link`</span> messages like:
+* On the CloudLinux OS 7 normal kernel, `dmesg` is flooded with the <span class="notranslate">`may_create_sym_link`</span> messages like:
 
 <div class="notranslate">
 
@@ -336,7 +340,7 @@ Command line parameters:
 -u | --uid       retrieve file names for particular UID only
 ```
 </div>
-If no UID specified, are retrieved for all users. If no timestamp specified, all database events are shown.
+If no UID is specified, file names are retrieved for all users. If no timestamp specified, all database events are shown.
 
 **Output format**
 <div class="notranslate">
@@ -369,6 +373,7 @@ The timestamp in output is needed so you can clearly identify from which timesta
 1003:/home/user3/logs/data.log
 ```
 </div>
+
 **Getting changed files by end user**
 
 <span class="notranslate">/usr/bin/cloudlinux-backup-helper-uid</span>  is a SUID wrapper for the  <span class="notranslate"> cloudlinux-backup-helper </span>  utility that enables an end user to get the list of files changed. It accepts timestamp argument only and retrieves data of the user who is running it only.
@@ -521,7 +526,7 @@ user_ro_mode_min_uid=-1
 </div>
 
 :::tip Note
-Please keep in mind, that current implementation implies that one process is writing to a database and another is reading from it. As reading sets shared lock to a database table, the writing process cannot write to the table until the lock is released. That’s why passing a timestamp to cloudlinux-backup-helpermatters: this way the number of records to be returned is substantially decreased, lowering the processing time and filtering out old records. Likewise, pay attention to narrowing the scope of events being recorded. Chances are that changing attributes, ownership, directory creation/deletion, symlink events are not relevant and there’s no need to keep them.
+Please keep in mind, that current implementation implies that one process is writing to a database and another is reading from it. As reading sets shared lock to a database table, the writing process cannot write to the table until the lock is released. That’s why passing a timestamp to cloudlinux-backup-helper matters: this way the number of records to be returned is substantially decreased, lowering the processing time and filtering out old records. Likewise, pay attention to narrowing the scope of events being recorded. Chances are that changing attributes, ownership, directory creation/deletion, symlink events are not relevant and there’s no need to keep them.
 :::
 
 ### Low-level access
@@ -532,9 +537,13 @@ Using this options is dangerous, and might cause problems with <span class="notr
 
 The kernel exposes the functionality to /proc/sys/fs/datacycle/ folder.
 
+The kernel interface (`/proc/sys/fs/datacycle/`) is available with the CloudLinux OS 7 normal kernel, the CloudLinux OS 7 hybrid kernel and the regular CloudLinux OS 8 kernel (4.18). It is not available on CloudLinux OS 9 and later or on Ubuntu.
+
 1. <span class="notranslate"> **enable** </span> - enable/disable the functionality. Write 1 to this file to enable, 0 to disable. If disabled, no events are coming to events file.
 
-2. <span class="notranslate"> **events** </span> - the modified files log itself. Events in the format <span class="notranslate"> <EVENT_ID>:<EVENT_TYPE_ID>:<USER_ID>:<FILE_PATH> </span> are constantly appending to the end of the file if datacycle enabled. File events are never duplicated: if we have file modification event, we would not get file deletion event if the file has been later deleted. This events buffer has limited capacity, therefore from time to time, the events log requires flushing.
+2. <span class="notranslate"> **events** </span> - the modified files log itself. Events in the format <span class="notranslate">`<EVENT_ID>:<EVENT_TYPE_ID>:<USER_ID>:<FILE_PATH>`</span> are constantly appending to the end of the file if datacycle enabled. The same path can appear in several events: a file that is modified and later deleted produces both a modification event and a deletion event. Events that arrive while the buffer is full are not logged, so the events log requires regular flushing.
+
+   `<EVENT_TYPE_ID>` values: 0 file created, 1 directory created, 2 directory deleted, 3 file deleted, 4 symlink created, 5 hardlink created, 6 renamed or moved, 11 attributes changed (on CloudLinux OS 8 and CloudLinux OS 7 hybrid, also content modified; on the CloudLinux OS 7 normal kernel, permissions changed), 12 file opened for writing was closed. The CloudLinux OS 7 normal kernel also uses 9 and 10 for a truncated file and 13 for a path that is too long. In `<FILE_PATH>`, a backslash is written as `\\` and a newline as `\n`. On file systems other than ext4, the path starts at the root of that file system and does not include its mount point.
 
 3. <span class="notranslate"> **flush** </span> - a file for clearing events log. For flushing, the last <span class="notranslate"> event_id </span> from the events file is written to this file. Right after this, events log is truncated to that <span class="notranslate"> event_id </span> .
 
@@ -544,9 +553,11 @@ The kernel exposes the functionality to /proc/sys/fs/datacycle/ folder.
 
 6. <span class="notranslate"> **min_event_uid** </span> - this file has minimal UID of events to be handled. Events from users with smaller UID are not handled. By default 500 (non-system users in redhat-based systems).
 
+7. <span class="notranslate"> **max_events** </span> - maximum number of events kept in the buffer. New events are not recorded once this number is reached. The default is 500000 on the CloudLinux OS 7 normal kernel. On kmod-lve (CloudLinux OS 7 hybrid and CloudLinux OS 8 kernels) the default is 0, which sets no limit on the number of events; the size of the buffer is still limited.
+
 ## Tuned-profiles-cloudlinux
 
-The <span class="notranslate"> **_tuned-profiles-cloudlinux_** </span> package brings a range of kernel under-the-hood tunings to address high LA, iowait issues what were detected earlier on particular users deploys. The package also encloses OOM adjustments to prioritize the elimination of overrun PHP, <span class="notranslate"> lsphp, Phusion Passenger </span> workers processes over other processes (e.g. ssh, a cron job).
+The <span class="notranslate"> **_tuned-profiles-cloudlinux_** </span> package brings a range of kernel under-the-hood tunings to address high LA, iowait issues what were detected earlier on particular users deploys. On CloudLinux OS 7 kernels with the OpenVZ <span class="notranslate">`/proc/vz/vestat`</span> interface, the `cloudlinux-default` and `cloudlinux-latency-performance` profiles also load OOM adjustments to prioritize the elimination of overrun PHP, <span class="notranslate"> lsphp, Phusion Passenger </span> workers processes over other processes (e.g. ssh, a cron job).
 
 The following profiles are provided by CloudLinux OS:
 <div class="notranslate">
@@ -566,21 +577,23 @@ The following profiles are provided by CloudLinux OS:
 ```
 </div>
 
+CloudLinux OS 7 provides only `cloudlinux-default`, `cloudlinux-latency-performance`, `cloudlinux-dummy` and `cloudlinux-vz`. There, `cloudlinux-default` and `cloudlinux-latency-performance` are regular profiles and are not deprecated. Ubuntu 22 does not provide `cloudlinux-dummy` and `cloudlinux-vz`.
+
 ::: warning Profile structure
-The recommended profile for most servers is **<span class="notranslate">cloudlinux-default-cgv1</span>**. For latency-sensitive workloads, use **<span class="notranslate">cloudlinux-latency-performance-cgv1</span>**.
+The recommended profile for most servers is **<span class="notranslate">cloudlinux-default-cgv1</span>** (**<span class="notranslate">cloudlinux-default-cgv2</span>** on CloudLinux OS 10, **<span class="notranslate">cloudlinux-default</span>** on CloudLinux OS 7). For latency-sensitive workloads, use **<span class="notranslate">cloudlinux-latency-performance-cgv1</span>** (**<span class="notranslate">cloudlinux-latency-performance-cgv2</span>** on CloudLinux OS 10, **<span class="notranslate">cloudlinux-latency-performance</span>** on CloudLinux OS 7).
 
 The profiles are organized in a hierarchy:
-- **<span class="notranslate">cloudlinux-default-base</span>** / **<span class="notranslate">cloudlinux-latency-performance-base</span>** — contain all generic tuning parameters (sysctl, CPU governor, OOM adjustments). Not intended for direct use.
-- **<span class="notranslate">cloudlinux-default-cgv1</span>** / **<span class="notranslate">cloudlinux-latency-performance-cgv1</span>** — include the base profile and add cgroups v1 boot parameters. **Recommended for most servers.**
-- **<span class="notranslate">cloudlinux-default-cgv2</span>** / **<span class="notranslate">cloudlinux-latency-performance-cgv2</span>** — include the base profile and add cgroups v2 boot parameters. Supported starting from **kmod-lve 2.1-58** on **CloudLinux OS 8, 9, 10, and Ubuntu 22**.
-- **<span class="notranslate">cloudlinux-default</span>** / **<span class="notranslate">cloudlinux-latency-performance</span>** — **deprecated** wrappers that internally include the <span class="notranslate">-cgv1</span> variants. They remain functional for backward compatibility (e.g. existing Ansible scripts), but new installations should use the <span class="notranslate">-cgv1</span> profiles directly.
+- **<span class="notranslate">cloudlinux-default-base</span>** / **<span class="notranslate">cloudlinux-latency-performance-base</span>** — contain all generic tuning parameters (sysctl, CPU governor, disk scheduler, transparent HugePage). Not intended for direct use.
+- **<span class="notranslate">cloudlinux-default-cgv1</span>** / **<span class="notranslate">cloudlinux-latency-performance-cgv1</span>** — include the base profile and add cgroups v1 boot parameters. **Recommended for most servers on CloudLinux OS 8, 9 and Ubuntu 22.**
+- **<span class="notranslate">cloudlinux-default-cgv2</span>** / **<span class="notranslate">cloudlinux-latency-performance-cgv2</span>** — include the base profile and add cgroups v2 boot parameters. Supported starting from **kmod-lve 2.1-58** on **CloudLinux OS 8, 9, 10, and Ubuntu 22**. **Recommended on CloudLinux OS 10, where they are the default.**
+- **<span class="notranslate">cloudlinux-default</span>** / **<span class="notranslate">cloudlinux-latency-performance</span>** — **deprecated** wrappers that internally include the <span class="notranslate">-cgv1</span> variants. They remain functional for backward compatibility (e.g. existing Ansible scripts), but new installations should use the <span class="notranslate">-cgv1</span> or <span class="notranslate">-cgv2</span> profiles directly.
 
-When upgrading from older versions, the deprecated profiles are automatically switched to their <span class="notranslate">-cgv1</span> equivalents.
+When upgrading from older versions, the deprecated profiles are automatically switched to their <span class="notranslate">-cgv1</span> equivalents, or to their <span class="notranslate">-cgv2</span> equivalents on CloudLinux OS 10. A profile explicitly set to <span class="notranslate">-cgv1</span> or <span class="notranslate">-cgv2</span> is not changed.
 :::
 
-<span class="notranslate"> cloudlinux-dummy</span> and  <span class="notranslate"> cloudlinux-vz</span> are used for internal needs or when  <span class="notranslate"> Virtuozzo/OpenVZ </span>  detected and actually do nothing.
+<span class="notranslate"> cloudlinux-dummy</span> and  <span class="notranslate"> cloudlinux-vz</span> are used for internal needs, or when  <span class="notranslate"> Virtuozzo/OpenVZ </span> or a CloudLinux container is detected, and actually do nothing.
 
-<span class="notranslate"> cloudlinux-default-cgv1 </span> (or the deprecated <span class="notranslate"> cloudlinux-default</span>) is the one to be used. It actually does the following:
+<span class="notranslate"> cloudlinux-default-cgv1 </span> (<span class="notranslate">cloudlinux-default-cgv2</span> on CloudLinux OS 10, <span class="notranslate">cloudlinux-default</span> on CloudLinux OS 7), or on other systems the deprecated <span class="notranslate"> cloudlinux-default</span>, is the one to be used. It actually does the following:
 
 1. Switches CPU power consumption mode to the maximum. CPU operates at maximum performance at the maximum clock rate:
 
@@ -589,6 +602,7 @@ When upgrading from older versions, the deprecated profiles are automatically sw
 ```
 governor=performance
 energy_perf_bias=performance
+min_perf_pct=100 (CloudLinux OS 8, 9, 10 and Ubuntu 22)
 ```
 </div>
 
@@ -598,14 +612,36 @@ If standard software CPU governors are used.
 
 
 
- 2. Applies the following kernel options:
-<span class="notranslate">
-vm.force_scan_thresh=100 </span> - Improves kernel memory clean-up in case of big number of running LVE.
+ 2. Applies the following kernel options.
+
+On CloudLinux OS 7:
+
+<span class="notranslate">vm.force_scan_thresh=100</span> - Improves kernel memory clean-up in case of big number of running LVE.
+
+<span class="notranslate">kernel.pid_max=4194303</span> - Raises the maximum process ID.
 
 UBC parameters set the limits for the containers:
 
 <span class="notranslate">  ubc.dirty_ratio=100 </span> - Defines maximum RAM percentage for dirty memory pages.
-<span class="notranslate"> dirty_background_ratio=75</span> - Defines RAM percentage when to allow writing dirty pages on the disk.
+<span class="notranslate"> ubc.dirty_background_ratio=75</span> - Defines RAM percentage when to allow writing dirty pages on the disk.
+
+The CloudLinux OS 7 hybrid kernel does not provide `vm.force_scan_thresh` and the `ubc.*` options, so they have no effect there.
+
+On CloudLinux OS 8, 9, 10 and Ubuntu 22 (on top of the `throughput-performance` profile):
+
+<div class="notranslate">
+
+```
+vm.dirty_ratio=40
+vm.dirty_background_ratio=10
+vm.swappiness=10
+vm.zone_reclaim_mode=0
+kernel.numa_balancing=1
+net.ipv4.tcp_fastopen=3
+```
+</div>
+
+CloudLinux OS 8, 9 and 10 also set `vm.oom_dump_tasks=0`. Ubuntu 22 also sets `vm.force_scan_thresh=100` and `kernel.pid_max=4194303`.
 
 3. _[CloudLinux OS 7 only]_ Detects used disk types and changes elevator to <span class="notranslate"> 'deadline' </span> for HDD and to <span class="notranslate"> 'noop' </span> for SSD in <span class="notranslate"> /sys/block/[blockname]/queue/scheduler </span> .
 
@@ -635,9 +671,18 @@ chmod +x /etc/rc.d/rc.local
 4. _[CloudLinux OS 7 only]_ The profile sets <span class="notranslate"> I/O </span> scheduler. For the normal discs the <span class="notranslate"> Deadline Scheduler </span> is set to improve <span class="notranslate"> IO </span> performance and decrease <span class="notranslate"> IO </span> latency, for SSD - noop.
 When configuring scheduler <span class="notranslate"> I/O </span> queue is changed and set to the value 1024 which improves overall <span class="notranslate"> I/O </span> subsystem performance by caching <span class="notranslate"> IO </span> requests in memory.
 
+On CloudLinux OS 8, 9, 10 and Ubuntu 22, items 3 and 4 do not apply. Instead, the profile sets the `mq-deadline` I/O scheduler for `vd*` and `sd*` disks and `none` for `nvme*` disks. On Ubuntu 22 the profile also sets `readahead=0` for `nvme*` disks.
+
 5. Disables transparent <span class="notranslate"> HugePage </span> .
 
-6. Provides adjustment group file for OOM-Killer to kill overrun php, lsphp and <span class="notranslate"> Phusion Passenger </span> workers first.
+6. _[CloudLinux OS 7 only]_ Only on kernels that expose the OpenVZ interfaces <span class="notranslate">`/proc/vz/vestat`</span> and <span class="notranslate">`/proc/vz/oom_score_adj`</span>, and when `cloudlinux-default` or `cloudlinux-latency-performance` is selected instead of the `cloudlinux-vz` profile the package picks there, the profile loads the adjustment group file <span class="notranslate">`/etc/tuned-profiles-cloudlinux/oom-groups.conf`</span> for OOM-Killer to kill overrun php, lsphp and <span class="notranslate"> Phusion Passenger </span> workers first. On such kernels it skips the disk scheduler and transparent HugePage steps. In all other cases, including CloudLinux OS 8 and later, the profiles do not apply this file. This file is not provided on Ubuntu 22. To make the OOM-Killer prefer PHP processes started by mod_lsapi, use [lsapi_backend_oom_score_adj](/cloudlinuxos/cloudlinux_os_components/#lsapi-backend-oom-score-adj).
+
+The <span class="notranslate">`cloudlinux-latency-performance`</span> profiles apply the same settings as the matching <span class="notranslate">`cloudlinux-default`</span> profiles and additionally:
+
+- keep CPUs out of deep C-states (`force_latency=1`), which increases power consumption;
+- on CloudLinux OS 7, set `min_perf_pct=100`;
+- on CloudLinux OS 8, 9, 10 and Ubuntu 22, enable network busy polling (`net.core.busy_read=50`, `net.core.busy_poll=50`), set `net.ipv4.tcp_window_scaling=1` and `net.ipv4.tcp_timestamps=1`, and set `sched_min_granularity_ns=10000000` and `sched_wakeup_granularity_ns=15000000`;
+- on CloudLinux OS 8, 9 and 10, set read-ahead to 0 for `nvme*` disks (on Ubuntu 22 the default profile already does this).
 
 To install:
 
@@ -645,6 +690,15 @@ To install:
 
 ```
 yum install tuned-profiles-cloudlinux
+```
+</div>
+
+On Ubuntu:
+
+<div class="notranslate">
+
+```
+apt-get install tuned-profiles-cloudlinux
 ```
 </div>
 
@@ -657,6 +711,24 @@ tuned-adm profile cloudlinux-default-cgv1
 ```
 </div>
 
+On CloudLinux OS 10, use `cloudlinux-default-cgv2`:
+
+<div class="notranslate">
+
+```
+tuned-adm profile cloudlinux-default-cgv2
+```
+</div>
+
+On CloudLinux OS 7, use `cloudlinux-default`:
+
+<div class="notranslate">
+
+```
+tuned-adm profile cloudlinux-default
+```
+</div>
+
 To stop using a profile:
 
 <div class="notranslate">
@@ -665,6 +737,26 @@ To stop using a profile:
 tuned-adm off
 ```
 </div>
+
+::: warning
+Each install or update of `tuned-profiles-cloudlinux` selects a CloudLinux profile again if no profile is active or if one of these stock profiles is active:
+
+- `off`, `default`, `powersave`, `balanced`, `virtual-guest`: switched to `cloudlinux-default-cgv1` (`cloudlinux-default-cgv2` on CloudLinux OS 10, `cloudlinux-default` on CloudLinux OS 7)
+- `latency-performance`, `throughput-performance`: switched to `cloudlinux-latency-performance-cgv1` (`cloudlinux-latency-performance-cgv2` on CloudLinux OS 10). Not on CloudLinux OS 7.
+
+Inside a container or on OpenVZ/Virtuozzo, `cloudlinux-vz` is selected instead (not on Ubuntu).
+
+So `tuned-adm off` lasts only until the next package update. Other profiles, including your own, are not changed. To keep your settings, activate your own profile.
+:::
+
+### Crash dump configuration
+
+On CloudLinux OS servers with more than 16 GB of RAM, each install or update of `tuned-profiles-cloudlinux` configures crash dumps:
+
+- adds `crashkernel=auto` to `GRUB_CMDLINE_LINUX` in `/etc/default/grub` and regenerates the GRUB configuration. A `crashkernel` value set in megabytes is replaced with `auto`.
+- on CloudLinux OS 8, 9 and 10, enables the `kdump` service. On CloudLinux OS 10, also adds `crashkernel=auto` to all installed kernels.
+
+The new memory reservation takes effect after a reboot. This does not apply to Ubuntu.
 
 ### Switching between cgroup v1 and cgroup v2
 
@@ -719,15 +811,27 @@ reboot
 ```
 </div>
 
-To verify that the server has booted with cgroup v2 and that the LVE module is operating correctly, check the kernel log after reboot:
+To verify that the server has booted with cgroup v2, check the file system type of the cgroup mount after reboot:
 <div class="notranslate">
 
 ```
-dmesg | grep -i "cgroups"
+stat -fc %T /sys/fs/cgroup
 ```
 </div>
 
-The presence of the message **"detected cgroups v2"** in the output confirms that the system is running with cgroup v2.
+The output `cgroup2fs` confirms that the system is running with cgroup v2. With cgroup v1 the output is `tmpfs`.
+
+To verify that the LVE module is loaded:
+<div class="notranslate">
+
+```
+lsmod | grep '^kmodlve '
+```
+</div>
+
+If the module is not loaded and `dmesg` shows `unsupported cgroups configuration`, the memory, cpu and pids controllers are not all on the same cgroup version.
+
+With `kmod-lve` 2.1-78 or later, the LVE kernel module keeps its control groups in the `lve.slice` directory of each cgroup hierarchy it uses, for example `/sys/fs/cgroup/lve.slice/` on cgroup v2 and `/sys/fs/cgroup/memory/lve.slice/` on cgroup v1. Update any monitoring or scripts that read LVE control groups directly.
 
 ## Kernel config variables
 
@@ -785,7 +889,7 @@ If fs.proc_can_see_other_uid is set to 0, users will not be able to see special 
 
 fs.proc_super_gid=XX
 
-The fs.proc_super_gid sets group ID which will see system files in /proc, add any users to that group so they will see all files in /proc. Usually needed by some monitoring users like nagios or zabbix and [cldetect utility](/cloudlinuxos/command-line_tools/#cldetect) can configure few most commonly used monitoring software automatically.
+The fs.proc_super_gid sets group ID which will see system files in /proc, add any users to that group so they will see all files in /proc. Usually needed by some monitoring users like nagios or zabbix. The [cldetect utility](/cloudlinuxos/command-line_tools/#cldetect) can add the Nagios user automatically; add other monitoring users to this group manually.
 
 #### Automatic configuration of a group in the fs.proc_super_gid
 
@@ -906,7 +1010,7 @@ On Cloudlinux OS 8, changing the `/etc/fstab` file for setting `/proc` remountin
 ## Ptrace block
 
 :::tip
-Since CL7 kernel it’s recommended to use the native sysctl parameter `yama.ptrace_scope`. For details refer to the [official documentation](https://docs.kernel.org/admin-guide/LSM/Yama.html#ptrace-scope).
+Since CL7 kernel it’s recommended to use the native sysctl parameter `kernel.yama.ptrace_scope`. For details refer to the [official documentation](https://docs.kernel.org/admin-guide/LSM/Yama.html#ptrace-scope).
 :::
 
 Starting with kernel 3.10.0-427.18.s2.lve1.4.21 ( <span class="notranslate"> CloudLinux OS </span> 7) we re-implemented <span class="notranslate"> ptrace block </span> to protect against <span class="notranslate"> ptrace </span> family of vulnerabilities. It prevents end user from using any <span class="notranslate"> ptrace </span> related functionality, including such commands as <span class="notranslate"> strace, lsof </span> or <span class="notranslate"> gdb </span> .
@@ -956,18 +1060,18 @@ ptrace protection is known to break PSA service for Plesk 11
 By adding <span class="notranslate"> xen_blkfront.sda_is_xvda=0 </span> to kernel boot line in <span class="notranslate"> grub.conf </span> you will make sure no naming translation is done, and the drives will be identified as <span class="notranslate"> xvde </span> .
 
 By default, this option is set to 1 in the kernel, and drives are detected as <span class="notranslate"> xvda </span> .
-This is needed only for CloudLinux OS 6 and <span class="notranslate"> Hybrid </span> kernels.
+This is needed only for the CloudLinux OS 6 kernel. The CloudLinux OS 7, CloudLinux OS 7 hybrid and CloudLinux OS 8 kernels do not have this option.
 
 ## Umask behavior
 
 :::tip Note
-CloudLinux OS 7, CloudLinux OS 7 hybrid kernels
+All kernels with the LVE kernel module
 :::
 
 Starting from the kernel module **lve-kmod-2.0-10**, the behavior of umask is changed.
 
 Now, when entering LVE task's original umask value is preserved, instead of using LVE's umask value.
-This behavior is typical for all kernels: CloudLinux OS 7, CloudLinux OS 7 hybrid kernels.
+This behavior applies to all kernels with the LVE kernel module.
 
 ## IO limits latency
 
@@ -976,11 +1080,11 @@ This behavior is typical for all kernels: CloudLinux OS 7, CloudLinux OS 7 hybri
 When customer reaches <span class="notranslate"> IO Limit, the processes that are waiting for  <span class="notranslate"> IO will be placed to sleep to make sure they don't go over the limit. That could make some processes sleep for a very long time. </span> </span>
 By defining <span class="notranslate"> IO latency, you can make sure that no process sleeps due to  <span class="notranslate"> IO limit for more then X milliseconds. By doing so, you will also let customers to burst through the limits, and use up more than they were limited too in some instances. </span> </span>
 
-This option is <span class="notranslate"> OFF by default. </span>
+With the `kmodlve` module, the latency is set to 5000 milliseconds (5 seconds) by default, so a single wait caused by the IO limit lasts no longer than that. The value of the parameter is in milliseconds.
 
-_For CloudLinux OS 7, CloudLinux OS 8 (kmodlve 2.1-2 and later):_
+_For CloudLinux OS 7, 8, 9, 10 and Ubuntu 22 (kmodlve 2.1-2 and later):_
 
-To enable <span class="notranslate"> IO </span> Limits latency and set it to 10 seconds:
+To set <span class="notranslate"> IO </span> Limits latency to 10 seconds:
 <div class="notranslate">
 
 ```
@@ -1017,15 +1121,35 @@ echo 2000000000 > /sys/module/iolimits/**parameters/latency
 </div>
 
 
+## Kernel defaults on CloudLinux OS 8 and CloudLinux OS 7 hybrid
+
+The regular 4.18 CloudLinux kernel on these systems has two defaults that differ from a similar RHEL kernel.
+
+**Writeback throttling.** Writeback throttling (WBT) is disabled by default, so `/sys/block/<device>/queue/wbt_lat_usec` shows `0` on disk devices. To enable throttling for a device, write the target latency in microseconds to that file. Writing `-1` restores the kernel default. To use the standard defaults (2 ms for non-rotational and 75 ms for rotational storage), add `wbt_latency_old` to the kernel boot line.
+
+**ipset.** A hash-type set created without the `hashsize` option uses a hash size of 16384 instead of the usual 1024.
+
+
 ## Reading LVE usage
 
-CloudLinux OS kernel provides real time usage data in file.
+CloudLinux OS kernel provides real time usage data in the `/proc/lve/list` file.
 
-All the statistics can be read from that file in real time. Depending on your kernel version, you will get either version 6 or version 4 of the file.
-You can detect the version by reading the first line of the file. It should look like:
+All the statistics can be read from that file in real time. You can detect the version of the format by reading the first line of the file. Current LVE kernel modules write version 10, older ones write an earlier version, such as 8, 6 or 4:
 
+10:LVE... for version 10
 6:LVE... for version 6
 4:LVE... for version 4
+
+The order of the columns differs between versions, so read the columns by the names in the first line. In version 10, the columns are:
+
+<div class="notranslate">
+
+```
+10:LVE lCPU lCPUW nCPU lEP lNPROC lMEM lMEMPHY lIO lIOPS lNETO lNETI EP CPU MEM IO fMEM fEP MEMPHY fMEMPHY NPROC fNPROC IOPS NETO NETI
+```
+</div>
+
+In version 10, the LVE column has the form `<reseller LVE ID>,<LVE ID>`. The reseller LVE ID is 0 for an LVE that does not belong to a reseller. LVEs that belong to a reseller are listed in the same format in `/proc/lve/resellers/lvp<reseller LVE ID>/list`.
 
 First line presents headers for the data.
 Second line shows default limits for the server, with all other values being 0.
@@ -1046,15 +1170,15 @@ Version 6 file example:
 |**Label** | **Description** | **Value** | **Supported versions**|
 |<span class="notranslate"> LVE </span> | <span class="notranslate"> LVE ID </span> | number | |
 |<span class="notranslate"> EP </span> | Number of <span class="notranslate"> entry processes </span> | number | |
-|<span class="notranslate"> lCPU </span> | <span class="notranslate"> CPU </span> Limit | % relative to total <span class="notranslate"> CPU power </span> | |
-|<span class="notranslate"> lIO </span> | <span class="notranslate"> IO </span> limits for CL6 | KB/s for v6, from 1 to 100 for v4 | |
-|<span class="notranslate"> CPU </span> | <span class="notranslate"> CPU </span> usage since reboot | in nanoseconds for v6, hertz for v4 | |
-|<span class="notranslate"> MEM </span> | Virtual memory usage | number of 4k pages | |
-|<span class="notranslate"> IO </span> | <span class="notranslate"> IO </span> usage | KB/s for v6, 0 for v4 | |
-|<span class="notranslate"> lMEM </span> | Virtual memory limit | number of 4k pages | |
+|<span class="notranslate"> lCPU </span> | <span class="notranslate"> CPU </span> Limit | v8 and later: hundredths of a percent of one core (10000 = one full core); v4 and v6: % relative to total <span class="notranslate"> CPU power </span> | |
+|<span class="notranslate"> lIO </span> | <span class="notranslate"> IO </span> limit | KB/s for v6 and later, from 1 to 100 for v4 | |
+|<span class="notranslate"> CPU </span> | <span class="notranslate"> CPU </span> usage since reboot | in nanoseconds for v6 and later, hertz for v4 | |
+|<span class="notranslate"> MEM </span> | Virtual memory usage (always 0 on CloudLinux OS 7 hybrid kernels, CloudLinux OS 8 and later, and Ubuntu) | number of 4k pages | |
+|<span class="notranslate"> IO </span> | <span class="notranslate"> IO </span> usage | v10: total KB since the LVE was created, to get KB/s take the difference between two reads and divide it by the seconds between them; KB/s for v6; 0 for v4 | |
+|<span class="notranslate"> lMEM </span> | Virtual memory limit (shown but not enforced on CloudLinux OS 7 hybrid kernels, CloudLinux OS 8 and later, and Ubuntu) | number of 4k pages | |
 |<span class="notranslate"> lEP </span> | <span class="notranslate"> Entry Processes </span> limit | number | |
 |<span class="notranslate"> nCPU </span> | Number of cores limit | number of cores | |
-|<span class="notranslate"> fMEM </span> | <span class="notranslate"> Virtual memory </span> faults | number of faults | |
+|<span class="notranslate"> fMEM </span> | <span class="notranslate"> Virtual memory </span> faults (always 0 on CloudLinux OS 7 hybrid kernels, CloudLinux OS 8 and later, and Ubuntu) | number of faults | |
 |<span class="notranslate"> fEP </span> | <span class="notranslate"> Entry Processes </span> faults | number of faults | v6+|
 |<span class="notranslate"> lMEMPHY </span> | Physical memory limit | number | v6+|
 |<span class="notranslate"> lCPUW </span> | <span class="notranslate"> CPU </span> weight (not used) | from 1 to 100 | v6+|
@@ -1064,6 +1188,13 @@ Version 6 file example:
 |<span class="notranslate"> NPROC </span> | <span class="notranslate"> Number of processes </span> | number | v6+|
 |<span class="notranslate"> fNPROC </span> | <span class="notranslate"> Number of processes </span> faults | number of faults | v6+|
 |<span class="notranslate"> IOPS </span> | <span class="notranslate"> IO </span> operations since reboot | number | v8+|
+|<span class="notranslate"> lIOPS </span> | <span class="notranslate"> IO </span> operations limit | operations per second | v8+|
+|<span class="notranslate"> lNETO </span> | Output traffic limit, not enforced by the kernel | normally 0 | v10|
+|<span class="notranslate"> lNETI </span> | Input traffic limit, not enforced by the kernel | normally 0 | v10|
+|<span class="notranslate"> NETO </span> | Outgoing traffic | total bytes | v10|
+|<span class="notranslate"> NETI </span> | Incoming traffic | total bytes | v10|
+
+On CloudLinux OS 7 hybrid kernels, CloudLinux OS 8 and later, and Ubuntu, use <span class="notranslate"> MEMPHY, lMEMPHY </span> and <span class="notranslate"> fMEMPHY </span> to check memory usage.
 
 ## Flashcache
 
@@ -1131,6 +1262,10 @@ kernel.memcg_oom_disable=1
 ```
 </div>
 
+:::tip Note
+The `kernel.memcg_oom_disable` parameter is available on the CloudLinux OS 7 normal kernel. CloudLinux OS 7 hybrid and CloudLinux OS 8 kernels do not have it.
+:::
+
 
 ## File system quotas
 
@@ -1169,7 +1304,7 @@ echo 1 > /sys/module/kmodlve/parameters/lve_setuid_enter
 As updating the kernel is one of the most sensitive tasks, we'd like to achieve the maximum stability along the way.
 In case something goes wrong, proactive reacting to kernel crashes can help tremendously.
 
-Our new tool, _Kernel Panic Receiver_, released in [June 2020](https://blog.cloudlinux.com/kernel-panic-receiver-a-new-tool-to-organize-kernel-panic-logs) allows you to to organize kernel panic logs.
+Our new tool, _Kernel Panic Receiver_, released in [June 2020](https://blog.cloudlinux.com/kernel-panic-receiver-a-new-tool-to-organize-kernel-panic-logs) allows you to organize kernel panic logs.
 Kernel Panic Receiver is an open-source component designed to pre-emptively resolve any kernel-related issues.
 
 Visit the [Kernel Panic Receiver project GitHub page](https://github.com/cloudlinux/kernel_panic_receiver).
@@ -1185,15 +1320,23 @@ The configuration is done by the `initscripts` package, starting from the follow
 * For CloudLinux OS 7: `9.49.49-1.cloudlinux`
 * For CloudLinux OS 8-9: `10.00.4-1.cloudlinux`
 
-To update the `initscripts` package, run the following command:
+On CloudLinux OS 8, the kernel package also requires the `netconsole-service` package.
+
+To update the packages, run the following command:
 
 ```
-yum update initscripts --enablerepo=cloudlinux-updates-testing
+yum update initscripts
+```
+
+On CloudLinux OS 8:
+
+```
+yum update initscripts netconsole-service
 ```
 
 #### For CloudLinux OS 10
 
-The configuration is handled by the `tuned-profiles-cloudlinux` package as a separate service, instead of the `initscripts/netconsole-service` package.
+The configuration is handled by the `tuned-profiles-cloudlinux` package as a separate `cloudlinux-netconsole` service, instead of the `initscripts/netconsole-service` package. The package enables and starts the service on install and on every update.
 
 When a kernel panic occurs, the _netconsole_ module sends logs to our server as plain text via the UDP protocol.
 
@@ -1222,7 +1365,13 @@ service netconsole stop
 
 #### For CloudLinux OS 10
 
-The _netconsole_ functionality is managed by the service provided by the `tuned-profiles-cloudlinux` package. To disable it, stop the corresponding service.
+The _netconsole_ functionality is managed by the `cloudlinux-netconsole` service from the `tuned-profiles-cloudlinux` package. The package enables and starts this service on every install and update, so stopping or disabling it does not last. To turn the service off and keep it off after reboots and package updates, mask it:
+
+```
+systemctl mask --now cloudlinux-netconsole
+```
+
+To check the current state, run `systemctl status cloudlinux-netconsole`.
 
 :::tip Note
 _Netconsole_ is used only for Kernel Panic Receiver, so disabling it doesn't lead to issues with other CloudLinux OS services.
