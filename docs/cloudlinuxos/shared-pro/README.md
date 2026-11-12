@@ -2531,7 +2531,7 @@ Make sure that `cm.cloudlinux.com` is available on your end server.
     ```
     **Note**: If the `rhn_check` command is not found, run the following command:
     ```
-    yum install/update rhn-check rhn-setup
+    yum install rhn-check rhn-setup
     ```
    AccelerateWP Premium activation support was added in ```lve-utils-6.5.11-1```.
 7. After 5 hours (or after the manual setup), check that statistics for all registered servers is collected via [https://cm.cloudlinux.com/#/servers](https://cm.cloudlinux.com/#/servers). And check that user statistics on the servers is collected via [https://cm.cloudlinux.com/#/users](https://cm.cloudlinux.com/#/users).
@@ -2570,26 +2570,26 @@ Click <span class="notranslate">C-Monitoring</span> in the left menu.
 #### Servers
 
 
-This page contains the list of all clients’ end servers. The server appears in the list after finishing [Installation](./#installation-2). By default, there is a descending sort by CPU usage.
+This page contains the list of all clients’ end servers. The server appears in the list after finishing [Installation](./#installation-1). By default, there is a descending sort by Load Avg 15m.
 
 ![All Servers table: load avg, CPU %, memory used/total bars, IO read/write per hostname](/images/cloudlinuxos/shared-pro/centralized-monitoring/CMAllServers.webp)
 
 The following values are available for each server:
 
 * <span class="notranslate">**Load Avg 15m**</span> – average system load for the last 15 min
-* <span class="notranslate">**CPU Usage**</span> – CPU usage for the last 15 min (the number of cores can be found in the hint)
-* <span class="notranslate">**Memory Usage**</span> – free available memory, the second value is the total memory for the last 15 min
-* <span class="notranslate">**IO read/write**</span> – disk read bytes/disk written bytes for the last 15 min
+* <span class="notranslate">**CPU Usage**</span> – current CPU usage (the number of cores can be found in the hint)
+* <span class="notranslate">**Memory Usage**</span> – used memory, the second value is the total memory
+* <span class="notranslate">**IO read/write**</span> – current disk read bytes/disk written bytes per second
 
 :::tip Note
-The values are calculated using a 15 min time period but the metric state is updated automatically every minute by default or you can choose from one of the predefined periods.
+Load Avg shows the 15-minute load average. The values are refreshed automatically every minute. Click _Refresh_ to update them immediately.
 :::
 
 * <span class="notranslate">**Idle state**</span> – there were no statistics for the server for the last minute. 
 * <span class="notranslate">**N/A state**</span> – there were no statistics for the server for the last 30 days. This can happen if a new server was added but statistics sending was not configured.
 
-There is no pagination on the <span class="notranslate">_All servers_</span> page and all columns can be sorted by absolute value.
-Use the search tool to operate with the data.
+There is no pagination on the <span class="notranslate">_All servers_</span> page and all columns can be sorted: Memory Usage by the percentage of used memory, IO by the sum of read and write, the other columns by their value. When sorting by Memory Usage, rows with 90% or more of memory used have a red background, and rows with 50% to less than 90% have a yellow background.
+Use the search box to find a server by its hostname or server ID.
 
 #### Servers details
 
@@ -2687,7 +2687,7 @@ In each cell there are current usage/limit values for the basic LVE limits:
 * MySQL CPU
 * MySQL IO
 
-In the hint, there is a number of faults for each limit. The values in the columns are underlined (it is red if load-to-limit ratio >=90%  and it is yellow if load-to-limit ratio >= 50%). For the current implementation, the only sort by the load-to-limit ratio is available.
+In the hint, there is a number of faults for each limit except MySQL CPU and MySQL IO. The values in the columns are underlined (it is red if load-to-limit ratio >=90%  and it is yellow if load-to-limit ratio >= 50%). In the Top 5 Users table, only the sort by the load-to-limit ratio is available.
 By default, there is a descending sort by the CPU usage column.
 
 When sorting by a column, the lines with the load-to-limit ratio >=90% for this column will have the red background color, and lines with the load-to-limit ratio >=50% for this column will have the yellow background color.
@@ -2790,30 +2790,30 @@ The **server alert** tracks the next list of metrics:
 7. CPU Basic (user)
 8. CPU Basic (iowait)
 9. CPU Basic (steal)
-10. Network Traffic Basic (`eht0_receive`)
-11. Network Traffic Basic (`eht0_transmit`)
-12. Network Traffic Basic (`ehtN_receive`)
-13. Network Traffic Basic (`ehtN_transmit`)
+10. Network Traffic Basic (`eth0_receive`)
+11. Network Traffic Basic (`eth0_transmit`)
+12. Network Traffic Basic (`ethN_receive`)
+13. Network Traffic Basic (`ethN_transmit`)
 14. Disk Space Used Basic (`mountpoint: <0>`)
 15. Disk Space Used Basic (`mountpoint: <1>`)
 16. Disk Space Used Basic (`mountpoint: <N>`)
-17. Memory Basic (available)
-18. Memory Basic (used)
-19. Time spent Doing I/Os
-20. Disk IOps Writes Completed
-21. Disk IOps Reads Completed
-22. Disk Read Data
-23. Disk Write Data
-24. Disk Read Time
-25. Disk Write Time
-26. Apache connections
-27. Number of requests per minute
-28. MySQL queries
-29. Hardware Temperature (`chip<0>`)
-30. Hardware Temperature (`sensor<0>`)
-31. Hardware Temperature (`chip<N>`)
-32. Hardware Temperature (`sensor<N>`)
-33. Open File Description
+17. Memory available (%)
+18. Memory used (%)
+19. Memory available (MB)
+20. Memory used (MB)
+21. Time spent Doing I/Os
+22. Disk IOps Writes Completed
+23. Disk IOps Reads Completed
+24. Disk Read Data
+25. Disk Write Data
+26. Disk Read Time
+27. Disk Write Time
+28. Apache connections
+29. Number of requests per minute
+30. MySQL queries
+31. Hardware Temperature (`chip<0>`)
+32. Hardware Temperature (`chip<N>`)
+33. Open file descriptors
 
 During creating a server alert an admin should select the type of metrics as the first step. The list of servers will be collected according to the availability of these metrics on the server.
 
@@ -2842,8 +2842,7 @@ The **user alert** tracks the next list of LVE metrics:
 11. Number of Processes (current usage)
 12. Number of Processes (faults)
 13. MySQL CPU (current usage)
-14. MySQL CPU (faults)
-15. MySQL IO (current usage)
+14. MySQL IO (current usage)
 
 :::tip Small limitation
 We collect the server list according to having their statistics in our database (this behavior will be changed in the next releases).
@@ -2936,7 +2935,7 @@ Limit and current load are drawing regarding the left vertical axis, the count o
 * <span class="notranslate">`cl-node-exporter`</span> >= 1.1.0-2
 * <span class="notranslate">`rhn-client-tools`</span>
     * CloudLinux OS 6 >= 1.1.15-3.el6.cloudlinux.26
-    * CloudLinux OS 7 >= 2.0.2-31.el7.clouldinux
+    * CloudLinux OS 7 >= 2.0.2-31.el7.cloudlinux
     * CloudLinux OS 8 >= 2.8.16-14.module_el8.1.0+6074+9dc6073e.cloudlinux.2
 * <span class="notranslate">`lve-stats`</span> >= 3.0.7-2
 * <span class="notranslate">`lve-utils`</span> >= 4.2.21-2
@@ -2948,6 +2947,15 @@ Limit and current load are drawing regarding the left vertical axis, the count o
 
 ```
 service cl_plus_sender status
+```
+</div>
+
+Also check the service that provides server metrics to it:
+
+<div class="notranslate">
+
+```
+service cl_node_exporter status
 ```
 </div>
 
