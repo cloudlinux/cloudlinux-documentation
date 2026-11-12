@@ -1326,7 +1326,7 @@ Use the following commands to manage MAx Cache on your server via the cloudlinux
 When AccelerateWP is first installed on a site and a MAx Cache module is already on the server, the plugin turns MAx Cache on for that site automatically. Sites that already ran AccelerateWP before the module was installed stay off until you enable them.
 
 :::tip Note on Prerequisites
-**Important:** For either command to work, the AccelerateWP plugin must be installed and up-to-date on the WordPress sites you are targeting. Sites without it are skipped and listed as not installed. Old versions of the plugin do not support the current configuration. W3 Total Cache sites (2.11.0 or newer, Page Cache set to _Disk: Enhanced_) are not managed by these commands: enable MAx Cache from the plugin, see [Using MAx Cache with W3 Total Cache](/cloudlinuxos/shared-pro/#using-max-cache-with-w3-total-cache).
+**Important:** For either command to work, the AccelerateWP plugin must be installed and up-to-date on the WordPress sites you are targeting. Sites without it are skipped and listed as not installed. A MAx Cache module must also be installed and loaded in Apache or NGINX: otherwise `cloudlinux-awp-admin` exits with an error and changes no site. Old versions of the plugin do not support the current configuration. W3 Total Cache sites (2.11.0 or newer, Page Cache set to _Disk: Enhanced_) are not managed by these commands: enable MAx Cache from the plugin, see [Using MAx Cache with W3 Total Cache](/cloudlinuxos/shared-pro/#using-max-cache-with-w3-total-cache).
 :::
 
 #### 1. Bulk Activation (Server-Wide) 
@@ -2306,7 +2306,7 @@ journalctl -u maxcache-nginx-configd -f
 
 #### Default: automatic via maxcache-nginx-configd daemon
 
-In the default mode, the `maxcache-nginx-configd` daemon reads the MAx Cache directives that the caching plugin writes to the site's `.htaccess` and writes parsed per-domain configuration to shared memory (`/dev/shm/maxcache_config`). The NGINX module reads this shared memory on each request. No manual NGINX configuration is needed per domain.
+In the default mode, the `maxcache-nginx-configd` daemon reads the MAx Cache directives that the caching plugin writes to the site's `.htaccess` and writes parsed per-domain configuration to shared memory (`/run/maxcache/maxcache_config`). The NGINX module reads this shared memory on each request. No manual NGINX configuration is needed per domain.
 
 The daemon recognizes a block only when it opens with exactly `<IfModule maxcache_module>`, and directive names must be spelled as in this documentation. A block opened with `<IfModule mod_maxcache.c>` works on Apache but is ignored on NGINX.
 
@@ -2381,6 +2381,8 @@ setfacl -R -d -m u:nobody:rX /home/username/public_html/wp-content/cache/
 All directives below, except `maxcache_dynamic` and `maxcache_shm_path`, map directly to their [Apache MAx Cache counterparts](https://docs.cloudlinux.com/cloudlinuxos/shared-pro/#max-cache-documentation) . In most deployments with `maxcache_dynamic on` (the default), these are managed automatically by the daemon.
 
 For directives set in NGINX configuration files, a list directive such as `maxcache_exclude_uri` at a lower level replaces the list of the parent level instead of adding to it, so repeat any exclusions you still need.
+
+Regular expressions set in NGINX configuration files are case-insensitive. Patterns that the daemon reads from `.htaccess` (`MaxCacheExcludeURI`, `MaxCacheExcludeUA`, `MaxCacheExcludeCookie`) are case-sensitive on NGINX, unlike on Apache.
 
 #### maxcache
 
@@ -2512,7 +2514,7 @@ Enables dynamic per-domain configuration from the `maxcache-nginx-configd` daemo
 
 Path to the shared memory file for daemon-to-module configuration exchange.
 
-**Syntax:** `maxcache_shm_path <path>;` **Default:** `/dev/shm/maxcache_config` **Context:** `http`
+**Syntax:** `maxcache_shm_path <path>;` **Default:** `/run/maxcache/maxcache_config` **Context:** `http`
 
 Must match the `shm_path` setting in `/etc/maxcache/configd.conf`.
 
@@ -2537,7 +2539,7 @@ sudo -u nobody test -r /home/user/public_html/wp-content/cache/wp-rocket/example
 ```
 systemctl status maxcache-nginx-configd
 journalctl -u maxcache-nginx-configd --since "1 hour ago"
-ls -la /dev/shm/maxcache_config
+ls -la /run/maxcache/maxcache_config
 ```
 
 **Force rescan after migrations:**
@@ -2552,7 +2554,7 @@ systemctl reload maxcache-nginx-configd
 echo '{"action":"status"}' | socat - UNIX-CONNECT:/opt/cloudlinux/maxcache/notify.sock
 ```
 
-The list shows the names the daemon has registered. cPanel `www.` aliases are not registered on their own, so `www.example.com` is normally not listed. A request for `www.example.com` uses the entry of `example.com` unless `www.example.com` has its own entry. The cache file path still uses the host name in the request.
+The list shows the names the daemon has registered. cPanel `www.` aliases are not registered on their own, so `www.example.com` is normally not listed. With `ea-nginx-maxcache` 1.2.7 or newer, a request for `www.example.com` uses the entry of `example.com` unless `www.example.com` has its own entry. Older versions do not serve `www.example.com` from cache. The cache file path still uses the host name in the request.
 
 **Debug logging:**
 

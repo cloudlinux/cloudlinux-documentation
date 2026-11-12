@@ -34,7 +34,7 @@ Note that this may take a while, so we recommend running this command in a `tmux
 
 Any websites previously using LSAPI will be automatically switched to NGINX hosting with the LSAPI NGINX module.
 Websites using PHP-FPM will be switched to NGINX hosting with PHP-FPM.
-If some websites use other PHP handlers, the command asks whether to switch them to LSAPI. If you agree, the LSAPI handler is set for the PHP versions these websites use and for the default PHP version of the server. Remove `ea-apache24-mod_ruid2` and `ea-apache24-mod_mpm_itk` first: they are not compatible with `mod_lsapi`. If you accept the switch while `ea-apache24-mod_ruid2` is installed, setup stops with an error: remove the module and run setup again. If you decline, these websites are proxied to Apache.
+If some websites use other PHP handlers, the command asks whether to switch them to LSAPI. If you agree, the LSAPI handler is set for the PHP versions these websites use and for the default PHP version of the server. Remove `ea-apache24-mod_ruid2` and `ea-apache24-mod_mpm_itk` first: they are not compatible with `mod_lsapi`. If you accept the switch while `ea-apache24-mod_ruid2` is installed, setup stops with an error: remove the module, run `apache2max_webserver reset`, then run setup again. Without `reset`, the repeated setup leaves the `ea-nginx` cache enabled, and all websites are proxied to Apache. To fix this, run `apache2max_webserver reset --force`, then run setup again. If you decline, these websites are proxied to Apache.
 
 To answer without a prompt, for example in a script, add `-y` (switch) or `-n` (do not switch) to the command.
 
@@ -107,7 +107,7 @@ This command prints each such website as `domain (reason, details)`, or `Nothing
 | Reason | Meaning |
 |---|---|
 | `forced` | Set with the `proxy` command |
-| `handler` | The PHP handler is not supported. Details show the handler |
+| `handler` | The PHP handler is not supported, or the website uses LSAPI and the LSAPI NGINX module is not installed. Details show the handler |
 | `test` | The generated NGINX configuration failed validation |
 | `http` | After conversion the response status, content type or charset differs from the one before, or the content type became `application/octet-stream`. Details show the change |
 | `cache` | The `ea-nginx` cache is enabled |
@@ -138,7 +138,7 @@ To print the current state of MAx Web Server:
 apache2max_webserver state
 ```
 
-If `setup` or `reset` is running, the command waits for it to finish.
+If another `apache2max_webserver` command, such as `setup` or `reset`, is running, the command waits for it to finish.
 
 | State | Meaning |
 |---|---|
@@ -147,6 +147,7 @@ If `setup` or `reset` is running, the command waits for it to finish.
 | `unset` | Setup has not been run |
 | `resetting` | `reset` did not finish |
 | `setup_failed` | Setup failed. Check `/var/log/max_webserver_setup.log` |
+| `failed_deps` | Installing the NGINX packages failed. Check `/var/log/max_webserver_setup.log` |
 | `bad_env` | The server is not supported, the NGINX configuration check failed, or `mod_lsapi` conflicts were found |
 
 Any other state means setup did not finish. Check `/var/log/max_webserver_setup.log`.
