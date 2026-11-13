@@ -2642,10 +2642,17 @@ The `cloudlinux-ssa-manager` utility allows to manage Slow Site analyzer via CLI
 |-|-|
 |`set-config`|set the SSA configuration|
 |`get-config`|get the SSA configuration|
-|`get-ssa-status`|get a current status of SSA|
-|`enable-ssa`|enable SSA|
-|`disable-ssa`|disable SSA|
+|`get-ssa-status`|get whether SSA is enabled (`enabled` or `disabled`). This does not show whether the agent is running; check that with `systemctl status ssa-agent`. `enable-ssa` does nothing if SSA is already enabled, so to start a stopped agent run `systemctl restart ssa-agent`|
+|`enable-ssa`|enable SSA: add the `clos_ssa` extension to the PHP versions it supports, then enable and start the SSA agent. If SSA is already enabled, the command changes nothing. PHP workers load the extension when they start: workers of accounts with CloudLinux Isolates are restarted at once if a per-website setting changed, and other running workers load it after their next restart|
+|`disable-ssa`|disable SSA: stop and disable the SSA agent and its socket, and remove the `clos_ssa` extension from all PHP versions. Workers of accounts with CloudLinux Isolates are restarted at once if a per-website setting was removed, and other running workers keep the extension until their next restart|
 |`get-report`|get the latest report|
+|`get-stat`|get the SSA statistics: the current configuration (`config`), the package version (`version`), SSA status (`status`: `enabled` or `disabled`), SSA agent status (`agent_status`: `active` or `inactive`) and X-Ray Autotracing statistics (`autotracing`)|
+
+The SSA agent creates the report once a day at 00:00 UTC. If `--summary-notification-enabled` is `On` and the report is not empty, the report is emailed with JSON and HTML attachments. The email goes to the `report_email` address from the `wmt-api` configuration or, if that is empty, to the control panel administrator address. On a server without a control panel, no email is sent unless `report_email` is set. The email is sent through the local SMTP server or, if that fails, the `sendmail` utility.
+
+A running SSA agent reads `--summary-notification-enabled` when it starts. After changing it, run `systemctl restart ssa-agent` to apply the new value.
+
+`get-report` and the _PHP Site analyzer_ subtab show the report whatever the value of `--summary-notification-enabled`.
 
 You can use the `-h`, `--help` option with commands to get a full list of available optional arguments for each command.
 
@@ -2657,21 +2664,19 @@ Example of the `/usr/sbin/cloudlinux-ssa-manager set-config --help` command outp
 
 usage: cloudlinux-ssa-manager set-config [-h]
                                          [--domains-number DOMAINS_NUMBER]
-                                         [--urls-number URLS_NUMBER]
-                                         [--requests-duration REQUESTS_DURATION]
                                          [--request-number REQUEST_NUMBER]
                                          [--time TIME]
                                          [--correlation CORRELATION]
                                          [--correlation-coefficient CORRELATION_COEFFICIENT]
+                                         [--urls-number URLS_NUMBER]
+                                         [--requests-duration REQUESTS_DURATION]
                                          [--ignore-list IGNORE_LIST]
-optional arguments:
+                                         [--summary-notification-enabled SUMMARY_NOTIFICATION]
+
+options:
   -h, --help            show this help message and exit
   --domains-number DOMAINS_NUMBER
                         Size of TOP list for slow domains
-  --urls-number URLS_NUMBER
-                        Size of TOP list for slow urls
-  --requests-duration REQUESTS_DURATION
-                        The threshold value of request duration in seconds
   --request-number REQUEST_NUMBER
                         The threshold value of slow requests number in the
                         period of time to mark URL as a slow one
@@ -2681,10 +2686,59 @@ optional arguments:
                         Flag to enable or disable correlation
   --correlation-coefficient CORRELATION_COEFFICIENT
                         The threshold value of correlation coefficient
+  --urls-number URLS_NUMBER
+                        Size of TOP list for slow urls
+  --requests-duration REQUESTS_DURATION
+                        The threshold value of request duration in seconds
   --ignore-list IGNORE_LIST
                         List of URLs or domains that should not be included in
                         the daily report
+  --summary-notification-enabled SUMMARY_NOTIFICATION
+                        Turn on|off sending the daily report by e-mail
 ```
+
+These options match the Slow Site analyzer settings in [CloudLinux Manager](/cloudlinuxos/lve_manager/#settings), not the Website monitoring settings with similar names. See also [What is the density threshold?](/cloudlinuxos/lve_manager/#what-is-the-density-threshold).
+
+| Option | Setting in CloudLinux Manager |
+|-|-|
+|`--domains-number`|**Top N slow websites to show**|
+|`--urls-number`|**Top slow URLs**|
+|`--requests-duration`|**Slow request duration**|
+|`--request-number`|**Slow requests number**|
+|`--time`|**Analysis time**|
+|`--correlation`|**Enable slow requests density threshold**|
+|`--correlation-coefficient`|**Slow requests density threshold**|
+|`--ignore-list`|**Domains and URLs Ignore List**|
+|`--summary-notification-enabled`|**Enable summary notifications**|
+
+**Values of the `set-config` options**:
+
+| Option | Accepted values | Default |
+|-|-|-|
+|`--domains-number`|integer, `0` or greater; `0` keeps all domains in the report|`10`|
+|`--urls-number`|integer greater than `0`|`5`|
+|`--requests-duration`|number greater than `0`, in seconds|`3.0`|
+|`--request-number`|integer greater than `0`|`10`|
+|`--time`|integer from `0` to `12`, in hours; `0` means 24 hours|`1`|
+|`--correlation`|`On` or `Off`|`On`|
+|`--correlation-coefficient`|number greater than `0` and not greater than `1`|`0.8`|
+|`--ignore-list`|comma-separated list of patterns|`/wp-admin,/wp-cron`|
+|`--summary-notification-enabled`|`On` or `Off`|`On`|
+
+The value of `--ignore-list` is a comma-separated list of patterns and replaces the whole current list. New installations start with `/wp-admin,/wp-cron`; run `get-config` first and include any patterns you want to keep. Patterns are compared with the full request URL, including the scheme, the domain and the query string, and are case-sensitive:
+
+* A pattern without `*` matches any URL that contains it, for example `/wp-admin`.
+* A pattern with `*` is a wildcard that must match the whole URL, including the query string, and a leading `*` is added automatically. For example, `example.com/shop/*` matches `https://example.com/shop/cart`. In such patterns, `?` matches any single character.
+
+Requests that match the list are not stored and do not appear in reports, so removing a pattern does not bring back requests dropped while it was on the list.
+
+```
+/usr/sbin/cloudlinux-ssa-manager set-config --ignore-list "/wp-admin,/wp-cron,example.com/shop/*"
+```
+
+Except for help and usage errors, all commands print JSON. On success, `result` is `success`. On failure, `result` holds the error message and the exit code is `1`. In the `get-report` output, `average_duration` is in microseconds, and `domains` is empty if there is no report yet.
+
+The SSA agent runs as the `ssa-agent` service and logs to `/var/log/clos_ssa/agent.log`.
 
 ### The wmt-api utility
 
@@ -2693,35 +2747,60 @@ The `wmt-api` utility allows to manage Website Monitoring tool via CLI.
 **Usage**
 
 ```
-/usr/share/web-monitoring-tool/wmtbin/wmt-api [command] [--optional arguments]
+/usr/share/web-monitoring-tool/wmtbin/wmt-api [option]
 ```
 
-**Optional arguments**:
+**Options**:
 
 | | |
 |-|-|
 |`-h`, `--help`|show help message and exit|
+|`--config-change`|set the WMT configuration using the JSON string that follows|
+|`--config-get`|get the WMT configuration as JSON, including the report recipient (`report_email`) and the fallback address (`default_report_email`)|
+|`--report-get`|print the report for the last 24 hours as JSON|
+|`--send-clickhouse`|Send the summary report to ClickHouse|
+|`--send-email`|send the summary report for the previous day by email. A cron job runs it daily at midnight. It exits with an error if the WMT system is stopped, summary notifications are disabled or the CloudLinux license is expired|
+|`--start`|Start the WMT system|
+|`--status`|Check the status of the WMT system|
+|`--stop`|Stop the WMT system|
 
-**Commands**:
+Pass one option per call; if you pass several, only one of them takes effect.
 
-| | |
-|-|-|
-|`config-change`|set the WMT configuration using the JSON string that follows|
-|`config-get`|get the WMT configuration as JSON|
-|`email-get`|get WMT email from the config file|
-|`report-generate`|Generate a report JSON file|
-|`send-clickhouse`|Send the summary report to ClickHouse|
-|`start`|Start the WMT system|
-|`status`|Check the status of the WMT system|
-|`stop`|Stop the WMT system|
+The scanner runs as the `cl_wmt_scanner` service and writes its log to `/var/log/cl_wmt.log`.
+
+If the CloudLinux license expires, the scanner stops checking domains, and email reports and alerts are no longer sent. One email about it goes to the report recipient. Checks resume when the license is valid again.
 
 Example of the `/usr/share/web-monitoring-tool/wmtbin/wmt-api` command usage:
 
 ```
-/usr/share/web-monitoring-tool/wmtbin/wmt-api -config-change "{\"ping_connections\":8,\"report_top\":5,\"report_email\":\"user@example.com\"}"
+/usr/share/web-monitoring-tool/wmtbin/wmt-api --config-change "{\"ping_connections\":8,\"report_top\":5,\"report_email\":\"user@example.com\"}"
 ```
 
 This way you can set all or only certain parameters.
+
+Only configuration keys are accepted, and an unknown key rejects the whole change without saving anything. To reuse the `--config-get` output with `--config-change`, pass only the object inside `config`, and remove `default_report_email` from it. That field is read-only: it shows the address used when `report_email` is empty.
+
+**Configuration parameters**
+
+The settings are stored in `/etc/wmt/config.json`. The file is created by the first `--config-change`; until then the defaults apply.
+
+| Parameter | Default | Description |
+|-|-|-|
+|`ping_interval`|`30`|interval in minutes between requests to the same domain (integer)|
+|`ping_timeout`|`10`|time allowed for a response, in seconds (integer)|
+|`ping_connections`|`10`|number of concurrent requests (integer)|
+|`report_email`|empty|recipient of reports and alerts. If empty, the server administrator email is used|
+|`report_top`|`4`|the **Top N slow websites to show** setting (integer)|
+|`ignore_list`|empty|domains and URLs to exclude from monitoring: a JSON array, or a string in the format that `--config-get` prints|
+|`summary_notification_enabled`|`true`|send the daily summary report by email (`true` or `false`)|
+|`alert_notifications_enabled`|`false`|send alert emails when a domain keeps failing (`true` or `false`)|
+|`allow_private_targets`|`false`|check sites whose domain resolves to a private, loopback, link-local, reserved or shared (`100.64.0.0/10`) address (`true` or `false`). With `false`, WMT does not send requests to such addresses and reports the code `523`. Set `true` to monitor sites on an internal network or behind NAT|
+
+**Output**
+
+Except for help and usage errors, the utility prints JSON with `result` and `timestamp`. On success, `result` is `success`. On failure, it exits with code 1, `result` is `error` and the `context` field holds the reason. When `--send-email` refuses to run, it also exits with code 1, but `result` holds the message and there is no `context` field.
+
+`--status` adds `status`: `started` or `stopped`. In the report, `average_time` is in microseconds, the code `408` means the site did not respond within `ping_timeout`, and the code `523` means the site could not be reached. With `allow_private_targets` set to `false`, `523` can also mean that the domain resolves to a private or other non-public address and WMT did not request it.
 
 ## X-Ray Autotracing
 
