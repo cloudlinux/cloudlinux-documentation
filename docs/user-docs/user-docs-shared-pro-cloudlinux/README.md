@@ -18,7 +18,7 @@ Advice is not displayed while the site has a compatibility issue with the recomm
 
 ### Requirements
 
-* PHP version 5.6 or higher
+* PHP version 7.0 or higher
 * WordPress version 5.0 or higher
 * The PHP function `stream_socket_client` must be enabled. If it is disabled, the plugin shows the message `Advice management requires php function "stream_socket_client".` instead of the list of advice.
 
