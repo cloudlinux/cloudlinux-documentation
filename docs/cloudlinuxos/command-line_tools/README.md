@@ -2650,6 +2650,8 @@ The `cloudlinux-ssa-manager` utility allows to manage Slow Site analyzer via CLI
 
 The SSA agent creates the report once a day at 00:00 UTC. If `--summary-notification-enabled` is `On` and the report is not empty, the report is emailed with JSON and HTML attachments. The email goes to the `report_email` address from the `wmt-api` configuration or, if that is empty, to the control panel administrator address. On a server without a control panel, no email is sent unless `report_email` is set. The email is sent through the local SMTP server or, if that fails, the `sendmail` utility.
 
+A running SSA agent reads `--summary-notification-enabled` when it starts. After changing it, run `systemctl restart ssa-agent` to apply the new value.
+
 `get-report` and the _PHP Site analyzer_ subtab show the report whatever the value of `--summary-notification-enabled`.
 
 You can use the `-h`, `--help` option with commands to get a full list of available optional arguments for each command.
