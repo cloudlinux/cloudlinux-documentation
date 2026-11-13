@@ -11,7 +11,7 @@ When a client orders/upgrade a configurable option, a request will be sent to th
 ### Installation and Update
 
 1. The addon sends requests to servers from a WHMCS cron task that is set to run every minute. Run the WHMCS system cron every minute; if it runs less often, requests wait for the next run. [How to set up the cron](https://docs.whmcs.com/Crons#Setting_up_the_Cron_Tasks).
-2. On Plesk servers, the required [extension](./#plesk-extension) is installed and activated automatically with AccelerateWP 1.9-8 or later. AccelerateWP features in the addon require AccelerateWP 1.9-16 or later on the server.
+2. On Plesk servers, the required [extension](./#plesk-extension) is installed and activated automatically with AccelerateWP 1.9-8 or later.
 3. Download archive [https://repo.cloudlinux.com/plugins/whmcs-cl-advantage-plugin-latest.zip](https://repo.cloudlinux.com/plugins/whmcs-cl-advantage-plugin-latest.zip)
 
 <div class="notranslate">
@@ -36,7 +36,7 @@ unzip whmcs-cl-advantage-plugin-latest.zip -d <whmcs_root>/modules/addons
 6. Go to the admin panel page "WHMCS/System Settings/Addon Modules", activate "CloudLinuxAdvantage"
 ![WHMCS Addons page module table listing CloudLinuxAdvantage with green Activate button highlighted by a red arrow](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-activate.webp)
 7. Configure addon:
-   1. Debug mode is enabled when the addon is activated. Disable it if you do not need it. Logs are stored in the "Module Log".
+   1. Enable debug mode if necessary. Logs are stored in the "Module Log".
    2. Allow administrator access to the addon page to view information about the status of the servers
 ![WHMCS Addon Modules page with CloudLinuxAdvantage Configure: Logs on Module Log checkbox, admin role access, red arrows to Configure and Save](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-configure.webp)
 
@@ -46,7 +46,7 @@ When upgrading to a new version, be sure to open the "WHMCS/System Settings/Addo
 
 ### Setting prices for "Configurable options"
 
-During addon activation, the AccelerateWP configurable option groups "AccelerateWP Premium Addon", "AccelerateWP CDN Addon", and "AccelerateWP for Package Bundles" are created automatically (System settings/Configurable Options). The "AccelerateWP for Package Bundles" group is for system use. After an upgrade from an older version, the previous group is named "AccelerateWP Addons".
+During addon activation, the configurable option groups "AccelerateWP" (AccelerateWP Premium and AccelerateWP CDN options) and "MyImunify" are created automatically (System settings/Configurable Options).
 
 :::tip Notes
 Don't change the name of the group, options and sub-options!
@@ -54,7 +54,7 @@ Don't change the name of the group, options and sub-options!
 
 ![WHMCS AccelerateWP configurable option group: assigned hosting products and edit controls for Premium and CDN options](/images/cln/whmcs_advantage/whmcs-advantage-admin-config-option.webp)
 
-In the settings of the "AccelerateWP Premium Addon" and "AccelerateWP CDN Addon" groups, you need to configure:
+In the "AccelerateWP" group settings, you need to configure:
 * Choose for which products (cPanel/Plesk/DirectAdmin) you can additionally order the service.
   * AccelerateWP options work on cPanel, Plesk, and DirectAdmin.
 * For the "accelerate_wp_premium|AccelerateWP Premium" option, set the cost.
@@ -71,7 +71,7 @@ Set up your service to work with "Configurable options" in the "System settings/
 
 1. Choose the payment type, One time or Recurrent.
 ![WHMCS Edit Product Pricing tab: red arrow on Payment Type, Recurring selected, USD billing cycle pricing table](/images/cln/whmcs_advantage/whmcs-advantage-admin-product-price.webp)
-2. Make sure the product is associated with the required configurable option group, for example "AccelerateWP Premium Addon".
+2. Make sure the product is associated with the configurable option group "AccelerateWP".
 ![WHMCS Edit Product Configurable Options tab with AccelerateWP - CloudLinux selected in Assigned Option Groups](/images/cln/whmcs_advantage/whmcs-advantage-admin-product-config-option.webp)
 3. Allow clients to upgrade Configurable options so they can purchase AccelerateWP for existing subscriptions.
 ![WHMCS Edit Product Upgrades tab with Allow upgrading or downgrading configurable options checkbox checked](/images/cln/whmcs_advantage/whmcs-advantage-admin-product-upgrades.webp)
@@ -85,25 +85,42 @@ Set up your service to work with "Configurable options" in the "System settings/
 
 ### CloudLinuxAdvantage addon page
 
-In the **AccelerateWP Premium** tab, choose **Add-on subscription** to offer AccelerateWP Premium as a paid option, or **Value-add for hosting packages** to include it in selected hosting packages.
+Module page contains information about the state of active features
+
+![WHMCS admin Addons menu open on CloudLinuxAdvantage with yellow configurable option status box listing AccelerateWP and MyImunify](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-menu.webp)
 
 In case the configurable options were accidentally removed, you can re-install them on the CloudLinuxAdvantage settings page.
 
 ![CloudLinuxAdvantage addon settings showing MISSED configurable options with INSTALL buttons for Premium, CDN, and MyImunify](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-page.webp)
 
-The table of each section lists the activated hosting packages with their user counts and status. The status info shows activation or deactivation in progress and the number of incompatible servers. Use **Deactivate** to remove a package.
+The table shows the queue and history of requests to the servers for which the AccelerateWP status change will be applied.
 
 :::tip Note
 Deactivating the addon will delete the table with the history of AccelerateWP activity on the servers.
 :::
 
-The addon does not list individual requests. Errors are written to the Module Log when debug mode is on.
+| Column  | Description |
+|---------|-------------|
+| Service | The client service the request refers to, with its last and current status. |
+| Server  | The server the request is sent to. |
+| Suite   | For which product the status will be changed.<br/>* Last status: previous status<br/>* Current status: current status<br/>* Will set status: the status that will be set. It depends on the selected configurable option and the status of the client's service. |
+| Message | The last message about the operation. A detailed error may be displayed. |
+| Queue   | Whether a cron request is queued for this row. |
+| Action  | **Retry now** sends the request at once.<br/>**Delete** removes the row from the table. |
 
-To offer AccelerateWP Premium, open its section and select the hosting packages under **Add packages**. Value-add for hosting packages adds one package at a time; repeat **Add packages** for more. For an add-on subscription, set the monthly price if the form asks for it; the other billing cycles are calculated from the monthly price. Click **Next**. In the **Automatic Server Activation** dialog, review the changes and click **Scan and Activate**. Cron activates the feature on all compatible servers that host the selected packages. AccelerateWP CDN has no section on this page; link its option group to the product as described in [Product/Service setup](./#product-service-setup).
+An example of sending requests to the server for selected options for the user.
+Each line is a report of sending a request to the server for each module that the user enabled or disabled.
+In case of an error, the response from the server is displayed in the "Message" column. Fix the problem and send the request again with the "Retry now" button.
 
-The **MyImunify** tab offers MyImunify - Account protection as an add-on subscription on cPanel servers. Select the hosting packages under **Add packages**, click **Next** and then **Scan and Activate**. More details: [MyImunify for hosting administrators](https://docs.imunify360.com/myimunify/#what-is-myimunify-for-hosting-admin).
+![CloudLinuxAdvantage addon page: last activation state table with Service, Server, Suite, Message, Queue, Action columns and Retry now buttons](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-page-example-cron.webp)
 
-To deactivate a package, click **Deactivate** next to it under **Currently active**, then click **Confirm**.
+The "PUSH" button is displayed for "MyImunify - Account Protection" for a bulk operation to enable/disable the module on services for which the "MyImunify - Account Protection" option is linked.  
+
+By default, the first sorted sub-option for the "MyImunify - Account Protection" option will be sent to all users, and if the user has previously independently changed the sub-option for "MyImunify - Account Protection" using the WHMCS interface, his choice will be saved and also added to the request.  
+
+More details: [https://docs.imunify360.com/myimunify/#what-is-myimunify-for-hosting-admin](https://docs.imunify360.com/myimunify/#what-is-myimunify-for-hosting-admin)
+
+![WHMCS Push info dialog confirming bulk MyImunify Account protection changes with Cancel and Send changes buttons](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-page-push-modal.webp)
 
 ### FAQ
 
@@ -112,17 +129,17 @@ To deactivate a package, click **Deactivate** next to it under **Currently activ
 The addon tracks the change in the order and services of the client.  
 For those client services that have the configurable options "AccelerateWP", a request is sent to the server to change the status of AccelerateWP products.
 
-Requests are processed by the WHMCS cron task. If a request fails, the task retries it after 5 seconds.
+Requests are sent by the WHMCS cron task, which runs every minute. If the server returns an error, the request is not retried automatically: the error is shown in the "Message" column of the addon page. Fix the cause and click "Retry now". A later change to the client service also queues a new request.
 
-The addon page shows the status of each activated hosting package, including the number of incompatible servers.
+Information about the servers to which requests were sent can be viewed on the addon page.
 
-If an error occurs, check the Module Log when debug mode is enabled.
+If debug mode is enabled, requests and errors are also written to the "Module Log".
 
 The CloudLinuxAdvantage enters the "Allowed" status when the client service's status is set to "Active" and the configurable options "On" is selected. In other cases, the status will be set to "Default" and the feature will be turned off for user.
 
 #### How to automatically open the "Upgrade/Downgrade Options" page?
 
-Parameters can be used to determine the billing account of the user in order to display the proper page. When the addon configures a server, it sets the AccelerateWP Premium upgrade URL from the WHMCS Domain setting. Make sure that this setting points to the root of your WHMCS instance.
+Parameters can be used to determine the billing account of the user in order to display the proper page. The WHMCS plugin already redirects to the upgrade page; set `upgrade-url` to the root of your WHMCS instance.
 
 #### Update AccelerateWP 0.0.1 module to CloudLinuxAdvantage 0.0.2
 
