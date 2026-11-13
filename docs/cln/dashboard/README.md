@@ -129,10 +129,10 @@ Every KernelCare customer gets a default activation key upon license purchase. Y
 
 The following actions are available:
 
-* **Copy a Default Activation Key**. Click _Copy_ next to the default key to copy it to a clipboard.
+* **Copy a Default Activation Key**. Click _Copy_ below the default key to copy it to a clipboard.
 * **Generate a new Activation Key**. Click _Generate new activation key_. In an opened popup specify _Server quantity limit_, _IP range limit_, _Sticky tag_, and add some _Notes_, if any, and click _Save Changes_ to confirm the action or _Cancel_ to close the popup.
     ![Edit activation key dialog with IP range, Sticky tag date, Note field, Save Changes](/images/cln/dashboard/kceditpng.webp)
-* **[Manage servers](/cln/billing/#overview-products)**.
+* **Manage servers** — click _Manage servers_ button. You will be redirected to the list of servers of this product (see [Servers](/cln/dashboard/#servers)).
 * **[Add server licenses](/cln/purchase/#purchase)**.
 * **Remove unused server licenses** . Click _Remove unused server licenses_ to delete all server licenses that are not used to activate a server. Do it to reduce your monthly bill as a customer pays per each server license and NOT per an activated server. Confirm your action in the opened popup by clicking _Remove_ or click _Cancel_ to close the popup.
 * **Go to [Activation Key Details](/cln/dashboard/#kernelcare-activation-key-details-page) page**. To do so, click a specific activation key in the table.
@@ -228,49 +228,17 @@ This way, you can add new patches to all the servers in some environment (i.e. r
 
 Find more details in [KernelCare documentation](https://docs.kernelcare.com/kc-agent-monitoring/)
 
-### Imunify360 License Types
+### Imunify360 Activation Keys
 
 
-Click _Imunify360_ at the top menu to go to _Imunify360 License Types_ page.
-
-![Imunify360 License Types page with tier cards, license gauges, and orange Buy buttons](/images/cln/dashboard/im360licensetypes_zoom70.webp)
-
-Here you can see all available license types, buy and manage them.
-
-The following license types are available:
-
-* **Single User** — good for servers with only one [user](/cln/terminology/#terminology) in the system
-* **Up to 30 users** — good for servers with users quantity less than 30 or equal
-* **Up to 250 users** — good for servers with users quantity less than 250 or equal
-* **Unlimited** — good for servers with users quantity more than 250
-To buy desired license type, click _Buy server licenses_ button. You will be redirected to [Purchase](/cln/purchase/#purchase) page.
-
-A license card includes the following information:
-
-* **Server licenses** — activated/limit;
-* **Activation key** itself. To copy activation key to clipboard, click it.
-
-The following actions are available to manage a license.
-
-* **Add server license** — click _Add server license_ button, you will be redirected to [Purchase](/cln/purchase/#purchase) page.
-* **Remove unused server licenses** — click _Remove unused server licenses_ to delete all server licenses that are not used to activate a server. Do it to reduce your monthly bill as a customer pays per each server license and NOT per an activated server. Confirm your action in the opened popup by clicking _Remove_ or click _Cancel_ to close the popup.
-:::tip Note
-If you have only one license then after the deletion, you will not have any licenses purchased and the product will be deleted from your account.
-:::
-* **Manage servers** — click _Manage servers_ button. You will be redirected to _[Billing →  Overview → Products page](/cln/billing/#overview-products)_.
-* **Manage activation keys** — click _Manage Activation keys_. You will be redirected to [Imunify360 Activation Keys](/cln/dashboard/#imunify360-activation-keys) page.
-
-#### Imunify360 Activation Keys
-
-
-Click _Imunify360_ at the top menu, then click _Activation Keys_ on the left menu to go to _Imunify360 Activation Keys_ page.
+Click _Imunify360_ at the top menu to go to _Imunify360 Activation Keys_ page.
 
 ![Imunify360 Activation Keys table with filter tags, license type, and server limits](/images/cln/dashboard/imunify360activationkeys_zoom70.webp)
 
 Here you can see the table with a list of all Imunify360 Activation Keys. It contains the following columns:
 
 * **Activation key** — activation key string. Click activation key to go to [Activation Key Details](/cln/dashboard/#imunify360-activation-key-details-page) page.
-* **License type** — a type of Imunify360 license for certain key. See [all available license types](/cln/dashboard/#imunify360-license-types).
+* **License type** — a type of Imunify360 license for certain key: Single User, Up to 30 users, Up to 250 users, or Unlimited.
 * **IP range** — a range of IP addresses for a particular activation key;
 * **Note** — any information you've added to a particular activation key;
 * **Servers (used/limits)** — shows how many servers have already been activated with this key (used) and a total number of servers that can be activated with this key (limits).
