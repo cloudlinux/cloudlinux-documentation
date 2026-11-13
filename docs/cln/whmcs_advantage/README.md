@@ -93,10 +93,10 @@ In case the configurable options were accidentally removed, you can re-install t
 
 ![CloudLinuxAdvantage addon settings showing MISSED configurable options with INSTALL buttons for Premium, CDN, and MyImunify](/images/cln/whmcs_advantage/whmcs-advantage-admin-addon-page.webp)
 
-The table shows the queue and history of requests to the servers for which the AccelerateWP status change will be applied.
+The table shows the latest activation state and queue status for each client service, server, and suite. The "Message" column contains the result of the latest attempt.
 
 :::tip Note
-Deactivating the addon will delete the table with the history of AccelerateWP activity on the servers.
+Deactivating the addon will delete this table with the activation states.
 :::
 
 | Column  | Description |
