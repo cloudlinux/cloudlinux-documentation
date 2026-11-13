@@ -2794,12 +2794,13 @@ The settings are stored in `/etc/wmt/config.json`. The file is created by the fi
 |`ignore_list`|empty|domains and URLs to exclude from monitoring: a JSON array, or a string in the format that `--config-get` prints|
 |`summary_notification_enabled`|`true`|send the daily summary report by email (`true` or `false`)|
 |`alert_notifications_enabled`|`false`|send alert emails when a domain keeps failing (`true` or `false`)|
+|`allow_private_targets`|`false`|check sites whose domain resolves to a private, loopback, link-local, reserved or shared (`100.64.0.0/10`) address (`true` or `false`). With `false`, WMT does not send requests to such addresses and reports the code `523`. Set `true` to monitor sites on an internal network or behind NAT|
 
 **Output**
 
 Except for help and usage errors, the utility prints JSON with `result` and `timestamp`. On success, `result` is `success`. On failure, it exits with code 1, `result` is `error` and the `context` field holds the reason. When `--send-email` refuses to run, it also exits with code 1, but `result` holds the message and there is no `context` field.
 
-`--status` adds `status`: `started` or `stopped`. In the report, `average_time` is in microseconds, the code `408` means the site did not respond within `ping_timeout`, and the code `523` means the site could not be reached.
+`--status` adds `status`: `started` or `stopped`. In the report, `average_time` is in microseconds, the code `408` means the site did not respond within `ping_timeout`, and the code `523` means the site could not be reached. With `allow_private_targets` set to `false`, `523` can also mean that the domain resolves to a private or other non-public address and WMT did not request it.
 
 ## X-Ray Autotracing
 
