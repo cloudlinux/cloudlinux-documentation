@@ -3231,7 +3231,7 @@ Tasks with *System administrator* or an end-user name in the *Created by* column
 A tracing task can have the following statuses:
 
 * <span class="notranslate">**Running**</span> – tracing is in progress
-* <span class="notranslate">**Stopped**</span> – tracing was stopped by the administrator or by the end-user who owns the task
+* <span class="notranslate">**Stopped**</span> – tracing was stopped by the administrator or by the end-user who owns the task. A task limited by the number of requests is also stopped automatically if it has not collected all its requests within two days
 * <span class="notranslate">**On hold**</span> – the same URL already exists in the lists. Task processing will not start automatically. Administrator should start it manually.
 * <span class="notranslate">**Completed**</span> – period of time is finished or number of requests is reached.
 
@@ -3312,11 +3312,11 @@ The <span class="notranslate">_External requests_</span> section displays the fo
 * <span class="notranslate">**File**</span> – the file and the line of the executed request and backtrace
 * <span class="notranslate">**Duration**</span> – execution time as a percentage of the total duration of a request and the function processing time (in brackets)
  
-#### System functions
+#### Other system functions
 
 ![Other system functions table: PHP functions, files, green Duration (%) values](/images/cloudlinuxos/shared-pro/x-ray/XRaySystemFunctions.webp)
 
-The <span class="notranslate">_System functions_</span> section displays the following data:
+The <span class="notranslate">_Other system functions_</span> section displays the following data:
 
 * <span class="notranslate">**Function**</span> – the executed function
 * <span class="notranslate">**File**</span> – the file and the line of the executed request
@@ -3545,7 +3545,7 @@ Example when an error appears during advice applying:
 
 ![Smart Advice table: Quick action Error log and Try again on Review row](/images/cloudlinuxos/shared-pro/x-ray/XRaySmartAdviceError.webp)
 
-**Email notifications.** When a WordPress site has performance advice in the *Review* status, the Smart Advice plugin emails the site's WordPress administrators and the email addresses of the control panel user. For each site, it sends at most one email a day about new advice, and a reminder if advice stays in the *Review* status for more than 30 days. The *Don't show me this advice again* link in the email stops emails about that type of advice for that address on that site. To turn these emails on or off for the whole server, run `cloudlinux-awp-admin --api-version 1 set-options --smart-advice-notifications=<on/off>`, which covers both new-advice emails and reminders, or `cloudlinux-awp-admin --api-version 1 set-options --smart-advice-reminders=<on/off>`, which covers reminders only.
+**Email notifications.** When a WordPress site has performance advice in the *Review* status, the Smart Advice plugin emails the site's WordPress administrators and the email addresses of the control panel user. If several pieces of new advice arrive together, it emails about one of them at once and about the others on the following days, one a day. A later advice update can trigger another email on the same day. It also sends a reminder if advice stays in the *Review* status for more than 30 days. The *Don't show me this advice again* link in the email stops emails about that type of advice for that address on that site. To turn these emails on or off for the whole server, run `cloudlinux-awp-admin --api-version 1 set-options --smart-advice-notifications=<on/off>`, which covers both new-advice emails and reminders, or `cloudlinux-awp-admin --api-version 1 set-options --smart-advice-reminders=<on/off>`, which covers reminders only.
 
 #### Smart Advice FAQ
 
@@ -3906,7 +3906,7 @@ The list of currently supported PHP versions:
 
 #### External requests
 
-* Function [curl_exec](https://www.php.net/manual/en/function.curl-exec.php) (PHP versions lower than 8.2). On PHP 8.2 and later, the _External requests_ section stays empty and `curl_exec` is handled like any other PHP function: it appears in the _System functions_ section if it is among the slowest functions of the request.
+* Function [curl_exec](https://www.php.net/manual/en/function.curl-exec.php) (PHP versions lower than 8.2). On PHP 8.2 and later, external requests are not collected and the _External requests_ section is not shown. `curl_exec` is handled like any other PHP function: it appears in the _Other system functions_ section if it is among the slowest functions of the request.
 
 #### System PHP functions
 
@@ -4190,7 +4190,7 @@ You can use any of them with a prefix `www.` and it is also correct.
 
 These formats apply to the URL of a tracing task. In the *Domain* field of a continuous tracing task, enter the domain without a path and without a trailing slash: `http://domain.com` or `https://domain.com`.
 
-X-Ray compares the path of each request with the path in the URL, including the query string and letter case. `https://domain.com` and `https://domain.com/` trace only the home page, and `https://domain.com/page.php` does not match `/page.php?a=1`. To trace the whole site, use `https://domain.com/*`. The scheme is not compared, and the domain matches with or without `www.`, in any letter case.
+X-Ray compares the path of each request with the path in the URL, including the query string and letter case. `https://domain.com` and `https://domain.com/` trace only the home page, and `https://domain.com/page.php` does not match `/page.php?a=1`. To trace the whole site, use `https://domain.com/*`. The scheme is not compared. The domain is compared in any letter case and matches with or without the `www.` prefix, but only a lowercase `www.` is ignored: `WWW.domain.com` does not match a task for `domain.com`.
 
 #### What packages are required for X-Ray?
 
