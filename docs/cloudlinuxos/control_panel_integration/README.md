@@ -2381,15 +2381,15 @@ See [versioning](./#versioning) for changelog.
 :::
 
 :::tip Note
-AccelerateWP has following known limitaions:
-- only cgi, fpm, and lsapi handlers are supported
-:::
--
-:::tip Note
-Both X-Ray and Accelerate WP require CloudLinux Shared Pro license.
+AccelerateWP has the following known limitation:
+- the Object Caching feature supports only the fpm and lsapi handlers. A domain with another handler gets the Unsupported PHP handler message. The handler is not checked when the LiteSpeed web server is running.
 :::
 
-In order to integrate X-Ray or AccelerateWP into your panel, you should follow two simple steps.
+:::tip Note
+Both X-Ray and AccelerateWP require a CloudLinux OS Shared Pro, CloudLinux OS Admin or CloudLinux OS Solo license. They are not available on CloudLinux OS Shared.
+:::
+
+In order to integrate X-Ray or AccelerateWP into your panel, you should follow the steps below. AccelerateWP also requires the [php](./#php) integration script, so implement it in addition to these steps, and enable the <span class="notranslate">`accelerate_wp`</span> feature in <span class="notranslate">`supported_cl_features`</span> of the [panel_info](./#panel-info) script.
 
 1. Extend the output of your existing [domains integration script](./#domains) as follows:
 
@@ -2418,11 +2418,13 @@ PHP interpreter configuration for each domain is to be placed in the nested key-
 <div class="notranslate">
 
 ```
-“php”: {
-   “version”: str
-   “ini_path”: str
-   “is_native”: bool
-   “fpm”: str
+"php": {
+   "php_version_id": str
+   "version": str
+   "ini_path": str
+   "is_native": bool
+   "fpm": str
+   "handler": str
 }
 ```
 </div>
@@ -2439,9 +2441,11 @@ PHP interpreter configuration for each domain is to be placed in the nested key-
       "document_root": "/home/username/public_html",
       "is_main": true,
       "php": {
+        "php_version_id": "alt-php56",
         "version": "56",
         "ini_path": "/opt/alt/php56/link/conf",
-        "is_native": true
+        "is_native": true,
+        "handler": "lsapi"
        }
     },
     "subdomain.domain.com": {
@@ -2449,9 +2453,11 @@ PHP interpreter configuration for each domain is to be placed in the nested key-
       "document_root": "/home/username/public_html/subdomain",
       "is_main": false,
       "php": {
+        "php_version_id": "alt-php72",
         "version": "72",
         "ini_path": "/opt/alt/php72/link/conf",
-        "fpm": "alt-php72-fpm"
+        "fpm": "alt-php72-fpm",
+        "handler": "fpm"
       }
     }
   },
@@ -2467,15 +2473,16 @@ PHP interpreter configuration for each domain is to be placed in the nested key-
 |                                            |          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 |--------------------------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Key                                        | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| <span class="notranslate">version</span>   | True     | The version of php that is selected by the end user or administrator in the panel for this domain. Should be presented in the format XY where XY is the exact version of PHP. List of supported versions is presented below.                                                                                                                                                                                                                                                                                                                                                                                               |
+| <span class="notranslate">version</span>   | True     | The version of php that is selected by the end user or administrator in the panel for this domain. Should be presented in the format XY where XY is the exact version of PHP. For the supported values, see the *Other panels PHP* column in [List of supported PHP versions](/cloudlinuxos/shared-pro/#list-of-supported-php-versions). |
 | <span class="notranslate">ini_path</span>  | True     | Path where PHP expects additional .ini files to scan, usually compiled path into binary PHP.Example where to get this value: ![phpinfo table: ini paths under /opt/alt/php56, scan dir /opt/alt/php56/link/conf, parsed default.ini; red arrow points to scan path](/images/cloudlinuxos/control_panel_integration/IniPath.webp)                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | <span class="notranslate">is_native</span> | False    | If your panel [has integrated CloudLinux OS PHP Selector](./#integrating-cloudlinux-os-php-selector), then there is the list of native PHP binaries in the <span class="notranslate">`native.conf`</span> (see details [here](/cloudlinuxos/cloudlinux_os_components/#native-php-configuration)). The <span class="notranslate">`is_native`</span> value must be set to true if the binary of the above version of PHP is specified in the <span class="notranslate">`native.conf`</span>, false or omitted otherwise. This way the X-Ray will determine if CloudLinux OS PHP Selector is enabled for a given domain |
-| <span class="notranslate">fpm</span>       | False    | The name of the FPM service that uses specified domain, optional value. To make the X-Ray work on domains using FPM, you need to restart FPM service. In X-Ray added automatic restart of the FPM service if the tracing task is created for the domain that uses the FPM therefore we need this field, otherwise it can be omitted                                                                                                                                                                                                                                                                                        |
-| handler                                    | *True    | The name of used handler. Can be one of the follwing: fpm, cgi, fcgi, lsapi. Use lsapi in case if you use litespeed web server.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| <span class="notranslate">fpm</span>       | False    | The name of the FPM service that serves the specified domain, optional value. To make X-Ray work on domains using FPM, the FPM service has to be reloaded. X-Ray reloads it automatically (`service <name> reload`) when a tracing task is created for a domain that uses FPM, so this field is needed for such domains. Otherwise it can be omitted. |
+| <span class="notranslate">php_version_id</span> | *True | Unique identifier of the PHP version. Must match the identifier returned by the [php](./#php) script. |
+| handler                                    | *True    | The name of used handler. Can be one of the following: fpm, cgi, fcgi, lsapi. Use lsapi in case if you use litespeed web server.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
-* handler is only required for Accelerate WP integration.
+* php_version_id and handler are only required for AccelerateWP integration.
 
-2. After finishing the X-Ray integration script, enable X-Ray support through [panel_info integration script](./#panel-info): add xray component into <span class="notranslate">`supported_cl_features`</span> object.
+2. After finishing the integration script, enable support through the [panel_info integration script](./#panel-info): add the <span class="notranslate">`xray`</span> component to the <span class="notranslate">`supported_cl_features`</span> object for X-Ray and the <span class="notranslate">`accelerate_wp`</span> component for AccelerateWP.
 
 **Output example**
 
@@ -2496,12 +2503,22 @@ PHP interpreter configuration for each domain is to be placed in the nested key-
 			"mysql_governor": true,
 			"cagefs": true,
 			"reseller_limits": true,
-			"xray": true
+			"xray": true,
+			"accelerate_wp": true
 		}
 	},
 	"metadata": {
 		"result": "ok"
 	}
 }
+```
+</div>
+
+3. Set <span class="notranslate">`base_path`</span> in the <span class="notranslate">`[lvemanager_config]`</span> section of <span class="notranslate">`/opt/cpvendor/etc/integration.ini`</span> before you install X-Ray. It is required for X-Ray even when the default LVE Manager directories are accessible: the X-Ray UI files are copied to <span class="notranslate">`<base_path>/assets/xray-admin`</span> and <span class="notranslate">`<base_path>/assets/xray-user`</span> when the <span class="notranslate">`lvemanager-xray`</span> package is installed, and the installation of the plugin stops with an error if the option is not set. If you set it later, reinstall the package:
+
+<div class="notranslate">
+
+```
+yum reinstall lvemanager-xray
 ```
 </div>
