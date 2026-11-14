@@ -7235,12 +7235,18 @@ Please note that in the example above 2 different Virtual Hosts use different LV
 * [lsapi_backend_pgrp_max_crashes](./#lsapi-backend-pgrp-max-crashes)
 * [lsapi_backend_loglevel_info](./#lsapi-backend-loglevel-info)
 * [lsapi_backend_oom_score_adj](./#lsapi-backend-oom-score-adj)
+* [lsapi_rlimit_nofile](./#lsapi-rlimit-nofile)
+* [lsapi_rlimit_nproc](./#lsapi-rlimit-nproc)
+* [lsapi_rlimit_cpu](./#lsapi-rlimit-cpu)
+* [lsapi_rlimit_as](./#lsapi-rlimit-as)
+* [lsapi_error_code](./#lsapi-error-code)
 * [lsapi-server-tweak](./#lsapi-server-tweak) Beta
 
 [Connection pool mode](./#connection-pool-mode):
 * [lsapi_with_connection_pool](./#lsapi-with-connection-pool)
 * [lsapi_backend_max_idle](./#lsapi-backend-max-idle)
 * [lsapi_backend_max_reqs](./#lsapi-backend-max-reqs)
+* [lsapi_max_connection](./#lsapi-max-connection)
 
 [CRIU support](./#criu-support-cloudlinux7-only):
 * [lsapi_criu](./#lsapi-criu)
@@ -7551,8 +7557,8 @@ Switch LSAPI_ACCEPT_NOTIFY mode for lsphp. This option can be used both in Globa
 
 #### **lsapi_backend_pgrp_max_reqs**
 
-**Syntax** : lsapi_backend_prgrp_max_reqs [number]
-**Default** : lsapi_backend_max_reqs 0
+**Syntax** : lsapi_backend_pgrp_max_reqs [number]
+**Default** : lsapi_backend_pgrp_max_reqs 0
 **Context** : httpd.conf, virtualhost
 
 **Description** :
@@ -7562,8 +7568,8 @@ Controls how many requests a control process will process before it exits. Shoul
 
 #### **lsapi_backend_pgrp_max_crashes**
 
-**Syntax** : lsapi_backend_prgrp_max_crashes [number]
-**Default** : lsapi_backend_max_crashes 0
+**Syntax** : lsapi_backend_pgrp_max_crashes [number]
+**Default** : lsapi_backend_pgrp_max_crashes 0
 **Context** : httpd.conf, virtualhost
 
 **Description** :
@@ -7597,6 +7603,69 @@ For more information on setting value **oom_score_adj**, see the page [https://m
 
 ---
 
+#### **lsapi_rlimit_nofile**
+
+**Syntax** : lsapi_rlimit_nofile [soft] [hard]
+**Default** : not set
+**Context** : httpd.conf, virtualhost, directory
+
+**Description** :
+Sets the soft and hard resource limits for the number of open files of the lsphp processes that mod_lsapi starts. Both values must be positive integers, and the soft limit cannot be greater than the hard limit. If the directive is not set, mod_lsapi does not change this limit.
+
+---
+
+#### **lsapi_rlimit_nproc**
+
+**Syntax** : lsapi_rlimit_nproc [soft] [hard]
+**Default** : not set
+**Context** : httpd.conf, virtualhost, directory
+
+**Description** :
+Sets the soft and hard resource limits for the number of child processes of the lsphp processes that mod_lsapi starts. Both values must be positive integers, and the soft limit cannot be greater than the hard limit. If the directive is not set, mod_lsapi does not change this limit.
+
+---
+
+#### **lsapi_rlimit_cpu**
+
+**Syntax** : lsapi_rlimit_cpu [soft] [hard]
+**Default** : not set
+**Context** : httpd.conf, virtualhost, directory
+
+**Description** :
+Sets the soft and hard resource limits for the CPU time of the lsphp processes that mod_lsapi starts, in seconds. Both values must be positive integers, and the soft limit cannot be greater than the hard limit. If the directive is not set, mod_lsapi does not change this limit.
+
+---
+
+#### **lsapi_rlimit_as**
+
+**Syntax** : lsapi_rlimit_as [soft] [hard]
+**Default** : not set
+**Context** : httpd.conf, virtualhost, directory
+
+**Description** :
+Sets the soft and hard resource limits for the address space of the lsphp processes that mod_lsapi starts, in bytes. Both values must be positive integers, and the soft limit cannot be greater than the hard limit. If the directive is not set, mod_lsapi does not change this limit.
+
+---
+
+#### **lsapi_error_code**
+
+**Syntax** : lsapi_error_code [name] [status]
+**Context** : httpd.conf, virtualhost, directory
+
+**Description** :
+Sets the HTTP status that mod_lsapi returns to the client for a type of failure. The status must be from 400 to 599; another value is ignored.
+
+| | |
+|-|-|
+|**Name** | **Default status**|
+|`SERVER_DOCROOT`, `SERVER_UID`, `SCRIPT_PERMS` | 500|
+|`LSAPI_CREATE`, `LSAPI_INTERNAL`, `LSAPI_CONN_ACQUIRE`, `LSAPI_CONN_DETERMINE` | 503|
+|`BACKEND_NOHDRS`, `BACKEND_ENDHDRS`, `BACKEND_SENDREQ`, `BACKEND_RECVHDR`, `BACKEND_RECVRSP`, `BACKEND_CONNECT` | 503|
+|`BACKEND_REJECT` | 507|
+|`CLIENT_SETUP` | 400|
+
+---
+
 #### **lsapi_server_tweak** <Badge type="info" text="beta" />
 
 **Syntax**: lsapi_server_tweak [On/Off]
@@ -7619,6 +7688,16 @@ For more information on setting value **oom_score_adj**, see the page [https://m
 
 **Description** :
 On/Off - disable enable connect pool, default is Off.
+
+---
+
+#### **lsapi_max_connection**
+
+**Syntax** : lsapi_max_connection [number]
+**Context** : httpd.conf
+
+**Description** :
+The maximum number of simultaneous connections to lsphp in the connection pool. The value must be greater than 0. If it is not set, mod_lsapi calculates it from `lsapi_backend_children` and the number of Apache processes. If the value is too high for them, mod_lsapi lowers it and writes a warning to the Apache error log.
 
 ---
 
@@ -7938,12 +8017,11 @@ To disable addition of PWD variable. Default value is Off. If set to On, the PWD
 
 #### **lsapi_max_resend_buffer**
 
-**Syntax** : lsapi_max_resend_buffer [number]tmp
-**Default** : lsapi_max_resend_buffer 200
+**Syntax** : lsapi_max_resend_buffer [number]
 **Context** : httpd.conf, virtualhost
 
 **Description** :
-Maximum buffer in KiB to resend for request that has a body (like POST request body).
+This directive is deprecated and has no effect. Remove it from the Apache configuration.
 
 
 See also [Apache mod_lsapi PRO CLI tools](/cloudlinuxos/command-line_tools/#apache-mod-lsapi-pro).

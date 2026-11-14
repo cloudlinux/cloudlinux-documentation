@@ -2587,6 +2587,8 @@ It has the following syntax:
 |`--build-native-lsphp` | build native _lsphp_ for cPanel EasyApache 3<br> _* supported for cPanel EasyApache 3 only_|
 |`--build-native-lsphp-cust` | build native _lsphp_ for cPanel EasyApache 3 (with custom PHP source path)<br> _* supported for cPanel EasyApache 3 only_|
 |`--check-php` | check PHP configuration<br> _* NOT supported for DirectAdmin_|
+|`--enable-default-php-ini` | LSPHP domains load the default `php.ini` of the PHP version (`/opt/alt/phpXX/etc/php.ini`; for LSPHP by vendor OS, the one of the version selected in PHP Selector) instead of the per-domain `php.ini`. Domain-level PHP settings in Plesk then no longer apply to LSPHP domains.<br> _* supported for Plesk only_|
+|`--disable-default-php-ini` | LSPHP domains load the per-domain `php.ini` again (default)<br> _* supported for Plesk only_|
 |`--stat` | return usage statistics in JSON format; the following statistics metrics are collected:<br> • control panel name;<br> • mod_lsapi version;<br> • liblsapi version;<br> • criu version and status;<br> • whether mod_lsapi is enabled;<br> • lsapi configuration options;<br> • number of domains, that use _mod_lsapi_, per each installed PHP version including those set in PHP Selector _(this metric is supported for cPanel EasyApache 4, Plesk and DirectAdmin)_ .|
 
 **Additional options**
@@ -2613,6 +2615,8 @@ The following table presents which `[OPTIONS]` are supported for various panels:
 |`build-native-lsphp` | - | + | - | - | - | - | -|
 |`build-native-lsphp-cust` | - | + | - | - | - | - | -|
 |`check-php` | + | + | + | - | + | + | +|
+|`enable-default-php-ini` | - | - | - | - | + | - | -|
+|`disable-default-php-ini` | - | - | - | - | + | - | -|
 |`verbose` | + | + | + | - | + | + | +|
 |`force` | + | + | + | - | + | + | +|
 |`stat` | + <br> _*without domain info_ | + <br> _*without domain info_ | + | + | + | + <br> _*without domain info_ | + <br> _*without domain info_|
