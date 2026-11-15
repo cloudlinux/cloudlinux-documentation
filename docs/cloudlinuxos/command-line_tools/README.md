@@ -3152,7 +3152,7 @@ For example:
 ```
 cldiag --symlinksifowner --json
 
-{"total_errors": 0, "Check fs.enforce_symlinksifowner is correctly enabled in /etc/sysctl.conf": {"res": "OK", "msg": "fs.enforce_symlinksifowner = 1"}}
+{"total_errors": 0, "Check fs.enforce_symlinksifowner is correctly enabled in sysctl conf": {"res": "OK", "msg": "fs.enforce_symlinksifowner = 1"}}
 ```
 </div>
 
@@ -3163,7 +3163,7 @@ For example:
 <div class="notranslate">
 
 ```
-Check fs.enforce_symlinksifowner is correctly enabled in /etc/sysctl.conf:
+Check fs.enforce_symlinksifowner is correctly enabled in sysctl conf:
 
 OK: fs.enforce_symlinksifowner = 1
 
@@ -3194,11 +3194,17 @@ Fails if <span class="notranslate">`/usr/local/directadmin/custombuild/options.c
 
 #### symlinksifowner
 
-Checks fs.enforce_symlinksifowner is correctly enabled in <span class="notranslate">`/etc/sysctl.conf`</span>.
+Checks fs.enforce_symlinksifowner is correctly enabled in the sysctl configuration.
 
-Checking specified kernel setup described in [this docs section](/cloudlinuxos/cloudlinux_os_kernel/#symlink-owner-match-protection) for deprecated value and displaying its current value.
+Applying the sysctl configuration and displaying the current value of the kernel setting described in [this docs section](/cloudlinuxos/cloudlinux_os_kernel/#symlink-owner-match-protection). Every value the kernel accepts (`0`, `1` or `2`) is reported as <span class="notranslate">`OK`</span>. Value `2` is the strictest mode: it also applies the protection to processes inside an LVE.
 
-Fails if <span class="notranslate">`/proc/sys/fs/enforce_symlinksifowner`</span> contains value `2` (it is deprecated and can cause issues for the system operation).
+Fails if the sysctl configuration cannot be applied because some parameter in it is configured incorrectly. Run <span class="notranslate">`/sbin/sysctl --system`</span> to see the full error.
+
+The check is skipped in the OpenVZ environment and on servers without LVE support.
+
+::: tip Note
+Starting from <span class="notranslate">**lve-utils 6.6.52-1**</span>, value `2` is reported as <span class="notranslate">`OK`</span>. Earlier versions reported it as <span class="notranslate">`FAILED`</span>.
+:::
  
 
 #### check-suexec
@@ -3363,19 +3369,24 @@ Checks the things on a server of client which are required for correct work of c
 Performs diagnostic checks from the list:
 
 * check_cp_diag
+* check_kernel_lve
 * check_symlinksifowner
 * check_suexec
 * check_suphp
 * check_use_pam
 * check_symlinkowngid
 * check_existence_of_all_users_packages
+* check_da_resellers_packages_files
 * check_phpselector
 * check_defaults_cfg
 * check_php_conf
 * check_lve_limits
 * check_hidepid
 * check_cagefs_partition_disk_quota
-* fake_cagefs_checker
+* check_low_pmem_limits
+* check_mysql_version_mismatch
+* check_manager_packages
+* CageFS sanity checks (see [check-cagefs](./#check-cagefs)), if CageFS is installed
 
 #### generate-email
 
@@ -3391,14 +3402,20 @@ Performs diagnostic checks from the list:
 * check_use_pam
 * check_symlinkowngid
 * check_existence_of_all_users_packages
+* check_da_resellers_packages_files
 * check_lve_limits
 * check_hidepid
 * check_cagefs_partition_disk_quota
+* check_low_pmem_limits
+* check_mysql_version_mismatch
 * check_jwt_token
 * check_cl_plus_sender_service
 * check_node_exporter_service
 * check_cmt_packages
 * check_lvestats_service
+* CageFS sanity checks (see [check-cagefs](./#check-cagefs)), if CageFS is installed. The MultiPHP system default check and the mount points check are not run by cron.
+
+The <span class="notranslate">`cldiag --help`</span> command prints the full list of cron checker names that the <span class="notranslate">`--disable-cron-checkers`</span> key accepts. When CageFS is installed, the list includes the CageFS checkers.
 
 #### doctor
 
