@@ -3196,9 +3196,9 @@ Fails if <span class="notranslate">`/usr/local/directadmin/custombuild/options.c
 
 Checks fs.enforce_symlinksifowner is correctly enabled in <span class="notranslate">`/etc/sysctl.conf`</span>.
 
-Checking specified kernel setup described in [this docs section](/cloudlinuxos/cloudlinux_os_kernel/#symlink-owner-match-protection) for deprecated value and displaying its current value.
+Reading the kernel setting described in [this docs section](/cloudlinuxos/cloudlinux_os_kernel/#fs-enforce-symlinksifowner) and displaying its current value. Every value the kernel accepts is reported as OK, including `2`, the strictest mode.
 
-Fails if <span class="notranslate">`/proc/sys/fs/enforce_symlinksifowner`</span> contains value `2` (it is deprecated and can cause issues for the system operation).
+Fails if the sysctl configuration cannot be read (<span class="notranslate">`sysctl --system`</span> reports an error).
  
 
 #### check-suexec
