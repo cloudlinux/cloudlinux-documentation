@@ -170,7 +170,7 @@ fs.symlinkown_gid = 48
 |-|-|
 |<span class="notranslate"> _fs.enforce_symlinksifowner = 0_ </span> | do not check <span class="notranslate"> symlink </span> ownership|
 |<span class="notranslate"> _fs.enforce_symlinksifowner = 1_ </span> | deny if <span class="notranslate"> symlink </span> ownership doesn’t match target, and process <span class="notranslate"> gid </span> matches <span class="notranslate"> _symlinkown_gid</span>|
-|<span class="notranslate"> _fs.enforce_symlinksifowner = 2_ </span> | deny if a process is in <span class="notranslate"> LVE </span> or <span class="notranslate"> symlink </span> ownership doesn’t match target, and process gid matches <span class="notranslate"> _symlinkown_gid</span>|
+|<span class="notranslate"> _fs.enforce_symlinksifowner = 2_ </span> | deny if <span class="notranslate"> symlink </span> ownership doesn’t match target, and the process is in an <span class="notranslate"> LVE </span> (root included) or its <span class="notranslate"> gid </span> matches <span class="notranslate"> _symlinkown_gid</span>|
 
 When <span class="notranslate"> _fs.enforce_symlinksifowner_ </span> set to 1, processes with <span class="notranslate"> GID </span> 48 will not be able to follow <span class="notranslate"> symlinks </span> if they are owned by <span class="notranslate"> user1 </span> , but point to file owned <span class="notranslate"> user2 </span> .
 
