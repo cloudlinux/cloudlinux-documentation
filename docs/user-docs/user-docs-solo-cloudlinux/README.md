@@ -662,7 +662,7 @@ other end-users will not be displayed in the UI of the current user.
 
   To solve this, the existing running tasks for the same Domain/URL should be stopped or completed. You can find more
   details about this in
-  the [FAQ](/solo/manager/#what-should-i-do-if-i-see-the-warning-task-is-duplicated-by-url).
+  the [FAQ](/cloudlinuxos/shared-pro/#what-should-i-do-if-i-see-the-warning-task-is-duplicated-by-url).
 
 
 ## SmartAdvice Plugin

@@ -3036,7 +3036,7 @@ Use this logging with caution because when it is enabled, the size of the daemon
 ### Description
 
 :::warning Warning!
-<span class="notranslate">X-Ray</span> is available out of the box for cPanel, Plesk, and DirectAdmin. For other control panels you should implement integration as described [here](/control_panel_integration/#how-to-integrate-x-ray-with-a-control-panel)
+<span class="notranslate">X-Ray</span> is available out of the box for cPanel, Plesk, and DirectAdmin. For other control panels you should implement integration as described [here](/cloudlinuxos/control_panel_integration/#how-to-integrate-x-ray-and-acceleratewp-with-a-control-panel)
 :::
 
 <span class="notranslate">X-Ray</span> is a tool developed for website performance monitoring and performance issues detection.
@@ -3053,7 +3053,7 @@ Once <span class="notranslate">X-Ray</span> tracing task is running for the site
 X-Ray Autotracing is installed and enabled by default on all new compatible servers.
 :::
 
-1. Make sure you have CloudLinux OS Shared Pro subscription (only non-reseller accounts apply)
+1. Make sure you have CloudLinux OS Shared Pro, CloudLinux OS Solo or CloudLinux OS Admin subscription (only non-reseller accounts apply)
 
 2. Make sure you have installed **LVE Manager version 6.2 or later**. You can install or update it with the following commands:
    * installation
@@ -3110,6 +3110,15 @@ X-Ray Autotracing is installed and enabled by default on all new compatible serv
     ```
     </div>
 
+    On CloudLinux Subsystem for Ubuntu:
+
+    <div class="notranslate">
+
+    ```
+    apt-get install lvemanager alt-php-xray
+    ```
+    </div>
+
 6. After installation, use the <span class="notranslate">_Start tracing_</span> button to create your first tracing task for a slow site.
 
 ![X-Ray header: Search for URL, Refresh, and green Start tracing button](/images/cloudlinuxos/shared-pro/x-ray/XRayStartTracing.webp)
@@ -3131,6 +3140,8 @@ cloudlinux-xray-manager disable-serverwide-mode
 ```
 
 Enable and disable commands do not stop or remove tracing tasks.
+
+In this mode the X-Ray extension stays loaded for all PHP versions even when no tracing tasks are running. Because X-Ray is not compatible with Opcache JIT (see [Known limitations](#known-limitations)), JIT remains disabled for these PHP versions for as long as the mode is enabled.
 
 
 ### X-Ray phpinfo mode
@@ -3158,10 +3169,10 @@ X-Ray provides several options for monitoring domain requests speed: Manual Trac
 
 * **Manual Tracing task** is a task that you can create for a specific URL to collect server requests. The task will end either after a specified number of requests to the URL or after a specified time (maximum after two days). It is not possible here to automatically email a report but it is possible to export the report in PDF and send to a user.
 
-* **Autotracing task** is a task that will be created automatically at the end of each day for slow URLs that were found during that day by the [PHP Slow Site Analyzer](/lve_manager/#website-monitoring-tool-and-slow-site-analyzer) (SSA).
-Need to be enabled separately, see [How to enable X-Ray Autotracing](/cloudlinux-os-plus/#how-to-enable-x-ray-autotracing).
+* **Autotracing task** is a task that will be created automatically at the end of each day for slow URLs that were found during that day by the [PHP Slow Site Analyzer](/cloudlinuxos/lve_manager/#website-monitoring-tool-and-slow-site-analyzer) (SSA).
+On servers where it is not enabled yet, see [How to enable X-Ray Autotracing](#how-to-enable-x-ray-autotracing).
 
-* **Continuous tracing** is a task that initiates daily hourly tracing requests for a specified domain and email a monitoring report. Continuous task can't stop automatically, you need to stop it manually. In fact, continuous task allows to automatically create a tracing task for each new day, with the ability to get a report for the past day.
+* **Continuous tracing** is a recurring job. Every day at midnight (server time) it starts a tracing task for all URLs of the specified domain, from any client IP, and emails a report for the previous day. In the report, requests are grouped by hour. A continuous task does not stop automatically, you need to stop it manually.
 
 #### Tracing tasks tab
 
@@ -3169,7 +3180,7 @@ The *Tracing tasks* tab contains a list of all tracing tasks created both manual
 
 ![Tracing tasks table: Completed rows, Created by column, view/delete, Start tracing](/images/cloudlinuxos/shared-pro/x-ray/XRayTracingTaskCreated.webp)
 
-The *Created* column shows how a task was created – automatically (by continuous task) or manually.
+The *Created by* column shows who created a task: *System administrator*, the name of the end-user, or *Automatically* for tasks created by a continuous task. Use the *Tasks type* filter to show all tasks, only *Automatically* created tasks or only *Manually* created tasks. Tasks created by X-Ray Autotracing are listed in the separate *Autotracing tasks* tab, where this column shows *Automatically (Autotracing)*.
 
 #### Continuous tracing tab
 
@@ -3203,10 +3214,9 @@ The *Continuous tracing* tab contains a list of continuous tasks for which traci
 
 **Advanced settings**
 
-* <span class="notranslate">**Client’s IP**</span>: it is an IPv4 address of a machine to trace. For example, if you have a production website that processes requests from different IP addresses and you do not want to add these requests to the tracing task. So, you can set a specific IP address and <span class="notranslate">X-Ray</span> will analyze requests only from this specific IP address.
-Record for
-* <span class="notranslate">**Time period**</span>: how much time <span class="notranslate">X-Ray</span> collect the requests (2 days max)
-* <span class="notranslate">**Requests**</span>: the amount of requests that <span class="notranslate">X-Ray</span> will collect
+* <span class="notranslate">**Client’s IP**</span>: it is an IPv4 address of a machine to trace. For example, if you have a production website that processes requests from different IP addresses and you do not want to add these requests to the tracing task. So, you can set a specific IP address and <span class="notranslate">X-Ray</span> will analyze requests only from this specific IP address. The default value `*` means all IP addresses.
+* <span class="notranslate">**Time period**</span>: how much time <span class="notranslate">X-Ray</span> collects the requests (from 1 minute to 2 days)
+* <span class="notranslate">**Requests**</span>: the amount of requests that <span class="notranslate">X-Ray</span> will collect (from 1 to 100)
 
 After creating, the task appears in the list of tracing tasks.
 
@@ -3216,14 +3226,14 @@ After creating, the task appears in the list of tracing tasks.
 
 ![Tracing tasks table: filters, statuses Running Completed On Hold, pagination](/images/cloudlinuxos/shared-pro/x-ray/XRayTrcingTaskList1.webp)
 
-Tasks created *Manually* are simply tracing tasks.
+Tasks with *System administrator* or an end-user name in the *Created by* column are simply tracing tasks.
 
 #### Tracing status
 
 A tracing task can have the following statuses:
 
 * <span class="notranslate">**Running**</span> – tracing is in progress
-* <span class="notranslate">**Stopped**</span> – tracing was stopped by administrator
+* <span class="notranslate">**Stopped**</span> – tracing was stopped by the administrator or by the end-user who owns the task. A task limited by the number of requests is also stopped automatically if it has not collected all its requests within two days
 * <span class="notranslate">**On hold**</span> – the same URL already exists in the lists. Task processing will not start automatically. Administrator should start it manually.
 * <span class="notranslate">**Completed**</span> – period of time is finished or number of requests is reached.
 
@@ -3239,16 +3249,16 @@ Click ![Eye icon to open collected requests for a tracing task](/images/cloudlin
 
 ![Recorded sessions: summary counts and slow-request rows with duration tooltip](/images/cloudlinuxos/shared-pro/x-ray/XRayCollectedRequests.webp)
 
-The slowest request is highlighted.
+Requests that took one second or longer are highlighted. By default the list is sorted by duration, with the slowest of the listed requests at the top.
 
 ![Highlighted request row #1 with URL, IP, timestamp, green duration 12.295 sec](/images/cloudlinuxos/shared-pro/x-ray/XRaySlowestRequest.webp)
 
 * <span class="notranslate">**Total**</span> displays how many requests were collected according to tasks requirements.
-* <span class="notranslate">**Pending**</span> displays how many of collected requests are not visible in the table yet.
-* <span class="notranslate">**Throttled**</span> displays the number of requests during the execution of which the LVE limits were exceeded.
-* <span class="notranslate">**Slow**</span> displays the number of requests lasting more than one second.
+* <span class="notranslate">**Pending**</span> displays how many of collected requests are not visible in the table yet. It is not shown for tasks created automatically by a continuous task.
+* <span class="notranslate">**Throttled**</span> displays the number of requests during the execution of which the LVE limits were exceeded. It is shown only if there are such requests.
+* <span class="notranslate">**Slow**</span> displays the number of requests lasting one second or longer during which the LVE limits were not exceeded.
 
-There are filters for the request types and the indicator of a filter used now.
+The *Requests* filter has the *Slow*, *Normal* and *Throttled* options (*Throttled* is available when the task has throttled requests). *Slow* is selected by default, so the table shows only slow requests until you change the filter. The selected filters are shown as tags that you can remove.
 
 ![Search bar and Requests menu with Slow checked; active blue Slow filter tag](/images/cloudlinuxos/shared-pro/x-ray/FilterIndicator.webp)
 
@@ -3264,6 +3274,12 @@ If slow requests were not detected during the tracing task, the following is dis
 * <span class="notranslate">**Database queries**</span> by execution time 
 * <span class="notranslate">**External requests**</span> by execution time
 * <span class="notranslate">**Other system functions**</span> by execution time 
+
+#### Top issues
+
+The <span class="notranslate">_Top issues_</span> section displays up to five of the slowest items of a request among those above the highlight thresholds below or finished with an error: <span class="notranslate">**Issue name**</span>, <span class="notranslate">**Type**</span> and <span class="notranslate">**Duration (%)**</span>. Click a row to go to this item in its table.
+
+Rows in the tables below are highlighted when the *Duration (%)* of a plugin is 20% or more, an SQL query takes 0.3 seconds or longer, or the *Duration (%)* of an external request or a system function is 10% or more.
 
 #### Software modules/plugins
 
@@ -3282,7 +3298,7 @@ The <span class="notranslate">_Software modules/plugins_</span> section displays
 
 The <span class="notranslate">_Database queries_</span> section displays the following data:
 
-* <span class="notranslate">**Query**</span> – the executed SQL-query
+* <span class="notranslate">**Query**</span> – the executed SQL-query. Queries longer than 4096 bytes are truncated
 * <span class="notranslate">**File**</span> – the file and the line of the executed query and backtrace
 * <span class="notranslate">**Software module**</span> – a WordPress plugin name from which the request was completed. If the request does not belong to any of the WordPress plugin, the name of the function that executed the given request is displayed
 * <span class="notranslate">**Calls**</span> – the number of identical SQL queries
@@ -3298,11 +3314,11 @@ The <span class="notranslate">_External requests_</span> section displays the fo
 * <span class="notranslate">**File**</span> – the file and the line of the executed request and backtrace
 * <span class="notranslate">**Duration**</span> – execution time as a percentage of the total duration of a request and the function processing time (in brackets)
  
-#### System functions
+#### Other system functions
 
 ![Other system functions table: PHP functions, files, green Duration (%) values](/images/cloudlinuxos/shared-pro/x-ray/XRaySystemFunctions.webp)
 
-The <span class="notranslate">_System functions_</span> section displays the following data:
+The <span class="notranslate">_Other system functions_</span> section displays the following data:
 
 * <span class="notranslate">**Function**</span> – the executed function
 * <span class="notranslate">**File**</span> – the file and the line of the executed request
@@ -3318,7 +3334,7 @@ The tracing task status will be changed to <span class="notranslate">**Stopped**
 
 #### Deleting tracing task 
 
-Click ![Trash can delete icon in tracing task row](/images/cloudlinuxos/shared-pro/x-ray/XRayDelete.webp) to delete the tracing task.
+Click ![Trash can delete icon in tracing task row](/images/cloudlinuxos/shared-pro/x-ray/XRayDelete.webp) to delete the tracing task. The delete icon is not available for a running task. Stop the task first.
 
 :::warning Warning!
 When you have deleted a tracing task, all collected data will be unavailable.
@@ -3332,17 +3348,17 @@ When you have deleted a tracing task, all collected data will be unavailable.
 
 ![Create continuous tracing button highlighted beside Start tracing on Tracing tasks tab](/images/cloudlinuxos/shared-pro/x-ray/XRayCreateContinuousTaskBtn.webp)
 
-2. Specify URL in the *Domain* field and email in the *Email for reports* field and click the *Create* button.
+2. Specify the domain with its scheme and without a path or a trailing slash (for example, `http://example.com`) in the *Domain* field and email in the *Email for reports* field and click the *Create* button.
 
 ![Create continuous tracing modal: Domain and Email for reports, Create/Cancel](/images/cloudlinuxos/shared-pro/x-ray/XRayCreateContinuousTaskForm.webp)
 
-3. You can see a new task in the *Continuous tracing* tab in the X-Ray UI.
+3. You can see a new task in the *Continuous tracing* tab in the X-Ray UI. The first automatic tracing task starts at the next midnight, and the first report is emailed one day later. Only one continuous task can exist for a domain.
 
 ![Continuous tracing tab: multiple domains with Created, report emails, Stop/Delete](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTab.webp)
 
-4. If you stop a continuous tracing task, a new task for the next 24 hours will not be created. The task for the current day will be finished at midnight and the report will be emailed.
+4. If you stop a continuous tracing task, a new task for the next 24 hours will not be created. The task for the current day will be finished at midnight and the report will be emailed. To resume a stopped continuous tracing task, click ![Play triangle icon to continue or start tracing from task row](/images/cloudlinuxos/shared-pro/x-ray/XRayStart.webp) in the *Continuous tracing* tab.
 
-5. If you delete a continuous tracing task, the task for the current day will be finished at midnight and the report will be emailed.
+5. If you delete a continuous tracing task, a new task will not be created and the task for the current day will be finished at midnight, but the report for that day will not be emailed. The task stays available in the *Tracing tasks* tab. To get the last report, stop the continuous task first and delete it after the report arrives.
 
 #### Viewing continuous tasks list
 
@@ -3350,11 +3366,11 @@ You can find a list of continuous tracing tasks in the _Continuous tracing_ tab.
 
 ![WHM X-Ray Continuous tracing: domain row, Created, email, actions, pagination](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTasksList.webp)
 
-You can find automatically created tasks in the _Tracing tasks_ tab marked as _Automatically_ in the _Created_ column.
+You can find automatically created tasks in the _Tracing tasks_ tab marked as _Automatically_ in the _Created by_ column.
 
 ![Tracing tasks: Created Automatically or Manually; Running and Completed rows](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTracingTasksListCreated.webp)
 
-The [statuses for automatically created tasks](/cloudlinux-os-plus/#tracing-status) are the same as for tracing task.
+The [statuses for automatically created tasks](#tracing-status) are the same as for tracing task.
 
 To view detailed info about an automatically created task, click ![Small eye icon to open hourly collected-requests drill-down](/images/cloudlinuxos/shared-pro/x-ray/XRayView1.webp). You will get requests grouped by hour.
 
@@ -3375,14 +3391,14 @@ The following data is collected for each request:
 
 Stopping automatic tracing task (a part of continuous tracing task) affects only the automatic tracing task for the current day. A new task for the next day will be created at the end of the day.
 
-To stop the continuous tracing task completely, see [Creating a new continuous task, paragraph 4](/cloudlinux-os-plus/#creating-a-new-continuous-task).
+To stop the continuous tracing task completely, see [Creating a new continuous task, paragraph 4](#creating-a-new-continuous-task).
 
 
 #### Deleting automatic tracing task
 
 Deleting automatic tracing task (a part of continuous tracing task) affects only the automatic tracing task for the current day. A new task for the next day will be created at the end of the day.
 
-To delete the continuous tracing task completely, see [Creating a new continuous task, paragraph 5](/cloudlinux-os-plus/#creating-a-new-continuous-task).
+To delete the continuous tracing task completely, see [Creating a new continuous task, paragraph 5](#creating-a-new-continuous-task).
 
 
 #### Continuous task daily report
@@ -3390,6 +3406,8 @@ To delete the continuous tracing task completely, see [Creating a new continuous
 1. Users get daily reports on their emails. An example of a report is shown below:
 
     ![Email: daily X-Ray continuous tracing report ready with vok.com link](/images/cloudlinuxos/shared-pro/x-ray/XRayContinuousTaskDaylyReportExample.webp)
+
+    The server sends the report itself shortly after midnight server time, using the local SMTP service or, if that fails, `/usr/sbin/sendmail`. If reports do not arrive, check the mail service on this server and `/var/log/alt-php-xray/manager.log`.
 
 2. Click the link in the email to show the detailed report:
 
@@ -3406,25 +3424,27 @@ To delete the continuous tracing task completely, see [Creating a new continuous
 
 ### X-Ray Autotracing
 
-X-Ray Autotracing automatically creates tracing tasks for slow URLs that were found during a day by the [PHP Slow Site Analyzer](/lve_manager/#website-monitoring-tool-and-slow-site-analyzer) (SSA).
+X-Ray Autotracing automatically creates tracing tasks for slow URLs that were found during a day by the [PHP Slow Site Analyzer](/cloudlinuxos/lve_manager/#website-monitoring-tool-and-slow-site-analyzer) (SSA).
 
 :::warning Warning
 To use X-Ray Autotracing, update your alt-php-ssa and alt-php-xray packages to versions alt-php-ssa-0.2-1 and alt-php-xray-0.4-1 or higher by running the following command:
 ```
-yum update alt-php-ssa alt-php-xray --enablerepo=cloudlinux-updates-testing
+yum update alt-php-ssa alt-php-xray
 ```
 :::
 
 #### How to enable X-Ray Autotracing
 
-To enable X-Ray Autotracing, run the following commands via SSH:
+To enable X-Ray Autotracing in the web interface, go to the *Autotracing tasks* tab of X-Ray, click *Enable Autotracing* and confirm. PHP Site Analyzer is required and is enabled automatically. If your kernel does not support throttling detection, a warning is shown instead of the button: update the kernel to use X-Ray Autotracing.
+
+To enable X-Ray Autotracing via SSH, run the following commands:
 
 ```
 /usr/sbin/cloudlinux-ssa-manager enable-ssa
 /usr/sbin/cloudlinux-autotracing enable --all
 ```
 
-Check [CLI documentation](/command-line_tools/#x-ray-autotracing) for a description of the `/usr/sbin/cloudlinux-autotracing` CLI utility.
+Check [CLI documentation](/cloudlinuxos/command-line_tools/#x-ray-autotracing) for a description of the `/usr/sbin/cloudlinux-autotracing` CLI utility.
 
 #### Requirements
 
@@ -3432,6 +3452,7 @@ Check [CLI documentation](/command-line_tools/#x-ray-autotracing) for a descript
 * alt-php-ssa > 0.2-1 version
 * alt-php-xray > 0.4-1 version
 * Enabled PHP SSA on the server
+* On servers with LVE (not applicable to CloudLinux OS Solo): `kmod-lve-2.0-23` (and later) for CloudLinux OS 8 or CloudLinux OS 7 hybrid, or `kernel-1.5-58` (and later) for CloudLinux OS 7 or CloudLinux OS 6 hybrid
 
 #### Autotracing Interface
 
@@ -3447,24 +3468,28 @@ Q: Why are the slow URLs in the Slow Site Analyzer report different from those o
 
 A: Because the autotracing decision module uses rules and thresholds different from Slow Site Analyzer, which are configured by the CloudLinux team.
 
+Q: Why were no autotracing tasks created for a site?
+
+A: Besides being slow, a URL has to pass additional rules, which the CloudLinux team can adjust. By default only WordPress sites are considered. A URL is also skipped if the owner has the NGINX user cache enabled, its requests were throttled, it is extremely slow, or it was traced recently. The number of autotracing tasks per domain and per server is limited as well.
+
 Q: How often autotracing tasks will be generated?
 
 A: Once a day at the same time as a Slow Site Analyzer report.
 
 ### X-Ray Smart Advice
 
-Smart advice is a new feature of X-Ray that is designed to find and propose solutions to fix performance issues and speed up the performance of a sites.
+Smart advice is a new feature of X-Ray that is designed to find and propose solutions to fix performance issues and speed up the performance of sites.
 
 :::tip Note
-Smart Advice will work only for CloudLinux OS Shared Pro servers with cPanel Control Panel for now.
+Smart Advice works on CloudLinux OS Shared Pro, CloudLinux OS Solo and CloudLinux OS Admin servers with cPanel, Plesk or DirectAdmin, and on other control panels with [X-Ray and AccelerateWP integration](/cloudlinuxos/control_panel_integration/#how-to-integrate-x-ray-and-acceleratewp-with-a-control-panel).
 
-At the moment, Smart Advise is focused only on WordPress sites.
+At the moment, Smart Advice is focused only on WordPress sites.
 :::
 
 :::warning Warning
 To use X-Ray Smart Advice, update your alt-php-ssa and alt-php-xray packages to versions alt-php-ssa-0.2-3 and alt-php-xray-0.5-1 or higher by running the following command:
 ```
-yum update alt-php-ssa alt-php-xray lve-utils lvemanager --enablerepo=cloudlinux-updates-testing
+yum update alt-php-ssa alt-php-xray lve-utils lvemanager
 ```
 :::
 
@@ -3476,7 +3501,7 @@ If you'd like to try Smart Advice and AccelerateWP you should participate in the
 
 #### Requirements
 
-* CloudLinux OS Shared Pro or CloudLinux OS Solo
+* CloudLinux OS Shared Pro or CloudLinux OS Solo or CloudLinux OS Admin
 * alt-php-xray > 0.5-1 version
 * lve-utils > 6.3.2-1 version
 * lvemanager > 7.6.1-1 version
@@ -3484,14 +3509,14 @@ If you'd like to try Smart Advice and AccelerateWP you should participate in the
 
 We Recommend:
 
-* Enable [X-Ray Autotracing](cloudlinux-os-plus/#x-ray-autotracing) on the server
+* Enable [X-Ray Autotracing](#x-ray-autotracing) on the server
 * Use alt-php-ssa > 0.2-3 version
 
 #### How X-Ray Smart Advice works
 
 The main process of looking for advice is X-Ray tracing tasks. The best way for doing this is to enable X-Ray Autotracing. 
 This will allow you to most effectively find Smart Advice for sites that have performance issues without your manual participation. 
-You can find information on how to enable X-Ray Autotracing [here](/cloudlinux-os-plus/#how-to-enable-x-ray-autotracing).
+You can find information on how to enable X-Ray Autotracing [here](#how-to-enable-x-ray-autotracing).
 On the other hand, you can create tracing tasks manually or use continuous X-Ray but we suggest you use X-Ray Autotracing for this purpose.
 
 :::tip Note
@@ -3502,14 +3527,13 @@ While the tracing task is running, X-Ray will look for places where advice can b
 
 ![Smart Advice: suggestion counts and table with Review Applied Outdated badges](/images/cloudlinuxos/shared-pro/x-ray/XRaySmartAdviceMainTab.webp)
 
-After the X-Ray finds advice you will see new advice in the *Review* status on the *Smart Advice* tab. 
-Then you may use the *Details* button to see which URLs were found by X-Ray that will be speed up by that advice and use *Quick Action* to enable advice for a site.
+After X-Ray finds advice, it appears with the *Review* status on the *Smart Advice* tab. The tab is read-only for the administrator: *Details* shows which URLs that advice would speed up. The end user accepts and installs advice in the AccelerateWP interface in the control panel or on the SmartAdvice settings page in WordPress admin. An administrator can apply it via SSH, see [Smart Advice CLI commands](#smart-advice-cli-commands).
 
 Example of details:
 
 ![Advice dialog Review: Turn on Object Cache module with URL and Turn on caching](/images/cloudlinuxos/shared-pro/x-ray/XRaySmartAdviceDetails.webp)
 
-After you apply the advice by using *Quick Action*, the status will change to the *Applied*.
+After the advice is applied, its status changes to *Applied*.
 
 If a long time has passed since the last time the advice was updated for a site, it will be moved to the *Outdated* status. 
 
@@ -3517,17 +3541,19 @@ If a long time has passed since the last time the advice was updated for a site,
 New X-Ray task may update *Outdated* advice if X-Ray finds performance issues that may be fixed by that advice. Then the status of advice becomes *Review*.
 :::
 
-If the process of applying advice fails you will see an error log with a detailed error, you may try to fix it manually and try again or [contact our support team for help](https://cloudlinux.zendesk.com/hc/en-us). 
+If applying advice fails, the AccelerateWP interface shows the error details and a *Try again* button. You may fix the cause and try again or [contact our support team for help](https://cloudlinux.zendesk.com/hc/en-us).
 
 Example when an error appears during advice applying:
 
 ![Smart Advice table: Quick action Error log and Try again on Review row](/images/cloudlinuxos/shared-pro/x-ray/XRaySmartAdviceError.webp)
 
+**Email notifications.** When a WordPress site has performance advice in the *Review* status, the Smart Advice plugin emails the site's WordPress administrators and the email addresses of the control panel user. If several pieces of new advice arrive together, it emails about one of them at once and about the others on the following days, one a day. A later advice update can trigger another email on the same day. It also sends a reminder if advice stays in the *Review* status for more than 30 days. The *Don't show me this advice again* link in the email stops emails about that type of advice for that address on that site. To turn these emails on or off for the whole server, run `cloudlinux-awp-admin --api-version 1 set-options --smart-advice-notifications=<on/off>`, which covers both new-advice emails and reminders, or `cloudlinux-awp-admin --api-version 1 set-options --smart-advice-reminders=<on/off>`, which covers reminders only.
+
 #### Smart Advice FAQ
 
 Q: Why I can't see new advice on the *Smart Advice* tab?
 
-A: For the generating of advice, it is necessary to run X-Ray tracing tasks, the best way to do it without manual interaction is to use X-Ray Autoracing. You can find more information on how to enable X-Ray Autotracing [here](/cloudlinux-os-plus/#how-to-enable-x-ray-autotracing).
+A: For the generating of advice, it is necessary to run X-Ray tracing tasks, the best way to do it without manual interaction is to use X-Ray Autotracing. You can find more information on how to enable X-Ray Autotracing [here](#how-to-enable-x-ray-autotracing).
 
 #### Smart Advice CLI commands
 
@@ -3539,7 +3565,7 @@ Starting from `alt-php-xray-0.5-25` Smart Advice CLI utilities provide CLI versi
 
 :::tip Note
 It is highly recommended to specify CLI version explicitly via --api-version, otherwise CLI will rely on default settings, 
-which cannot guarantee backward compatability.
+which cannot guarantee backward compatibility.
 :::
 
 ```
@@ -3551,13 +3577,15 @@ supported commands for `--api-version=1`:
 - `list` - shows list of all advices;
 - `apply` - applies specific advice;
 - `rollback` - rollbacks specific advice;
+- `details --advice_id=<id>` - shows details of specific advice;
+- `status --advice_id=<id>` - shows current status and progress of specific advice;
 
 ##### Advices list
 
 `--api-version=1`
 
 ```
-cl-smart-advice --api-version=<api_version> list
+cl-smart-advice --api-version=<api_version> list [ --extends ]
 ```
 
 For each advice in the list the CLI command returns the following information:
@@ -3565,15 +3593,15 @@ For each advice in the list the CLI command returns the following information:
 * `advice` information:
   * its identifier `id` (id, that should be used in apply and rollback commands)
   * its `type` (optimization feature identifier)
-  * its `status` - current status: `review` or `applied`
+  * its `status` - current status: `review`, `applied`, `pending` (apply or rollback is in progress) or `outdated`
   * `module_name` - name of optimization feature
   * `is_premium` - if advice is for optimization feature from AccelerateWP Premium suite
   * `subscription` - info about optimization suite subscription (only if advice requires subscription)
-  * `description` and `detailed_description` - human-readable descriptions of advice
+  * `description` - human-readable description of advice; `detailed_description` - extended description, returned only with the `--extends` option of the `list` command
   * other internal informational fields
 * `result` - result of command: it may have `success` or error details
 
-Successful output example of  `cl-smart-advice --api-version=1 list`:
+Successful output example of `cl-smart-advice --api-version=1 list --extends`:
 
 ```
 {
@@ -3599,8 +3627,7 @@ Successful output example of  `cl-smart-advice --api-version=1 list`:
         },
         "total_stages": 0,
         "completed_stages": 0,
-        "detailed_description": "To improve site performance, enable the Object Caching We recommend applying the advice if you see it frequen
-tly for the most valuable URLs of your site."
+        "detailed_description": "To improve site performance, enable the Object Caching We recommend applying the advice if you see it frequently for the most valuable URLs of your site."
       }
     },
     {
@@ -3639,10 +3666,11 @@ Failed output example of `cl-smart-advice --api-version=1 list`:
 `--api-version=1`
 
 ```
-cl-smart-advice --api-version=<api_version> apply --advice_id=<id_of_advice> [ --accept_license_terms ] [ --ignore-errors ]
+cl-smart-advice --api-version=<api_version> apply --advice_id=<id_of_advice> [ --accept_license_terms ] [ --ignore-errors ] [ --async ]
 ```
 `--accept_license_terms` - accept license terms on applying CDN type advice;
 `--ignore-errors` - ignore WordPress site web-checks after enabling optimization features;
+`--async` - run in a background process and return the current status, use `status` to follow progress;
 
 `advice_id` from `cl-smart-advice --api-version=<api_version> list` output
 
@@ -3661,6 +3689,8 @@ Successful output example of `cl-smart-advice --api-version=1 apply --advice_id=
   * `enabled`: true or false value meaning feature is enabled or not
 * `result`:  result of command: it may have `success` or error details
 
+If the license terms were not accepted before and `--accept_license_terms` is not specified, the advice is not applied and the command returns `{"result": "LICENCE_TERMS_APPROVE_REQUIRED", "text": "..."}`.
+
 Failed output example of `cl-smart-advice --api-version=1 apply --advice_id=12345`:
 ```
 {"result": "Malformed API response"}
@@ -3671,8 +3701,10 @@ Failed output example of `cl-smart-advice --api-version=1 apply --advice_id=1234
 `--api-version=1`
 
 ```
-cl-smart-advice --api-version=<api_version> rollback --advice_id=<id_of_advice>
+cl-smart-advice --api-version=<api_version> rollback --advice_id=<id_of_advice> [ --async ] [ --reason=<text> ]
 ```
+`--async` - run in a background process and return the current status, use `status` to follow progress;
+`--reason=<text>` - reason for rollback, only the first 200 characters are saved;
 
 `advice_id` from `cl-smart-advice --api-version=<api_version> list` output
 
@@ -3774,7 +3806,7 @@ But there are some differences and they are described further.
 * To specify URL or wildcard, end-users should use the input field next to the domain:
     ![Start tracing: domain user1.com and wordpress/* mask highlighted; Run](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserUiSpecifyURL.webp)
 
-You can read about all other basic interface elements and managing tracing tasks in the [Managing tracing task section](/cloudlinux-os-plus/#managing-tracing-task).
+You can read about all other basic interface elements and managing tracing tasks in the [Managing tracing task section](#managing-tracing-task).
 
 :::tip Note
 Tracing tasks created by an end-user will also be displayed in the administrator interface and administrators can manage the end-user's tasks the same way as they manage their own. At the same time, tasks created by the administrator or other end-users will not be displayed in the UI of the current user.
@@ -3794,7 +3826,7 @@ Tracing tasks created by an end-user will also be displayed in the administrator
     
     ![Orange warning banner: Task duplicated by URL with Show less link](/images/cloudlinuxos/shared-pro/x-ray/XRayEndUserUIWarning.webp)
 
-    To solve this, the existing running tasks for the same Domain/URL should be stopped or completed. You can find more details about this in the [FAQ](/cloudlinux-os-plus/#what-should-i-do-if-i-see-the-warning-task-is-duplicated-by-url).
+    To solve this, the existing running tasks for the same Domain/URL should be stopped or completed. You can find more details about this in the [FAQ](#what-should-i-do-if-i-see-the-warning-task-is-duplicated-by-url).
 
 * If a user's tracing task was created for a domain which is using the FPM handler there's an additional limitation.  To avoid  frequent reloads of the particular FPM service, **Start tracing** ,  **Stop tracing** or  **Continue tracing** action would be blocked in case if the latest reload of a corresponding FPM service was done less than 1 minute ago.  
 If a user gets such an error message - it means that  1 reload  in  1 minute for a particular FPM service has been already done.  Just try performing the same operation once again in a while.
@@ -3851,32 +3883,32 @@ The list of currently supported PHP versions:
 | <ul><li>alt-php54</li><li>alt-php55</li><li>alt-php56</li><li>alt-php70</li><li>alt-php71</li><li>alt-php72</li><li>alt-php73</li><li>alt-php74</li><li>alt-php80</li><li>alt-php81</li><li>alt-php82</li><li>alt-php83</li><li>alt-php84</li></ul> | <ul><li>ea-php54</li><li>ea-php55</li><li>ea-php56</li><li>ea-php70</li><li>ea-php71</li><li>ea-php72</li><li>ea-php73</li><li>ea-php74</li><li>ea-php80</li><li>ea-php81</li><li>ea-php82</li></ul> | <ul><li>php54</li><li>php55</li><li>php56</li><li>php70</li><li>php71</li><li>php72</li><li>php73</li><li>php74</li><li>php80</li><li>php81</li><li>php82</li><li>php83</li><li>php84</li></ul> | <ul><li>php54</li><li>php55</li><li>php56</li><li>php70</li><li>php71</li><li>php72</li><li>php73</li><li>php74</li><li>php80</li><li>php81</li><li>php82</li><li>php83</li><li>php84</li></ul> | <ul><li>54</li><li>55</li><li>56</li><li>70</li><li>71</li><li>72</li><li>73</li><li>74</li><li>80</li><li>81</li><li>82</li><li>83</li><li>84</li></ul> |
 
 :::warning Warning!
-<span class="notranslate">[php-zts](/cloudlinux_os_components/#how-to-configure-alt-php72-zts-to-use-with-php-selector)</span> and [custom PHPs, rolled in selector](/cloudlinux_os_components/#roll-your-own-php), are not supported
+<span class="notranslate">[php-zts](/cloudlinuxos/cloudlinux_os_components/#how-to-configure-alt-php72-zts-to-use-with-php-selector)</span> and [custom PHPs, rolled in selector](/cloudlinuxos/cloudlinux_os_components/#roll-your-own-php), are not supported
 :::
 
 ### Functions that X-Ray client can hook
 
 #### Database queries
 
-* Functions from the [MySQL](https://www.php.net/manual/ru/book.mysql.php) extension:
+* Functions from the [MySQL](https://www.php.net/manual/en/book.mysql.php) extension:
     * <span class="notranslate">`mysql_query`</span>
     * <span class="notranslate">`mysql_db_query`</span>
     * <span class="notranslate">`mysql_unbuffered_query`</span>
-* Functions from the [MySQLi](https://www.php.net/manual/ru/book.mysqli.php) extension:
+* Functions from the [MySQLi](https://www.php.net/manual/en/book.mysqli.php) extension:
     * <span class="notranslate">`mysqli_query`</span>
     * <span class="notranslate">`mysqli::query`</span>
     * <span class="notranslate">`mysqli_multi_query`</span>
     * <span class="notranslate">`mysqli::multi_query`</span>
     * <span class="notranslate">`mysqli_real_query`</span>
     * <span class="notranslate">`mysqli::real_query`</span>
-* Functions from the [PDO](https://www.php.net/manual/ru/book.pdo.php) extension:
+* Functions from the [PDO](https://www.php.net/manual/en/book.pdo.php) extension:
     * <span class="notranslate">`PDO::exec`</span>
     * <span class="notranslate">`PDO::query`</span>
     * <span class="notranslate">`PDOStatement::execute`</span>
 
 #### External requests
 
-* Function [curl_exec](https://www.php.net/manual/ru/function.exec)
+* Function [curl_exec](https://www.php.net/manual/en/function.curl-exec.php) (PHP versions lower than 8.2). On PHP 8.2 and later, external requests are not collected and the _External requests_ section is not shown. `curl_exec` is handled like any other PHP function: it appears in the _Other system functions_ section if it is among the slowest functions of the request.
 
 #### System PHP functions
 
@@ -3912,7 +3944,7 @@ It may be any PHP system function which can be related to a PHP engine or other 
 
 **Changeable**: <span class="notranslate">PHP_INI_SYSTEM</span>
 
-**Description**: The number of the slowest SQL queries which will be sent to the <span class="notranslate">X-Ray</span> agent. The min value is 0 and the max value is 100. If the variable value is more, the default value will be used.
+**Description**: The number of the slowest SQL queries which will be sent to the <span class="notranslate">X-Ray</span> agent. The min value is 1 and the max value is 100. If the value is out of this range, 10 will be used.
 
 -----
 
@@ -3928,7 +3960,7 @@ It may be any PHP system function which can be related to a PHP engine or other 
 
 **Changeable**: <span class="notranslate">PHP_INI_SYSTEM</span>
 
-**Description**: The number of the slowest external requests (the curl_exec function) which will be sent to the <span class="notranslate">X-Ray</span> agent. The min value is 0 and the max value is 100. If the variable value is more, the default value will be used.
+**Description**: The number of the slowest external requests (the curl_exec function) which will be sent to the <span class="notranslate">X-Ray</span> agent. On PHP 8.2 and later this directive has no effect, because external requests are not collected. The min value is 1 and the max value is 100. If the value is out of this range, 10 will be used.
 
 -----
 
@@ -3945,7 +3977,7 @@ It may be any PHP system function which can be related to a PHP engine or other 
 **Changeable**: <span class="notranslate">PHP_INI_SYSTEM</span>
 
 **Description**: The number of the slowest system functions which will be sent to the <span class="notranslate">X-Ray</span> agent. 
-The min value is 0 and the max value is 100. If the variable value is more, the default value will be used.
+The min value is 1 and the max value is 100. If the value is out of this range, 10 will be used.
 
 -----
 
@@ -3961,7 +3993,7 @@ The min value is 0 and the max value is 100. If the variable value is more, the 
 
 **Changeable**: <span class="notranslate">PHP_INI_SYSTEM</span>
 
-**Description**: The backtrace depth to the main() function which will be sent to the <span class="notranslate">X-Ray</span> agent. The min value is 0 and the max value is 20. If the variable value is more, the default value will be used.
+**Description**: The backtrace depth to the main() function which will be sent to the <span class="notranslate">X-Ray</span> agent. The min value is 1 and the max value is 20. If the value is out of this range, 10 will be used.
 
 -----
 
@@ -3988,13 +4020,13 @@ The min value is 0 and the max value is 100. If the variable value is more, the 
 
 </div>
 
-**Syntax**: <span class="notranslate">`xray.tasks=host:uri:ip:id`</span>
+**Syntax**: <span class="notranslate">`;xray.tasks=[number]`</span> (a comment in <span class="notranslate">`xray.ini`</span>)
 
 **Default**: <span class="notranslate">no value</span>
 
 **Changeable**:  <span class="notranslate">PHP_INI_SYSTEM</span>
 
-**Description**: The current tracing tasks for the given PHP request. This directive is added automatically by the <span class="notranslate">X-Ray</span> manager when creating a task. It is not allowed to edit manually, as <span class="notranslate">X-Ray</span> may stop working.
+**Description**: The number of tracing tasks, kept in <span class="notranslate">`xray.ini`</span> by the <span class="notranslate">X-Ray</span> manager when creating and finishing a task. It is not allowed to edit manually, as <span class="notranslate">X-Ray</span> may stop working.
 
 -----
 
@@ -4103,20 +4135,22 @@ Note that the URL field supports wildcard matching and you can have a case when 
 
 #### I started a tracing task and made requests to URL but did not see any results in the UI. What should I do?
 
-1. <span class="notranslate">X-Ray</span> may not send data if a site uses a caching plugin, as the caching plugin is outputting HTML, thus there are no PHP scripts to examine. We encountered such issues with sites that use <span class="notranslate">LSCache</span> and <span class="notranslate">WP Super Cache</span> plugins. Check that your site does not use caching plugins. If so, disable it while tracing a site to get information from <span class="notranslate">X-Ray</span>. Moreover, it can also be because of caching on server side, for example NGINX Cache. Or when using CDN because requests are processed from another host. In such cases, during tracing, caching must also be disabled.
+1. <span class="notranslate">X-Ray</span> may not send data if a site uses a caching plugin, as the caching plugin is outputting HTML, thus there are no PHP scripts to examine. We encountered such issues with sites that use <span class="notranslate">LSCache</span> and <span class="notranslate">WP Super Cache</span> plugins. Check that your site does not use caching plugins. If so, disable it while tracing a site to get information from <span class="notranslate">X-Ray</span>. Moreover, it can also be because of caching on server side, for example NGINX Cache, or when using a CDN, because requests are processed from another host. In such cases, caching must also be disabled during tracing. On cPanel with ea-nginx, X-Ray handles NGINX caching itself: it is disabled for all domains of the domain owner while tracing is running and is restored afterwards.
 2. If you set a client’s IP when creating the tracing task, check that your requests come to the server with this IP via phpinfo (since there may be NAT between your local machine and the server).
    
     ![phpinfo row: $_SERVER['REMOTE_ADDR'] value 10.106.1.145](/images/cloudlinuxos/shared-pro/x-ray/XRayPHPInfoRemoteAddr.webp)
 
-3. Check that <span class="notranslate">**xray**</span> extension is enabled for the domain. To do so, go to the <span class="notranslate">`phpinfo()`</span> page and make a request. In the phpinfo output try to find the following section:
+3. Check that the requested address matches the URL of the task. Without a wildcard, only that exact path and query string are traced.
+
+4. Check that <span class="notranslate">**xray**</span> extension is enabled for the domain. To do so, go to the <span class="notranslate">`phpinfo()`</span> page and make a request. In the phpinfo output try to find the following section:
    
     ![phpinfo xray directives table: xray.enabled On and related values](/images/cloudlinuxos/shared-pro/x-ray/XRayPHPInfo.webp)
 
 If you cannot see that section, try to restart PHP processes for that user (the simplest way is to restart Apache) and check that you can see the <span class="notranslate">**xray**</span> extension.
 
-4. If you can see the <span class="notranslate">**xray**</span> extension in the phpinfo, check that <span class="notranslate">X-Ray</span> agent service is running with the service xray-agent status command. If it is not running, start it with the <span class="notranslate">`service xray-agent start`</span> command.
+5. If you can see the <span class="notranslate">**xray**</span> extension in the phpinfo, check that <span class="notranslate">X-Ray</span> agent service is running with the service xray-agent status command. If it is not running, start it with the <span class="notranslate">`service xray-agent start`</span> command.
 
-5. If, after checking the previous items, the issue persists, [contact our support team](https://cloudlinux.zendesk.com/hc/en-us/requests/new).
+6. If, after checking the previous items, the issue persists, [contact our support team](https://cloudlinux.zendesk.com/hc/en-us/requests/new).
 
 #### What to do if X-Ray is not found in the phpinfo() page?
 
@@ -4132,7 +4166,7 @@ If you managed to create a tracing task, this means that the <span class="notran
     <div class="notranslate">
 
     ```
-    cat /usr/share/alt-php-xray/manager.log | grep ini_location
+    cat /var/log/alt-php-xray/manager.log | grep ini_location
     ```
     </div>
 
@@ -4155,6 +4189,10 @@ All of the examples below are correct:
 * `https://domain.com/`
 
 You can use any of them with a prefix `www.` and it is also correct.
+
+These formats apply to the URL of a tracing task. In the *Domain* field of a continuous tracing task, enter the domain without a path and without a trailing slash: `http://domain.com` or `https://domain.com`.
+
+X-Ray compares the path of each request with the path in the URL, including the query string and letter case. `https://domain.com` and `https://domain.com/` trace only the home page, and `https://domain.com/page.php` does not match `/page.php?a=1`. To trace the whole site, use `https://domain.com/*`. The scheme is not compared. The domain is compared in any letter case and matches with or without the `www.` prefix, but only a lowercase `www.` is ignored: `WWW.domain.com` does not match a task for `domain.com`.
 
 #### What packages are required for X-Ray?
 
