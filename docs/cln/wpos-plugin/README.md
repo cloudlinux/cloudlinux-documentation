@@ -431,7 +431,7 @@ If you don't see any links, contact your hoster to upgrade your subscription man
 If subscription is active, you will bypass the subscription window and proceed
 directly to the plugin installation.
 
-After a couple of minutes, the redis instance will be configured, plugin will be installed and activated.
+After a couple of minutes, the object cache instance will be configured, plugin will be installed and activated.
 
 ![Premium Advice modal with green Applied badge, Turn on Object Caching heading, yellow beta notice, speed-up page link, Rollback and Close.](/images/wpos-plugin/AWPPremiumApplied.webp)
 
@@ -484,7 +484,7 @@ it as not working anymore.
 
 The most frequent cases are:
 
-* Redis process cannot be started for some period of time.
+* The object cache process cannot be started for some period of time.
     * **Resolution:** [contact our support team](https://cloudlinux.zendesk.com/hc/en-us/requests/new) for further
       investigation.
 * WordPress Redis Object Cache plugin is disabled via WordPress Admin Gui/Plugins.

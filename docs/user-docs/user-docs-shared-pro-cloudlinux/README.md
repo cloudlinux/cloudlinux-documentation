@@ -548,7 +548,7 @@ If you don't see any links, contact your hoster to upgrade your subscription man
 If subscription is active, you will bypass the subscription window and proceed
 directly to the plugin installation.
 
-After a couple of minutes, the redis instance will be configured, plugin will be installed and activated.
+After a couple of minutes, the object cache instance will be configured, plugin will be installed and activated.
 
 ![Premium Advice modal: Applied badge, Turn on Object Caching details, Close and Rollback buttons](/images/user-docs/user-docs-shared-pro-cloudlinux/AWPPremiumApplied.webp)
 
@@ -593,7 +593,7 @@ Each message has a small "how to", so you can try to fix them by yourself via co
 The misconfiguration message can appear in the cases when optimization feature was activated, but AccelerateWP detects it as not working anymore.
 
 The most frequent cases are:
-* Redis process cannot be started for some period of time.
+* The object cache process cannot be started for some period of time.
   * **Resolution:** [contact our support team](https://cloudlinux.zendesk.com/hc/en-us/requests/new) for further investigation.
 * WordPress Redis Object Cache plugin is disabled via WordPress Admin Gui/Plugins.
   * **Resolution:** You can resolve it by yourself via the WordPress Admin Gui.
