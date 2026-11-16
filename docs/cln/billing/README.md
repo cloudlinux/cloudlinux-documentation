@@ -3,12 +3,12 @@
 ## Overview. Products
 
 
-Click _Billing → Overview_ to go to _Products_ page. On _Products_ page you can see all your purchased or trial products.
+Click _Billing → Subscriptions_ to go to the _Subscriptions_ page. Here you can see all your purchased or trial products.
 
 The following information is available:
 
 * **Server licenses** — displays the number of servers activated for each product.
-* **Paid until** — the date of the next payment.
+* **Renewal date** — the date of the next payment, or the end date of the trial for a product on trial.
 
 ![CloudLinux Network Billing Products page with three product cards, circular server-license displays, paid-until, and actions](/images/cln/billing/billing_zoom70.webp)
 
@@ -63,10 +63,12 @@ The table contains the followings columns:
 * **Amount total** — a total amount you have to pay.
 * **Amount due** — unpaid part which a user has to pay off.
 * **Status** — invoice billing status:
-  * **Outstanding** — not paid yet.
+  * **Outstanding** or **Overdue** — not paid yet.
 * **Actions** — the following actions are available:
   * **View invoice** — click the _eye_ icon to view invoice in-details. It opens in a new popup.
   * **Download invoice** — click _download_ icon to download an invoice.
+  * **View invoice details** — if details are available for the invoice, click the _details_ icon to open the _Invoice Details_ page with the invoice items by product. Expand a product to see what was billed for it.
+  * **Pay** — click _Pay_ in the invoice row to pay this invoice only.
 
 A total amount to be paid for all outstanding invoices and a due date are displayed under the _Unpaid Invoices_ table. To pay total due, click _Pay Now_ button. Select payment method popup opens. Available payment methods are _PayPal_ and _Credit_ or _Debit Card_. Click the desired method and proceed with the instructions on the screen.
 
@@ -77,6 +79,7 @@ The table contains the followings columns:
 * **Date** — invoice issue date.
 * **Invoice Number** — unique invoice number.
 * **Amount total** — a total amount you have already paid.
+* **Amount refunded** — the part of the invoice that was refunded.
 * **Status** — invoice billing status:
   * **Paid** — an invoice has already been paid.
 * **Actions** — the following actions are available:

@@ -7,7 +7,7 @@ The main goal of this subsystem is to allow operating the already existed CloudL
 
 ### How to install the CloudLinux subsystem on Ubuntu?
 
-See [Installation](/installation/).
+See [Installation](/ubuntu/installation/).
 
 ### Is the CloudLinux subsystem on Ubuntu paid/unpaid?
 
