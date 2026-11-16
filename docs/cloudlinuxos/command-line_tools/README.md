@@ -1100,7 +1100,7 @@ cloudlinux-statistics --json --show=cpu,io
 * [dbtop](./#dbtop)
 * [dbctl](./#dbctl)
 * [lveinfo --dbgov](./#lveinfo-dbgov)
-* [dbgovchart](./#dbgovchart-2)
+* [dbgovchart](./#dbgovchart-1)
 
 * <span class="notranslate">`dbtop`</span> monitors MySQL usage on per user bases.
 * <span class="notranslate">`dbctl`</span> is a command line tool to manage <span class="notranslate">DB Governor</span> configuration.
@@ -1117,7 +1117,7 @@ Utility to monitor MySQL usage. Requires <span class="notranslate">`db_governor`
 | | |
 |-|-|
 | <span class="notranslate"> -c </span> |show one time user list (no interactive mode) | 
-| <span class="notranslate"> -r interval </span> |refresh interval for interactive mode (in seconds)|
+| <span class="notranslate"> -r interval </span> |refresh interval for interactive mode (in seconds; 1 by default)|
 
 **Control keys**
 
@@ -1131,6 +1131,8 @@ Utility to monitor MySQL usage. Requires <span class="notranslate">`db_governor`
 |<span class="notranslate"> w </span> |sort table by write column | 
 |<span class="notranslate"> l </span> |sort by restriction level | 
 |<span class="notranslate"> t </span> |sort by time before restrictions will be lifted.|
+|<span class="notranslate"> h, ? </span> |show help|
+|<span class="notranslate"> 1 </span> |return from help to the user table|
 
 Control keys, that sort table, displays into header of table bold and underlined symbol.
 Sorted field will be highlighted by *.
@@ -1138,29 +1140,30 @@ Sorted field will be highlighted by *.
 Values of column ' <span class="notranslate"> CAUSE </span> ' - cause of restriction or freezing:
 Possible stages:
 * `-` <span class="notranslate"> OK </span>
-* `1` - Restriction 1
-* `2` - Restriction 2
-* `3` - Restriction 3
-* `4` - Restriction level 4
+* `R` - Restricted (default <span class="notranslate">`limit`</span> mode, which has no levels)
+* `1` - Restriction 1 (<span class="notranslate">`period`</span> mode)
+* `2` - Restriction 2 (<span class="notranslate">`period`</span> mode)
+* `3` - Restriction 3 (<span class="notranslate">`period`</span> mode)
+* `4` - Restriction level 4 (<span class="notranslate">`period`</span> mode)
 
 | | |
 |-|-|
 | <span class="notranslate"> c - current </span> |(current value of parameter)|
-| <span class="notranslate"> s - short </span> |(average value of 5 last values of parameter)|
-| <span class="notranslate"> m - middle </span> |(average value of 15 last values of parameter)|
-| <span class="notranslate"> l - long </span> |(average value of 30 last values of parameter)|
-| |and parameter which is cause of restriction|
-| <span class="notranslate"> 1/s:busy_time/12 </span> | first level restricted account with short average restriction <span class="notranslate"> by busy_time </span> with 12 seconds left before re-enabled.|
+| <span class="notranslate"> s - short </span> |(average value over the <span class="notranslate">`short`</span> interval set by <span class="notranslate">`<intervals>`</span> in the configuration file, 15 seconds in the default configuration)|
+| <span class="notranslate"> m - middle </span> |(average value over the <span class="notranslate">`mid`</span> interval, 60 seconds in the default configuration)|
+| <span class="notranslate"> l - long </span> |(average value over the <span class="notranslate">`long`</span> interval, 300 seconds in the default configuration)|
+| |and parameter which is cause of restriction: <span class="notranslate"> cpu, read </span> or <span class="notranslate"> write </span>|
+| <span class="notranslate"> R/s:cpu/12 </span> | restricted account with short average restriction <span class="notranslate"> by cpu </span> with 12 seconds left before re-enabled.|
 
 **Display fields:**
 
 * <span class="notranslate"> cpu </span> - number in %, shows <span class="notranslate"> cpu </span> usage by user
-  * <span class="notranslate"> read </span> - number of bytes (kbytes, mbytes, gbytes) which user reads per second
-  * <span class="notranslate"> write </span> - number of bytes (kbytes, mbytes, gbytes) write user reads per second
+* <span class="notranslate"> read </span> - number of bytes (kbytes, mbytes, gbytes) which user reads per second
+* <span class="notranslate"> write </span> - number of bytes (kbytes, mbytes, gbytes) which user writes per second
 
 
 Accounts highlighted in _red_ color means that the account is restricted.  
-Accounts highlighted in _blue_ color are in cool down period
+Accounts highlighted in _blue_ color are in cool down period (<span class="notranslate">`period`</span> mode only)
 
 Command line parameters of <span class="notranslate"> dbtop </span> utility:  
 <span class="notranslate"> -r - dbtop </span> refresh period in seconds ( <span class="notranslate"> dbtop -r12 </span> )
@@ -1178,7 +1181,7 @@ usage: <span class="notranslate"> dbctl command [parameter] [options] </span>
 | <span class="notranslate"> list </span> |list users & their limits. It will list all users who had been active since <span class="notranslate"> Governor </span> restart,  as well as those for who explicit limits were set|
 | <span class="notranslate"> list-restricted </span> |list restricted customers, with their limits, restriction reason, and time period they will still be restricted|
 | <span class="notranslate"> ignore </span> |ignore particular user|
-| <span class="notranslate"> watch </span> |start observing particular user again|
+| <span class="notranslate"> monitor </span> |start observing particular user again (cancels <span class="notranslate"> ignore </span>)|
 | <span class="notranslate"> delete </span> |remove limits for user/use defaults|
 | <span class="notranslate"> restrict </span> |restrict user using lowest level (or if <span class="notranslate"> --level </span> specified, using the specified level)|
 | <span class="notranslate"> unrestrict </span> |unrestrict username (configuration file remains unchanged)|
@@ -1235,7 +1238,7 @@ dbctl set test2 --cpu=150,100,70,50 --read=2048,1500,1000,800
 ```
 </div>
 
-sets individual limits for <span class="notranslate"> cpu (current, short, middle </span> period) and <span class="notranslate"> read (current, short, middle, long </span> periods) for user <span class="notranslate"> test2 </span>
+sets individual limits for <span class="notranslate"> cpu (current, short, middle, long </span> periods) and <span class="notranslate"> read (current, short, middle, long </span> periods) for user <span class="notranslate"> test2 </span>
 <div class="notranslate">
 
 ```
@@ -1319,7 +1322,7 @@ Displays information about DB Governor historical usage
 <div class="notranslate">
 
 ```
-lveinfo [OPTIONS]
+lveinfo --dbgov [OPTIONS]
 ```
 </div>
 
@@ -1334,9 +1337,9 @@ lveinfo [OPTIONS]
 |<span class="notranslate">`--by-usage ALIAS [ALIAS ...]`</span>|show LVEs with usage (averaged) within 90 percent of the limit;<br>available values:<br><span class="notranslate">`COLUMN_NAME`–`ALIAS`</span>–DESCRIPTION<br><span class="notranslate">`cpu`–`CPU`–`average CPU usage`</span><br><span class="notranslate">`io`–`IO`–`average IO usage`</span>|
 |<span class="notranslate">`-p 0..100`</span>, <span class="notranslate">`--percentage 0..100`</span>|defines percentage for the <span class="notranslate">`--by-usage`</span> option; default is 90|
 |<span class="notranslate">`-o ALIAS`</span>, <span class="notranslate">`--order-by ALIAS`</span>|orders results by one of the following:<br><span class="notranslate">`ALIAS`</span> – DESCRIPTION<br><span class="notranslate">`con`</span> – average connections (deprecated)<br><span class="notranslate">`cpu`</span> – average CPU usage<br><span class="notranslate">`read`</span> – average READ usage<br><span class="notranslate">`write`</span> – average WRITE usage<br><span class="notranslate">`io`</span> – average READ+WRITE usage|
-|<span class="notranslate">`-b ALIAS [ALIAS ...]`</span>, <span class="notranslate">`--format ALIAS [ALIAS ...]`</span>|show only specific fields into output:<br>COLUMN_NAME – <span class="notranslate">`ALIAS`</span> – DESCRIPTION<br><span class="notranslate">`ts`</span> – <span class="notranslate">`TS`</span> – timestamp records<br><span class="notranslate">`username`</span> – <span class="notranslate">`USER`</span> – user name<br><span class="notranslate">`id`</span> – <span class="notranslate">`ID`</span>user id<br><span class="notranslate">`cpu`</span> – <span class="notranslate">`CPU`</span> – average CPU usage<br><span class="notranslate">`read`</span> – <span class="notranslate">`READ`</span> – average READ usage<br><span class="notranslate">`write`</span> – <span class="notranslate">`WRITE`</span> – average WRITE usage<br><span class="notranslate">`con`</span> – <span class="notranslate">`CON`</span> – average connections (deprecated)<br><span class="notranslate">`lcpu`</span> – <span class="notranslate">`lCPU`</span> – CPU limit<br><span class="notranslate">`lread`</span> – <span class="notranslate">`lREAD`</span> – READ limit<br><span class="notranslate">`lwrite`</span> – <span class="notranslate">`lWRITE`</span> – WRITE limit<br><span class="notranslate">`-`</span> – <span class="notranslate">`RESTRICT`</span> – <span class="notranslate">`C`</span> - CPU restrict, <span class="notranslate">`R`</span> - read restrict, <span class="notranslate">`W`</span> - write restrict |
+|<span class="notranslate">`-b ALIAS [ALIAS ...]`</span>, <span class="notranslate">`--format ALIAS [ALIAS ...]`</span>|show only specific fields into output:<br>COLUMN_NAME – <span class="notranslate">`ALIAS`</span> – DESCRIPTION<br><span class="notranslate">`ts`</span> – <span class="notranslate">`TS`</span> – timestamp records<br><span class="notranslate">`username`</span> – <span class="notranslate">`USER`</span> – user name<br><span class="notranslate">`id`</span> – <span class="notranslate">`ID`</span> – user id<br><span class="notranslate">`cpu`</span> – <span class="notranslate">`CPU`</span> – average CPU usage<br><span class="notranslate">`read`</span> – <span class="notranslate">`READ`</span> – average READ usage<br><span class="notranslate">`write`</span> – <span class="notranslate">`WRITE`</span> – average WRITE usage<br><span class="notranslate">`con`</span> – <span class="notranslate">`CON`</span> – average connections (deprecated)<br><span class="notranslate">`lcpu`</span> – <span class="notranslate">`lCPU`</span> – CPU limit<br><span class="notranslate">`lread`</span> – <span class="notranslate">`lREAD`</span> – READ limit<br><span class="notranslate">`lwrite`</span> – <span class="notranslate">`lWRITE`</span> – WRITE limit<br><span class="notranslate">`-`</span> – <span class="notranslate">`RESTRICT`</span> – <span class="notranslate">`C`</span> - CPU restrict, <span class="notranslate">`R`</span> - read restrict, <span class="notranslate">`W`</span> - write restrict |
 |<span class="notranslate">`--show-all`</span>|full output (show all limits); brief output is default|
-|<span class="notranslate">`--server_id SERVER_ID`</span>, <span class="notranslate">`--server-id SERVER_ID`</span>|used with central database for multiple servers, default is <span class="notranslate">`2d823047-a`</span>|
+|<span class="notranslate">`--server_id SERVER_ID`</span>, <span class="notranslate">`--server-id SERVER_ID`</span>|used with central database for multiple servers, default is the <span class="notranslate">`server_id`</span> value from <span class="notranslate">`/etc/sysconfig/lvestats2`</span>|
 |<span class="notranslate">`--time-unit TIME_UNIT`</span>|time step for grouping statistic in minutes; 1 min. by default; can use <span class="notranslate">`m`,`h`,`d`</span> suffixes or can use <span class="notranslate">`dyn[amic]`</span> for using in the <span class="notranslate">`v1`</span> mode; for example: <span class="notranslate">`1h`</span> or <span class="notranslate">`1h30m`</span> or <span class="notranslate">`1d12h`</span>|
 |<span class="notranslate">`-c [PATH]`</span>, <span class="notranslate">`--csv [PATH]`</span>|save statistics in CSV format; <span class="notranslate">`-`</span> by default (output to screen)|
 |<span class="notranslate">`-j`</span>, <span class="notranslate">`--json`</span>|display output in JSON format|
@@ -1367,7 +1370,7 @@ Acceptable options are:
             today, yesterday
             5m - last 5 minutes, 4h - last four hours, 2d - last 2 days,
             as well as today
---user=     mysql username
+--user=     system user name (required)
 --output=   Filename to save chart as, if not present, output will be sent to STDOUT
 --show-all  Show all graphs (by default shows graphs for which limits are set)
 ```
