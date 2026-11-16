@@ -602,7 +602,7 @@ When upgrading from older versions, the deprecated profiles are automatically sw
 ```
 governor=performance
 energy_perf_bias=performance
-min_perf_pct=100 (CloudLinux OS 8, 9, 10 and Ubuntu 22)
+min_perf_pct=100 (CloudLinux OS 7 hybrid, 8, 9, 10 and Ubuntu 22)
 ```
 </div>
 
@@ -614,7 +614,7 @@ If standard software CPU governors are used.
 
  2. Applies the following kernel options.
 
-On CloudLinux OS 7:
+On CloudLinux OS 7 (normal kernel):
 
 <span class="notranslate">vm.force_scan_thresh=100</span> - Improves kernel memory clean-up in case of big number of running LVE.
 
@@ -625,9 +625,7 @@ UBC parameters set the limits for the containers:
 <span class="notranslate">  ubc.dirty_ratio=100 </span> - Defines maximum RAM percentage for dirty memory pages.
 <span class="notranslate"> ubc.dirty_background_ratio=75</span> - Defines RAM percentage when to allow writing dirty pages on the disk.
 
-The CloudLinux OS 7 hybrid kernel does not provide `vm.force_scan_thresh` and the `ubc.*` options, so they have no effect there.
-
-On CloudLinux OS 8, 9, 10 and Ubuntu 22 (on top of the `throughput-performance` profile):
+On CloudLinux OS 7 hybrid, 8, 9, 10 and Ubuntu 22 (on top of the `throughput-performance` profile):
 
 <div class="notranslate">
 
@@ -643,7 +641,7 @@ net.ipv4.tcp_fastopen=3
 
 CloudLinux OS 8, 9 and 10 also set `vm.oom_dump_tasks=0`. Ubuntu 22 also sets `vm.force_scan_thresh=100` and `kernel.pid_max=4194303`.
 
-3. _[CloudLinux OS 7 only]_ Detects used disk types and changes elevator to <span class="notranslate"> 'deadline' </span> for HDD and to <span class="notranslate"> 'noop' </span> for SSD in <span class="notranslate"> /sys/block/[blockname]/queue/scheduler </span> .
+3. _[CloudLinux OS 7 normal kernel only]_ Detects used disk types and changes elevator to <span class="notranslate"> 'deadline' </span> for HDD and to <span class="notranslate"> 'noop' </span> for SSD in <span class="notranslate"> /sys/block/[blockname]/queue/scheduler </span> .
 
 ::: tip Note
 <span class="notranslate">The script uses /sys/block/[blockname]/queue/rotational flag, some RAID controllers can not set it properly. For example, SSD used for RAID but rotational is set to 1 by RAID driver. As a workaround add the following to /etc/rc.d/rc.local to make it applied on boot:</span>
@@ -668,21 +666,21 @@ chmod +x /etc/rc.d/rc.local
 ```
 </div>
 
-4. _[CloudLinux OS 7 only]_ The profile sets <span class="notranslate"> I/O </span> scheduler. For the normal discs the <span class="notranslate"> Deadline Scheduler </span> is set to improve <span class="notranslate"> IO </span> performance and decrease <span class="notranslate"> IO </span> latency, for SSD - noop.
+4. _[CloudLinux OS 7 normal kernel only]_ The profile sets <span class="notranslate"> I/O </span> scheduler. For the normal discs the <span class="notranslate"> Deadline Scheduler </span> is set to improve <span class="notranslate"> IO </span> performance and decrease <span class="notranslate"> IO </span> latency, for SSD - noop.
 When configuring scheduler <span class="notranslate"> I/O </span> queue is changed and set to the value 1024 which improves overall <span class="notranslate"> I/O </span> subsystem performance by caching <span class="notranslate"> IO </span> requests in memory.
 
-On CloudLinux OS 8, 9, 10 and Ubuntu 22, items 3 and 4 do not apply. Instead, the profile sets the `mq-deadline` I/O scheduler for `vd*` and `sd*` disks and `none` for `nvme*` disks. On Ubuntu 22 the profile also sets `readahead=0` for `nvme*` disks.
+On CloudLinux OS 7 hybrid, 8, 9, 10 and Ubuntu 22, items 3 and 4 do not apply. Instead, the profile sets the `mq-deadline` I/O scheduler for `vd*` and `sd*` disks and `none` for `nvme*` disks. On Ubuntu 22 the profile also sets `readahead=0` for `nvme*` disks.
 
 5. Disables transparent <span class="notranslate"> HugePage </span> .
 
-6. _[CloudLinux OS 7 only]_ Only on kernels that expose the OpenVZ interfaces <span class="notranslate">`/proc/vz/vestat`</span> and <span class="notranslate">`/proc/vz/oom_score_adj`</span>, and when `cloudlinux-default` or `cloudlinux-latency-performance` is selected instead of the `cloudlinux-vz` profile the package picks there, the profile loads the adjustment group file <span class="notranslate">`/etc/tuned-profiles-cloudlinux/oom-groups.conf`</span> for OOM-Killer to kill overrun php, lsphp and <span class="notranslate"> Phusion Passenger </span> workers first. On such kernels it skips the disk scheduler and transparent HugePage steps. In all other cases, including CloudLinux OS 8 and later, the profiles do not apply this file. This file is not provided on Ubuntu 22. To make the OOM-Killer prefer PHP processes started by mod_lsapi, use [lsapi_backend_oom_score_adj](/cloudlinuxos/cloudlinux_os_components/#lsapi-backend-oom-score-adj).
+6. _[CloudLinux OS 7 normal kernel only]_ Only on kernels that expose the OpenVZ interfaces <span class="notranslate">`/proc/vz/vestat`</span> and <span class="notranslate">`/proc/vz/oom_score_adj`</span>, and when `cloudlinux-default` or `cloudlinux-latency-performance` is selected instead of the `cloudlinux-vz` profile the package picks there, the profile loads the adjustment group file <span class="notranslate">`/etc/tuned-profiles-cloudlinux/oom-groups.conf`</span> for OOM-Killer to kill overrun php, lsphp and <span class="notranslate"> Phusion Passenger </span> workers first. On such kernels it skips the disk scheduler and transparent HugePage steps. In all other cases, including CloudLinux OS 8 and later, the profiles do not apply this file. This file is not provided on Ubuntu 22. To make the OOM-Killer prefer PHP processes started by mod_lsapi, use [lsapi_backend_oom_score_adj](/cloudlinuxos/cloudlinux_os_components/#lsapi-backend-oom-score-adj).
 
 The <span class="notranslate">`cloudlinux-latency-performance`</span> profiles apply the same settings as the matching <span class="notranslate">`cloudlinux-default`</span> profiles and additionally:
 
 - keep CPUs out of deep C-states (`force_latency=1`), which increases power consumption;
-- on CloudLinux OS 7, set `min_perf_pct=100`;
-- on CloudLinux OS 8, 9, 10 and Ubuntu 22, enable network busy polling (`net.core.busy_read=50`, `net.core.busy_poll=50`), set `net.ipv4.tcp_window_scaling=1` and `net.ipv4.tcp_timestamps=1`, and set `sched_min_granularity_ns=10000000` and `sched_wakeup_granularity_ns=15000000`;
-- on CloudLinux OS 8, 9 and 10, set read-ahead to 0 for `nvme*` disks (on Ubuntu 22 the default profile already does this).
+- on CloudLinux OS 7 (normal kernel), set `min_perf_pct=100`;
+- on CloudLinux OS 7 hybrid, 8, 9, 10 and Ubuntu 22, enable network busy polling (`net.core.busy_read=50`, `net.core.busy_poll=50`), set `net.ipv4.tcp_window_scaling=1` and `net.ipv4.tcp_timestamps=1`, and set `sched_min_granularity_ns=10000000` and `sched_wakeup_granularity_ns=15000000`;
+- on CloudLinux OS 7 hybrid, 8, 9 and 10, set read-ahead to 0 for `nvme*` disks (on Ubuntu 22 the default profile already does this).
 
 To install:
 
@@ -742,7 +740,7 @@ tuned-adm off
 Each install or update of `tuned-profiles-cloudlinux` selects a CloudLinux profile again if no profile is active or if one of these stock profiles is active:
 
 - `off`, `default`, `powersave`, `balanced`, `virtual-guest`: switched to `cloudlinux-default-cgv1` (`cloudlinux-default-cgv2` on CloudLinux OS 10, `cloudlinux-default` on CloudLinux OS 7)
-- `latency-performance`, `throughput-performance`: switched to `cloudlinux-latency-performance-cgv1` (`cloudlinux-latency-performance-cgv2` on CloudLinux OS 10). Not on CloudLinux OS 7.
+- `latency-performance`, `throughput-performance`: switched to `cloudlinux-latency-performance-cgv1` (`cloudlinux-latency-performance-cgv2` on CloudLinux OS 10). On CloudLinux OS 7 hybrid, `throughput-performance` is switched to `cloudlinux-default`; the CloudLinux OS 7 normal kernel does not switch them.
 
 Inside a container or on OpenVZ/Virtuozzo, `cloudlinux-vz` is selected instead (not on Ubuntu).
 
@@ -1125,9 +1123,9 @@ echo 2000000000 > /sys/module/iolimits/**parameters/latency
 
 The regular 4.18 CloudLinux kernel on these systems has two defaults that differ from a similar RHEL kernel.
 
-**Writeback throttling.** Writeback throttling (WBT) is disabled by default, so `/sys/block/<device>/queue/wbt_lat_usec` shows `0` on disk devices. To enable throttling for a device, write the target latency in microseconds to that file. Writing `-1` restores the kernel default. To use the standard defaults (2 ms for non-rotational and 75 ms for rotational storage), add `wbt_latency_old` to the kernel boot line.
+**Writeback throttling.** Starting from kernel 4.18.0-553.16.1.lve.1, writeback throttling (WBT) is disabled by default, so `/sys/block/<device>/queue/wbt_lat_usec` shows `0` on disk devices. To enable throttling for a device, write the target latency in microseconds to that file. Writing `-1` resets it to the kernel default, which is `0` (disabled) unless the kernel was booted with `wbt_latency_old`. To use the standard defaults (2 ms for non-rotational and 75 ms for rotational storage), add `wbt_latency_old` to the kernel boot line.
 
-**ipset.** A hash-type set created without the `hashsize` option uses a hash size of 16384 instead of the usual 1024.
+**ipset.** Starting from kernel 4.18.0-553.117.1.lve.1, a hash-type set created without the `hashsize` option uses a hash size of 16384 instead of the usual 1024. Older kernels use 1024.
 
 
 ## Reading LVE usage
