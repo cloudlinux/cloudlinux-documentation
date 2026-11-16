@@ -669,18 +669,32 @@ other end-users will not be displayed in the UI of the current user.
 
 ### Overview
 
-SmartAdvice Plugin is a WordPress Must Use Plugin that displays the available advise for the site, which can be
+SmartAdvice Plugin is a WordPress Must Use Plugin that displays the available advice for the site, which can be
 activated/deactivated from the WordPress admin panel.
-Installing and uninstalling the plugin is an automatic process, depending on the available advise for the site.
+The plugin is installed and removed automatically, depending on the advice available for the site.
+
+:::tip Note
+Advice is not displayed while the site has a compatibility issue with the recommended feature. Advice that was not
+applied and has not been updated for a year becomes outdated and is no longer displayed in the plugin.
+:::
 
 ### Requirements
 
-* PHP version 5.6 or higher
+* PHP version 7.0 or higher
 * WordPress version 5.0 or higher
+* The PHP function `stream_socket_client` must be enabled. If it is disabled, the plugin shows the message
+  `Advice management requires php function "stream_socket_client".` instead of the list of advice.
+
+These are the minimum versions for the plugin itself. Advice for AccelerateWP or Object Caching appears only if the site
+also meets the requirements of that feature. See the limitations for
+[AccelerateWP](/user-docs/user-docs-solo-cloudlinux/#limitations) and
+[Object Caching](/user-docs/user-docs-solo-cloudlinux/#limitations-1).
 
 ### Managing Advice via SmartAdvice Plugin
 
 If there is available advice, a widget will be displayed in the Dashboard of the WordPress site.
+The widget and the plugin page are available to WordPress users who can manage site options, such as Administrators.
+You can also open the plugin page from _Settings → SmartAdvice_.
 The table displays a list of advice, their status (1) and the ability to go to their settings (2).
 Click _See advice_ (2) to go to the detailed information of the advice.
 
@@ -691,8 +705,20 @@ apply them to automatically improve the website (3).
 
 ![WordPress SmartAdvice settings table: Review, Details, Apply columns; tooltip on Turn on Object Caching row](/images/user-docs/user-docs-solo-cloudlinux/SmartAdviceDetails.webp)
 
+Some advice needs one more step before it is applied:
+
+* CDN advice may ask you to accept the terms and conditions. Click _I accept_ to continue.
+* Advice for a paid feature that is not included in your subscription opens a dialog asking you to upgrade. Use the
+  button in the dialog or, if there is no button, contact your administrator. After a successful payment, the feature
+  is applied within several minutes. Refresh the page to check the status.
+
 Advice in the "Applied"(1) status can be deactivated using the "Rollback"(3) button.
+The button opens a dialog where you can give a reason for the rollback (optional; the reason is sent to CloudLinux).
+Click _Confirm_ to start the rollback.
 Advice that is in the process of applying or rolling back, displays the percentage of progress (4).
+
+The Review status means the advice is available and has not been applied yet. After a successful rollback, the feature
+is turned off on the site and the advice returns to the Review status, so you can apply it again.
 
 :::tip Note
 Advice activation may take some time.
@@ -700,12 +726,24 @@ Advice activation may take some time.
 
 ![SmartAdvice table Applied badge and Rollback on AccelerateWP plus 70% spinner on Object Caching row](/images/user-docs/user-docs-solo-cloudlinux/SmartAdviceApply.webp)
 
-If the application of Advice caused an error, you would be notified.
+If applying advice fails, you are notified at the top of the page. When the feature fails to activate or the site check
+after activation fails, the changes are reverted and the feature stays turned off. The advice stays in the Review
+status, so you can apply it again after fixing the reported issue.
 
 ![SmartAdvice settings red error banner plugin activation failed reverted caching plus advice Apply links](/images/user-docs/user-docs-solo-cloudlinux/SmartAdviceError.webp)
 
 Please contact our [Support team](https://www.cloudlinux.com/support-portal/) if you are unable to resolve the issue
 yourself.
+
+### Email notifications
+
+When new advice appears, the plugin sends an email to the WordPress administrators and to the email addresses of the
+hosting account. If advice stays in the Review status, a reminder about that advice is sent no more often than once
+every 30 days.
+
+To stop emails about a type of advice, click _Don't show me this advice again._ in the email. This stops the emails for
+your email address only and does not hide the advice in the plugin. The server administrator can turn off notifications
+and [reminders](/cloudlinuxos/shared-pro/#smartadvice-email-reminders) for the whole server.
 
 
 ## PHP Selector
