@@ -162,7 +162,7 @@ CentOS 8 reached End Of Life (EOL) on December 31st, 2021.
 If you would like to convert from CentOS 8 to CloudLinux OS 8, follow these steps:
 
 * Convert CentOS 8 to AlmaLinux 8 using [almalinux-deploy](https://github.com/AlmaLinux/almalinux-deploy)
-* Convert AlmaLinux 8 to CloudLinux 8 using [cldeploy](/cloudlinux_installation/#cldeploy-explained)
+* Convert AlmaLinux 8 to CloudLinux 8 using [cldeploy](/cloudlinuxos/cloudlinux_installation/#downloading-and-running-the-conversion-script)
 
 
 ### Downloading and running the conversion script
@@ -382,6 +382,8 @@ Use the logs that the conversion already creates:
 * `/var/log/cldeploy.log` — conversion output, including registration, package transactions, and panel setup.
 * `/var/log/cldeploy-precheck.log` — readiness checks, if precheck was run.
 * `/var/log/cldeploy-debug.log` — system information recorded before conversion, if the run reached that step.
+* `/var/log/cldeploy.log.old` — logs of previous runs, saved before `/var/log/cldeploy.log` is cleared for a new run.
+* `/var/log/normal-to-hybrid.log` — hybrid conversion on CloudLinux OS 7, if it ran.
 * The package-manager logs for the same time period, such as `/var/log/dnf.log` and `/var/log/dnf.rpm.log` on DNF-based systems, or `/var/log/yum.log` on CentOS 7.
 
 Preserve the failed run's logs before a retry. Review them locally and remove activation keys, passwords, tokens, and private customer information from any copy you share. Do not paste full logs or license keys into a public issue.
@@ -527,13 +529,14 @@ Here's what the cldeploy script does when you run it:
 
 #### Uninstallation Process
 
-To uninstall CloudLinux, run the following command:
+To uninstall CloudLinux, download the script and run:
 ```
-cldeploy -c
+wget -O cldeploy https://repo.cloudlinux.com/cloudlinux/sources/cln/cldeploy
+bash cldeploy -c
 ```
 or equivalently:
 ```
-cldeploy --uninstall
+bash cldeploy --uninstall
 ```
 
 Here's what the cldeploy script does during uninstallation:
@@ -620,7 +623,7 @@ The first screen displayed is the language selection page.
 
 ![CloudLinux 8.7 graphical installer welcome: language list, English locale column, Continue and Quit](/images/cloudlinuxos/cloudlinux_installation/welcome_page.webp)
 
-First, find your preferred language in the left column and than select locale in the right one.
+First, find your preferred language in the left column and then select locale in the right one.
 Selected language will be used during installation and also as a default language of the installed system.
 
 After you select your language and locale, click `Continue` to confirm your selection
@@ -689,7 +692,7 @@ Tick the `ISO file` checkbox and press the `Done` button.
 
 After clicking `Done`, you will be redirected to the [Installation Summary](./#installation-summary) screen
 where [Installation source](./#choosing-the-installation-source) and [Software Selection](./#software-selection) links
-will be greyed and the `Downloading package metadata` message wll be shown.
+will be greyed and the `Downloading package metadata` message will be shown.
 
 ![Installation Summary: Installation Source and Software Selection greyed with Downloading package metadata](/images/cloudlinuxos/cloudlinux_installation/installation_source_gray_working.webp)
 
@@ -774,7 +777,7 @@ yum install rhn-setup
 * [Google Cloud Engine](https://download.cloudlinux.com/cloudlinux/images/#gce-tab)
 * [Amazon Web Services](https://download.cloudlinux.com/cloudlinux/images/#aws-tab)
 * [Alibaba Cloud](https://download.cloudlinux.com/cloudlinux/images/#ali-tab)
-* [Xen](/cloudlinux_installation/#installing-new-servers)
+* [Xen](/cloudlinuxos/cloudlinux_installation/#xen-images)
 * [CloudLinux Azure Images](./#cloudlinux-azure-images)
 
 :::warning CloudLinux OS 10
@@ -784,13 +787,13 @@ Please use the [conversion procedure](/cloudlinuxos/cloudlinux_installation/#con
 
 ### CloudLinux Azure Images
 
-We build and release CloudLinux 7.9 and CloudLinux 8.6 for Azure and upload to the [Mircosoft Azure Community Galleries](https://learn.microsoft.com/en-us/azure/virtual-machines/share-gallery-community?tabs=cli).
+We build and release CloudLinux 7.9 and CloudLinux 8.6 for Azure and upload to the [Microsoft Azure Community Galleries](https://learn.microsoft.com/en-us/azure/virtual-machines/share-gallery-community?tabs=cli).
 
 Images are built in both types Azure supports: *gen1 (BIOS based)* and *gen2 (UEFI based)*. CloudLinux Images could be found in the following regions: *West Europe, Germany West Central, Southeast Asia, East US, West US 2*. A publisher of CloudLinux Images in Azure is *cloudlinux*. Community gallery name is *cloudlinux-cbc76afd-63bc-4f6e-b801-65bd2f1ab0a0*.
 
 How to use CloudLinux Image in Azure:
 
-* When creating Virtual Machine, while choosing what OS should be used, click See al images.
+* When creating Virtual Machine, while choosing what OS should be used, click See all images.
    ![Azure Create a virtual machine Basics form: Ubuntu image; red lines mark title and See all images link](/images/cloudlinuxos/cloudlinux_installation/AzureVirt.webp)
 * Switch from Marketplace to Community images.
    ![Azure Select an image: red arrow to Community Images (PREVIEW) in sidebar; community images table](/images/cloudlinuxos/cloudlinux_installation/AzureSwitch.webp)
@@ -821,7 +824,7 @@ If you are going to use CloudLinux OS Legacy (Shared) with cPanel image, you may
 
 ### H-Sphere
 
-* [Requirements](/cloudlinuxos/cloudlinux_installation/#requirements)
+* [Requirements](/cloudlinuxos/cloudlinux_installation/#requirements-2)
 * [Converting from mod_fastcgi to mod_fcgid](/cloudlinuxos/cloudlinux_installation/#converting-from-mod-fastcgi-to-mod-fcgid)
 * [Older versions of H-Sphere](/cloudlinuxos/cloudlinux_installation/#older-versions-of-h-sphere)
 
@@ -983,7 +986,7 @@ Download and apply patch [https://repo.cloudlinux.com/cloudlinux/sources/mod_fcg
 
 ```
 wget https://repo.cloudlinux.com/cloudlinux/sources/mod_fcgid-hsphere/httpd.conf.tmpl.patch
-patch --fuzz=3 /hsphere/local/config/httpd2/httpd.conf.tmpl.cusom  httpd.conf.tmpl.patch
+patch --fuzz=3 /hsphere/local/config/httpd2/httpd.conf.tmpl.custom httpd.conf.tmpl.patch
 ```
 
 </div>
@@ -1114,7 +1117,7 @@ Below, we will describe how to add a qcow2 (QEMU/KVM) CloudLinux OS image as a c
 
 ![CloudLinux download site OpenStack QEMU/KVM tab with instructions and qcow2 image link and checksum](/images/cloudlinuxos/cloudlinux_installation/cloudlinuximages.webp)
 
-2. Copy the link for the image you are going to use and log into [cloud.digitalocean.com](https://blog.digitalocean.com/custom-images/cloud.digitalocean.com).
+2. Copy the link for the image you are going to use and log into [cloud.digitalocean.com](https://cloud.digitalocean.com).
 
 Click <span class="notranslate">_Images_</span> on the left of the screen and then choose <span class="notranslate">_Custom Images_</span>. Click the <span class="notranslate">_Import via URL_</span> button and paste the CloudLinux OS Legacy (Shared) image link.
 
@@ -1260,7 +1263,7 @@ To use CloudLinux Shared Pro in Virtuozzo container, please update the next pack
 * [AccelerateWP](/cloudlinuxos/cloudlinux_installation/#acceleratewp)
 * [Hardened PHP](/cloudlinuxos/control_panel_integration/#hardened-php)
 * [Website monitoring and Slow Site Analyzer](/cloudlinuxos/lve_manager/#website-monitoring-tool-and-slow-site-analyzer)
-* [X-Ray](/solo/manager/#x-ray)
+* [X-Ray](/cloudlinuxos/shared-pro/#x-ray)
 * [CageFS](/cloudlinuxos/cloudlinux_installation/#cagefs)
 * [PHP Selector](/cloudlinuxos/cloudlinux_installation/#php-selector)
 * [Wizard](/cloudlinuxos/cloudlinux_installation/#cloudlinux-wizard)
@@ -1287,7 +1290,7 @@ cd /home && curl -o latest -L https://securedownloads.cpanel.net/latest && sh la
 ```
 wget https://repo.cloudlinux.com/cloudlinux/sources/cln/cldeploy
 chmod 775  cldeploy
-./cldeploy -k SHARED_PRO_CLN_KEY_HERE --testing-repo
+./cldeploy -k SHARED_PRO_CLN_KEY_HERE --testing-repos
 ```
 5. You don't need to restart the container after the cldeploy script finished execution.
 
@@ -1333,7 +1336,7 @@ You can find the complete lsapi documentation [here](https://docs.cloudlinux.com
 
 If you'd like to try Smart Advice and AccelerateWP you should participate in the Beta tester program. To become a beta tester, please send your request at our Beta program page with the signup form [here](https://www.cloudlinux.com/wp-performance/). Once you submit the request, we will send you a confirmation email with program details, terms of use, and installation instructions.
 
-All additional information can be found [here](https://docs.cloudlinux.com/cloudlinuxos/shared-pro/acceleratewp).
+All additional information can be found [here](/cloudlinuxos/shared-pro/#acceleratewp).
 
 
 #### CageFS
@@ -1358,7 +1361,7 @@ You can find CageFS documentation [here](/cloudlinuxos/cloudlinux_os_components/
    ```sh
    yum install cagefs
    yum groupinstall alt-php
-   cagefsctl –init
+   cagefsctl --init
    ```
    **Via CloudLinux Wizard (cPanel only):**
    ![CloudLinux Manager Configure your OS: CageFS, Install LSAPI, Configure PHP cards with toggles checked](/images/cloudlinuxos/cloudlinux_installation/CLWizardInstallation.webp)
@@ -1377,10 +1380,10 @@ You can find CageFS documentation [here](/cloudlinuxos/cloudlinux_os_components/
 
 Useful links:
 
-* [General information and requirements](/cloudlinuxos/cloudlinux_os_components/#general-information-and-requirements-5)
+* [General information and requirements](/cloudlinuxos/cloudlinux_os_components/#general-information-and-requirements-4)
 	* [Installation and update](/cloudlinuxos/cloudlinux_os_components/#installation-and-update-3)
 	* [Installation instructions for cPanel users](/cloudlinuxos/cloudlinux_os_components/#installation-instructions-for-cpanel-users)
-* [Uninstalling](/cloudlinuxos/cloudlinux_os_components/#uninstalling-3)
+* [Uninstalling](/cloudlinuxos/cloudlinux_os_components/#uninstalling-2)
 	* [Configuration and using](/cloudlinuxos/cloudlinux_os_components/#configuration-and-using)
 	* [Bundled PHP extensions](/cloudlinuxos/cloudlinux_os_components/#bundled-php-extensions)
 
@@ -1400,9 +1403,9 @@ Please update or install the packages mentioned above using the following comman
 yum update lve alt-python27-cllib lvemanager cagefs --enablerepo=cloudlinux-updates-testing
 ```
 
-The installation of Python Selector is available via CloudLinux Wizard. Aslo, the information about manual installation can be found [here](/cloudlinuxos/cloudlinux_os_components/#cpanel-2).
+The installation of Python Selector is available via CloudLinux Wizard. Also, the information about manual installation can be found [here](/cloudlinuxos/cloudlinux_os_components/#cpanel-1).
 
-Information about working with Python Selector via GUI can be found [here](/cloudlinuxos/lve_manager/#python-selector-2).
+Information about working with Python Selector via GUI can be found [here](/cloudlinuxos/lve_manager/#python-selector-1).
 
 
 #### Node.js Selector
@@ -1436,11 +1439,11 @@ The `ea-apache24-mod-alt-passenger` is deprecated in favor of `ea-ruby24-mod_pas
 
 #### General Information
 
-General information can be found [here](/cloudlinuxos/cloudlinux_os_components/#general-information-and-requirements-7).
+General information can be found [here](/cloudlinuxos/cloudlinux_os_components/#general-information-and-requirements-6).
 
 #### Requirements
 
-Information about Requirements can be found [here](/cloudlinuxos/cloudlinux_os_components/#requirements-2).
+Information about Requirements can be found [here](/cloudlinuxos/cloudlinux_os_components/#requirements-1).
 
 #### Limitations
 
@@ -1462,7 +1465,7 @@ Information about Remote usage of Node.js interpreters can be found [here](/clou
 
 #### Node.js Selector UI
 
-Information about working with Node.js Selector via UI can be found [here](./lve_manager/#node-js-selector-2).
+Information about working with Node.js Selector via UI can be found [here](/cloudlinuxos/lve_manager/#node-js-selector-1).
 
 
 
@@ -1501,10 +1504,10 @@ A: Issue is known and will be fixed soon.
 
 3. Some servers require increasing `fs.ve-mount-nr` on the host node. If it wasn't done, then:
    * CageFS will throw errors related to mounting e.g. `Can't mount jail for user`, `mount(2) system call failed: Cannot allocate memory` etc.
-   * on a host node (but not in the container!) there will be errors `reached the limit on mounts` in `/var/log/messages` throwed by kernel
+   * on a host node (but not in the container!) there will be errors `reached the limit on mounts` in `/var/log/messages` thrown by the kernel
 
    To increase `fs.ve-mount-nr` on a host node:
-   * add <span class="notranslate">`fs.ve-mount-nr = 15000`</span> to <span class="notranslte">`/etc/sysctl.conf`</span>;<br/>
+   * add <span class="notranslate">`fs.ve-mount-nr = 15000`</span> to <span class="notranslate">`/etc/sysctl.conf`</span>;<br/>
    * apply it with the <span class="notranslate">`sysctl -p`</span> command.
 
    In some very rare cases the value should be increased higher, up to 50000.
@@ -1595,7 +1598,7 @@ mv /etc/lilo.conf /etc/lilo.conf.bak
 ```
 </div>
 
-3. Convert to CloudLinux OS Legacy (Shared) using <span class="notranslate"> [deploy2cl](/cloudlinuxos/cloudlinux_installation/#converting-existing-servers)</span> utility.
+3. Convert to CloudLinux OS Legacy (Shared) using the <span class="notranslate"> [cldeploy](/cloudlinuxos/cloudlinux_installation/#converting-existing-servers)</span> utility.
 
 4. Check <span class="notranslate">`grub.conf`</span> – it should be configured automatically:
 
@@ -1676,7 +1679,7 @@ To delete CloudLinux OS kernel, run (change the kernel package name to the one y
 rpm -e --nodeps $(rpm -qa | grep kernel | grep lve)
 ```
 
-To install new AlmaLlinux or CentOS* kernel once you deleted CloudLinux OS kernel, run the following command:
+To install new AlmaLinux or CentOS kernel once you deleted CloudLinux OS kernel, run the following command:
 
 ```
 yum install kernel
