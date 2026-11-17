@@ -981,6 +981,7 @@ The underlying <span class="notranslate">`lvectl`</span> commands are available 
 |<span class="notranslate">`lvectl deny-domain-limits <user>`</span> | Remove the account's LVP and disallow per-domain limits.|
 |<span class="notranslate">`lvectl enable-domain-limits <domain>`</span> | Register a domain LVE. The owner and document root are resolved from the control panel.|
 |<span class="notranslate">`lvectl disable-domain-limits <domain>`</span> | Unregister the domain LVE and remove its registry entry.|
+|<span class="notranslate">`lvectl list-domain-limits <user\|uid>`</span> | Print the limits currently applied in the kernel for each registered domain of the account, as JSON. The output is <span class="notranslate">`{"data": [...]}`</span>, with one entry per domain name. Each entry shows the domain name, document root, domain LVE id and limits. One domain LVE id can appear in several entries. <span class="notranslate">`domain`</span> is <span class="notranslate">`null`</span> for a registered document root that the control panel no longer assigns to the account. If the domain LVE has not been created in the kernel yet, <span class="notranslate">`in_kernel`</span> is <span class="notranslate">`false`</span> and <span class="notranslate">`limits`</span> is <span class="notranslate">`null`</span>. Until then, the website runs within the account's limits. In <span class="notranslate">`limits`</span>, <span class="notranslate">`cpu`</span> is in hundredths of a percent, <span class="notranslate">`pmem`</span> and <span class="notranslate">`vmem`</span> are in bytes, <span class="notranslate">`io`</span> is in KB/s, and <span class="notranslate">`ep`</span>, <span class="notranslate">`nproc`</span> and <span class="notranslate">`iops`</span> are counts.|
 |<span class="notranslate">`lvectl list-domains <uid>`</span> | List the members of the account's LVP. The output can also include the account's own LVE, whose id is the UID. A <span class="notranslate">`limit`</span> or <span class="notranslate">`default`</span> row is not a domain.|
 |<span class="notranslate">`lvectl regenerate-domains --username <user> ...`</span> | Refresh the domain configuration and id mapping after a rename or document root change.|
 
@@ -994,7 +995,7 @@ After changing a domain name or document root outside a supported control panel,
 
 ### Setting per-domain limits
 
-Per-domain limits are set by the account owner with [`isolatectl limits`](#per-domain-resource-limits), not by the administrator: there is no <span class="notranslate">`lvectl`</span> command that sets an individual domain's limits. Administrators control the account-level limits, which bound every domain underneath them.
+Per-domain limits are set by the account owner with [`isolatectl limits`](#per-domain-resource-limits), not by the administrator: there is no <span class="notranslate">`lvectl`</span> command that sets an individual domain's limits. Administrators control the account-level limits, which bound every domain underneath them. To see the limits that apply to each of an account's domains, run <span class="notranslate">`lvectl list-domain-limits <user|uid>`</span>. It reads them from the kernel, not from the account's <span class="notranslate">`~/.lve/domains.json`</span>.
 
 Where the state lives:
 
