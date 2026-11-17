@@ -16,14 +16,14 @@ sidebarDepth: 4
 * [Limits validation](/cloudlinuxos/limits/#limits-validation)
 * [Compatibility matrix](/cloudlinuxos/limits/#compatibility-matrix)
 * [Reseller Limits](/cloudlinuxos/limits/#reseller-limits)
-* [WEB interface resource limiting modes](/limits/#web-interface-resource-limiting-modes)
+* [WEB interface resource limiting modes](/cloudlinuxos/limits/#web-interface-resource-limiting-modes)
 
 CloudLinux OS has support for the following limits:
 
 | |  |  |  | |
 |--|---|--|--|--|
 |Limits | Units | Default Value | Description | Supported Kernels / OS|
-|<span class="notranslate"> [SPEED](/cloudlinuxos/limits/#speed-limit) </span> | % of a core, or HZ | 100% | <span class="notranslate"> CPU </span> speed limit, relative to a single core, or specified in HZ (portable across <span class="notranslate"> CPU </span> s) | all|
+|<span class="notranslate"> [SPEED](/cloudlinuxos/limits/#speed-limit) </span> | % of a core, or MHz/GHz | 100% | <span class="notranslate"> CPU </span> speed limit, relative to a single core, or specified in MHz or GHz (portable across <span class="notranslate"> CPU </span> s) | all|
 |<span class="notranslate">[CPU](/cloudlinuxos/deprecated/#cpu-limits)</span> [deprecated] | % of <span class="notranslate"> CPU </span> | 25% | <span class="notranslate"> CPU </span> Limit (smallest of <span class="notranslate"> CPU </span> & NCPU is used) | all|
 |[NCPU](/cloudlinuxos/deprecated/#cpu-limits) [deprecated] | number of cores | 1 CORE | Max number of cores (smallest of <span class="notranslate"> CPU </span> & NCPU used) | all|
 |[PMEM](/cloudlinuxos/limits/#physical-memory-limit) | KB | 1024MB | Physical memory limit (RSS field in ps/RES in top). Also includes shared memory and disk cache | all|
@@ -31,7 +31,7 @@ CloudLinux OS has support for the following limits:
 |[IO](/cloudlinuxos/limits/#io) | KB/sec | 1024KB/sec | IO throughput - combines both read & write operations | CL8, CL7, CL6 lve1.1.9+ kernel|
 |[IOPS](/cloudlinuxos/limits/#iops) [lve1.3+] | Operations per second | 1024 | Restricts total number of read/write operations per second. | all|
 |[NPROC](/cloudlinuxos/limits/#number-of-processes) | number | 100 | Max number of processes within LVE | all|
-|[EP](/cloudlinuxos/limits/#entry-processes) | number | 20 | Limit on entry processes. Usually represents max number of concurrent connections to apache dynamic scripts as well as SSH and cron jobs running simultaneously. | all|
+|[EP](/cloudlinuxos/limits/#entry-processes) | number | 20 | Limit on entry processes. Usually represents max number of concurrent connections to apache dynamic scripts. | all|
 
 
 
@@ -148,7 +148,7 @@ Example:
 ```
 </div>
 
-Sets <span class="notranslate">CPU</span> limit to 25%, <span class="notranslate">IO</span> limit to 1024KB/s, <span class="notranslate">virtual memory</span> limit to 1GB (memory limit is set as a number of 4096 bytes pages), <span class="notranslate">physical memory</span> limit to 1GB, <span class="notranslate"> CPU</span> cores per LVE to 1, maximum entry processes to 200 and no limit for number of processes for all LVEs. It also sets the limit of 30% and number of processes limit to 5 for LVE with ID 532.
+Sets <span class="notranslate">CPU</span> limit to 25%, <span class="notranslate">IO</span> limit to 1024KB/s, <span class="notranslate">virtual memory</span> limit to 1GB (memory limit is set as a number of 4096 bytes pages), <span class="notranslate">physical memory</span> limit to 1GB, <span class="notranslate"> CPU</span> cores per LVE to 1, maximum entry processes to 200 and no limit for number of processes for all LVEs. It also sets the <span class="notranslate">CPU</span> limit to 30% and <span class="notranslate">CPU</span> cores to 5 for LVE with ID 532.
 
 :::tip Note
 In cPanel, setting a value to be inherited from the LVE_DEFAULT package will not be applied to the current LVE package
@@ -164,8 +164,8 @@ One of the best way to monitor current usage is [lvetop](/cloudlinuxos/command-l
 ```
 lvetop
 
-         ID     EP    PNO    TNO    CPU    MEM    I/O
-         test    1     2            2     2%    728     0
+         ID     EP    PNO    TNO     SPEED      MEM         IO       IOPS
+       test      1      2      2        2%      728          0          0
 ```
 </div>
 
@@ -174,14 +174,13 @@ You can also check the content of <span class="notranslate">`/proc/lve/list`</sp
 <div class="notranslate">
 
 ```
-cat /proc/lve/list
+head -1 /proc/lve/list
 
-4:LVE        EP        lCPU        lIO        CPU        MEM        IO        lMEM        lEP        nCPU        fMEM        fEP
-0        0        75        25        0        0        0        262144        20        2        0        0
-500        0        75        25        0        0        0        4294967 20        3        2        1
-700        1        75        25        1403247        202        0        262144        20        2        0        0
+10:LVE  lCPU  lCPUW  nCPU  lEP  lNPROC  lMEM  lMEMPHY  lIO  lIOPS  lNETO  lNETI  EP  CPU  MEM  IO  fMEM  fEP  MEMPHY  fMEMPHY  NPROC  fNPROC  IOPS  NETO  NETI
 ```
 </div>
+
+The number before `LVE` in the first line is the file format version; older kernels show a lower version with fewer columns. The second line of the file shows the default limits. Each of the following lines describes one LVE, and its first column has the form `<LVP ID>,<LVE ID>`. In this file the LVP ID is `0`. LVEs of users under reseller limits are listed in `/proc/lve/resellers/lvpYYY/list`, where YYY is the reseller's LVP ID, and their rows start with that ID.
 
 Additionally, you can use tool [lveps](/cloudlinuxos/command-line_tools/#lveps) to see <span class="notranslate">CPU</span> usage, and processes within LVE.
 
@@ -191,7 +190,7 @@ Additionally, you can use tool [lveps](/cloudlinuxos/command-line_tools/#lveps) 
 <span class="notranslate">lve-utils 1.4+</span>
 :::
 
-<span class="notranslate">CPU SPEED</span> limit allows to set <span class="notranslate">CPU</span> limit in terms of % of a single core, or as a fixed number of Hz.
+<span class="notranslate">CPU SPEED</span> limit allows to set <span class="notranslate">CPU</span> limit in terms of % of a single core, or as a fixed frequency in MHz or GHz.
 
 <span class="notranslate">`--speed=XX%`</span> would set performance relative to one core.
 
@@ -206,6 +205,8 @@ For example:
 For example, on 1ghz <span class="notranslate"> CPU </span> , setting of <span class="notranslate"> `--speed=2ghz` </span> would mean 2 cores, while on 4ghz <span class="notranslate"> CPU </span> same setting would mean 1/2 of a core.
 
 This should allow hosting companies to set same approximate performance level limits across different hardware using single setting.
+
+A value above the total capacity of the server's cores is reduced to that total.
 
 :::tip Note
 Note. We strongly recommend setting <span class="notranslate">CPU</span> speed limits not less than 100%. As such limits cause <span class="notranslate">CPU</span> context switching which leads to increased `%sys`.
@@ -261,6 +262,8 @@ cloudlinux-limits set --pmem-lower-bound 512M --json
 The lower bound value accepts standard memory format notations (e.g., <span class="notranslate">`512M`</span>, <span class="notranslate">`1G`</span>, <span class="notranslate">`2048M`</span>).
 
 The configured PMEM lower bound value is stored in the <span class="notranslate">`/etc/sysconfig/limits_lower_bounds`</span> configuration file.
+
+To remove the lower bound, set it to `0`.
 
 #### Disable Page Cache accounting
 
@@ -348,11 +351,13 @@ The IO limits will only affect <span class="notranslate"> DISK IO</span>, and wi
 
 ## IOPS
 
-<span class="notranslate">IOPS</span> limits restrict the total number of read/write operations per second. When the limit is reached the read/write operations stop until current second expires.
+<span class="notranslate">IOPS</span> limits restrict the number of disk operations per second. When the limit is reached, processes are put to sleep so that the rate of operations stays within the limit. They keep working, only slower, as with [IO](/cloudlinuxos/limits/#io) limits.
 
 ## Entry processes
 
 <span class="notranslate"> Entry processes </span> limit controls the number of entries into LVE. Each time a process 'enters' into LVE, we increment the counter. Each time process exits LVE, we decrement the counter. We don't count processes that are created inside LVE itself. It is also know as <span class="notranslate"> 'Apache concurrent connections' </span> limit.
+
+By default, SSH sessions and cron jobs that enter an LVE through the pam_lve module are not counted against the EP limit. Their processes count toward the NPROC limit.
 
 The process enter's into LVE when there is a new HTTP request for CGI/PHP.
 
@@ -379,9 +384,9 @@ If you'd like to set the concurrent connection limit with LiteSpeed, you can use
 Supported on cPanel, Plesk, and DirectAdmin control panels
 :::
 
-<span class="notranslate"> LVE Manager inodes </span> limits extension allows setting <span class="notranslate"> inode </span> limits for the customers. An <span class="notranslate"> inode </span> is a data structure on a file system used to keep information about a file or a folder. The number of <span class="notranslate"> inodes </span> indicates the number of files and folders an account has. <span class="notranslate"> inodes </span> limits work on the level of <span class="notranslate"> disk quota </span> , and will be enabled on <span class="notranslate"> /home </span> partition only.
+<span class="notranslate"> LVE Manager inodes </span> limits extension allows setting <span class="notranslate"> inode </span> limits for the customers. An <span class="notranslate"> inode </span> is a data structure on a file system used to keep information about a file or a folder. The number of <span class="notranslate"> inodes </span> indicates the number of files and folders an account has. <span class="notranslate"> inodes </span> limits work on the level of <span class="notranslate"> disk quota </span> , and are applied on the filesystem that holds each user's home directory. Disk quota must be enabled on that filesystem.
 
-<span class="notranslate"> LVE Manager </span> allows to set <span class="notranslate"> soft </span> and <span class="notranslate"> hard IO </span> limit.
+<span class="notranslate"> LVE Manager </span> allows to set <span class="notranslate"> soft </span> and <span class="notranslate"> hard </span> inode limits.
 
 * <span class="notranslate"> Hard </span> limit prevents a user from writing data to disk.
 
@@ -423,6 +428,8 @@ The same can be achieved using [cloudlinux-config](/cloudlinuxos/command-line_to
 End users can monitor their inodes usage through cPanel only (not available on Plesk and DirectAdmin):
 
 ![cPanel Statistics sidebar listing inodes 151 of 100,000 with progress bar and other resource quotas](/images/cloudlinuxos/limits/inodescpanel.webp)
+
+The counter is hidden by default. To show it, enable _Show end-user inode usage_ in the _Inode limits_ section of the _Options_ tab, or set `inodeLimits.showUserInodesUsage` to `true` with [cloudlinux-config](/cloudlinuxos/command-line_tools/#cloudlinux-config). cPanel shows the counter only for accounts that have an inode limit. The counter also stays hidden when _Hide end user usage statistic_ is enabled, or when `file_usage=1` is set in `/var/cpanel/cpanel.config`.
 
 End user can also see the usage inside resource usage menu.
 
@@ -552,7 +559,7 @@ Network limits are supported only for processes inside LVE. By default it does n
 * [Existing limits validation](/cloudlinuxos/limits/#existing-limits-validation)
 * [Best practice](/cloudlinuxos/limits/#best-practice)
 
-Starting from <span class="notranslate">**lve-utils**</span> **version 3.1-1**, the validation of EP and NPROC limits is supported. If an administrator sets the NPROC limit less than (EP + 15), the following warning is shown:
+Starting from <span class="notranslate">**lve-utils**</span> **version 3.1-1**, the validation of EP and NPROC limits is supported. If an administrator sets the NPROC limit less than (EP + 15), the command fails with the following error and the limits are not changed:
 
 <div class="notranslate">
 
@@ -563,9 +570,9 @@ also Apache processes/threads, SSH sessions and etc, which enter into LVE.
 ```
  </div>
 
-PMEM LVE limit should not be lower than 512 MB.
+PMEM LVE limit should not be lower than 512 MB. A lower value is not rejected unless a [PMEM lower bound](/cloudlinuxos/limits/#physical-memory-lower-bound) is configured. Run <span class="notranslate">`cldiag --check-low-pmem-limits`</span> to check whether any user has a lower limit. The automatic <span class="notranslate">`cldiag`</span> check by cron described in [Existing limits validation](/cloudlinuxos/limits/#existing-limits-validation) reports this too.
 
-Validation does not affect limits operation in any way. Even if invalid limits have been set, they will be applied for users/resellers.
+An unlimited NPROC or EP limit (`0`) is not validated. Validation does not change how limits that are already in place work: invalid limits that exist on the server, for example because of the exceptions listed below, are still applied for users/resellers.
 
 Commands that support validation:
 
@@ -593,7 +600,7 @@ This command supports validation when setting default limits for a reseller.
 This command supports limits validation both for packages existing in the system and nonexisting ones.
 
 
-6. The <span class="notranslate">`cloudlinux-package`</span> and <span class="notranslate">`cloudlinux-limits`</span> commands support all validation types described above, and support limits validation and exceptions lists as described below.
+6. The <span class="notranslate">`cloudlinux-packages`</span> and <span class="notranslate">`cloudlinux-limits`</span> commands support all validation types described above, and support limits validation and exceptions lists as described below.
 
 #### Exceptions list (validation is not supported)
 
@@ -648,8 +655,8 @@ Set NPROC limit greater than (EP + 15).
 |Apache / MPM ITK | Yes | No | Yes | Yes | Yes | Yes<sup> 1</sup> | No|
 |LiteSpeed | Yes | Yes | Yes | Yes | Yes | Yes | Yes|
 |NGINX / PHP-FPM | Yes<sup> 2</sup> | Yes | No | Yes | Yes | Yes | No|
-|SSH | Yes | Yes | Yes | Yes | Yes | Yes<sup> 2</sup> | Yes|
-|<span class="notranslate">Cron Jobs</span> | Yes | Yes | Yes | Yes | Yes | Yes | Yes|
+|SSH | Yes | Yes | No | Yes | Yes | Yes<sup> 2</sup> | Yes|
+|<span class="notranslate">Cron Jobs</span> | Yes | Yes | No | Yes | Yes | Yes | Yes|
 |<span class="notranslate">Apache / mod_lsapi</span> | Yes | Yes | Yes | Yes | Yes | Yes | Yes|
 
 1. Requires patched version of MPM-ITK. CL httpd RPM has ITK worker with the patch. Patch is also available at: [https://repo.cloudlinux.com/cloudlinux/sources/da/cl-apache-patches.tar.gz](https://repo.cloudlinux.com/cloudlinux/sources/da/cl-apache-patches.tar.gz)
@@ -702,7 +709,7 @@ As you probably have already understood, the reseller will technically be able t
 
 1. CloudLinux OS should be [installed](/cloudlinuxos/cloudlinux_installation/) on the server.
 2. You also need to check that your kernel supports Reseller limits feature
-    * CloudLinux OS 6 and kernels **2.16+**: not supported, you need to [migrate to Hybrid](/cloudlinuxos/cloudlinux_os_kernel/#how-to-migrate-from-the-normal-to-hybrid-channel-cl6h).
+    * CloudLinux OS 6 and kernels **2.16+**: not supported, you need to [migrate to Hybrid](/cloudlinuxos/cloudlinux_os_kernel/#how-to-migrate-from-the-normal-kernel-to-hybrid-one).
     * CloudLinux OS 6 Hybrid: supported starting from **3.10.0-714.10.2.lve1.5.3.el6h** kernel.
     * CloudLinux OS 7: supported starting from **3.10.0-714.10.2.lve1.5.3.el7** kernel.
     * CloudLinux OS 7 Hybrid: supported
@@ -730,7 +737,7 @@ Selecting **Make the account own itself** makes the reseller full owner of all h
 ![LVE Manager Users table with modal for reseller res1; Manage Limits toggle off, pencil edit icon marked](/images/cloudlinuxos/limits/ResellerLimits-enabling.webp)
 
 ::: tip Note
-Managing Reseller limits are not available for Solo and Admin editions. More at [Cloudlinux OS editions](/introduction/#cloudlinux-os-editions)
+Managing Reseller limits are not available for Solo and Admin editions. More at [Cloudlinux OS editions](/introduction/cloudlinux-os-editions/#cloudlinux-os-editions)
 :::
 
  :::tip
@@ -764,22 +771,15 @@ CloudLinux provides flexible resource limiting modes for user processes started 
 
 Also, there is a short list of processes, that runs without CageFS in every modes. They are not affecting security, but we are working on removing them from excludes.
 
-The web_resource_limit_mode parameter controls resource limiting behavior and can be added to any section of `/etc/sysconfig/cloudlinux` for convenience and better organization. Configuration files ignore section boundaries, so the parameter can be placed in existing sections or new custom sections.
+The web_resource_limit_mode parameter controls resource limiting behavior and can be added to any section of `/etc/sysconfig/cloudlinux` for convenience and better organization. Configuration files ignore section boundaries, so the parameter can be placed in existing sections or new custom sections. Set the parameter only once. If it appears several times, the first occurrence in the file is used, whichever section it is in.
 
 Example Configuration:
 ```
 [license_check]
-email = CP`
-cpanel_getemail_script = /usr/share/cloudlinux/clgetcpanelemail
-plesk_getemail_script = /usr/share/cloudlinux/clgetpleskemail
-web_resource_limit_mode = unlimited
-
-[cldiag_cron]
-disabled_cldiag_cron_checkers = check-usepam
-web_resource_limit_mode = all
-
-[custom_section]
-web_resource_limit_mode = unlimited
+EMAIL=CP
+cPanel_getemail_script=/usr/share/cloudlinux/clgetcpanelemail
+Plesk_getemail_script=/usr/share/cloudlinux/clgetpleskemail
+web_resource_limit_mode = heavy
 ```
 
 Possible parameter values:
@@ -789,8 +789,10 @@ Possible parameter values:
     For example, this mode allows a user to execute the `cloudlinux-selector stop` process, even if the user hits the NUMPROC limit.
 * `unlimited`: All processes run without CPU, memory, IO, and NUMPROC limits. CageFS isolation is still applied when available for security. Not recommended for production environments.
 
+Values are case-sensitive. Any other value is treated as `all`.
+
 ### Changes
-The default option has been updated from all to heavy starting with lvemanager-7.11.25-1.
+If `web_resource_limit_mode` is not set, `heavy` is used with lvemanager 7.11.26-1 or later. Older versions use `all`.
 
 ### Requirements:
 
