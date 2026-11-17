@@ -7366,6 +7366,10 @@ Should be more or equal to 0.
 **Description** :
 Redirecting log output of backend processes from Apache error_log to dedicated log file or files, depending on value of lsapi_backend_common_own_log option. If Off, use Apache error log file for backend output, or separate file otherwise.
 
+:::tip Note
+If the dedicated log file cannot be opened or validated, the PHP backend still starts and the site keeps working (it does not return HTTP 503). In this case the backend output goes to the Apache error log, the same as with <span class="notranslate">lsapi_backend_use_own_log Off</span>. The reason and the line <span class="notranslate">`own log not attached, backend stderr stays on the default log`</span> are written to <span class="notranslate">sulsphp_log</span>.
+:::
+
 ---
 
 #### **lsapi_backend_common_own_log**
@@ -8258,16 +8262,18 @@ Note that this option works only if <span class="notranslate">lsapi_terminate_ba
 
 Current mod_lsapi allows cleaning all images only with one flag file.
 
-Create <span class="notranslate"> /usr/share/criu/mod_lsapi/lsphp.criu.reset </span> file. Also don't forget to set such permissions <span class="notranslate"> [nobody:nobody] </span> (or <span class="notranslate"> [apache:apache] </span> for non cPanel) and access mode [700] to the <span class="notranslate"> /usr/share/criu/mod_lsapi </span> directory.
+Create <span class="notranslate"> /var/lib/mod_lsapi/lsphp.criu.reset </span> file. Also don't forget to set such permissions <span class="notranslate"> [nobody:nobody] </span> (or <span class="notranslate"> [apache:apache] </span> for non cPanel) and access mode [700] to the <span class="notranslate"> /var/lib/mod_lsapi </span> directory.
+
+The flag is kept under <span class="notranslate">/var</span> because Apache can run with the systemd <span class="notranslate">ProtectSystem</span> setting, which makes <span class="notranslate">/usr</span> read-only to it. The earlier location, <span class="notranslate">/usr/share/criu/mod_lsapi/lsphp.criu.reset</span>, is no longer checked. The mod_lsapi packages create the <span class="notranslate">/var/lib/mod_lsapi</span> directory and set the flag automatically when mod_lsapi, <span class="notranslate">criu-lve</span> or an <span class="notranslate">alt-php*-cli</span> package is installed or updated. They also remove the old flag and, if it is empty, the old directory.
 
 Steps to do :
 
 <div class="notranslate">
 
 ```
-mkdir /usr/share/criumkdir /usr/share/criu/mod_lsapi
-chown nobody:nobody /usr/share/criu/mod_lsapi
-touch /usr/share/criu/mod_lsapi/lsphp.criu.reset
+mkdir -p /var/lib/mod_lsapi
+chown nobody:nobody /var/lib/mod_lsapi
+touch /var/lib/mod_lsapi/lsphp.criu.reset
 ```
 </div>
 
@@ -8762,6 +8768,10 @@ It will be used only when lsapi_backend_use_own_log is set to On. On-backend pro
 
 **Description** :
 Redirecting log output of backend processes from NGINX error.log to dedicated log file or files, depending on the value of the lsapi_backend_common_own_log option. If off, use the NGINX error log file for backend output, or a separate file otherwise.
+
+:::tip Note
+If the dedicated log file cannot be opened or validated, the PHP backend still starts and the site keeps working (it does not return HTTP 503). In this case the backend output goes to the default error log, the same as with <span class="notranslate">lsapi_backend_use_own_log off</span>. The reason and the line <span class="notranslate">`own log not attached, backend stderr stays on the default log`</span> are written to <span class="notranslate">sulsphp_log</span>.
+:::
 
 ---
 
@@ -9443,16 +9453,16 @@ Note that this option works only if <span class="notranslate">lsapi_terminate_ba
 
 The current NGINX LSAPI Module allows cleaning all images only with one flag file.
 
-Create <span class="notranslate"> /usr/share/criu/mod_lsapi/lsphp.criu.reset </span> file. Also don't forget to set permissions as follows: <span class="notranslate"> [nobody:nobody] </span> (or <span class="notranslate"> [nginx:nginx] </span> for non cPanel) and access mode [700] to the <span class="notranslate"> /usr/share/criu/mod_lsapi </span> directory.
+Create <span class="notranslate"> /var/lib/mod_lsapi/lsphp.criu.reset </span> file. Also don't forget to set permissions as follows: <span class="notranslate"> [nobody:nobody] </span> (or <span class="notranslate"> [nginx:nginx] </span> for non cPanel) and access mode [700] to the <span class="notranslate"> /var/lib/mod_lsapi </span> directory. The earlier location, <span class="notranslate">/usr/share/criu/mod_lsapi/lsphp.criu.reset</span>, is no longer checked.
 
 Steps to do :
 
 <div class="notranslate">
 
 ```
-mkdir /usr/share/criumkdir /usr/share/criu/mod_lsapi
-chown nobody:nobody /usr/share/criu/mod_lsapi
-touch /usr/share/criu/mod_lsapi/lsphp.criu.reset
+mkdir -p /var/lib/mod_lsapi
+chown nobody:nobody /var/lib/mod_lsapi
+touch /var/lib/mod_lsapi/lsphp.criu.reset
 ```
 </div>
 
