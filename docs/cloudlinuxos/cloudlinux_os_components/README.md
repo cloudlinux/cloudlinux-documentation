@@ -4308,6 +4308,8 @@ If you see a log message stating: "Unable to set up PHP/NodeJS/Python/Ruby auxil
 
 These `els-*-release` packages are **required** for proper installation of PHP, Python, NodeJS, and Ruby Selector packages on CloudLinux 10.
 
+Starting with `cloudlinux-release` 10-6, the `els-php-release`, `els-python-release`, `els-nodejs-release`, and `els-ruby-release` packages are dependencies of `cloudlinux-release`. On servers that are already running CloudLinux 10, updating `cloudlinux-release` installs them as well. They are no longer installed only by `cldeploy`.
+
 ### Authentication and access
 
 Unlike standard CloudLinux repositories, ALT-ELS repositories require separate authentication. This is because these packages are shared across different products (CloudLinux OS, Imunify360, and standalone ELS) under different licensing schemes.
@@ -4316,12 +4318,35 @@ Unlike standard CloudLinux repositories, ALT-ELS repositories require separate a
 
 * If your machine is registered with a valid license, access is handled automatically.
 * Upon successful registration, a primary CloudLinux JWT (JSON Web Token) is generated on your machine.
-* The `rhn-client-tools` package (version 3.0.2-1 or higher) automatically links this token to your package manager's variables:
+* The `rhn-client-tools` package (version 3.0.5-1 or higher; `cloudlinux-release` 10-6 and later do not install with older versions) automatically links this token to your package manager's variables:
   * `/etc/dnf/vars/phpelstoken`
   * `/etc/dnf/vars/altpythonelstoken`
   * `/etc/dnf/vars/altrubyelstoken`
   * `/etc/dnf/vars/altnodejselstoken`
 * When you run an update, DNF uses these tokens within the repository URLs to verify your access.
+
+#### ALT-ELS repositories without a token
+
+Without these token variables, DNF would fail with a 403 error on the ALT-ELS repositories. To prevent this, `cloudlinux-release` turns off each enabled ALT-ELS repository (from the `els-*-release` packages, pointing to `repo.alt.tuxcare.com`) that has no token variable on the server yet. It sets `enabled=0` in the repository section and adds this line above it:
+
+```
+# cloudlinux-release: switched off until this server has a TuxCare ELS token (rhn_check fetches it). Delete this line to keep the repo off.
+```
+
+This check runs every time `rhn-client-tools` updates the token, and every time `cloudlinux-release` or an `els-*-release` package is installed or updated.
+
+* When the token variable appears, the repository is turned back on automatically (`enabled=1`) and the line is removed. This also happens if you point the repository to a different URL.
+* If you turn a marked repository back on by hand while the server still has no token, it is turned off again.
+* To keep a repository off permanently, delete the marker line. The repository then counts as disabled by you, so it stays off after the token arrives.
+* Repositories you disabled yourself, repositories that already have a token variable, and repository files that are symlinks are not changed. A repository is not turned off if its token variable exists but the token is rejected.
+
+When `cloudlinux-release` is installed or updated on a registered server and some ALT-ELS repositories are still off, it prints:
+
+```
+TuxCare ELS repositories stay off until this server gets its ELS token from CLN.
+```
+
+Then it starts `rhn_check` in the background to fetch the token. If `rhn_check` cannot be started automatically, it asks you to run `rhn_check` manually. During a `cldeploy` conversion, `rhn_check` is not started here, because `cldeploy` fetches the token when the conversion finishes.
 
 ### Frequently asked questions
 
@@ -4330,6 +4355,9 @@ No. As long as you have a valid license and your machine is registered, the syst
 
 **What happens if my license expires?**  
 Since access depends on a valid JWT token, you will lose access to the ALT-ELS repositories (and thus updates for PHP/Python/NodeJS/Ruby Selectors) if the license is no longer active.
+
+**Why are my ALT-ELS repositories disabled?**  
+If a repository file contains the `# cloudlinux-release: switched off until this server has a TuxCare ELS token ...` line, the server does not have its ALT-ELS token yet. Make sure the server is registered with a valid license and run `rhn_check`. When the token arrives, the repositories are turned back on automatically. To keep a repository off, delete the marker line and leave `enabled=0`. See [ALT-ELS repositories without a token](./#alt-els-repositories-without-a-token).
 
 
 ## PHP Selector
@@ -7511,6 +7539,10 @@ Should be more or equal to 0.
 **Description** :
 Redirecting log output of backend processes from Apache error_log to dedicated log file or files, depending on value of lsapi_backend_common_own_log option. If Off, use Apache error log file for backend output, or separate file otherwise.
 
+:::tip Note
+If the dedicated log file cannot be opened or validated, the PHP backend still starts and the site keeps working (it does not return HTTP 503). In this case the backend output goes to the Apache error log, the same as with <span class="notranslate">lsapi_backend_use_own_log Off</span>. The reason and the line <span class="notranslate">`own log not attached, backend stderr stays on the default log`</span> are written to <span class="notranslate">sulsphp_log</span>.
+:::
+
 ---
 
 #### **lsapi_backend_common_own_log**
@@ -8403,16 +8435,18 @@ Note that this option works only if <span class="notranslate">lsapi_terminate_ba
 
 Current mod_lsapi allows cleaning all images only with one flag file.
 
-Create <span class="notranslate"> /usr/share/criu/mod_lsapi/lsphp.criu.reset </span> file. Also don't forget to set such permissions <span class="notranslate"> [nobody:nobody] </span> (or <span class="notranslate"> [apache:apache] </span> for non cPanel) and access mode [700] to the <span class="notranslate"> /usr/share/criu/mod_lsapi </span> directory.
+Create <span class="notranslate"> /var/lib/mod_lsapi/lsphp.criu.reset </span> file. Also don't forget to set such permissions <span class="notranslate"> [nobody:nobody] </span> (or <span class="notranslate"> [apache:apache] </span> for non cPanel) and access mode [700] to the <span class="notranslate"> /var/lib/mod_lsapi </span> directory.
+
+The flag is kept under <span class="notranslate">/var</span> because Apache can run with the systemd <span class="notranslate">ProtectSystem</span> setting, which makes <span class="notranslate">/usr</span> read-only to it. The earlier location, <span class="notranslate">/usr/share/criu/mod_lsapi/lsphp.criu.reset</span>, is no longer checked. The mod_lsapi packages create the <span class="notranslate">/var/lib/mod_lsapi</span> directory and set the flag automatically when mod_lsapi, <span class="notranslate">criu-lve</span> or an <span class="notranslate">alt-php*-cli</span> package is installed or updated. They also remove the old flag and, if it is empty, the old directory.
 
 Steps to do :
 
 <div class="notranslate">
 
 ```
-mkdir /usr/share/criumkdir /usr/share/criu/mod_lsapi
-chown nobody:nobody /usr/share/criu/mod_lsapi
-touch /usr/share/criu/mod_lsapi/lsphp.criu.reset
+mkdir -p /var/lib/mod_lsapi
+chown nobody:nobody /var/lib/mod_lsapi
+touch /var/lib/mod_lsapi/lsphp.criu.reset
 ```
 </div>
 
@@ -8907,6 +8941,10 @@ It will be used only when lsapi_backend_use_own_log is set to On. On-backend pro
 
 **Description** :
 Redirecting log output of backend processes from NGINX error.log to dedicated log file or files, depending on the value of the lsapi_backend_common_own_log option. If off, use the NGINX error log file for backend output, or a separate file otherwise.
+
+:::tip Note
+If the dedicated log file cannot be opened or validated, the PHP backend still starts and the site keeps working (it does not return HTTP 503). In this case the backend output goes to the default error log, the same as with <span class="notranslate">lsapi_backend_use_own_log off</span>. The reason and the line <span class="notranslate">`own log not attached, backend stderr stays on the default log`</span> are written to <span class="notranslate">sulsphp_log</span>.
+:::
 
 ---
 
@@ -9588,16 +9626,16 @@ Note that this option works only if <span class="notranslate">lsapi_terminate_ba
 
 The current NGINX LSAPI Module allows cleaning all images only with one flag file.
 
-Create <span class="notranslate"> /usr/share/criu/mod_lsapi/lsphp.criu.reset </span> file. Also don't forget to set permissions as follows: <span class="notranslate"> [nobody:nobody] </span> (or <span class="notranslate"> [nginx:nginx] </span> for non cPanel) and access mode [700] to the <span class="notranslate"> /usr/share/criu/mod_lsapi </span> directory.
+Create <span class="notranslate"> /var/lib/mod_lsapi/lsphp.criu.reset </span> file. Also don't forget to set permissions as follows: <span class="notranslate"> [nobody:nobody] </span> (or <span class="notranslate"> [nginx:nginx] </span> for non cPanel) and access mode [700] to the <span class="notranslate"> /var/lib/mod_lsapi </span> directory. The earlier location, <span class="notranslate">/usr/share/criu/mod_lsapi/lsphp.criu.reset</span>, is no longer checked.
 
 Steps to do :
 
 <div class="notranslate">
 
 ```
-mkdir /usr/share/criumkdir /usr/share/criu/mod_lsapi
-chown nobody:nobody /usr/share/criu/mod_lsapi
-touch /usr/share/criu/mod_lsapi/lsphp.criu.reset
+mkdir -p /var/lib/mod_lsapi
+chown nobody:nobody /var/lib/mod_lsapi
+touch /var/lib/mod_lsapi/lsphp.criu.reset
 ```
 </div>
 
