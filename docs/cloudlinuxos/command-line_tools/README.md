@@ -1459,8 +1459,8 @@ Starting from cagefs-7.6.17, users inside CageFS can manipulate PHP Selector usi
 ## Python Selector
 
 * [Hoster](./#hoster)
+* [Examples](./#examples-2)
 * [Examples](./#examples-3)
-* [Examples](./#examples-4)
 * [End user](./#end-user)
 
 :::warning Warning!
@@ -1468,6 +1468,10 @@ selectorctl command line tool is not supported in the new Python Selector. You c
 :::
 
 Below, there is a list of commands hoster and end user can run in a command line.
+
+:::tip Note
+The <span class="notranslate">`--json`</span> option is required. Without it, <span class="notranslate">`cloudlinux-selector`</span> prints <span class="notranslate">`use --json option, other modes currently unsupported`</span>.
+:::
 
 #### Hoster
 
@@ -1491,14 +1495,15 @@ When running user command as root, please use <span class="notranslate">`--user`
 ```
 {
   "selector_enabled": true | false, 
-  "default_version": "2.7.15", 
+  "passenger_active": true,
+  "default_version": "2.7",
   "result": "success", 
   "timestamp": 1508667174.220027,
   “cache_status”: “ready”,         //  or “updating” during automatic yum cache rebuild
   "available_versions": {   //  begin of  “versions”
       "2.7.15" : {   //   begin of version "2.7.15"
-          "status": "enabled",  //  enabled, disabled, not_installed, installing, removing, locked
-          “base_dir”: “/opt/alt/alt-python27”   //  empty when version is not installed
+          "status": "enabled",  //  enabled, disabled, not_installed, installing, removing
+          “base_dir”: “/opt/alt/python27”   //  empty when version is not installed
           “users”: {   //  begin of  “users”
               “user1”: {   //  begin of “user1”
 	“homedir”: “/home/user1”,		
@@ -1517,6 +1522,7 @@ When running user command as root, please use <span class="notranslate">`--user`
                              “var1” : “value1”,
                              “var2” : “value2”
                          },
+                         “virtualenv”: { “activate_path”: “/home/user1/virtualenv/apps_dir/app1/2.7/bin/activate” },
                      },   // end of application “apps_dir/app1”
                      “apps_dir/app2” : {    //   begin of application “apps_dir/app2”
                           << data for application “apps_dir/app2”  (same structure as for application “apps_dir/app1” above) >>
@@ -1528,7 +1534,7 @@ When running user command as root, please use <span class="notranslate">`--user`
               },   //  end of “user2”
           },   // end of “users”
         },    //  end of version “2.7.15”
-      "8.21.5" : {   //   begin of version "3.3.7"
+      "3.3.7" : {   //   begin of version "3.3.7"
             << data for version "3.3.7"  (same structure as for version “2.7.15” above) >>
         },    //  end of version “3.3.7”
     },    //  end of “versions”
@@ -1536,12 +1542,12 @@ When running user command as root, please use <span class="notranslate">`--user`
 ```
 </div>
 
-* Get Python script execution timeout in seconds :
-  
+* Get only the default version, the Selector status or the supported versions:
+
     <div class="notranslate">
 
     ```
-    cloudlinux-selector get --json --interpreter python --get-run-script-timeout
+    cloudlinux-selector get --json --interpreter python (--get-default-version | --get-selector-status | --get-supported-versions)
     ```
     </div>
 
@@ -1591,7 +1597,7 @@ When running user command as root, please use <span class="notranslate">`--user`
     ```
     </div>
 
-5. Uninstall a specific Python version:
+5. Uninstall a specific Python version (note that it is impossible to uninstall the default version or a version used by applications):
 
     <div class="notranslate">
     
@@ -1618,42 +1624,14 @@ When running user command as root, please use <span class="notranslate">`--user`
     ```
     </div>
 
-8. Set Python script execution timeout value in seconds :
-     <div class="notranslate">
-    
-     ```
-     cloudlinux-selector set --json --interpreter=python --run-script-timeout=5
-     ```
-     </div>
-
 * Change version for an application:
-    * For a specific application:
-        
-        <div class="notranslate">
-        
-        ```
-        cloudlinux-selector set [--json] --interpreter python --user <str> --app-root <str> --new-version <str>
-        ```
-        </div>
 
-    * For all applications that use specific Python version:
-        
-        <div class="notranslate">
-        
-        ```
-        cloudlinux-selector change-version-multiple --json --interpreter python --from-version <str> --new-version <str>
-        ```
-        </div>
+    <div class="notranslate">
 
-    * For multiple applications:
-        
-        <div class="notranslate">
-        
-        ```
-        cloudlinux-selector change-version-multiple --json --interpreter python --data  <pairs user:app-root as json> --new-version <str>
-        ```
-        </div>
-
+    ```
+    cloudlinux-selector set --json --interpreter python --user <str> --app-root <str> --new-version <str>
+    ```
+    </div>
 
 #### *Examples*
 
@@ -1665,33 +1643,6 @@ When running user command as root, please use <span class="notranslate">`--user`
     cloudlinux-selector set --json --interpreter python --user user1 --app-root apps_dir/app1 --new-version 2.7
     ```
     </div>
-
-2. Change version for all applications that use version 2.7.15 to version 3.3.5:
-    
-    <div class="notranslate">
-    
-    ```
-    cloudlinux-selector change-version-multiple --json --interpreter python --from-version 2.7 --new-version 3.3
-    ```
-    </div>
-
-3. Change version of multiple application(s) and/or multiple users:
-    
-    <div class="notranslate">
-    
-    ```
-    cloudlinux-selector change-version-multiple --json --interpreter python --data <pairs user:app-root as json> --new-version <str>
-    ```
-    </div>
-
-**Example**
-
-<div class="notranslate">
-
-```
-cloudlinux-selector change-version-multiple --json --interpreter python --data [ {“user”: “user1”, “app_root”: “apps/app1”}, {“user”: “user2”, “app_root”: “apps/app1”} ]  --new-version 2.7
-```
-</div>
 
 Common output for all <span class="notranslate">`set`</span> commands:
 
@@ -1834,7 +1785,7 @@ To start all users CLI commands use <span class="notranslate">`cagefs_enter`</sp
 * Create user application:
 
     :::tip Note
-    Python Selector supports only utf-8 symbols for the 'app-root' and 'app-uri' arguments.
+    Python Selector supports only utf-8 symbols for the 'app-root' and 'app-uri' arguments. The <span class="notranslate">`--entry-point`</span> option requires <span class="notranslate">`--startup-file`</span>.
     ::: 
 
     <div class="notranslate">
@@ -1843,6 +1794,8 @@ To start all users CLI commands use <span class="notranslate">`cagefs_enter`</sp
     cloudlinux-selector create [--json] --interpreter python  [--user <str> | --domain <str>]  --app-root <str> --app-uri <str> [--version <str>]  [--startup-file <str>] [--entry-point <str>] [--env-vars <json string>]
     ```
     </div>
+
+    If you do not pass `--version`, the application uses the default version set by the administrator with `set --default-version`. If no default version is set, `create` fails with `python default version not defined`; pass `--version`.
 
     **Example:**
     
@@ -1898,7 +1851,7 @@ To start all users CLI commands use <span class="notranslate">`cagefs_enter`</sp
     <div class="notranslate">
     
     ```
-    cloudlinux-selector set [--json] --interpreter python  [--user <str> | --domain <str>] --app-root <str> [--app-mode <str>]  [--new-app-root <str>]  [--new-domain <str>]  [--new-app-uri <str>]  [--new-version <str>]  [--startup-file <str>] [--entry-point <str>] [--env-vars <json string>] [--config-files <str>]
+    cloudlinux-selector set --json --interpreter python  [--user <str> | --domain <str>] --app-root <str> [--new-app-root <str>]  [--new-domain <str>]  [--new-app-uri <str>]  [--new-version <str>]  [--startup-file <str>] [--entry-point <str>] [--env-vars <json string>] [--config-files <str>] [--skip-web-check]
     ```
     </div>
 
@@ -1907,16 +1860,18 @@ To start all users CLI commands use <span class="notranslate">`cagefs_enter`</sp
     <div class="notranslate">
     
     ```
-    cloudlinux-selector set --json --interpreter python  --user user1 --app-root my_apps/app1 --app-mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars { “var1” : “value1”, “var2” : “value2” }  --config-files requirements.txt,reqs.txt
+    cloudlinux-selector set --json --interpreter python  --user user1 --app-root my_apps/app1 --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 3.3  --startup-file new_app.py --entry-point app --env-vars '{ "var1" : "value1", "var2" : "value2" }'  --config-files requirements.txt,reqs.txt
     ```
     </div>
+
+    `--entry-point` requires `--startup-file`.
 
 * Run <span class="notranslate">`PIP install`</span> for user application:
 
     <div class="notranslate">
     
     ```
-    cloudlinux-selector install-modules [--json] --interpreter python  [--user <str> | --domain <str>] --app-root <str> --requirements-file <path>
+    cloudlinux-selector install-modules [--json] --interpreter python  [--user <str> | --domain <str>] --app-root <str> --requirements-file <path> [--skip-web-check]
     ```
     </div>
 
@@ -1929,7 +1884,7 @@ To start all users CLI commands use <span class="notranslate">`cagefs_enter`</sp
     ```
     </div>
 
-* Optional: install or uninstall Python packages for user application:
+   * Optional: install or uninstall Python packages for user application:
 
     <div class="notranslate">
     
@@ -1952,7 +1907,7 @@ To start all users CLI commands use <span class="notranslate">`cagefs_enter`</sp
     <div class="notranslate">
     
     ```
-    cloudlinux-selector run-script [--json] --interpreter python  [--user <str | --domain <str>>] --app-root <str> --script-name <str> [-- <args>...]
+    cloudlinux-selector run-script --json --interpreter python  [--user <str> | --domain <str>] --app-root <str> --script-name <str> [-- <args>...]
     ```
     </div>
 
@@ -1978,14 +1933,16 @@ To start all users CLI commands use <span class="notranslate">`cagefs_enter`</sp
     ```
     </div>
 
-* Get Python script execution timeout in seconds :
-    
+   * Activate the virtual environment of an application:
+
     <div class="notranslate">
-    
+
     ```
-    cloudlinux-selector get --json --interpreter=python --get-run-script-timeout
-    ``` 
+    source <activate_path>
+    ```
     </div>
+
+    Replace `<activate_path>` with the full path from the application's `virtualenv.activate_path` field in the output of `get`.
 
 ## Ruby Selector
 
@@ -2039,20 +1996,38 @@ To restart application:
 selectorctl --interpreter ruby --user cltest1 --domain cltest1.com --restart-webapp testapp
 ```
 </div>
-To choose <span class="notranslate"> Ruby </span> version:
+
+To install, remove or update gems of an application (comma-separated; for remove and update, `-` means all gems):
 <div class="notranslate">
 
 ```
-selectorctl --interpreter=ruby --user=$USER -v 2.0
+/usr/bin/selectorctl --interpreter=ruby [--user=USER] [--json] --enable-user-extensions=<GEMS> <FOLDER_NAME>
+/usr/bin/selectorctl --interpreter=ruby [--user=USER] [--json] --disable-user-extensions=<GEMS> <FOLDER_NAME>
+/usr/bin/selectorctl --interpreter=ruby [--user=USER] [--json] --replace-user-extensions=<GEMS> <FOLDER_NAME>
+```
+</div>
+
+To list the gems of an application, the current version of an application, the applications of a user and the available versions:
+<div class="notranslate">
+
+```
+/usr/bin/selectorctl --interpreter=ruby [--user=USER] [--json] --list-user-extensions <FOLDER_NAME>
+/usr/bin/selectorctl --interpreter=ruby [--user=USER] [--json] --user-current <FOLDER_NAME>
+/usr/bin/selectorctl --interpreter=ruby [--user=USER] [--json] --user-summary
+/usr/bin/selectorctl --interpreter=ruby [--json] --list
 ```
 </div>
 
 ## Node.js Selector
 
-* [Hoster](./#hoster-2)
-* [End user](./#end-user-2)
+* [Hoster](./#hoster-1)
+* [End user](./#end-user-1)
 
 Below is a list of commands hoster and end user can run in a command line.
+
+:::tip Note
+The <span class="notranslate">`--json`</span> option is required. Without it, <span class="notranslate">`cloudlinux-selector`</span> prints <span class="notranslate">`use --json option, other modes currently unsupported`</span>.
+:::
 
 #### **Hoster**
 
@@ -2070,13 +2045,13 @@ cloudlinux-selector [get] [--json] --interpreter nodejs
 ```
 {  
 "selector_enabled": true | false,   
-"default_version": "6.11.3",   
+"passenger_active": true,
+"default_version": "6",
 "result": "success",   
 "timestamp": 1508667174.220027  
 "cache_status": "ready"         //  or “updating” during automatic yum cache rebuild  
 "available_versions": {   //  begin of  “versions”
       "6.11.3" : {   //   begin of version "6.11.3"
-		"name_modifier": "",
 		"status": "enabled",  //  enabled, disabled, not_installed, installing, removing
 		“base_dir”: “/opt/alt/alt-nodejs6”   //  empty when version is not installed
 		“users”: {   //  begin of  “users”                      
@@ -2097,6 +2072,7 @@ cloudlinux-selector [get] [--json] --interpreter nodejs
 							“var1” : “value1”,
 							“var2” : “value2”
 						},
+						“virtualenv”: { “activate_path”: “/home/user1/nodevenv/apps_dir/app1/6/bin/activate” },
 					},   // end of application “apps_dir/app1”
 					“apps_dir/app2” : {    //   begin of application “apps_dir/app2”
 						<< data for application “apps_dir/app2”  (same structure as for application “apps_dir/app1” above) >>
@@ -2111,17 +2087,18 @@ cloudlinux-selector [get] [--json] --interpreter nodejs
 	"8.21.5" : {   //   begin of version "8.21.5"
 		<< data for version "8.21.5"  (same structure as for version “6.11.3” above) >>
 	},    //  end of version “8.21.5”
-},    //  end of “versions”}   //   end of json
+	},    //  end of “versions”
+}   //   end of json
 ```
 </div>
 
-Get Nodejs script execution timeout in seconds :
-    
+Get only the default version, the Selector status or the supported versions:
+
 <div class="notranslate">
 
 ```
-cloudlinux-selector get --json --interpreter=nodejs --get-run-script-timeout
-``` 
+cloudlinux-selector get --json --interpreter nodejs (--get-default-version | --get-selector-status | --get-supported-versions)
+```
 </div>
 
 Set default version, supported versions, and status of <span class="notranslate"> Node.js Selector </span> :
@@ -2178,7 +2155,7 @@ cloudlinux-selector install-version --json --interpreter nodejs --version 8
 ```
 </div>
 
-Uninstall required Node.js version:
+Uninstall required Node.js version (note that it is impossible to uninstall the default version or a version used by applications):
 <div class="notranslate">
 
 ```
@@ -2202,22 +2179,23 @@ cloudlinux-selector disable-version --json --interpreter nodejs --version 8
 ```
 </div>
 
-Set Nodejs script execution timeout value in seconds :
-  
+Change version for a specific application:
 <div class="notranslate">
 
 ```
-cloudlinux-selector set --json --interpreter nodejs --run-script-timeout=5
+cloudlinux-selector set --json --interpreter nodejs (--user <str> | --domain <str>) --app-root <str> --new-version <str>
 ```
 </div>
 
-Change version for application(s):
+Change version for all applications that use a specific Node.js version (run as root):
 <div class="notranslate">
 
 ```
-cloudlinux-selector set [--json] --interpreter nodejs ((--user <str> |  --domain <str>) --app-root <str> | --from-version <str>) --new-version <str>
+cloudlinux-selector change-version-multiple --json --interpreter nodejs --from-version <str> --new-version <str>
 ```
 </div>
+
+The command starts in the background and returns at once, so `success` means only that the job has started. Applications are switched one by one; the target version must be installed. While it runs, `cloudlinux-selector get --json --interpreter nodejs` reports `remaining_apps_count` and `total_apps_count`. Only one job can run at a time, and applications cannot be created on the source version until it finishes.
 
 **Examples** :  
 This command changes version for the specific application:
@@ -2225,6 +2203,14 @@ This command changes version for the specific application:
 
 ```
 cloudlinux-selector set --json --interpreter nodejs --user user1 --app-root apps_dir/app1 --new-version 8
+```
+</div>
+
+This command changes version for all applications that use Node.js 6:
+<div class="notranslate">
+
+```
+cloudlinux-selector change-version-multiple --json --interpreter nodejs --from-version 6 --new-version 8
 ```
 </div>
 
@@ -2399,6 +2385,8 @@ cloudlinux-selector create [--json] --interpreter nodejs [(--user <str> | --doma
 ```
 </div>
 
+If you do not pass `--version`, the application uses the default version set by the administrator with `set --default-version`. If no default version is set, `create` fails with `nodejs default version not defined`; pass `--version`.
+
 **Example**:  
 
 :::tip Note
@@ -2440,7 +2428,7 @@ Change properties for an application
 <div class="notranslate">
 
 ```
-cloudlinux-selector set [--json] --interpreter nodejs  [(--user <str> | --domain <str>)] --app-root <str> [--app-mode <str>] [--new-app-root <str>] [--new-domain <str>] [--new-app-uri <str>] [--new-version <str>] [--startup-file <str>] [--env-vars <json string>]
+cloudlinux-selector set --json --interpreter nodejs  [(--user <str> | --domain <str>)] --app-root <str> [--app-mode <str>] [--new-app-root <str>] [--new-domain <str>] [--new-app-uri <str>] [--new-version <str>] [--startup-file <str>] [--env-vars <json string>] [--skip-web-check]
 ```
 </div>
 
@@ -2467,7 +2455,7 @@ This command sets a production mode, new domain <span class="notranslate"> new.x
 <div class="notranslate">
 
 ```
-cloudlinux-selector set --json --interpreter nodejs  --user user1 --app-root my_apps/app1 --mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars '{ "var1" : "value1", "var2" : "value2" }'
+cloudlinux-selector set --json --interpreter nodejs  --user user1 --app-root my_apps/app1 --app-mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars '{ "var1" : "value1", "var2" : "value2" }'
 ```
 </div>
 
@@ -2476,7 +2464,7 @@ cloudlinux-selector set --json --interpreter nodejs  --user user1 --app-root my_
 <div class="notranslate">
 
 ```
-cloudlinux-selector set --json --interpreter nodejs  --domain xyz.com --app-root my_apps/app1 --mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars '{ "var1" : "value1", "var2" : "value2" }'
+cloudlinux-selector set --json --interpreter nodejs  --domain xyz.com --app-root my_apps/app1 --app-mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars '{ "var1" : "value1", "var2" : "value2" }'
 ```
 </div>
 
@@ -2488,7 +2476,7 @@ Run <span class="notranslate"> _npm install_ </span> command for the user applic
 <div class="notranslate">
 
 ```
-cloudlinux-selector install-modules [--json] --interpreter nodejs  [(--user <str> |  --domain <str>)] --app-root <str>
+cloudlinux-selector install-modules --json --interpreter nodejs  [(--user <str> |  --domain <str>)] --app-root <str> [--skip-web-check]
 ```
 </div>
 
@@ -2533,15 +2521,6 @@ cloudlinux-selector run-script --json --interpreter nodejs --user user1 --app-ro
 		  "data": "script output as Base64 encoded string"
 }
 ```
-</div>
-
-Get Nodejs script execution timeout in seconds :
-    
-<div class="notranslate">
-
-```
-cloudlinux-selector get --json --interpreter=nodejs --get-run-script-timeout
-``` 
 </div>
 
 Activate virtual environment of NodeJS:
