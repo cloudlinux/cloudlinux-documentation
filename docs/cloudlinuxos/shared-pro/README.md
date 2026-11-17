@@ -9,7 +9,7 @@ CloudLinux OS Shared Hosting Pro was developed with shared hosting in mind. Itâ€
 
 It includes additional tools to expand the functionality.
 
-To activate the CloudLinux OS Shared Pro you have to purchase a Shared Pro license first, or upgrade the existing one from the [cln.cloudlinux.com](https://cln.cloudlinux.com) then activate a license on a server using the [same instructions](https://docs.cloudlinux.com/cloudlinuxos/cloudlinux_installation/#license-activation) just with a new key.
+To activate CloudLinux OS Shared Pro, purchase a Shared Pro license or upgrade your existing one in [cln.cloudlinux.com](https://cln.cloudlinux.com). On a server that is not registered yet, follow [License Activation](/cloudlinuxos/cloudlinux_installation/#license-activation). On a server that is already registered, follow [Switching to a different license type](/cloudlinuxos/cloudlinux_installation/#switching-to-a-different-license-type). If you have an IP-based license, run `clnreg_ks --force` instead.
 
 :::tip Info
 Apart from the functionality described in this documentation section, the Shared Pro edition includes all the [CloudLinux Shared OS features](/cloudlinuxos/cloudlinux_os_components/#cloudlinux-os-components).
