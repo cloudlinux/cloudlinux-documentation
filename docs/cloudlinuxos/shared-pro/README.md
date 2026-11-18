@@ -42,7 +42,7 @@ By default, AccelerateWP Premium suite includes Object Cache (which is not billa
 
 
 
-![AccelerateWP settings: Premium for Object Caching (Redis), upgrade URL field, Turn on button](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPAdminNonPaidPremium.webp)
+![AccelerateWP settings: Premium Features with Object Caching, upgrade URL field, Turn on button](/images/cloudlinuxos/shared-pro/accelerate-wp/AWPAdminNonPaidPremium.webp)
 
 
 Enable AccelerateWP Free for all users on the server via [CLI](#enable-acceleratewp-free)
@@ -85,7 +85,7 @@ billable features (Image Optimization, Critical CSS) - only Object Cache will be
 
 
 ##### AccelerateWP suite
-This is a basic suite which includes [AccelerateWP base feature](https://user-docs.cloudlinux.com/wpos-plugin/#acceleratewp-feature-wordpress-optimization-plugin): 
+This is a basic suite which includes [AccelerateWP base feature](/user-docs/user-docs-shared-pro-cloudlinux/#acceleratewp-feature-wordpress-optimization-plugin):
 a WordPress optimization plugin that provides full page caching, GZIP compression and some other useful optimizations.
 
 **AccelerateWP suite limitations**
@@ -120,6 +120,37 @@ If the license does not include paid features, only free features will be access
 The Object Caching mechanism stores database query results in additional storage for quick access. 
 This mechanism is beneficial in cases if a website needs to process multiple pages per second as 
 requests come in and may be helpful in cases when full-page caching cannot be used, e.g. on personalized pages.
+
+:::tip Note
+Starting from `accelerate-wp-1.11-1`, the Object Caching feature stores its data in [Valkey](https://valkey.io/),
+an open source in-memory data store that is compatible with Redis. AccelerateWP installs it as a dependency
+(the `alt-valkey` package) and runs a separate Valkey instance for each user who has Object Caching turned on.
+Websites keep using the WordPress Redis Object Cache plugin and the PHP `redis` extension, so nothing has to be changed on the websites by hand.
+
+After the update, AccelerateWP restarts the running Object Cache instances on Valkey in the background, a few users at a time.
+A website's cache is empty right after the restart and fills up again as the website is visited.
+The update does not change any website file: the `WP_REDIS_PATH` line in `wp-config.php` keeps naming `~/.clwpos/redis.sock`.
+The update does not remove the `alt-redis` package.
+
+What changes on the server:
+
+| | Before `accelerate-wp-1.11-1` | Starting from `accelerate-wp-1.11-1` |
+|-|-|-|
+| Object Cache process | `/opt/alt/redis/bin/redis-server` | `/opt/alt/valkey/bin/valkey-server` |
+| Per-user files in `~/.clwpos/` | `redis.conf`, `redis.log`, `redis.pid` | `valkey.conf`, `valkey.log`, `valkey.pid` |
+| Socket | `~/.clwpos/redis.sock` | `~/.clwpos/valkey.sock`; `~/.clwpos/redis.sock` stays as a symbolic link to it |
+| Diagnostic client | `/opt/alt/redis/bin/redis-cli` | `/opt/alt/valkey/bin/valkey-cli` |
+
+If some users' Object Cache instances still run `redis-server` after the update, run `clwpos-daemon rolling-restart --replaced-binary-only` as root.
+It resumes the move to Valkey in the background and leaves the instances already on Valkey alone.
+
+On the CloudLinux subsystem on Ubuntu, the nightly cPanel update runs `apt-get upgrade`, which does not install new packages.
+It keeps `accelerate-wp` at the previous version, and Object Caching keeps working on that version.
+To update AccelerateWP and install `alt-valkey`, run once:
+```
+apt-get update && apt-get install accelerate-wp
+```
+:::
 
 [Image Optimization feature](/user-docs/user-docs-shared-pro-cloudlinux/#image-optimization)
 
@@ -204,7 +235,7 @@ CLI commands for managing AccelerateWP are provided by those utilities:
 - `cloudlinux-awp-admin` - for administrator-side actions;
 - `cloudlinux-awp-user` - for user-side actions;
 
-[Smart Advice CLI for managing optimization advices](/cloudlinuxos/shared-pro/x-ray/#smart-advice-cli-commands)
+[Smart Advice CLI for managing optimization advices](/cloudlinuxos/shared-pro/#smart-advice-cli-commands)
 
 Starting from `accelerate-wp-1.6-6` AccelerateWP CLI utilities provide CLI versioning which is defined via `--api-version` option. 
 
@@ -265,8 +296,10 @@ cloudlinux-awp-admin set-suite --suites=accelerate_wp_cdn --allowed --users=<use
 
 **All users**
 ```
-cloudlinux-awp-admin set-suite --suites accelerate_wp_cdn_pro --attrs='{"traffic_limit": "50 GB"}' --allowed-for-all
+cloudlinux-awp-admin set-suite --suites accelerate_wp_cdn_pro --allowed-for-all
 ```
+
+`--allowed-for-all` cannot be combined with `--attrs`. To set a custom limit, use `--allowed --users` with `--attrs`.
 
 **Single user or group of users**
 ```
@@ -391,12 +424,12 @@ cloudlinux-awp-admin --api-version 1 set-suite --suites=accelerate_wp_premium --
 
 To disable the AccelerateWP CDN suite:
 ```
-cloudlinux-awp-admin --api-version 1 set-suite --suite=accelerate_wp_cdn --disallowed --users=<username>
+cloudlinux-awp-admin --api-version 1 set-suite --suites=accelerate_wp_cdn --disallowed --users=<username>
 ```
 
 To disable the AccelerateWP CDN Pro suite:
 ```
-cloudlinux-awp-admin --api-version 1 set-suite --suite=accelerate_wp_cdn_pro --disallowed --users=<username>
+cloudlinux-awp-admin --api-version 1 set-suite --suites=accelerate_wp_cdn_pro --disallowed --users=<username>
 ```
 
 To enable CDN Pro for a particular user:
@@ -437,7 +470,7 @@ cloudlinux-awp-admin --api-version 1 set-suite --suites=<suites_comma_separated>
 
 Example of command to enable CDN Pro for all users:
 ```
-cloudlinux-awp-admin --api-version 1 set-suite --suites accelerate_wp_cdn_pro --users all --allowed-for-all
+cloudlinux-awp-admin --api-version 1 set-suite --suites accelerate_wp_cdn_pro --allowed-for-all
 ```
 
 ##### Manage AccelerateWP server wide settings
@@ -460,8 +493,8 @@ cloudlinux-awp-admin --api-version 1 set-options --icon-visible=on
 cloudlinux-awp-admin --api-version 1 set-options --icon-visible=off
 ```
 
-To change the display of promotional materials for all new installations of the Redis Object Cache module by default, 
-you need to set the visibility setting
+To change the default display of promotional materials (the banner of the WordPress Redis Object Cache plugin)
+for all new activations of the Object Caching feature, you need to set the visibility setting
 
 ```
 cloudlinux-awp-admin --api-version 1 set-options --object-cache-banner-visible=on
@@ -706,7 +739,7 @@ The example output is given below:
 cloudlinux-awp-admin --api-version 1 enable-feature (--all | --status)
 ```
 
-Use the that command to ensure the best performance for every end-user. CLI command
+Use this command to ensure the best performance for every end-user. CLI command
 scans a server for all WordPress sites and activates the AccelerateWP
 free feature suite. It can take up to 2 minutes for a single site. 
 CLI command skips activation for WordPress sites with page caching or feature incompatibilities.
@@ -858,16 +891,17 @@ cloudlinux-awp-user --api-version 1 disable --feature object_cache --wp-path "us
 Please, make sure `--wp-path` is same as in `"path"` key of `cloudlinux-awp-user get` json output.
 
 
-Successful response example of enabling feature:
-rely on `feature.enabled` field to identify that feature was enabled
+Successful response example of disabling feature:
+rely on `feature.enabled` field to identify that feature was disabled
 ```
 {
     "feature": {
-        "enabled": true,
+        "enabled": false,
         "visible": true
     },
     "result": "success",
-    "timestamp": 1690975273.8860605
+    "timestamp": 1690975273.8860605,
+    "used_memory": null
 }
 ```
 
@@ -1125,18 +1159,35 @@ This is a part of our very long-term plans, thus not expected in the nearest fut
 
 AccelerateWP is a complex solution to help your customers increase their WordPress site performance. AccelerateWP brings number of optimization features, like object caching, css and js preprocessing and website preloading.
 
-#### How could I monitor Redis instances while using the AccelerateWP Premium suite?
+<!----><a name="how-could-i-monitor-redis-instances-while-using-the-acceleratewp-premium-suite"></a>
+#### How could I monitor Object Cache instances while using the AccelerateWP Premium suite?
 
-The Redis process is started for a user after activating the AccelerateWP Premium Object Caching feature for at least one WordPress site.
+A dedicated Object Cache server process is started for a user after activating the AccelerateWP Premium Object Caching feature for at least one WordPress site.
 It is killed after AccelerateWP Premium Object Caching has been deactivated for all user's websites.
 
-Look through the processes list to check the Redis status for a particular user:
+Look through the processes list to check the Object Cache status for a particular user:
 ```
- ps aux | grep redis  
+ ps aux | grep -E 'valkey-server|redis-server'
 
- awpuser  2662517  0.0  0.5 101096  8512 ?        Sl   15:33   0:00 /opt/alt/redis/bin/redis-server unixsocket:/home/awpuser/.clwpos/redis.sock
+ awpuser  2662517  0.0  0.5 101096  8512 ?        Sl   15:33   0:00 /opt/alt/valkey/bin/valkey-server unixsocket:/home/awpuser/.clwpos/valkey.sock
+ awpuser2 2662530  0.0  0.5 101096  8420 ?        Sl   15:33   0:00 /opt/alt/redis/bin/redis-server unixsocket:/home/awpuser2/.clwpos/redis.sock
 ```
-In case if AccelerateWP Premium is active, the auxiliary monitoring daemon `clwpos_monitoring` is also activated. It checks Redis instances each 5 minutes, starts new instances, restart failed ones and kills the “garbage” instances if needed.
+Search for both process names. Before `accelerate-wp-1.11-1`, the Object Cache process is `/opt/alt/redis/bin/redis-server` and its socket is `~/.clwpos/redis.sock`.
+After the update to `accelerate-wp-1.11-1`, each user's cache moves to Valkey at its own restart, so for a short time some users are still listed with `redis-server`, as `awpuser2` above.
+If they stay on `redis-server`, run `clwpos-daemon rolling-restart --replaced-binary-only` as root to resume the move.
+
+Starting from `accelerate-wp-1.11-1`, the instance's files in the user's `~/.clwpos/` directory are `valkey.conf`, `valkey.log`, `valkey.pid` and the socket `valkey.sock`
+(before: `redis.conf`, `redis.log`, `redis.pid` and `redis.sock`). `redis.sock` stays there as a symbolic link to `valkey.sock`, because the websites connect through it.
+When the home directory path is too long for `valkey.sock` (for example, a very long Plesk domain name), the instance keeps listening on `redis.sock` itself.
+
+To check that the instance answers, use `valkey-cli` (before `accelerate-wp-1.11-1`: `/opt/alt/redis/bin/redis-cli`) with the socket the websites use:
+```
+ /opt/alt/valkey/bin/valkey-cli -s /home/awpuser/.clwpos/redis.sock ping
+
+ PONG
+```
+
+In case if AccelerateWP Premium is active, the auxiliary monitoring daemon `clwpos_monitoring` is also activated. It checks the Object Cache instances each 5 minutes, starts new instances, restart failed ones and kills the “garbage” instances if needed.
 Check daemon status using `service clwpos_monitoring status` and its main log: `/var/log/clwpos/daemon.log`.
 
 #### My users are complaining that their features are not installed automatically after a subscription upgrade
