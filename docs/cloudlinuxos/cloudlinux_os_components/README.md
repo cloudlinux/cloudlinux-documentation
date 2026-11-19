@@ -5984,7 +5984,29 @@ Ruby Selector works only on cPanel/WHM servers.
 
 ### Supported versions
 
-![Support matrix table: CL6–CL9 columns with bulleted alt-ruby package lists per release](/images/cloudlinuxos/cloudlinux_os_components/Ruby_supported_versions.webp)
+::: tip
+The mark `x` stands for an available package.
+:::
+
+|                | CloudLinux 6 | CloudLinux 7 | CloudLinux 8 | CloudLinux 9 |
+|:--------------:|:------------:|:------------:|:------------:|:------------:|
+| alt-ruby26     |      x       |      x       |      x       |      x       |
+| alt-ruby27     |      x       |      x       |      x       |      x       |
+| alt-ruby30     |      –       |      x       |      x       |      x       |
+| alt-ruby31     |      –       |      x       |      x       |      x       |
+| alt-ruby32     |      –       |      x       |      x       |      x       |
+| alt-ruby33     |      –       |      x       |      x       |      x       |
+| alt-ruby34     |      –       |      x       |      x       |      x       |
+| alt-ruby35 \*  |      –       |      x       |      x       |      x       |
+| alt-ruby40     |      –       |      x       |      x       |      x       |
+
+\* alt-ruby35 is a Ruby 3.5.0 preview build.
+
+::: warning
+CloudLinux provides security updates for alt-ruby26 and later. The alt-ruby18 to alt-ruby25 packages (alt-ruby18–25 on CloudLinux OS 6, 7, and 8; alt-ruby22–25 on CloudLinux OS 9) can still be installed, but they are not maintained and do not receive security fixes. We recommend moving applications to alt-ruby26 or later.
+
+For the current list of maintained Ruby versions, see [TuxCare ELS for Runtimes: Ruby](https://docs.tuxcare.com/els-for-runtimes/ruby/).
+:::
 
 
 ### Installation and update
