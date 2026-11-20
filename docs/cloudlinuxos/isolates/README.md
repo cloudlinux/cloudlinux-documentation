@@ -762,6 +762,108 @@ Only domains that were active during the period are recorded at all, so a quiet 
 
 ***
 
+### Extra Home Paths for Isolated Websites
+
+Available since <span class="notranslate">cagefs 7.6.56-1</span>, the feature is **off by default**.
+
+An isolated website sees only its own document root from the account's home directory. An application that keeps files above the document root therefore stops working once isolation is enabled. Examples are Composer's <span class="notranslate">`vendor/`</span> directory, a framework's application code next to <span class="notranslate">`public/`</span>, or data shared by several sites.
+
+The administrator allows the feature for the server. Users then choose, for each domain, which extra directories of their home that website can see.
+
+#### Allow or Deny Extra Paths (Administrator)
+
+<div class="notranslate">
+
+```
+cagefsctl --allow-isolates-extra-path
+cagefsctl --deny-isolates-extra-path
+```
+
+</div>
+
+**Example:**
+
+<div class="notranslate">
+
+```
+# cagefsctl --allow-isolates-extra-path
+Users can now expose extra home directories to their isolated websites.
+
+# cagefsctl --deny-isolates-extra-path
+Extra paths for isolated websites are denied; declared lists are kept.
+```
+
+</div>
+
+**Notes:**
+
+* When the feature is allowed, the flag file <span class="notranslate">`/opt/cloudlinux/flags/enabled-flags.d/isolates-extra-paths.flag`</span> exists.
+* Denying the feature takes the extra paths away from all websites immediately. The lists users have declared are kept and take effect again as soon as the feature is allowed.
+* CloudLinux Isolates itself must also be allowed for the user (see [Per-User Management](#per-user-management)).
+
+#### Manage Extra Paths (User-Level)
+
+Users manage their lists with <span class="notranslate">`cagefsctl-user`</span>, run as the account user. All output is JSON.
+
+<div class="notranslate">
+
+```
+cagefsctl-user isolates-paths-add --domain <domain> --path <path>[,<path>...]
+cagefsctl-user isolates-paths-remove --domain <domain> --path <path>[,<path>...]
+cagefsctl-user isolates-paths-list [--domain <domain>]
+```
+
+</div>
+
+**Parameters:**
+
+| Parameter | Description |
+| --- | --- |
+| <span class="notranslate">`--domain`</span> | The domain whose website gets the paths. Required for <span class="notranslate">`add`</span> and <span class="notranslate">`remove`</span>. For <span class="notranslate">`list`</span>, omit it to list every domain. |
+| <span class="notranslate">`--path`</span> | A directory relative to the home directory, for example <span class="notranslate">`example.com/vendor`</span> for <span class="notranslate">`/home/john/example.com/vendor`</span>. Required for <span class="notranslate">`add`</span> and <span class="notranslate">`remove`</span>. To give several directories, separate them with commas or repeat the option: <span class="notranslate">`--path a,b`</span> is the same as <span class="notranslate">`--path a --path b`</span>. |
+
+Every response returns the paths declared for the domain in <span class="notranslate">`extra_paths`</span>, and whether the administrator currently allows the feature (<span class="notranslate">`active`</span>).
+
+**Example** — the document root of <span class="notranslate">`example.com`</span> is <span class="notranslate">`~/example.com/www`</span>, and its <span class="notranslate">`index.php`</span> loads <span class="notranslate">`../vendor/autoload.php`</span>:
+
+<div class="notranslate">
+
+```
+$ isolatectl site-isolation enable --domain example.com
+{"result": "success", "enabled_sites": ["example.com"]}
+# the site now fails: vendor/ is outside its document root
+
+$ cagefsctl-user isolates-paths-add --domain example.com --path example.com/vendor,shared-config
+{"result": "success", "active": true, "extra_paths": {"example.com": ["example.com/vendor", "shared-config"]}}
+# the site works again
+
+$ cagefsctl-user isolates-paths-list --domain example.com
+{"result": "success", "active": true, "extra_paths": {"example.com": ["example.com/vendor", "shared-config"]}}
+
+$ cagefsctl-user isolates-paths-remove --domain example.com --path example.com/vendor --path shared-config
+{"result": "success", "active": true, "extra_paths": {"example.com": []}}
+```
+
+</div>
+
+**Rules:**
+
+* **Relative to the home directory.** A path must be a directory inside the home directory. An absolute path or one that leads outside the home is refused.
+* **Must exist.** The directory must already exist when it is added. If one path in a request is refused, none of the paths in that request are added.
+* **No symlinks.** A path that is a symlink, or lies under one, is refused, because a symlink could later be repointed elsewhere.
+* **Per document root.** Isolation applies to a whole document root, and so do extra paths. Domains that share a document root share one list, and the response lists them all.
+* **Lifetime.** Lists are kept when isolation is disabled and re-enabled, and when the configuration is regenerated. When a domain is deleted, its list is removed.
+
+**Errors:**
+
+| <span class="notranslate">`code`</span> | Meaning |
+| --- | --- |
+| <span class="notranslate">`extra_paths_not_allowed`</span> | The administrator has not allowed extra paths (<span class="notranslate">`cagefsctl --allow-isolates-extra-path`</span>). Adding and removing are refused; listing still works and reports <span class="notranslate">`"active": false`</span>. |
+| <span class="notranslate">`not_allowed`</span> | CloudLinux Isolates is not allowed for the user. |
+| <span class="notranslate">`invalid_path`</span> | The path breaks one of the rules above. The <span class="notranslate">`message`</span> field says which one, for example <span class="notranslate">`"path must be a real directory, not a symlink or under one: 'vendor-link'"`</span>. |
+
+***
+
 ### Executing Commands in an Isolated Site Context
 
 The `cagefs_enter_site` utility allows executing a command inside CageFS in the context of a specific isolated website. This can be useful for debugging or running site-specific operations.
