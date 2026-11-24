@@ -1002,13 +1002,13 @@ The two halves of CloudLinux Isolates are separate layers and can be reasoned ab
 | | |
 |-|-|
 |[CageFS per domain](#cagefs-per-domain) | *Filesystem* isolation — a compromised website cannot read another site's files. Available only where CloudLinux Isolates is provided and enabled.|
-|LVE per domain | *Resource* isolation — a website has its own CPU, memory, I/O and process limits. Requires CloudLinux OS 8 or 9 and the [per-domain prerequisites](#per-domain-prerequisites) in addition to filesystem isolation.|
+|LVE per domain | *Resource* isolation — a website has its own CPU, memory, I/O and process limits. Requires CloudLinux OS 8, 9, or 10 and the [per-domain prerequisites](#per-domain-prerequisites) in addition to filesystem isolation.|
 
 Where both layers are available, you do not enable them separately. The [CageFS Isolates commands](#command-reference) configure filesystem isolation and automatically register domain LVEs when the [per-domain prerequisites](#per-domain-prerequisites) are met. If those prerequisites are not met but CloudLinux Isolates itself is available, filesystem isolation can still work without per-domain resource limits.
 
 ### Per-Domain Prerequisites
 
-Per-domain LVE limits are supported on CloudLinux OS 8 and 9. CloudLinux OS 7 predates the required kernel interface; on it, commands that need per-domain support fail with exit code `38` and the message <span class="notranslate">`Domain limits are not supported by this kernel`</span>.
+Per-domain LVE limits are supported on CloudLinux OS 8, 9, and 10. CloudLinux OS 7 predates the required kernel interface; on it, commands that need per-domain support fail with exit code `38` and the message <span class="notranslate">`Domain limits are not supported by this kernel`</span>.
 
 In addition to the [CloudLinux Isolates prerequisites](#prerequisites), per-domain LVE limits require:
 
@@ -1153,7 +1153,7 @@ Administrators customising the email templates should see the <span class="notra
 
 **"Domain limits are not supported by this kernel (requires lve_lvp_create2)"**
 
-This kernel does not report the required per-domain LVE capability. Per-domain limits require CloudLinux OS 8 or 9 and a kernel with per-domain LVE support. CloudLinux Isolates is not supported on CloudLinux OS 7.
+This kernel does not report the required per-domain LVE capability. Per-domain limits require CloudLinux OS 8, 9, or 10 and a kernel with per-domain LVE support. CloudLinux Isolates is not supported on CloudLinux OS 7.
 
 **Isolation was enabled, but no domain LVEs were created**
 
