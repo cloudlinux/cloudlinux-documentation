@@ -1527,6 +1527,7 @@ As a result, <span class="notranslate">CloudLinux Manager</span> will automatica
 
 * [Resource Usage client plugin](./#resource-usage-client-plugin)
 * [Dashboard](./#dashboard-2)
+  * [Links in Dashboard messages](./#links-in-dashboard-messages) <sup>CloudLinux Manager 7.11.57-1</sup>
 * [Current Usage](./#current-usage-3)
   * [Current Usage table](./#current-usage-table)
   * [Filters](./#filters)
@@ -1586,6 +1587,52 @@ To see detailed information about resource usage, click <span class="notranslate
 If your site is not limited, you will see the plain <span class="notranslate">Dashboard</span>.
 
 ![Resource usage Dashboard: no issues in 24h message with illustration; DETAILS; tab bar.](/images/cloudlinuxos/lve_manager/RU-no-issues.webp)
+
+#### Links in Dashboard messages
+
+:::tip Note
+Requires <span class="notranslate">CloudLinux Manager</span> 7.11.57-1+
+:::
+
+A hosting provider can add links and line breaks to the messages of the <span class="notranslate">_Dashboard_</span> tab. For example, you can link to a guide on resource limits or to a page for upgrading a hosting plan. To do so, replace the value of the message in the installed translation catalog. Do not change its key.
+
+The catalogs are JSON files named after the locale, for example, <span class="notranslate">`en-en.json`</span>. They are in the following directories:
+
+* cPanel: <span class="notranslate">`/usr/local/cpanel/base/3rdparty/cloudlinux/assets/i18n/`</span>
+* DirectAdmin: <span class="notranslate">`/usr/local/directadmin/plugins/resource_usage/images/assets/i18n/`</span>
+* Plesk: <span class="notranslate">`/usr/local/psa/admin/htdocs/modules/plesk-lvemanager/i18n/`</span>
+
+Edit the catalog of every locale that your end users use. For English, edit both <span class="notranslate">`en-en.json`</span> and <span class="notranslate">`en-us.json`</span>.
+
+Links and line breaks are supported in the following messages:
+
+* <span class="notranslate">`You have reached the limits within the past 24 hours`</span>
+* <span class="notranslate">`Your site might reach the resource limits soon`</span>
+* <span class="notranslate">`Your site had no issues in the past 24 hours`</span>
+* <span class="notranslate">`No issues in the past 24 hours`</span> (shown when <span class="notranslate">_Show account and isolated domains_</span> is selected)
+* the messages about each limit in the <span class="notranslate">`RESOURCE_USAGE`</span> section of the catalog: <span class="notranslate">`<limit>_limited`</span> and <span class="notranslate">`<limit>_soon_limited`</span>, where <span class="notranslate">`<limit>`</span> is <span class="notranslate">`cpu`</span>, <span class="notranslate">`vmem`</span>, <span class="notranslate">`pmem`</span>, <span class="notranslate">`ep`</span>, <span class="notranslate">`nproc`</span>, <span class="notranslate">`io`</span>, or <span class="notranslate">`iops`</span>. Keep the placeholders in these messages: they are still replaced with the number of faults and with the usage and limit values.
+
+Other texts of the <span class="notranslate">_Dashboard_</span>, including domain names, are shown as plain text.
+
+For example, to add a link to the message about reached limits, change its value as follows. Escape double quotes inside the value with a backslash.
+
+<div class="notranslate">
+
+```
+"You have reached the limits within the past 24 hours": "You have reached the limits within the past 24 hours. Visit our <a href=\"https://example.com/guide\">guide</a> for help."
+```
+</div>
+
+Only the following markup is kept in these messages:
+
+* <span class="notranslate">`<a>`</span> with the <span class="notranslate">`href`</span> attribute. Only absolute <span class="notranslate">`http://`</span> and <span class="notranslate">`https://`</span> URLs are allowed. A link with a relative URL or another scheme keeps its text but loses its <span class="notranslate">`href`</span>, so it cannot be clicked. All other attributes are removed, such as <span class="notranslate">`target`</span>, <span class="notranslate">`class`</span>, <span class="notranslate">`style`</span> and event handlers. As a result, you cannot make a link open in a new tab.
+* <span class="notranslate">`<br>`</span> for a line break.
+
+Other tags are removed, but their text is kept. Active content, such as scripts, is removed.
+
+:::warning Warning
+Updates of the <span class="notranslate">lvemanager</span> package overwrite the catalogs. On cPanel, every cPanel update (<span class="notranslate">`upcp`</span>), including nightly updates, overwrites them as well. Reapply your changes after each update.
+:::
 
 #### Current Usage
 
@@ -2088,6 +2135,9 @@ Your changes to <span class="notranslate">_LVE Settings_</span> will appear in t
 |<span class="notranslate"> Nproc Settings </span> | Maximum number of processes usage for an account. Must be a positive number. Type <span class="notranslate">`DEFAULT`</span> to use default value. Type `0` for unlimited resource.|
 |<span class="notranslate"> IO Settings </span> | Maximum <span class="notranslate">I/O (input/output)</span> usage speed for an account. Is measured in <span class="notranslate">`Kb/s`</span>. Must be a positive number. Type <span class="notranslate">`DEFAULT`</span> to use default value. Type `0` for unlimited resource.|
 |<span class="notranslate"> IOPS Settings </span> | Maximum <span class="notranslate">`IOPS`</span> (input/output operations per second) usage for an account. Must be a positive number. Type <span class="notranslate">`DEFAULT`</span> to use default value. Type `0` to unlimited resource.|
+|<span class="notranslate">INODES soft limit</span>, <span class="notranslate">INODES hard limit</span> | Soft and hard limits on the number of [inodes](/cloudlinuxos/limits/#inodes) for an account. Must be a positive number. Type `0` to apply the default limit. Type `-1` for unlimited resource. Type <span class="notranslate">`DEFAULT`</span> or leave the field empty to keep the limit that is already set for the package, for example, in <span class="notranslate">CloudLinux Manager</span>.|
+|<span class="notranslate">MySQL CPU limit</span> | Maximum MySQL CPU usage for an account, in percent. Applies only if [MySQL Governor](/cloudlinuxos/cloudlinux_os_components/#mysql-governor) is installed. Must be a positive number. Type <span class="notranslate">`DEFAULT`</span> or `0` to use default value.|
+|<span class="notranslate">MySQL IO limit</span> | Maximum MySQL <span class="notranslate">I/O</span> usage speed for an account, read and write combined. Is measured in <span class="notranslate">`MB/s`</span>. Applies only if [MySQL Governor](/cloudlinuxos/cloudlinux_os_components/#mysql-governor) is installed. Must be a positive number. Type <span class="notranslate">`DEFAULT`</span> or `0` to use default value.|
 
 ![WHM Add a Package: LVE Settings fields Speed, Memory, EP, NPROC, IO, IOPS filled; Add.](/images/cloudlinuxos/lve_manager/lve-extension_03.webp) 
 
