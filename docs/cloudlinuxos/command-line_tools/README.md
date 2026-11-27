@@ -1536,15 +1536,6 @@ When running user command as root, please use <span class="notranslate">`--user`
 ```
 </div>
 
-* Get Python script execution timeout in seconds :
-  
-    <div class="notranslate">
-
-    ```
-    cloudlinux-selector get --json --interpreter python --get-run-script-timeout
-    ```
-    </div>
-
 * Set default version, supported versions, and status of Python Selector:
 
     <div class="notranslate">
@@ -1618,14 +1609,6 @@ When running user command as root, please use <span class="notranslate">`--user`
     ```
     </div>
 
-8. Set Python script execution timeout value in seconds :
-     <div class="notranslate">
-    
-     ```
-     cloudlinux-selector set --json --interpreter=python --run-script-timeout=5
-     ```
-     </div>
-
 * Change version for an application:
     * For a specific application:
         
@@ -1636,24 +1619,7 @@ When running user command as root, please use <span class="notranslate">`--user`
         ```
         </div>
 
-    * For all applications that use specific Python version:
-        
-        <div class="notranslate">
-        
-        ```
-        cloudlinux-selector change-version-multiple --json --interpreter python --from-version <str> --new-version <str>
-        ```
-        </div>
-
-    * For multiple applications:
-        
-        <div class="notranslate">
-        
-        ```
-        cloudlinux-selector change-version-multiple --json --interpreter python --data  <pairs user:app-root as json> --new-version <str>
-        ```
-        </div>
-
+        To change the version of several Python applications, run this command for each application; `change-version-multiple` is available only for Node.js.
 
 #### *Examples*
 
@@ -1665,33 +1631,6 @@ When running user command as root, please use <span class="notranslate">`--user`
     cloudlinux-selector set --json --interpreter python --user user1 --app-root apps_dir/app1 --new-version 2.7
     ```
     </div>
-
-2. Change version for all applications that use version 2.7.15 to version 3.3.5:
-    
-    <div class="notranslate">
-    
-    ```
-    cloudlinux-selector change-version-multiple --json --interpreter python --from-version 2.7 --new-version 3.3
-    ```
-    </div>
-
-3. Change version of multiple application(s) and/or multiple users:
-    
-    <div class="notranslate">
-    
-    ```
-    cloudlinux-selector change-version-multiple --json --interpreter python --data <pairs user:app-root as json> --new-version <str>
-    ```
-    </div>
-
-**Example**
-
-<div class="notranslate">
-
-```
-cloudlinux-selector change-version-multiple --json --interpreter python --data [ {“user”: “user1”, “app_root”: “apps/app1”}, {“user”: “user2”, “app_root”: “apps/app1”} ]  --new-version 2.7
-```
-</div>
 
 Common output for all <span class="notranslate">`set`</span> commands:
 
@@ -1831,6 +1770,10 @@ To start all users CLI commands use <span class="notranslate">`cagefs_enter`</sp
     ```
     </div>
 
+:::tip Note
+The `create`, `start`, `restart`, and `destroy` commands below exit with code `0` on success and with code `1` on failure, also when root runs them with `--user` or `--domain`; on failure, `result` holds the error message. Before lvemanager-7.11.58-1, they could exit with code `0` after a failure. Other commands, such as `stop`, can report an error in `result` and still exit with code `0`.
+:::
+
 * Create user application:
 
     :::tip Note
@@ -1898,7 +1841,7 @@ To start all users CLI commands use <span class="notranslate">`cagefs_enter`</sp
     <div class="notranslate">
     
     ```
-    cloudlinux-selector set [--json] --interpreter python  [--user <str> | --domain <str>] --app-root <str> [--app-mode <str>]  [--new-app-root <str>]  [--new-domain <str>]  [--new-app-uri <str>]  [--new-version <str>]  [--startup-file <str>] [--entry-point <str>] [--env-vars <json string>] [--config-files <str>]
+    cloudlinux-selector set [--json] --interpreter python  [--user <str> | --domain <str>] --app-root <str>  [--new-app-root <str>]  [--new-domain <str>]  [--new-app-uri <str>]  [--new-version <str>]  [--startup-file <str>] [--entry-point <str>] [--env-vars <json string>] [--config-files <str>]
     ```
     </div>
 
@@ -1907,7 +1850,7 @@ To start all users CLI commands use <span class="notranslate">`cagefs_enter`</sp
     <div class="notranslate">
     
     ```
-    cloudlinux-selector set --json --interpreter python  --user user1 --app-root my_apps/app1 --app-mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars { “var1” : “value1”, “var2” : “value2” }  --config-files requirements.txt,reqs.txt
+    cloudlinux-selector set --json --interpreter python  --user user1 --app-root my_apps/app1  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 3.8  --startup-file run.py --env-vars '{"var1": "value1", "var2": "value2"}'  --config-files requirements.txt,reqs.txt
     ```
     </div>
 
@@ -1976,15 +1919,6 @@ To start all users CLI commands use <span class="notranslate">`cagefs_enter`</sp
        	“data”: “script output as Base64 encoded string”
     }
     ```
-    </div>
-
-* Get Python script execution timeout in seconds :
-    
-    <div class="notranslate">
-    
-    ```
-    cloudlinux-selector get --json --interpreter=python --get-run-script-timeout
-    ``` 
     </div>
 
 ## Ruby Selector
@@ -2115,15 +2049,6 @@ cloudlinux-selector [get] [--json] --interpreter nodejs
 ```
 </div>
 
-Get Nodejs script execution timeout in seconds :
-    
-<div class="notranslate">
-
-```
-cloudlinux-selector get --json --interpreter=nodejs --get-run-script-timeout
-``` 
-</div>
-
 Set default version, supported versions, and status of <span class="notranslate"> Node.js Selector </span> :
 <div class="notranslate">
 
@@ -2202,22 +2127,16 @@ cloudlinux-selector disable-version --json --interpreter nodejs --version 8
 ```
 </div>
 
-Set Nodejs script execution timeout value in seconds :
-  
-<div class="notranslate">
-
-```
-cloudlinux-selector set --json --interpreter nodejs --run-script-timeout=5
-```
-</div>
-
 Change version for application(s):
 <div class="notranslate">
 
 ```
-cloudlinux-selector set [--json] --interpreter nodejs ((--user <str> |  --domain <str>) --app-root <str> | --from-version <str>) --new-version <str>
+cloudlinux-selector set [--json] --interpreter nodejs (--user <str> | --domain <str>) --app-root <str> --new-version <str>
+cloudlinux-selector change-version-multiple --json --interpreter nodejs --from-version <str> --new-version <str>
 ```
 </div>
+
+The first command changes the version of one application. The second one changes the version of all applications that use the Node.js version given in `--from-version`: it returns `success` at once and changes the applications one by one in a background process. While the applications are being changed, the output of `cloudlinux-selector get --json --interpreter nodejs` includes `remaining_apps_count` and `total_apps_count`.
 
 **Examples** :  
 This command changes version for the specific application:
@@ -2467,7 +2386,7 @@ This command sets a production mode, new domain <span class="notranslate"> new.x
 <div class="notranslate">
 
 ```
-cloudlinux-selector set --json --interpreter nodejs  --user user1 --app-root my_apps/app1 --mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars '{ "var1" : "value1", "var2" : "value2" }'
+cloudlinux-selector set --json --interpreter nodejs  --user user1 --app-root my_apps/app1 --app-mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars '{ "var1" : "value1", "var2" : "value2" }'
 ```
 </div>
 
@@ -2476,7 +2395,7 @@ cloudlinux-selector set --json --interpreter nodejs  --user user1 --app-root my_
 <div class="notranslate">
 
 ```
-cloudlinux-selector set --json --interpreter nodejs  --domain xyz.com --app-root my_apps/app1 --mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars '{ "var1" : "value1", "var2" : "value2" }'
+cloudlinux-selector set --json --interpreter nodejs  --domain xyz.com --app-root my_apps/app1 --app-mode production  --new-app-root new_apps/new_app1  --new-domain new.xyz.com --new-app-uri new_apps/app1  --new-version 8  --startup-file new_app.js --env-vars '{ "var1" : "value1", "var2" : "value2" }'
 ```
 </div>
 
@@ -2533,15 +2452,6 @@ cloudlinux-selector run-script --json --interpreter nodejs --user user1 --app-ro
 		  "data": "script output as Base64 encoded string"
 }
 ```
-</div>
-
-Get Nodejs script execution timeout in seconds :
-    
-<div class="notranslate">
-
-```
-cloudlinux-selector get --json --interpreter=nodejs --get-run-script-timeout
-``` 
 </div>
 
 Activate virtual environment of NodeJS:
