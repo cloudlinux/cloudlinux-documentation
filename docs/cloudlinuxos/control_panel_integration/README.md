@@ -1412,7 +1412,17 @@ cagefs_enter_user --pmem=512M --speed=70% <user> <command>
 Refer to [documentation on limits](/cloudlinuxos/limits/#understanding-limits) for more details on the provided parameters.
 
 :::tip Note
-Temporary LVE is destroyed after the process terminates unless the option `--no-fork` passed.
+Temporary LVE is destroyed after the process terminates unless the `--no-fork` option is passed.
+
+Starting from lve-wrappers 0.7.19-1, `cagefs_enter_user` records each temporary LVE it creates in the root-only directory `/run/lve-wrappers/temp-lve`. Records are lost on reboot, together with the LVEs. If the record cannot be written, the command still runs, but that LVE is not reclaimed automatically.
+
+A temporary LVE that is left over, for example after a `--no-fork` call or after the wrapper was killed, is reclaimed by the next `cagefs_enter_user` call that uses a temporary-limit parameter. That call checks the existing records before it creates its own LVE. A recorded LVE is destroyed only when all of the following are true:
+
+* the process that created it has exited;
+* the LVE has no processes left (NPROC is 0);
+* no domain LVE is registered on the server (in `/etc/container/lvd_ids`).
+
+The cleanup only considers LVEs that `cagefs_enter_user` has recorded; it never looks for other LVEs in the same ID range.
 :::
 
 ### Updating CageFS skeleton
