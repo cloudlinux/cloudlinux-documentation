@@ -64,6 +64,7 @@ export default defineClientConfig({
                 sidebar,
                 siteTitle: "Documentation",
                 stayInTouch: "Stay in touch",
+                aiAgentsHint: "AI agent? Look here:",
                 navbarLinks: navbarLinks,
             },
 

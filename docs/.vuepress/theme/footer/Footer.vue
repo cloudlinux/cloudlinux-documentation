@@ -5,6 +5,9 @@
         <img :src="withBase(footerCustomLogo)"
              :alt="footerCustomAltText">
       </a>
+      <div v-if="locales.aiAgentsHint" class="footer-ai-hint">
+        {{ locales.aiAgentsHint }} <a :href="withBase('/llms.txt')">/llms.txt</a>
+      </div>
     </div>
     <div class="footer-company-title">{{ year }}.
       CloudLinux Inc
@@ -91,6 +94,15 @@ const isGlobalLayout = computed(() => frontmatter.value.layout === 'HomeLayout')
 .footer-default-layout
   position static
   width 100%
+
+.footer-ai-hint
+  margin-top 0.25rem
+  font-size 0.7rem
+  color #999
+
+  a
+    color inherit
+    text-decoration underline
 
 .sidebar-width
   width $sidebarWidth + 2rem
